@@ -34,6 +34,7 @@ const emit = defineEmits([
   "map-click",
   "map-move",
   "layer-change",
+  "map-zoom",
 ]);
 
 // 创建地图容器引用

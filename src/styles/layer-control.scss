@@ -1,0 +1,148 @@
+// 控制图层面板样式
+.layer-control-drawer {
+  :deep(.ant-drawer-content) {
+    background: linear-gradient(270deg, #121C2B 60.58%, rgba(18, 28, 43, 0.75) 90.63%, rgba(18, 28, 43, 0.6) 100%);
+    border-left: 1px solid rgba(0, 255, 255, 0.3);
+  }
+
+  :deep(.ant-drawer-header) {
+    background: rgba(18, 28, 43, 0.9);
+    border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+    padding: 16px 20px;
+
+    .ant-drawer-title {
+      color: #00ffff;
+      font-size: 20px;
+      font-weight: 600;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+  }
+
+  :deep(.ant-drawer-body) {
+    padding: 0;
+    height: calc(100% - 57px);
+    overflow-y: auto;
+    background: rgba(18, 28, 43, 0.8);
+  }
+
+  .search-section {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+    background: rgba(18, 28, 43, 0.9);
+
+    .search-input {
+      :deep(.ant-input) {
+        background: rgba(18, 28, 43, 0.8);
+        border: 1px solid rgba(0, 255, 255, 0.3);
+        color: #ffffff;
+        border-radius: 4px;
+        height: 32px;
+
+        &:focus {
+          border-color: #00ffff;
+          box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.2);
+        }
+
+        &:hover {
+          border-color: rgba(0, 255, 255, 0.5);
+        }
+
+        &::placeholder {
+          color: rgba(255, 255, 255, 0.6);
+        }
+      }
+
+      :deep(.ant-input-prefix) {
+        color: rgba(255, 255, 255, 0.6);
+      }
+    }
+  }
+
+  .layer-list {
+    .layer-section {
+      padding: 16px 0;
+    }
+
+    .layer-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+      position: relative;
+
+      &:hover {
+        background: rgba(0, 255, 255, 0.1);
+      }
+
+      &.active {
+        background: rgba(0, 255, 255, 0.2);
+        
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          width: 3px;
+          background: #00ffff;
+        }
+      }
+
+      .layer-info {
+        flex: 1;
+
+        .layer-name {
+          color: #ffffff;
+          font-size: 14px;
+          font-weight: 500;
+          line-height: 1.4;
+        }
+      }
+
+      .layer-toggle {
+        :deep(.ant-switch) {
+          background: rgba(255, 255, 255, 0.3);
+          border: none;
+
+          &.ant-switch-checked {
+            background: #00ffff;
+            box-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+          }
+
+          .ant-switch-handle {
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+          }
+        }
+      }
+    }
+
+    .divider {
+      height: 1px;
+      background: rgba(0, 255, 255, 0.3);
+      margin: 16px 0;
+      box-shadow: 0 0 4px rgba(0, 255, 255, 0.2);
+    }
+  }
+
+  // 滚动条样式
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 255, 255, 0.1);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 255, 255, 0.3);
+    border-radius: 2px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 255, 255, 0.5);
+  }
+}

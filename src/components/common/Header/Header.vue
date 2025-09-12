@@ -252,6 +252,7 @@ onMounted(() => {
     font-style: normal;
     text-transform: none;
     color: #0edfb8;
+    margin-right: 110px;
     background: linear-gradient(
       0deg,
       #0edfb8 10%,

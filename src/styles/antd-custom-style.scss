@@ -1,9 +1,10 @@
-.warning-drawer {
+.warning-drawer,
+.layer-control-drawer {
     background: rgba(23, 31, 58, 0.8) !important;
 
-    
     .ant-drawer-header {
         padding: 16px 24px 16px 4px;
+
         .ant-drawer-title {
             color: #ffffff !important;
             font-size: 18px;
@@ -30,7 +31,7 @@
     }
 }
 
-.ui-container  {
+.ui-container {
     .ant-drawer-content-wrapper {
         height: 965px;
         position: absolute;
@@ -59,4 +60,12 @@
         /* Chrome, Safari */
         color: #dedada;
     }
+}
+
+.plot-helper-control-point-div {
+    display: none;
+}
+
+.layer-box {
+    margin-right: 92px;
 }

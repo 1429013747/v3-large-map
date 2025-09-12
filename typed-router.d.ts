@@ -21,5 +21,6 @@ declare module 'vue-router/auto-routes' {
     '404': RouteRecordInfo<'404', '/:all(.*)', { all: ParamValue<true> }, { all: ParamValue<false> }>,
     '/smart-map/': RouteRecordInfo<'/smart-map/', '/smart-map', Record<never, never>, Record<never, never>>,
     '/test/': RouteRecordInfo<'/test/', '/test', Record<never, never>, Record<never, never>>,
+    '/test-layer-control/': RouteRecordInfo<'/test-layer-control/', '/test-layer-control', Record<never, never>, Record<never, never>>,
   }
 }

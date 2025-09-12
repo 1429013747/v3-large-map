@@ -19,7 +19,7 @@
       </template>
       <template #default>
         <div class="main-container">
-          <!-- 搜索 -->
+          <!-- 顶部搜索 -->
           <div class="search-container">
             <a-input
               v-model:value="searchKeyword"
@@ -31,7 +31,7 @@
               </template>
             </a-input>
           </div>
-          <!-- 预警 -->
+          <!-- 顶部预警 -->
           <div class="warning-container" @click="handleWarningClick">
             <div class="warning-title">
               <div class="warning-title-num">6</div>
@@ -41,6 +41,48 @@
               白岩码头风险点在2025.06.20 21:00疑似出现走私预警
             </div>
           </div>
+          <!-- 左侧预警抽屉 -->
+          <WarningDrawer
+            v-model:open="warningDrawerVisible"
+            @warning-click="handleWarningItemClick"
+            @track-click="handleTrackClick"
+            @detail-click="handleDetailClick"
+          />
+          <!-- 右侧工具栏 -->
+          <RightToolbar
+            @layer-control="handleToolbarLayerControl"
+            @legend-display="handleToolbarLegendDisplay"
+            @ship-events="handleToolbarShipEvents"
+            @comprehensive-search="handleToolbarComprehensiveSearch"
+            @track-query="handleToolbarTrackQuery"
+            @gang-vehicle-query="handleToolbarGangVehicleQuery"
+            @tide-query="handleToolbarTideQuery"
+            @measure-distance="handleToolbarMeasureDistance"
+            @measure-area="handleToolbarMeasureArea"
+            @plotting="handleToolbarPlotting"
+            @clear="handleToolbarClear"
+            @locate="handleToolbarLocate"
+            @zoom-in="handleToolbarZoomIn"
+            @zoom-out="handleToolbarZoomOut"
+          />
+          
+          <!-- 控制图层面板 -->
+          <LayerControlPanel
+            v-model:open="layerControlVisible"
+            @layer-toggle="handleLayerToggle"
+            @layer-click="handleLayerClick"
+          />
+          
+          <!-- 应急标绘面板 -->
+          <PlotPanel
+            ref="plotPanelRef"
+            :map="map"
+            :visible="plottingPanelVisible"
+            @close="closePlottingPanel"
+            @featureCreated="handleFeatureCreated"
+            @featureSelected="handleFeatureSelected"
+            @featureDeleted="handleFeatureDeleted"
+          />
           <!-- 底部菜单 -->
           <div class="bottom-menu">
             <div class="bottom-menu-box">
@@ -187,13 +229,6 @@
               </div>
             </div>
           </div>
-          <!-- 预警抽屉 -->
-          <WarningDrawer
-            v-model:open="warningDrawerVisible"
-            @warning-click="handleWarningItemClick"
-            @track-click="handleTrackClick"
-            @detail-click="handleDetailClick"
-          />
         </div>
       </template>
     </MapLayout>
@@ -201,14 +236,18 @@
 </template>
 
 <script setup>
-import { computed, nextTick, onMounted, onUnmounted } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, provide, reactive, ref } from "vue";
 import MapLayout from "@/layouts/MapLayout.vue";
 import MapViewer from "@/components/map/MapViewer.vue";
 import WarningDrawer from "@/components/WarningDrawer/WarningDrawer.vue";
+import RightToolbar from "@/components/RightToolbar/RightToolbar.vue";
+import PlotPanel from "@/components/PlottingPanel/PlotPanel.vue";
+import LayerControlPanel from "@/components/LayerControlPanel/LayerControlPanel.vue";
 import { useMapMarkers } from "@/composables/useMapMarkers.js";
 import { generateRandomCoordinates } from "@/utils/coordinateGenerator.js";
 import "@/styles/marker-popup.scss";
 import "@/styles/bottom-statistics.scss";
+import "@/styles/layer-control.scss";
 
 // 地图配置
 const mapCenter = reactive([121.92925185863172, 29.275393872226005]); // 宁波坐标
@@ -235,9 +274,15 @@ const mapViewer = ref(null);
 const searchKeyword = ref("");
 const warningDrawerVisible = ref(false);
 const activeBottomMenu = ref(0);
+const plottingPanelVisible = ref(false);
+const layerControlVisible = ref(false);
 
-// 标记点详情面板（现在由 Overlay 处理）
-let markerPopup = null;
+// 标绘面板引用
+const plotPanelRef = ref(null);
+
+let mapMarkersConfig = {};
+const map = ref(null);
+
 // 底部菜单
 const bottomMenu = ref([
   {
@@ -265,6 +310,8 @@ const getIcon = (icon) => {
 // 当前图层
 const currentLayer = ref("天地图卫星");
 
+const mapConfig = ref({});
+
 // 切换地图图层
 const switchLayer = (layerType) => {
   // 直接使用传入的 layerType，不要映射
@@ -279,32 +326,45 @@ const switchLayer = (layerType) => {
 };
 
 // 地图准备就绪
-const onMapReady = (map) => {
+const onMapReady = (mapInstance) => {
   console.log("当前地图中心:", mapCenter.value);
+  map.value = mapInstance; // 设置 map 变量
   const {
-    markers,
     initMarkerLayer,
     addMarker,
     clearMarkers,
-    enableClickToAdd,
     getMarker,
-    toggleMarkerVisibility,
-    setMarkerClickCallback,
     hideMarkerPopup,
-  } = useMapMarkers(map);
-  initMarkerLayer();
-  markerPopup = hideMarkerPopup;
+    setCenter,
+    setZoom,
+    flyTo,
+    zoomIn,
+    zoomOut,
+  } = useMapMarkers(mapInstance);
+  
+  
+  mapMarkersConfig = {
+    initMarkerLayer,
+    addMarker,
+    clearMarkers,
+    getMarker,
+    hideMarkerPopup,
+    setCenter,
+    setZoom,
+    flyTo,
+    zoomIn,
+    zoomOut
+  };
+  
 
-  // 中心坐标
-  const centerLat = 29.330254208488313;
-  const centerLon = 121.69077697750392;
-  const radiusKm = 50; // 50公里半径
+  // 初始化标记点
+  initMarkerLayer();
 
   // 生成随机坐标点（50公里内）
   const randomCoords = generateRandomCoordinates(
-    centerLat,
-    centerLon,
-    radiusKm,
+    29.330254208488313,
+    121.69077697750392,
+    50,
     15
   );
 
@@ -432,8 +492,9 @@ const displayClicked = computed(() => {
 });
 
 const handleSearch = () => {
-  console.log("搜索", searchKeyword.value);
-  mapViewer.value.search(searchKeyword.value);
+  if (!mapViewer.value || !searchKeyword.value.trim()) return;
+  console.log("🚀 ~ handleSearch ~ searchKeyword.value:", searchKeyword.value);
+  mapMarkersConfig.flyTo([121.72875137035045, 29.358613535256325], 10);
 };
 
 // 预警相关方法
@@ -456,6 +517,136 @@ const handleTrackClick = (warning) => {
 const handleDetailClick = (warning) => {
   console.log("查看详情", warning);
   // 这里可以添加详情查看逻辑
+};
+
+// 工具栏事件处理函数
+const handleToolbarLayerControl = () => {
+  console.log("工具栏：控制图层");
+  layerControlVisible.value = true;
+};
+
+const handleToolbarLegendDisplay = () => {
+  console.log("工具栏：图例展示");
+  // 可以显示图例面板
+};
+
+const handleToolbarShipEvents = () => {
+  console.log("工具栏：船舶事件");
+  // 可以显示船舶事件面板
+};
+
+const handleToolbarComprehensiveSearch = () => {
+  console.log("工具栏：综合检索");
+  // 可以显示综合检索面板
+};
+
+const handleToolbarTrackQuery = () => {
+  console.log("工具栏：轨迹查询");
+  // 可以显示轨迹查询面板
+};
+
+const handleToolbarGangVehicleQuery = () => {
+  console.log("工具栏：团伙车辆查询");
+  // 可以显示团伙车辆查询面板
+};
+
+const handleToolbarTideQuery = () => {
+  console.log("工具栏：潮汐查询");
+  // 可以显示潮汐查询面板
+};
+
+const handleToolbarMeasureDistance = () => {
+  console.log("工具栏：测距");
+  // 关闭标绘面板
+  plottingPanelVisible.value = false;
+  // 启动测距功能
+  if (plotPanelRef.value && plotPanelRef.value.startMeasureDistance) {
+    plotPanelRef.value.startMeasureDistance();
+  }
+};
+
+const handleToolbarMeasureArea = () => {
+  console.log("工具栏：测面");
+  // 关闭标绘面板
+  plottingPanelVisible.value = false;
+  // 启动测面功能
+  if (plotPanelRef.value && plotPanelRef.value.startMeasureArea) {
+    plotPanelRef.value.startMeasureArea();
+  }
+};
+
+const handleToolbarPlotting = () => {
+  console.log("工具栏：标绘");
+  // 停止测量功能
+  if (plotPanelRef.value && plotPanelRef.value.stopMeasure) {
+    plotPanelRef.value.stopMeasure();
+  }
+  // 切换标绘面板显示状态
+  plottingPanelVisible.value = !plottingPanelVisible.value;
+};
+
+const handleToolbarClear = () => {
+  console.log("工具栏：清空按钮被点击");
+  // 清空所有内容
+  if (plotPanelRef.value && plotPanelRef.value.clearAll) {
+    console.log("调用 PlotPanel 的 clearAll 方法");
+    plotPanelRef.value.clearAll();
+  } else {
+    console.log("PlotPanel 引用不存在或 clearAll 方法不存在");
+  }
+  // 关闭标绘面板
+  plottingPanelVisible.value = false;
+};
+
+const handleToolbarLocate = () => {
+  console.log("工具栏：定位");
+  // 可以定位到当前位置或指定位置
+};
+
+const handleToolbarZoomIn = () => {
+  console.log("工具栏：放大");
+  mapMarkersConfig.zoomIn();
+};
+
+const handleToolbarZoomOut = () => {
+  console.log("工具栏：缩小");
+  mapMarkersConfig.zoomOut();
+};
+
+// 标绘面板事件处理
+const closePlottingPanel = () => {
+  plottingPanelVisible.value = false;
+};
+
+const handleFeatureCreated = (feature) => {
+  console.log("标绘要素已创建:", feature);
+  // PlotPanel 使用 ol-plot 库，不需要我们手动处理
+};
+
+const handleFeatureSelected = (feature) => {
+  console.log("标绘要素已选中:", feature);
+  // PlotPanel 使用 ol-plot 库，不需要我们手动处理
+};
+
+const handleFeatureDeleted = (feature) => {
+  console.log("标绘要素已删除:", feature);
+  // PlotPanel 使用 ol-plot 库，不需要我们手动处理
+};
+
+// 控制图层面板事件处理
+const handleLayerToggle = (layer) => {
+  console.log("图层切换:", layer);
+  // 这里可以添加实际的图层显示/隐藏逻辑
+  // 例如：更新地图图层的可见性
+  if (mapViewer.value && mapViewer.value.toggleLayer) {
+    mapViewer.value.toggleLayer(layer.id, layer.visible);
+  }
+};
+
+const handleLayerClick = (layer) => {
+  console.log("图层点击:", layer);
+  // 这里可以添加图层选中逻辑
+  // 例如：高亮显示该图层或显示图层详情
 };
 
 const handleBottomMenuClick = (index) => {
@@ -586,8 +777,8 @@ const getSliderIndicatorStyle = computed(() => {
   }
   .map-controls {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    bottom: 90px;
+    left: 20px;
     z-index: 100;
     pointer-events: auto;
     .control-panel {

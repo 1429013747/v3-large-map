@@ -170,6 +170,7 @@ export function useMapMarkers(map) {
     const coordinates = [
       [121.72482419397187, 29.34646109911479],
       [121.82213515941295, 29.34065820190017],
+      [121.7919227570692, 29.2915641536963],
       [121.8633338898817, 29.266409276796225]
     ];
 
@@ -177,6 +178,7 @@ export function useMapMarkers(map) {
     generateTrackRoute(coordinates, {
       showStartEnd: true,
       animation: true,
+      animationDuration: 4000,
       style: {
         stroke: '#d65e37',
         strokeWidth: 3,
@@ -586,6 +588,38 @@ export function useMapMarkers(map) {
     markerSource.value = null;
   };
 
+  // 动画飞行到指定位置
+  const flyTo = (center, zoom, duration = 1000) => {
+    if (!map) return;
+    const view = map.getView();
+    view.animate({
+      center: fromLonLat(center),
+      zoom: zoom,
+      duration: duration
+    });
+  };
+
+  /**
+   * 放大
+   */
+  const zoomIn = () => {
+    if (!map) return;
+    const view = map.getView();
+    const currentZoom = view.getZoom();
+    view.animate({ zoom: currentZoom + 1, duration: 300 });
+  };
+
+  /**
+   * 缩小
+   */
+  const zoomOut = () => {
+    if (!map) return;
+    const view = map.getView();
+    const currentZoom = view.getZoom();
+    view.animate({ zoom: currentZoom - 1, duration: 300 });
+  };
+
+
   return {
     // 状态
     markers,
@@ -616,6 +650,12 @@ export function useMapMarkers(map) {
     isMarkerIdUnique,
     generateUniqueMarkerId,
 
+
+    // 动画飞行到指定位置
+    flyTo,
+
+    zoomIn,
+    zoomOut,
     // 轨迹生成方法
     generateTrackRoute,
     startTrackRouteAnimation,
