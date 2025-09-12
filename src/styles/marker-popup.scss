@@ -1,0 +1,156 @@
+/* 标记点弹窗样式 */
+.marker-popup-container {
+  position: relative;
+  z-index: 1000;
+}
+
+.vehicle-popup {
+  background: rgba(23, 38, 42, 0.85);
+  min-width: 220px;
+  overflow: hidden;
+  animation: popupIn 0.3s ease-out;
+  pointer-events: auto;
+  border: 1px solid rgba(72, 207, 209, 1);
+  box-shadow: 0 8px 32px rgba(72, 207, 209, 0.4);
+}
+
+@keyframes popupIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 车辆弹窗头部 */
+.vehicle-popup .popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 10px;
+  background: linear-gradient(135deg, #01dff3 0%, transparent 100%);
+  color: white;
+}
+
+.vehicle-popup .popup-header h3 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+}
+
+.vehicle-popup .popup-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+}
+
+.vehicle-popup .popup-close {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  font-size: 18px;
+  line-height: 1;
+  opacity: 0.8;
+}
+
+
+
+/* 车辆弹窗内容 */
+.vehicle-popup .popup-content {
+  display: flex;
+  padding: 8px;
+  gap: 16px;
+}
+
+.vehicle-popup .vehicle-image {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  overflow: hidden;
+  background: #333;
+}
+
+.vehicle-popup .vehicle-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vehicle-popup .vehicle-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.vehicle-popup .info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vehicle-popup .info-label {
+  font-size: 12px;
+  color: #19c7c7;
+  font-weight: 500;
+  min-width: 40px;
+}
+
+.vehicle-popup .info-value {
+  font-size: 12px;
+  color: #bcc1c1;
+  font-weight: 400;
+  text-align: left;
+  flex: 1;
+  margin-left: 8px;
+}
+
+
+
+/* 车辆弹窗底部 */
+.vehicle-popup .popup-footer {
+  display: flex;
+  align-items: center;
+  gap: 100px;
+
+  padding-right: 8px;
+}
+
+.vehicle-popup .track-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  color: #5de6e7;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+
+.vehicle-popup .more-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: #5de6e7;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: color 0.2s;
+}

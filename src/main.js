@@ -8,6 +8,8 @@ import App from './App.vue'
 import router from './router'
 // 导入所有样式，这样就不需要每个组件单独导入样式了
 import 'ant-design-vue/dist/reset.css'
+// 导入 OpenLayers 样式
+import 'ol/ol.css'
 
 const app = createApp(App)
 const pinia = createPinia()

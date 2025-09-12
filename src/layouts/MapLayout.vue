@@ -1,8 +1,35 @@
+<template>
+  <div class="map-layout">
+    <!-- 地图内容区域 - 全屏铺满，不受缩放影响 -->
+    <div v-if="showMap" class="map-background">
+      <slot name="map" />
+    </div>
+
+    <!-- 非地图页面背景 -->
+    <div v-else class="page-background" />
+
+    <!-- UI容器 - 受缩放影响 -->
+    <div ref="uiContainer" class="ui-container">
+      <!-- Header组件 -->
+      <Header />
+      <!-- 页面内容区域 -->
+      <main class="page-content">
+        <slot />
+      </main>
+
+      <!-- 底部控制栏 -->
+      <footer class="map-footer">
+        <div class="control-tabs"></div>
+      </footer>
+    </div>
+  </div>
+</template>
 <script setup>
 import autoScale from "@/utils/autoScale.js";
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import ThemeSwitch from "@/components/common/ThemeSwitch/ThemeSwitch.vue";
+import Header from "@/components/common/Header/Header.vue";
 
 // 定义props
 const props = defineProps({
@@ -98,31 +125,6 @@ onUnmounted(() => {
 });
 </script>
 
-<template>
-  <div class="map-layout">
-    <!-- 地图内容区域 - 全屏铺满，不受缩放影响 -->
-    <div v-if="showMap" class="map-background">
-      <slot name="map" />
-    </div>
-
-    <!-- 非地图页面背景 -->
-    <div v-else class="page-background" />
-
-    <!-- UI容器 - 受缩放影响 -->
-    <div ref="uiContainer" class="ui-container">
-      <!-- 页面内容区域 -->
-      <main class="page-content">
-        <slot />
-      </main>
-
-      <!-- 底部控制栏 -->
-      <footer class="map-footer">
-        <div class="control-tabs"></div>
-      </footer>
-    </div>
-  </div>
-</template>
-
 <style lang="scss" scoped>
 .map-layout {
   position: relative;
@@ -197,7 +199,7 @@ onUnmounted(() => {
   position: absolute;
   top: 20px;
   right: 20px;
-  z-index: 1000;
+  z-index: 100;
   pointer-events: auto;
 }
 
@@ -208,8 +210,8 @@ onUnmounted(() => {
   left: 0;
   right: 0;
   bottom: 0px;
-  z-index: 10;
   pointer-events: none;
+
 
   /* 子元素恢复交互 */
   > * {

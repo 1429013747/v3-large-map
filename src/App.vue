@@ -30,4 +30,6 @@ const theme = {
   </ConfigProvider>
 </template>
 
-<style lang="scss"></style>
+<style lang="scss">
+@use "./styles/antd-custom-style.scss" as *;
+</style>
