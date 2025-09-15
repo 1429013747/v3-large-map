@@ -64,6 +64,7 @@ declare module 'vue' {
     KeyTargetDataPopup: typeof import('./src/components/common/KeyTargetDataPopup.vue')['default']
     LayerControl: typeof import('./src/components/LayerControl.vue')['default']
     LayerControlPanel: typeof import('./src/components/LayerControlPanel/LayerControlPanel.vue')['default']
+    LegendPanel: typeof import('./src/components/LegendPanel/LegendPanel.vue')['default']
     LocationSelector: typeof import('./src/components/LocationSelector.vue')['default']
     MapHeader: typeof import('./src/components/MapHeader.vue')['default']
     MapViewer: typeof import('./src/components/map/MapViewer.vue')['default']

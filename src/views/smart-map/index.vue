@@ -65,14 +65,17 @@
             @zoom-in="handleToolbarZoomIn"
             @zoom-out="handleToolbarZoomOut"
           />
-          
+
           <!-- 控制图层面板 -->
           <LayerControlPanel
             v-model:open="layerControlVisible"
             @layer-toggle="handleLayerToggle"
             @layer-click="handleLayerClick"
           />
-          
+
+          <!-- 图例面板 -->
+          <LegendPanel v-model:open="legendPanelVisible" />
+
           <!-- 应急标绘面板 -->
           <PlotPanel
             ref="plotPanelRef"
@@ -236,11 +239,20 @@
 </template>
 
 <script setup>
-import { computed, nextTick, onMounted, onUnmounted, provide, reactive, ref } from "vue";
+import {
+  computed,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  provide,
+  reactive,
+  ref,
+} from "vue";
 import MapLayout from "@/layouts/MapLayout.vue";
 import MapViewer from "@/components/map/MapViewer.vue";
 import WarningDrawer from "@/components/WarningDrawer/WarningDrawer.vue";
 import RightToolbar from "@/components/RightToolbar/RightToolbar.vue";
+import LegendPanel from "@/components/LegendPanel/LegendPanel.vue";
 import PlotPanel from "@/components/PlottingPanel/PlotPanel.vue";
 import LayerControlPanel from "@/components/LayerControlPanel/LayerControlPanel.vue";
 import { useMapMarkers } from "@/composables/useMapMarkers.js";
@@ -276,6 +288,7 @@ const warningDrawerVisible = ref(false);
 const activeBottomMenu = ref(0);
 const plottingPanelVisible = ref(false);
 const layerControlVisible = ref(false);
+const legendPanelVisible = ref(false);
 
 // 标绘面板引用
 const plotPanelRef = ref(null);
@@ -341,8 +354,7 @@ const onMapReady = (mapInstance) => {
     zoomIn,
     zoomOut,
   } = useMapMarkers(mapInstance);
-  
-  
+
   mapMarkersConfig = {
     initMarkerLayer,
     addMarker,
@@ -353,9 +365,8 @@ const onMapReady = (mapInstance) => {
     setZoom,
     flyTo,
     zoomIn,
-    zoomOut
+    zoomOut,
   };
-  
 
   // 初始化标记点
   initMarkerLayer();
@@ -528,6 +539,7 @@ const handleToolbarLayerControl = () => {
 const handleToolbarLegendDisplay = () => {
   console.log("工具栏：图例展示");
   // 可以显示图例面板
+  legendPanelVisible.value = true;
 };
 
 const handleToolbarShipEvents = () => {
