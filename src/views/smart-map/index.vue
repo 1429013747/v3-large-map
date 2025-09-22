@@ -1033,25 +1033,6 @@ const handleBottomMenuClick = (index) => {
     console.log("岸线管控");
   } else if (index === 1) {
     console.log("重点船舶");
-    const defaultVisibleLayers = {
-      船舶: "ship",
-      风险点: "icon",
-      电子围栏: "electronic-fence",
-      光电雷达覆盖区域: "optical-radar",
-      智能限高杆: "smart-height-bar",
-      视频感知设备: "video-sensing-device",
-      船舶运行热力图: "ship-running-heatmap",
-    };
-    keyVesselsPopupVisible.value = true;
-    handleDefaultVisibleLayers(Object.keys(defaultVisibleLayers));
-    // 更新图层
-    Object.values(defaultVisibleLayers).forEach((type) => {
-      mapMarkersConfig.toggleMarkerVisibilityList(type, true);
-    });
-    mapMarkersConfig.toggleMarkerVisibilityList("icon", true);
-    mapMarkersConfig.toggleMarkerVisibilityList("ship", true);
-    mapMarkersConfig.toggleMarkerVisibilityList("car", false);
-    mapMarkersConfig.toggleMarkerVisibilityByLayer("轨迹", true);
   } else if (index === 2) {
     console.log("重点人员");
     const defaultVisibleLayers = {

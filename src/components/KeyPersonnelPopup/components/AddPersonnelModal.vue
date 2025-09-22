@@ -26,8 +26,8 @@
         <Col :span="12">
           <a-form-item label="性别" name="gender" required>
             <a-select v-model:value="formData.gender" placeholder="请选择性别">
-              <a-select-option value="man">男</a-select-option>
-              <a-select-option value="woman">女</a-select-option>
+              <a-select-option value="男">男</a-select-option>
+              <a-select-option value="女">女</a-select-option>
             </a-select>
           </a-form-item>
         </Col>
@@ -40,10 +40,10 @@
               v-model:value="formData.vehicleType"
               placeholder="请选择证件类型"
             >
-              <a-select-option value="idCard">身份证</a-select-option>
-              <a-select-option value="passport">护照</a-select-option>
-              <a-select-option value="drivingLicense">驾驶证</a-select-option>
-              <a-select-option value="other">其他</a-select-option>
+              <a-select-option value="身份证">身份证</a-select-option>
+              <a-select-option value="护照">护照</a-select-option>
+              <a-select-option value="驾驶证">驾驶证</a-select-option>
+              <a-select-option value="其他">其他</a-select-option>
             </a-select>
           </a-form-item>
         </Col>
@@ -67,14 +67,12 @@
         </Col>
         <Col :span="12">
           <a-form-item label="标签" name="status">
-            <a-select
-              v-model:value="formData.status"
-              placeholder="请选择证件类型"
-            >
-              <a-select-option value="前科人员">前科人员</a-select-option>
-              <a-select-option value="失业人员">失业人员</a-select-option>
-              <a-select-option value="非本地">非本地</a-select-option>
-              <a-select-option value="其他">其他</a-select-option>
+            <a-select v-model:value="formData.status" placeholder="请选择标签">
+              <a-select-option value="标签1">标签1</a-select-option>
+              <a-select-option value="标签2">标签2</a-select-option>
+              <a-select-option value="标签3">标签3</a-select-option>
+              <a-select-option value="标签4">标签4</a-select-option>
+              <a-select-option value="标签5">标签5</a-select-option>
             </a-select>
           </a-form-item>
         </Col>
@@ -130,7 +128,7 @@ const formData = reactive({
   phone: "",
   idCard: "",
   photos: [],
-  status: "",
+  status: null,
 });
 
 // 表单验证规则
@@ -160,7 +158,7 @@ const resetForm = () => {
   formData.vehicleType = null;
   formData.idCard = "";
   formData.phone = "";
-  formData.status = "";
+  formData.status = null;
   formRef.value?.resetFields();
 };
 

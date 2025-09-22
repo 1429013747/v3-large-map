@@ -4,7 +4,7 @@
 -->
 <script setup>
 import { globalLoading } from '@/components/common/GlobalLoading/useGlobalLoading'
-import { computed, defineOptions } from 'vue'
+import { computed } from 'vue'
 
 defineOptions({
   name: 'GlobalLoading'

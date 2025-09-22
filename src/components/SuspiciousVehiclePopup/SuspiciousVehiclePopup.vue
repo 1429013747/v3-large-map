@@ -278,7 +278,7 @@ const visibleModal = computed({
   set(value) {
     emit("update:open", value);
   },
-});;
+});
 // 分类选项
 const categories = [
   { value: "all", label: "全部车辆" },
@@ -732,16 +732,12 @@ defineExpose({
     }
 
     .add-btn {
-      background: #103d4c;
-      border-color: #103d4c;
-      color: #ffffff;
-      padding: 0 12px;
-      height: 30px;
-      font-size: 14px;
-
+      background: transparent;
+      border: none;
+      color: #00e5ff;
+      letter-spacing: 1px;
       &:hover {
-        background: #144b5d;
-        border-color: #144b5d;
+        background: #1a4e5e;
       }
     }
   }

@@ -188,7 +188,7 @@ const visibleModal = computed({
   set(value) {
     emit("update:open", value);
   },
-});;
+});
 // 重点人员数据
 const personnelList = ref([
   {
@@ -374,8 +374,6 @@ const handleDetail = (personnel) => {
   selectedPersonnelData.value = personnel;
   personnelDetailModalVisible.value = true;
 };
-
-
 </script>
 
 <style lang="scss" scoped>
@@ -487,7 +485,7 @@ const handleDetail = (personnel) => {
   .add-btn {
     background: transparent;
     border: none;
-    color: #05bbcf;
+    color: #00e5ff;
     letter-spacing: 1px;
     &:hover {
       background: #1a4e5e;

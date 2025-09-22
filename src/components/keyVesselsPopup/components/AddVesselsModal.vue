@@ -32,11 +32,11 @@
               v-model:value="formData.color"
               placeholder="请选择车牌颜色"
             >
-              <a-select-option value="blue">蓝色</a-select-option>
-              <a-select-option value="yellow">黄色</a-select-option>
-              <a-select-option value="green">绿色</a-select-option>
-              <a-select-option value="white">白色</a-select-option>
-              <a-select-option value="black">黑色</a-select-option>
+              <a-select-option value="蓝色">蓝色</a-select-option>
+              <a-select-option value="黄色">黄色</a-select-option>
+              <a-select-option value="绿色">绿色</a-select-option>
+              <a-select-option value="白色">白色</a-select-option>
+              <a-select-option value="黑色">黑色</a-select-option>
             </a-select>
           </a-form-item>
         </Col>
@@ -49,11 +49,11 @@
               v-model:value="formData.vehicleType"
               placeholder="请选择车辆类型"
             >
-              <a-select-option value="truck">货车</a-select-option>
-              <a-select-option value="van">面包车</a-select-option>
-              <a-select-option value="car">轿车</a-select-option>
-              <a-select-option value="bus">客车</a-select-option>
-              <a-select-option value="motorcycle">摩托车</a-select-option>
+              <a-select-option value="货车">货车</a-select-option>
+              <a-select-option value="面包车">面包车</a-select-option>
+              <a-select-option value="轿车">轿车</a-select-option>
+              <a-select-option value="客车">客车</a-select-option>
+              <a-select-option value="摩托车">摩托车</a-select-option>
             </a-select>
           </a-form-item>
         </Col>
