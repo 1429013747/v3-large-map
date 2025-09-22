@@ -1,0 +1,447 @@
+// 重点船舶相关样式
+
+// ==================== 通用弹框样式（可复用） ====================
+// 使用说明：
+// 1. 基础弹框结构: .popup-base
+// 2. 悬停弹框: .hover-popup + .popup-content
+// 3. 选中弹框: .selected-popup + .selected-popup-content
+// 4. 自定义颜色: 通过CSS变量 --popup-primary-color 定制主色调
+
+// 通用弹框基础样式变量
+:root {
+  --popup-primary-color: #00FFFF;
+  --popup-bg-gradient: linear-gradient(135deg, rgba(18, 28, 43, 0.95), rgba(26, 91, 146, 0.85));
+  --popup-border-radius: 8px;
+  --popup-text-color: #ffffff;
+  --popup-border-color: rgba(0, 255, 255, 0.4);
+  --popup-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+// 通用弹框基础样式
+.popup-base {
+  background: var(--popup-bg-gradient);
+  border-radius: var(--popup-border-radius);
+  color: var(--popup-text-color);
+  backdrop-filter: blur(10px);
+
+  // 通用细节项样式
+  .detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 13px;
+
+    .detail-label {
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 500;
+    }
+
+    .detail-value {
+      color: #ffffff;
+      font-weight: 400;
+      text-align: right;
+      word-break: break-all;
+    }
+  }
+
+  // 通用状态标签样式
+  .status-tag {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  // 通用关闭按钮样式
+  .close-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: rgba(255, 107, 107, 0.8);
+    color: white;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 107, 107, 1);
+      transform: scale(1.1);
+    }
+  }
+
+  // 通用操作按钮区域
+  .action-area {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--popup-border-color);
+
+    .action-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: transparent;
+      color: var(--popup-text-color);
+
+      .btn-icon {
+        font-size: 16px;
+      }
+
+      .btn-text {
+        font-size: 14px;
+      }
+
+      // 成功类型按钮
+      &.success-btn {
+        background: linear-gradient(135deg, #2ed573, #20a45b);
+        border: 1px solid rgba(46, 213, 115, 0.5);
+
+        &:hover {
+          background: linear-gradient(135deg, #20a45b, #1a8a4a);
+          box-shadow: 0 4px 12px rgba(46, 213, 115, 0.3);
+          transform: translateY(-1px);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+      }
+
+      // 危险类型按钮
+      &.danger-btn {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        border: 1px solid rgba(255, 107, 107, 0.5);
+
+        &:hover {
+          background: linear-gradient(135deg, #ee5a52, #e04848);
+          box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+          transform: translateY(-1px);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+      }
+
+      // 警告类型按钮
+      &.warning-btn {
+        background: linear-gradient(135deg, #ffa502, #ff8c00);
+        border: 1px solid rgba(255, 165, 2, 0.5);
+
+        &:hover {
+          background: linear-gradient(135deg, #ff8c00, #ff7700);
+          box-shadow: 0 4px 12px rgba(255, 165, 2, 0.3);
+          transform: translateY(-1px);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+      }
+
+      // 信息类型按钮
+      &.info-btn {
+        background: linear-gradient(135deg, #0088cc, #0066aa);
+        border: 1px solid rgba(0, 136, 204, 0.5);
+
+        &:hover {
+          background: linear-gradient(135deg, #0066aa, #004488);
+          box-shadow: 0 4px 12px rgba(0, 136, 204, 0.3);
+          transform: translateY(-1px);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+      }
+    }
+  }
+}
+
+// ==================== 重点船舶专用弹框样式 ====================
+
+// 重点船舶弹框基础样式
+.key-vessel-popup {
+  &.selected-popup {
+    max-width: 380px;
+    min-width: 300px;
+  }
+
+  // 悬停弹框内容样式
+  .popup-content {
+    .vessel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+
+      .vessel-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #00FFFF;
+      }
+
+      .vessel-status {
+        font-size: 12px;
+        font-weight: 500;
+        padding: 2px 8px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.1);
+      }
+    }
+
+    .vessel-details {
+      .detail-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 6px;
+        font-size: 13px;
+
+        .detail-label {
+          color: rgba(255, 255, 255, 0.7);
+          font-weight: 500;
+        }
+
+        .detail-value {
+          color: #ffffff;
+          font-weight: 400;
+          max-width: 150px;
+          text-align: right;
+          word-break: break-all;
+        }
+      }
+    }
+  }
+
+  // 选中弹框内容样式
+  .selected-popup-content {
+    .selected-vessel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+      position: relative;
+
+      .selected-vessel-name {
+        font-size: 18px;
+        font-weight: 700;
+        color: #00FFFF;
+        text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        flex: 1;
+      }
+
+      .selected-vessel-status {
+        font-size: 13px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        margin-right: 8px;
+      }
+
+      .close-btn {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        width: 24px;
+        height: 24px;
+        border: none;
+        background: rgba(255, 107, 107, 0.8);
+        color: white;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 16px;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: rgba(255, 107, 107, 1);
+          transform: scale(1.1);
+        }
+      }
+    }
+
+    .selected-vessel-details {
+      .detail-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        font-size: 14px;
+        line-height: 1.4;
+
+        .detail-label {
+          color: rgba(255, 255, 255, 0.8);
+          font-weight: 600;
+          min-width: 90px;
+        }
+
+        .detail-value {
+          color: #ffffff;
+          font-weight: 500;
+          max-width: 220px;
+          text-align: right;
+          word-break: break-all;
+        }
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+
+    // 船舶操作按钮区域
+    .vessel-actions {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(0, 255, 255, 0.2);
+
+      .action-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: transparent;
+        color: #ffffff;
+
+        .btn-icon {
+          font-size: 16px;
+        }
+
+        .btn-text {
+          font-size: 14px;
+        }
+
+        // 重点船舶专用按钮样式（使用通用样式）
+        &.add-mark-btn {
+          background: linear-gradient(135deg, #2ed573, #20a45b);
+          border: 1px solid rgba(46, 213, 115, 0.5);
+
+          &:hover {
+            background: linear-gradient(135deg, #20a45b, #1a8a4a);
+            box-shadow: 0 4px 12px rgba(46, 213, 115, 0.3);
+            transform: translateY(-1px);
+          }
+
+          &:active {
+            transform: translateY(0);
+          }
+        }
+
+        &.remove-mark-btn {
+          background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+          border: 1px solid rgba(255, 107, 107, 0.5);
+
+          &:hover {
+            background: linear-gradient(135deg, #ee5a52, #e04848);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+            transform: translateY(-1px);
+          }
+
+          &:active {
+            transform: translateY(0);
+          }
+        }
+      }
+    }
+  }
+}
+
+// 重点船舶悬停弹窗基础样式（应用到overlay元素）
+.key-vessel-hover-popup {
+  background: linear-gradient(135deg, rgba(18, 28, 43, 0.95), rgba(26, 91, 146, 0.85));
+  border: 1px solid rgba(0, 255, 255, 0.4);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  padding: 16px;
+  color: #ffffff;
+  font-size: 14px;
+  z-index: 9999;
+  pointer-events: none;
+  animation: keyVesselPopupFadeIn 0.3s ease-out;
+}
+
+// 重点船舶选中弹窗基础样式（应用到overlay元素）
+.key-vessel-selected-popup {
+  background: linear-gradient(135deg, rgba(18, 28, 43, 0.95), rgba(26, 91, 146, 0.85));
+  border: 2px solid rgba(0, 255, 255, 0.6);
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(15px);
+  padding: 20px;
+  color: #ffffff;
+  font-size: 14px;
+  z-index: 9999;
+  pointer-events: auto;
+  animation: keyVesselSelectedPopupFadeIn 0.4s ease-out;
+}
+
+// 动画效果
+@keyframes keyVesselPopupFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes keyVesselPopupBounce {
+  0% {
+    transform: scale(0.9);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes keyVesselSelectedPopupFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-15px) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
