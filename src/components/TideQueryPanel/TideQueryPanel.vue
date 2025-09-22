@@ -133,7 +133,7 @@ const tideData = ref([
 ]);
 
 const handleClose = () => {
-  emit("update:visible", false);
+  visibleModal.value = false;
 };
 
 const handleQuery = () => {
