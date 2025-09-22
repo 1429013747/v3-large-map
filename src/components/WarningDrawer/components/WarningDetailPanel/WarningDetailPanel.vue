@@ -160,7 +160,7 @@ const props = defineProps({
 });
 
 // Emits
-const emit = defineEmits(["update:visible", "close"]);
+const emit = defineEmits(["close"]);
 
 // 响应式数据
 const detailMapViewer = ref(null);
@@ -182,18 +182,30 @@ const getStatusText = (status) => {
 };
 
 const handleClose = () => {
-  emit("update:visible", false);
   emit("close");
 };
 
 const onMapReady = (map) => {
   console.log("详情地图已加载完成", map);
-  const { addMarker, initMarkerLayer, trackBack } = useMapMarkers(map);
+  const { addMarker, initMarkerLayer } = useMapMarkers(map);
   initMarkerLayer();
   // 可以在这里添加预警点的标记
   if (detailMapViewer.value) {
     // 添加带文本的标记点
-    trackBack();
+    addMarker([120.31783498535157, 30.37189672436138], {
+      id: "location-marker",
+      type: "location",
+      showBorder: false,
+      style: {
+        color: "#00ffff",
+        radius: 6,
+        text: {
+          content: "白岩码头",
+          color: "#ffffff",
+          offsetY: -20,
+        },
+      },
+    });
   }
 };
 

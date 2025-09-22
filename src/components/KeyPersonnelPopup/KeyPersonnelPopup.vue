@@ -140,14 +140,14 @@
 
   <!-- 新增重点人员弹窗 -->
   <AddPersonnelModal
-    v-model:visible="addPersonnelModalVisible"
+    v-model:open="addPersonnelModalVisible"
     @submit="handleAddPersonnelSubmit"
     @cancel="handleAddPersonnelCancel"
   />
 
   <!-- 人员详情弹窗 -->
   <PersonnelDetailModal
-    v-model:visible="personnelDetailModalVisible"
+    v-model:open="personnelDetailModalVisible"
     :personnel-data="selectedPersonnelData"
   />
 </template>
@@ -164,14 +164,14 @@ import PersonnelDetailModal from "./components/PersonnelDetailModal.vue";
 
 // Props
 const props = defineProps({
-  visible: {
+  open: {
     type: Boolean,
     default: false,
   },
 });
 
 // Emits
-const emit = defineEmits(["update:visible", "close"]);
+const emit = defineEmits(["update:open", "close"]);
 
 // 响应式数据
 const selectedGender = ref("");
@@ -181,7 +181,14 @@ const addPersonnelModalVisible = ref(false);
 const personnelDetailModalVisible = ref(false);
 const selectedPersonnelData = ref(null);
 
-const visibleModal = computed(() => props.visible);
+const visibleModal = computed({
+  get() {
+    return props.open;
+  },
+  set(value) {
+    emit("update:open", value);
+  },
+});;
 // 重点人员数据
 const personnelList = ref([
   {
@@ -314,7 +321,7 @@ const filteredPersonnel = computed(() => {
 
 // 方法
 const handleClose = () => {
-  emit("update:visible", false);
+  emit("update:open", false);
 };
 
 const handleGenderChange = (gender) => {

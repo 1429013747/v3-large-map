@@ -115,7 +115,14 @@ const props = defineProps({
 
 const emit = defineEmits(["update:open"]);
 
-const visibleModal = computed(() => props.open);
+const visibleModal = computed({
+  get() {
+    return props.open;
+  },
+  set(value) {
+    emit("update:open", value);
+  },
+});;
 
 // 搜索和筛选数据
 const licensePlateNumber = ref("");

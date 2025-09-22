@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    :open="visible"
+    :open="open"
     title="新增可疑车辆"
     :width="700"
     :centered="true"
@@ -97,14 +97,14 @@ import { PlusOutlined } from "@ant-design/icons-vue";
 
 // Props
 const props = defineProps({
-  visible: {
+  open: {
     type: Boolean,
     default: false,
   },
 });
 
 // Emits
-const emit = defineEmits(["update:visible", "submit", "cancel"]);
+const emit = defineEmits(["update:open", "submit", "cancel"]);
 
 // 表单引用
 const formRef = ref(null);
@@ -138,7 +138,7 @@ const formRules = {
 
 // 监听 visible 变化，重置表单
 watch(
-  () => props.visible,
+  () => props.open,
   (newVal) => {
     if (newVal) {
       resetForm();
@@ -165,7 +165,7 @@ const handleSubmit = async () => {
     emit("submit", { ...formData });
 
     // 关闭弹窗
-    emit("update:visible", false);
+    emit("update:open", false);
   } catch (error) {
     console.log("表单验证失败:", error);
   }
@@ -173,8 +173,7 @@ const handleSubmit = async () => {
 
 // 取消表单
 const handleCancel = () => {
-  emit("update:visible", false);
-  emit("cancel");
+  emit("update:open", false);
 };
 
 // 文件上传前的处理

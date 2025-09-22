@@ -209,7 +209,6 @@ const props = defineProps({
 
 // Emits
 const emit = defineEmits(["update:open"]);
-
 // 响应式数据
 const visible = computed({
   get: () => props.open,

@@ -1,6 +1,6 @@
 <template>
   <a-drawer
-    v-model:visible="visibleModal"
+    v-model:open="visibleModal"
     title="重点船舶"
     placement="left"
     getContainer=".ui-container"
@@ -186,14 +186,14 @@
 
   <!-- 新增船舶弹窗 -->
   <AddVesselsModal
-    v-model:visible="addVesselsModalVisible"
+    v-model:open="addVesselsModalVisible"
     @submit="handleAddVesselsSubmit"
     @cancel="handleAddVesselsCancel"
   />
 
   <!-- 船舶详情弹窗 -->
   <VesselsDetailModal
-    v-model:visible="vesselsDetailModalVisible"
+    v-model:open="vesselsDetailModalVisible"
     :vessel-data="selectedVesselData"
     @set-key-vessel="handleSetKeyVesselsFromDetail"
   />
@@ -235,7 +235,7 @@ import {
 
 // Props
 const props = defineProps({
-  visible: {
+  open: {
     type: Boolean,
     default: false,
   },
@@ -247,7 +247,7 @@ const props = defineProps({
 
 // Emits
 const emit = defineEmits([
-  "update:visible",
+  "update:open",
   "track-back",
   "view-more",
   "create-warning",
@@ -271,7 +271,14 @@ const vesselsDetailModalVisible = ref(false);
 const vesselsVisible = ref(false);
 const selectedVesselData = ref(null);
 
-const visibleModal = computed(() => props.visible);
+const visibleModal = computed({
+  get() {
+    return props.open;
+  },
+  set(value) {
+    emit("update:open", value);
+  },
+});;
 // 分类选项
 const categories = [
   { value: "all", label: "全部船舶" },
@@ -531,7 +538,7 @@ const filteredVessels = computed(() => {
 });
 
 const handleClose = () => {
-  emit("update:visible", false);
+  emit("update:open", false);
 };
 
 const handleQuery = () => {

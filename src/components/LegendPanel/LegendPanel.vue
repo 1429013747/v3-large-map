@@ -102,7 +102,14 @@ const props = defineProps({
 const emit = defineEmits(["update:open"]);
 
 // 响应式数据
-const visibleModal = computed(() => props.open);
+const visibleModal = computed({
+  get() {
+    return props.open;
+  },
+  set(value) {
+    emit("update:open", value);
+  },
+});;
 
 // 设备/对象数据
 const equipmentItems = ref([

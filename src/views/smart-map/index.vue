@@ -74,6 +74,16 @@
             @zoom-out="handleToolbarZoomOut"
           />
 
+          <!-- 应急标绘面板 -->
+          <PlotPanel
+            ref="plotPanelRef"
+            :map="map"
+            :visible="plottingPanelVisible"
+            @close="closePlottingPanel"
+            @featureCreated="handleFeatureCreated"
+            @featureSelected="handleFeatureSelected"
+            @featureDeleted="handleFeatureDeleted"
+          />
           <!-- 控制图层面板 -->
           <LayerControlPanel
             v-model:open="layerControlVisible"
@@ -98,12 +108,12 @@
           <GangVehicleQueryPanel v-model:open="gangVehicleQueryPanelVisible" />
 
           <!-- 潮汐查询面板 -->
-          <TideQueryPanel v-model:visible="tideQueryPanelVisible" />
+          <TideQueryPanel v-model:open="tideQueryPanelVisible" />
 
           <!-- 可疑车辆弹窗 -->
           <SuspiciousVehiclePopup
             ref="suspiciousVehiclePopupRef"
-            v-model:visible="suspiciousVehiclePopupVisible"
+            v-model:open="suspiciousVehiclePopupVisible"
             :vehicleData="selectedVehicleData"
             @track-back="handleVehicleTrackBack"
             @view-more="handleVehicleViewMore"
@@ -117,7 +127,7 @@
           <!-- 重点船舶弹窗 -->
           <KeyVesselsPopup
             ref="keyVesselsPopupRef"
-            v-model:visible="keyVesselsPopupVisible"
+            v-model:open="keyVesselsPopupVisible"
             :vesselsData="selectedVesselData"
             @track-back="handleVesselTrackBack"
             @view-more="handleVesselViewMore"
@@ -130,20 +140,10 @@
 
           <!-- 重点人员弹窗 -->
           <KeyPersonnelPopup
-            v-model:visible="keyPersonnelPopupVisible"
+            v-model:open="keyPersonnelPopupVisible"
             @close="handleKeyPersonnelClose"
           />
 
-          <!-- 应急标绘面板 -->
-          <PlotPanel
-            ref="plotPanelRef"
-            :map="map"
-            :visible="plottingPanelVisible"
-            @close="closePlottingPanel"
-            @featureCreated="handleFeatureCreated"
-            @featureSelected="handleFeatureSelected"
-            @featureDeleted="handleFeatureDeleted"
-          />
           <!-- 底部菜单 -->
           <div class="bottom-menu">
             <div class="bottom-menu-box">

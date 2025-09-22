@@ -1,7 +1,7 @@
 <template>
   <div class="vehicle-detail-modal-container">
     <a-modal
-      :open="visible"
+      :open="open"
       title="重点人员"
       :width="1200"
       :centered="true"
@@ -88,7 +88,7 @@ import { ref, reactive, watch } from "vue";
 import { CloseOutlined } from "@ant-design/icons-vue";
 
 const props = defineProps({
-  visible: {
+  open: {
     type: Boolean,
     default: false,
   },
@@ -99,9 +99,9 @@ const props = defineProps({
 });
 
 // Emits
-const emit = defineEmits(["update:visible"]);
+const emit = defineEmits(["update:open"]);
 const handleCancel = () => {
-  emit("update:visible", false);
+  emit("update:open", false);
 };
 </script>
 

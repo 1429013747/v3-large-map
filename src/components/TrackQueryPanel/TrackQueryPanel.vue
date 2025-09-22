@@ -61,7 +61,14 @@ const props = defineProps({
 
 const emit = defineEmits(["update:open"]);
 
-const visibleModal = computed(() => props.open);
+const visibleModal = computed({
+  get() {
+    return props.open;
+  },
+  set(value) {
+    emit("update:open", value);
+  },
+});;
 
 // 轨迹查询表格列定义
 const trackQueryColumns = [

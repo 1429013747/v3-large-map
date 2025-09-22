@@ -32,9 +32,9 @@ const props = defineProps({
 const emit = defineEmits([
   "map-ready",
   "map-click",
+  "map-double-click",
   "map-move",
   "layer-change",
-  "map-zoom",
 ]);
 
 // 创建地图容器引用

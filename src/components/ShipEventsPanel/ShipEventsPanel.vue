@@ -41,7 +41,7 @@
           <div class="filter-row-item-dropdown">
             <a-dropdown>
               <a class="ant-dropdown-link" @click.prevent>
-                {{ locale || "位置" }}
+                {{ locationFilter || "位置" }}
                 <DownOutlined />
               </a>
               <template #overlay>
@@ -136,7 +136,14 @@ const timeFilter = ref("");
 const locationFilter = ref("");
 const mmsiFilter = ref("");
 
-const visibleModal = computed(() => props.open);
+const visibleModal = computed({
+  get() {
+    return props.open;
+  },
+  set(value) {
+    emit("update:open", value);
+  },
+});;
 
 // 船舶事件表格列定义
 const shipEventColumns = [

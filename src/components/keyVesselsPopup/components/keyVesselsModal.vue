@@ -1,7 +1,7 @@
 <template>
   <div class="vehicle-detail-modal-container">
     <a-modal
-      :open="visible"
+      :open="open"
       title="重点船舶"
       :width="1200"
       :centered="true"
@@ -313,7 +313,7 @@ import {
 
 // Props
 const props = defineProps({
-  visible: {
+  open: {
     type: Boolean,
     default: false,
   },
@@ -321,7 +321,7 @@ const props = defineProps({
 });
 
 // Emits
-const emit = defineEmits(["update:visible", "setKeyVessel"]);
+const emit = defineEmits(["update:open", "setKeyVessel"]);
 
 // 响应式数据
 const activeTab = ref("alerts");
@@ -684,7 +684,7 @@ const handleNodeClick = (node) => {
 
 // 监听 visible 变化
 watch(
-  () => props.visible,
+  () => props.open,
   (newVal) => {
     if (newVal) {
       // 重置标签页状态
@@ -697,7 +697,7 @@ watch(
 
 // 关闭弹窗
 const handleCancel = () => {
-  emit("update:visible", false);
+  emit("update:open", false);
 };
 
 // 设置重点船舶

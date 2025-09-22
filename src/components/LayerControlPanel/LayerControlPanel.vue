@@ -117,7 +117,14 @@ const emit = defineEmits([
 ]);
 
 // 响应式数据
-const visibleModal = computed(() => props.open);
+const visibleModal = computed({
+  get() {
+    return props.open;
+  },
+  set(value) {
+    emit("update:open", value);
+  },
+});;
 const selectedLayerId = ref(null);
 
 // 计算属性

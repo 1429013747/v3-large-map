@@ -1,6 +1,6 @@
 <template>
   <a-drawer
-    v-model:visible="visibleModal"
+    v-model:open="visibleModal"
     title="潮汐查询"
     placement="right"
     getContainer=".ui-container"
@@ -97,15 +97,22 @@ import { CloseOutlined, ExportOutlined } from "@ant-design/icons-vue";
 import * as echarts from "echarts";
 
 const props = defineProps({
-  visible: {
+  open: {
     type: Boolean,
     default: false,
   },
 });
 
-const emit = defineEmits(["update:visible"]);
+const emit = defineEmits(["update:open"]);
 
-const visibleModal = computed(() => props.visible);
+const visibleModal = computed({
+  get() {
+    return props.open;
+  },
+  set(value) {
+    emit("update:open", value);
+  },
+});
 
 // 搜索和筛选数据
 const selectedLocation = ref();
@@ -133,7 +140,7 @@ const tideData = ref([
 ]);
 
 const handleClose = () => {
-  visibleModal.value = false;
+  emit("update:open", false);
 };
 
 const handleQuery = () => {
@@ -165,7 +172,8 @@ const handleTimeRangeChange = (value) => {
 };
 
 // 初始化潮汐图表
-const initTideChart = () => {
+const initTideChart = async () => {
+  await nextTick();
   if (!tideChartRef.value) return;
 
   // 销毁现有图表
@@ -338,13 +346,14 @@ const initTideChart = () => {
   });
 };
 
-watch(visibleModal, (newVal) => {
-  if (newVal) {
-    nextTick(() => {
+watch(
+  () => props.open,
+  (newVal) => {
+    if (newVal) {
       initTideChart();
-    });
+    }
   }
-});
+);
 </script>
 
 <style lang="scss" scoped>

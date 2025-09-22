@@ -53,9 +53,7 @@ export function useMapMarkers(map) {
     generateTrackRoute,
     startTrackRouteAnimation,
     clearTrackRoutes,
-    trackBack: trackBackTracks,
     viewMore: viewMoreTracks,
-    trackCorrect: trackCorrectTracks,
     viewMoreCorrect: viewMoreCorrectTracks,
     toggleTrackRouteVisibility,
     showTrackRoute,
@@ -164,7 +162,7 @@ export function useMapMarkers(map) {
       const borderColor = icon.borderColor || '#ffcc00';
       const borderWidth = icon.borderWidth || 2;
       const displacement = icon.displacement || [9, -9];
-      const showBorder = icon.showBorder !== false; // 默认显示边框，除非明确设置为false
+      const showBorder = icon.showBorder; // 默认显示边框，除非明确设置为false
 
       // 外边框样式 - 根据showBorder决定是否显示
       if (showBorder) {
@@ -199,7 +197,7 @@ export function useMapMarkers(map) {
       const borderSize = options.borderSize || radius * 2.5;
       const borderColor = options.borderColor || '#ffcc00';
       const borderWidth = options.borderWidth || 2;
-      const showBorder = options.showBorder !== false; // 默认显示边框，除非明确设置为false
+      const showBorder = options.showBorder; // 默认显示边框，除非明确设置为false
 
       // 外边框样式 - 根据showBorder决定是否显示
       if (showBorder) {
@@ -872,7 +870,8 @@ export function useMapMarkers(map) {
     clearTrackRoutes,
     toggleTrackRouteVisibility,
     showTrackRoute,
-      // 通用方法
+
+    // 通用方法
     destroy
   };
 }

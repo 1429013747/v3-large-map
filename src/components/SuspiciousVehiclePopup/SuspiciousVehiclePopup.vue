@@ -186,14 +186,13 @@
 
   <!-- 新增可疑车辆弹窗 -->
   <AddVehicleModal
-    v-model:visible="addVehicleModalVisible"
+    v-model:open="addVehicleModalVisible"
     @submit="handleAddVehicleSubmit"
-    @cancel="handleAddVehicleCancel"
   />
 
   <!-- 车辆详情弹窗 -->
   <VehicleDetailModal
-    v-model:visible="vehicleDetailModalVisible"
+    v-model:open="vehicleDetailModalVisible"
     :vehicle-data="selectedVehicleData"
     @set-key-vehicle="handleSetKeyVehicleFromDetail"
   />
@@ -235,9 +234,10 @@ import {
 
 // Props
 const props = defineProps({
-  visible: {
+  inheritAttrs: false,
+  open: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   vehicleData: {
     type: Object,
@@ -247,7 +247,7 @@ const props = defineProps({
 
 // Emits
 const emit = defineEmits([
-  "update:visible",
+  "update:open",
   "track-back",
   "view-more",
   "create-warning",
@@ -271,7 +271,14 @@ const vehicleDetailModalVisible = ref(false);
 const vehicleVisible = ref(false);
 const selectedVehicleData = ref(null);
 
-const visibleModal = computed(() => props.visible);
+const visibleModal = computed({
+  get() {
+    return props.open;
+  },
+  set(value) {
+    emit("update:open", value);
+  },
+});;
 // 分类选项
 const categories = [
   { value: "all", label: "全部车辆" },
@@ -426,7 +433,7 @@ const filteredVehicles = computed(() => {
 });
 
 const handleClose = () => {
-  emit("update:visible", false);
+  emit("update:open", false);
 };
 
 const handleQuery = () => {
@@ -506,11 +513,6 @@ const handleAddVehicleSubmit = (formData) => {
   // 这里可以添加提交逻辑
   emit("add-vehicle", formData);
   vehicles.value.push(formData);
-};
-
-// 新增车辆表单取消
-const handleAddVehicleCancel = () => {
-  console.log("取消新增车辆");
 };
 
 const handleSetKey = (vehicle) => {

@@ -228,7 +228,14 @@ const activeCategory = ref("all");
 const detailDrawerVisible = ref(false);
 const selectedWarning = ref(null);
 
-const visibleModal = computed(() => props.open);
+const visibleModal = computed({
+  get() {
+    return props.open;
+  },
+  set(value) {
+    emit("update:open", value);
+  },
+});;
 // 分类选项
 const categories = [
   { value: "all", label: "全部预警" },
