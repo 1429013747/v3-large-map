@@ -13,93 +13,223 @@
     <template #closeIcon>
       <CloseOutlined @click="handleClose" />
     </template>
+    <div v-if="toggleView">
+      <!-- 搜索和筛选区域 -->
+      <div class="search-filter-section">
+        <div class="filter-row">
+          <div class="filter-input-group action-buttons">
+            <a-button type="primary" class="query-btn" @click="handleAddQuery">
+              添加查询单
+            </a-button>
+            <a-input
+              v-model:value="licensePlateNumber"
+              placeholder="请输入车牌号"
+              class="license-plate-input"
+              allowClear
+              @pressEnter="handleQuery"
+            >
+              <template #prefix>
+                <SearchOutlined />
+              </template>
+            </a-input>
 
-    <!-- 搜索和筛选区域 -->
-    <div class="search-filter-section">
-      <div class="filter-row">
-        <div class="filter-input-group">
-          <a-input
-            v-model:value="licensePlateNumber"
-            placeholder="请输入车牌号"
-            class="license-plate-input"
-            allowClear
-            @pressEnter="handleQuery"
-          >
-            <template #prefix>
-              <SearchOutlined />
-            </template>
-          </a-input>
+            <a-select
+              v-model:value="selectedPlateColor"
+              placeholder="请选择车牌颜色"
+              class="plate-color-select"
+              allowClear
+              @change="handlePlateColorChange"
+            >
+              <a-select-option value="蓝色">蓝色</a-select-option>
+              <a-select-option value="黄色">黄色</a-select-option>
+              <a-select-option value="绿色">绿色</a-select-option>
+              <a-select-option value="白色">白色</a-select-option>
+              <a-select-option value="黑色">黑色</a-select-option>
+            </a-select>
 
-          <a-select
-            v-model:value="selectedPlateColor"
-            placeholder="请选择车牌颜色"
-            class="plate-color-select"
-            allowClear
-            @change="handlePlateColorChange"
-          >
-            <a-select-option value="蓝色">蓝色</a-select-option>
-            <a-select-option value="黄色">黄色</a-select-option>
-            <a-select-option value="绿色">绿色</a-select-option>
-            <a-select-option value="白色">白色</a-select-option>
-            <a-select-option value="黑色">黑色</a-select-option>
-          </a-select>
+            <a-select
+              v-model:value="selectedTimeRange"
+              placeholder="时间范围"
+              class="time-range-select"
+              allowClear
+              @change="handleTimeRangeChange"
+            >
+              <a-select-option value="今天">今天</a-select-option>
+              <a-select-option value="本周">本周</a-select-option>
+              <a-select-option value="本月">本月</a-select-option>
+            </a-select>
+          </div>
 
-          <a-select
-            v-model:value="selectedTimeRange"
-            placeholder="时间范围"
-            class="time-range-select"
-            allowClear
-            @change="handleTimeRangeChange"
-          >
-            <a-select-option value="今天">今天</a-select-option>
-            <a-select-option value="本周">本周</a-select-option>
-            <a-select-option value="本月">本月</a-select-option>
-          </a-select>
-        </div>
-
-        <div class="action-buttons">
-          <a-button type="primary" class="query-btn" @click="handleQuery">
-            查询
-          </a-button>
-          <a-button class="export-btn" @click="handleExport">
-            导出
-            <template #icon>
-              <ExportOutlined />
-            </template>
-          </a-button>
+          <div class="action-buttons">
+            <a-button type="primary" class="query-btn" @click="handleQuery">
+              查询
+            </a-button>
+            <a-button class="export-btn" @click="handleExport">
+              导出
+              <template #icon>
+                <ExportOutlined />
+              </template>
+            </a-button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- 团伙车辆查询列表 -->
-    <div class="gang-vehicle-table">
-      <a-table
-        :columns="gangVehicleColumns"
-        :data-source="gangVehicleData"
-        :pagination="paginationConfig"
-        size="small"
-        class="gang-vehicle-table-content"
-        :on-change="handleTableChange"
-      >
-        <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'operation'">
-            <a-button
-              type="link"
-              size="small"
-              class="detail-btn"
-              @click="handleViewDetail(record)"
-            >
-              查看详情
-            </a-button>
+      <!-- 团伙车辆查询列表 -->
+      <div class="gang-vehicle-table">
+        <a-table
+          :columns="gangVehicleColumns"
+          :data-source="gangVehicleData"
+          :pagination="paginationConfig"
+          size="small"
+          class="gang-vehicle-table-content"
+          :on-change="handleTableChange"
+        >
+          <template #bodyCell="{ column, record }">
+            <template v-if="column.key === 'operation'">
+              <a-button
+                type="link"
+                size="small"
+                class="detail-btn"
+                @click="handleViewDetail(record)"
+              >
+                查看详情
+              </a-button>
+            </template>
           </template>
-        </template>
-      </a-table>
+        </a-table>
+      </div>
+    </div>
+    <div v-if="!toggleView">
+      <!-- 团伙车辆详情表格 -->
+      <div class="gang-detail-view">
+        <div class="detail-header">
+          <a-button
+            type="link"
+            size="small"
+            class="back-btn"
+            @click="handleBackToGangList"
+          >
+            <ArrowLeftOutlined />
+            返回上级
+          </a-button>
+        </div>
+
+        <a-table
+          :columns="gangDetailColumns"
+          :data-source="gangDetailData"
+          :pagination="false"
+          class="gang-detail-table"
+          size="small"
+        >
+          <template #bodyCell="{ column, record }">
+            <template v-if="column.key === 'action'">
+              <a-button
+                type="link"
+                size="small"
+                class="action-btn"
+                @click="handleViewTrajectory(record)"
+              >
+                查看轨迹
+              </a-button>
+            </template>
+          </template>
+        </a-table>
+      </div>
+    </div>
+    <!-- 添加查询单弹窗 -->
+    <div
+      v-if="searchVisible"
+      title="团伙车辆查询"
+      class="search-modal-container"
+    >
+      <div class="search-modal-content">
+        <!-- 查询表格 -->
+        <div class="query-table-container">
+          <!-- 表格头部 -->
+          <div class="table-header">
+            <div class="header-cell">时间范围</div>
+            <div class="header-cell">车牌号</div>
+            <div class="header-cell">车牌颜色</div>
+            <div class="header-cell">操作</div>
+          </div>
+
+          <!-- 输入行 1-4 -->
+          <div
+            class="input-row"
+            v-for="(item, index) in inputRows"
+            :key="`input-${index}`"
+          >
+            <div class="cell">
+              <a-date-picker
+                v-model:value="item.timeRange"
+                placeholder="选择时间范围"
+                class="time-picker"
+                :bordered="false"
+              />
+            </div>
+            <div class="cell">
+              <a-input
+                v-model:value="item.vehicleName"
+                placeholder="请输入车牌号"
+                class="vehicle-input"
+                :bordered="false"
+              />
+            </div>
+            <div class="cell">
+              <a-select
+                v-model:value="item.plateColor"
+                placeholder="车牌颜色"
+                class="color-select"
+                :bordered="false"
+              >
+                <a-select-option value="蓝色">蓝色</a-select-option>
+                <a-select-option value="黄色">黄色</a-select-option>
+                <a-select-option value="绿色">绿色</a-select-option>
+                <a-select-option value="白色">白色</a-select-option>
+              </a-select>
+            </div>
+            <div class="cell operation-cell">
+              <div class="action-buttons">
+                <a-button
+                  type="text"
+                  size="small"
+                  class="action-btn minus-btn"
+                  @click="removeInputRow(index)"
+                >
+                  <span class="btn-icon">⊖</span>
+                </a-button>
+                <a-button
+                  type="text"
+                  size="small"
+                  class="action-btn plus-btn"
+                  @click="addInputRow"
+                >
+                  <span class="btn-icon">⊕</span>
+                </a-button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 底部按钮 -->
+        <div class="bottom-buttons">
+          <a-button
+            type="primary"
+            class="query-btn"
+            @click="handleAddVehicleQuery"
+          >
+            查询
+          </a-button>
+          <a-button class="cancel-btn" @click="handleCancel"> 取消 </a-button>
+        </div>
+      </div>
     </div>
   </a-drawer>
 </template>
 
 <script setup>
 import { ref, computed } from "vue";
+import { message } from "ant-design-vue";
 import {
   CloseOutlined,
   SearchOutlined,
@@ -122,12 +252,22 @@ const visibleModal = computed({
   set(value) {
     emit("update:open", value);
   },
-});;
+});
 
 // 搜索和筛选数据
 const licensePlateNumber = ref("");
 const selectedPlateColor = ref();
 const selectedTimeRange = ref();
+const searchVisible = ref(false);
+const toggleView = ref(true);
+
+const inputRows = ref([
+  {
+    timeRange: null,
+    vehicleName: "",
+    plateColor: null,
+  },
+]);
 
 // 团伙车辆查询表格列定义
 const gangVehicleColumns = [
@@ -306,9 +446,173 @@ const paginationConfig = {
   pageSizeOptions: ["10", "20", "30", "50"],
   size: "small",
 };
-
+// 团伙车辆详情表格列配置
+const gangDetailColumns = [
+  {
+    title: "序号",
+    dataIndex: "index",
+    key: "index",
+    width: 80,
+    align: "center",
+  },
+  {
+    title: "车牌号",
+    dataIndex: "plateNumber",
+    key: "plateNumber",
+    width: 120,
+  },
+  {
+    title: "车牌颜色",
+    dataIndex: "plateColor",
+    key: "plateColor",
+    width: 100,
+  },
+  {
+    title: "车辆类型",
+    dataIndex: "vehicleType",
+    key: "vehicleType",
+    width: 120,
+  },
+  {
+    title: "轨迹相似度",
+    dataIndex: "similarity",
+    key: "similarity",
+    width: 120,
+    align: "center",
+  },
+  {
+    title: "相似时间范围",
+    dataIndex: "timeRange",
+    key: "timeRange",
+    width: 200,
+  },
+  {
+    title: "操作",
+    key: "action",
+    width: 100,
+    align: "center",
+  },
+];
+// 团伙车辆详情表格数据
+const gangDetailData = ref([
+  {
+    key: "1",
+    index: 1,
+    plateNumber: "浙XXXX",
+    plateColor: "蓝色",
+    vehicleType: "高栏货车",
+    similarity: "90%",
+    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
+  },
+  {
+    key: "2",
+    index: 2,
+    plateNumber: "浙XXXX",
+    plateColor: "蓝色",
+    vehicleType: "高栏货车",
+    similarity: "90%",
+    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
+  },
+  {
+    key: "3",
+    index: 3,
+    plateNumber: "浙XXXX",
+    plateColor: "蓝色",
+    vehicleType: "高栏货车",
+    similarity: "90%",
+    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
+  },
+  {
+    key: "4",
+    index: 4,
+    plateNumber: "浙XXXX",
+    plateColor: "蓝色",
+    vehicleType: "高栏货车",
+    similarity: "90%",
+    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
+  },
+  {
+    key: "5",
+    index: 5,
+    plateNumber: "浙XXXX",
+    plateColor: "蓝色",
+    vehicleType: "高栏货车",
+    similarity: "90%",
+    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
+  },
+  {
+    key: "6",
+    index: 6,
+    plateNumber: "浙XXXX",
+    plateColor: "蓝色",
+    vehicleType: "高栏货车",
+    similarity: "90%",
+    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
+  },
+  {
+    key: "7",
+    index: 7,
+    plateNumber: "浙XXXX",
+    plateColor: "蓝色",
+    vehicleType: "高栏货车",
+    similarity: "90%",
+    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
+  },
+]);
 const handleClose = () => {
   emit("update:open", false);
+};
+
+const handleAddQuery = () => {
+  console.log("添加查询单");
+  searchVisible.value = true;
+};
+
+// 查询按钮
+const handleAddVehicleQuery = () => {
+  console.log("执行查询", inputRows.value);
+  // 这里可以添加查询逻辑
+};
+
+// 取消按钮
+const handleCancel = () => {
+  searchVisible.value = false;
+  // 重置输入数据
+  inputRows.value = [
+    {
+      timeRange: null,
+      vehicleName: "",
+      plateColor: null,
+    },
+  ];
+};
+// 添加输入行
+const addInputRow = () => {
+  if (inputRows.value.length < 3) {
+    inputRows.value.push({
+      timeRange: null,
+      vehicleName: "",
+      plateColor: null,
+    });
+  } else {
+    message.error("最多添加3行");
+  }
+};
+
+// 删除输入行
+const removeInputRow = (index) => {
+  if (inputRows.value.length > 1) {
+    inputRows.value.splice(index, 1);
+  }
+};
+
+const handleBackToGangList = () => {
+  toggleView.value = true;
+};
+
+// 查看轨迹
+const handleViewTrajectory = (record) => {
+  console.log("查看轨迹:", record);
 };
 
 const handleQuery = () => {
@@ -335,6 +639,7 @@ const handleTimeRangeChange = (value) => {
 
 const handleViewDetail = (record) => {
   console.log("查看详情", record);
+  toggleView.value = false;
 };
 
 const handleTableChange = (pagination, filters, sorter) => {
@@ -566,6 +871,232 @@ const handleTableChange = (pagination, filters, sorter) => {
             border-color: #00ffff;
             box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.2);
           }
+        }
+      }
+    }
+  }
+}
+
+// 团伙车辆详情表格样式
+.gang-detail-view {
+  .detail-header {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+
+    .back-btn {
+      color: #00ffff;
+      padding: 0;
+      height: auto;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+
+      &:hover {
+        color: #ffffff;
+      }
+    }
+  }
+
+  .gang-detail-table {
+    :deep(.ant-table) {
+      background: transparent;
+      color: #ffffff;
+    }
+
+    :deep(.ant-table-thead > tr > th) {
+      background: rgba(0, 255, 255, 0.1);
+      color: #ffffff;
+      border: none;
+      font-weight: 600;
+      padding: 12px 8px;
+      &::before {
+        display: none;
+      }
+    }
+
+    :deep(.ant-table-tbody > tr > td) {
+      background: transparent;
+      color: rgba(255, 255, 255, 0.8);
+      border: none !important;
+      padding: 12px 8px;
+    }
+
+    :deep(.ant-table-tbody > tr:hover > td) {
+      background: rgba(0, 255, 255, 0.05);
+    }
+
+    .action-btn {
+      color: #00ffff;
+      padding: 0;
+      height: auto;
+      font-size: 12px;
+
+      &:hover {
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+// 查询弹窗样式
+.search-modal-container {
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  background: rgba(18, 28, 43, 0);
+  width: 100%;
+  height: 100%;
+  .search-modal-content {
+    margin: auto;
+    margin-top: 10%;
+    background: rgba(18, 28, 43, 0.9);
+    width: 90%;
+    height: 70%;
+    padding: 20px;
+  }
+  .search-modal-content {
+    background: rgba(18, 28, 43, 0.95);
+    border-radius: 8px;
+    padding: 24px;
+
+    .query-table-container {
+      background: rgba(18, 28, 43, 0.8);
+      border-radius: 6px;
+      height: 500px;
+      overflow-y: auto;
+
+      .table-header {
+        display: flex;
+        background: rgba(0, 255, 255, 0.1);
+        border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+
+        .header-cell {
+          flex: 1;
+          padding: 12px 16px;
+          color: #fff;
+          font-weight: 600;
+          font-size: 14px;
+          text-align: center;
+          border-right: 1px solid rgba(0, 255, 255, 0.1);
+
+          &:last-child {
+            border-right: none;
+          }
+        }
+      }
+
+      .input-row,
+      .record-row {
+        display: flex;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+        &:hover {
+          background: rgba(0, 255, 255, 0.05);
+        }
+
+        .cell {
+          flex: 1;
+          padding: 12px 16px;
+          color: rgba(255, 255, 255, 0.9);
+          font-size: 14px;
+          display: flex;
+          align-items: center;
+          border-right: 1px solid rgba(255, 255, 255, 0.05);
+
+          &:last-child {
+            border-right: none;
+          }
+
+          .time-picker,
+          .vehicle-input,
+          .time-input,
+          .color-select {
+            width: 100%;
+            background: transparent;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.9);
+
+            &:focus,
+            &:hover {
+              border-color: #00ffff;
+              box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.1);
+            }
+
+            &::placeholder {
+              color: rgba(255, 255, 255, 0.5);
+            }
+          }
+
+          &.operation-cell {
+            justify-content: space-between;
+            align-items: center;
+            justify-content: center;
+            .status-text {
+              color: rgba(255, 255, 255, 0.8);
+              font-size: 14px;
+            }
+
+            .action-buttons {
+              display: flex;
+              gap: 18px;
+
+              .action-btn {
+                color: #00ffff;
+                .btn-icon {
+                  font-size: 22px;
+                }
+              }
+            }
+
+            .detail-link {
+              color: #02d9ee;
+              padding: 0;
+              height: auto;
+              font-size: 14px;
+
+              &:hover {
+                color: #00ffff;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .bottom-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+
+      .query-btn {
+        background: #00ffff;
+        border-color: #00ffff;
+        color: #000;
+        font-weight: 600;
+        padding: 8px 32px;
+        height: 40px;
+        border-radius: 6px;
+
+        &:hover {
+          background: #00e6e6;
+          border-color: #00e6e6;
+        }
+      }
+
+      .cancel-btn {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: rgba(255, 255, 255, 0.8);
+        padding: 8px 32px;
+        height: 40px;
+        border-radius: 6px;
+
+        &:hover {
+          border-color: #00ffff;
+          color: #00ffff;
         }
       }
     }

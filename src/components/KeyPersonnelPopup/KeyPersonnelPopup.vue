@@ -4,7 +4,7 @@
     title="重点人员"
     placement="left"
     getContainer=".ui-container"
-    :width="430"
+    :width="475"
     :closable="true"
     :mask="false"
     class="key-personnel-drawer"
@@ -118,8 +118,12 @@
             <div class="personnel-area">地区: {{ personnel.area }}</div>
           </div>
           <div class="personnel-status">
-            <a-tag class="status-tag">
-              {{ personnel.status }}
+            <a-tag
+              class="status-tag"
+              v-for="item in personnel.status.split(',')"
+              :key="item"
+            >
+              {{ item }}
             </a-tag>
           </div>
         </div>
@@ -352,6 +356,11 @@ const handleAddPersonnel = () => {
 };
 
 const handleAddPersonnelSubmit = (personnelData) => {
+  console.log("🚀 ~ handleAddPersonnelSubmit ~ personnelData:", personnelData);
+  personnelData.status = personnelData.tagsData
+    .map((item, index) => (personnelData.status[index] ? item : null))
+    .filter(Boolean)
+    .join(",");
   // 添加新人员到列表
   const newPersonnel = {
     id: Date.now(),
@@ -525,6 +534,7 @@ const handleDetail = (personnel) => {
           color: #fff;
           font-size: 14px;
           margin-bottom: 4px;
+          width: 100px;
         }
 
         .personnel-area {
@@ -535,6 +545,10 @@ const handleDetail = (personnel) => {
       }
 
       .personnel-status {
+        display: flex;
+        gap: 4px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
         .status-tag {
           margin: 0;
           font-size: 12px;

@@ -16,16 +16,24 @@
           @map-double-click="onMapDoubleClick"
           @map-move="onMapMove"
           @layer-change="onLayerChange"
+          @map-right-click="onMapRightClick"
         />
       </template>
       <template #default>
         <div class="main-container">
           <!-- 顶部搜索 -->
           <div class="search-container">
+            <a-cascader
+              v-model:value="valueArea"
+              :options="options"
+              placeholder="请选择区域"
+              allowClear
+            />
             <a-input
               v-model:value="searchKeyword"
               @pressEnter="handleSearch"
               placeholder="请输入关键词"
+              allowClear
             >
               <template #suffix>
                 <SearchOutlined @click="handleSearch" />
@@ -169,55 +177,55 @@
           <div class="bottom-statistics-bar">
             <div class="statistics-left">
               <div class="stat-item">
-                <span class="stat-label">图层</span>
+                <span class="stat-label">图层 :</span>
                 <span class="stat-value">{{ statistics.layerCount }}</span>
               </div>
               <div class="stat-item">
-                <span class="stat-label">预警数量</span>
+                <span class="stat-label">预警数量 :</span>
                 <span class="stat-value">{{ statistics.warningCount }}</span>
               </div>
               <div class="stat-item">
-                <span class="stat-label">重点船舶</span>
+                <span class="stat-label">重点船舶 :</span>
                 <span class="stat-value">{{ statistics.keyVessels }}</span>
               </div>
               <div class="stat-item">
-                <span class="stat-label">在航</span>
+                <span class="stat-label">在航 :</span>
                 <span class="stat-value">{{ statistics.underway }}</span>
               </div>
               <div class="stat-item">
-                <span class="stat-label">停泊</span>
+                <span class="stat-label">停泊 :</span>
                 <span class="stat-value">{{ statistics.anchored }}</span>
               </div>
               <div class="stat-item">
-                <span class="stat-label">可疑车辆</span>
+                <span class="stat-label">可疑车辆 :</span>
                 <span class="stat-value">{{
                   statistics.suspiciousVehicles
                 }}</span>
               </div>
               <div class="stat-item">
-                <span class="stat-label">实时境内车辆</span>
+                <span class="stat-label">实时境内车辆 :</span>
                 <span class="stat-value">{{
                   statistics.realtimeVehicles
                 }}</span>
               </div>
               <div class="stat-item">
-                <span class="stat-label">昨日累计车辆</span>
+                <span class="stat-label">昨日累计车辆 :</span>
                 <span class="stat-value">{{
                   statistics.yesterdayVehicles
                 }}</span>
               </div>
               <div class="stat-item">
-                <span class="stat-label">电子围栏</span>
+                <span class="stat-label">电子围栏 :</span>
                 <span class="stat-value">{{
                   statistics.electronicFences
                 }}</span>
               </div>
               <div class="stat-item">
-                <span class="stat-label">重点人员</span>
+                <span class="stat-label">重点人员 :</span>
                 <span class="stat-value">{{ statistics.keyPersonnel }}</span>
               </div>
               <div class="stat-item">
-                <span class="stat-label">风险点</span>
+                <span class="stat-label">风险点 :</span>
                 <span class="stat-value">{{ statistics.riskPoints }}</span>
               </div>
             </div>
@@ -301,6 +309,7 @@ import {
   ref,
   watch,
 } from "vue";
+import { Modal } from "ant-design-vue";
 import MapLayout from "@/layouts/MapLayout.vue";
 import MapViewer from "@/components/map/MapViewer.vue";
 import WarningDrawer from "@/components/WarningDrawer/WarningDrawer.vue";
@@ -316,6 +325,7 @@ import TideQueryPanel from "@/components/TideQueryPanel/TideQueryPanel.vue";
 import SuspiciousVehiclePopup from "@/components/SuspiciousVehiclePopup/SuspiciousVehiclePopup.vue";
 import KeyVesselsPopup from "@/components/keyVesselsPopup/keyVesselsPopup.vue";
 import KeyPersonnelPopup from "@/components/KeyPersonnelPopup/KeyPersonnelPopup.vue";
+import ClusterControlPanel from "@/components/ClusterControlPanel/ClusterControlPanel.vue";
 import { useMapMarkers } from "@/composables/useMapMarkers.js";
 import { generateRandomCoordinates } from "@/utils/coordinateGenerator.js";
 import { getIconPath, getIconPathMarkIcons } from "@/utils/utilstools.js";
@@ -323,17 +333,20 @@ import {
   createPopupContentCar,
   createPopupContentRisk,
   createPopupContentShip,
+  createPopupMenuShip,
 } from "@/composables/createPopupContent.js";
-import "@/styles/marker-popup.scss";
-import "@/styles/bottom-statistics.scss";
-import "@/styles/layer-control.scss";
-import "@/styles/ship-popup.scss";
 import { useDefaultConfigStore } from "@/stores/defaultConfig.js";
 import { toLonLat, fromLonLat } from "ol/proj";
+import Feature from "ol/Feature";
+import { Polygon as OlPolygon } from "ol/geom";
+import { Style, Fill, Stroke } from "ol/style";
+import VectorSource from "ol/source/Vector";
+import VectorLayer from "ol/layer/Vector";
 
 const defaultConfigStore = useDefaultConfigStore();
 // 地图配置
-const mapCenter = reactive([121.92925185863172, 29.275393872226005]); // 宁波坐标
+let mapCenter = [121.92925185863172, 29.275393872226005]; // 宁波坐标
+const displayCenter = ref(null);
 
 // 统计数据
 const statistics = reactive({
@@ -368,7 +381,7 @@ const tideQueryPanelVisible = ref(false);
 const warningInfoVisible = ref(true);
 const suspiciousVehiclePopupRef = ref(null);
 const keyVesselsPopupRef = ref(null);
-
+const valueArea = ref([]);
 // 可疑车辆弹窗相关
 const suspiciousVehiclePopupVisible = ref(false);
 const selectedVehicleData = ref({});
@@ -381,6 +394,9 @@ const selectedVesselData = ref({});
 const keyPersonnelPopupVisible = ref(false);
 
 const MarkerIds = ref([]);
+
+const clickMarkerId = ref(null);
+const isGeneratingMarker = ref(false);
 
 // 标绘面板引用
 const plotPanelRef = ref(null);
@@ -410,7 +426,40 @@ const bottomMenu = ref([
     icon: "bus",
   },
 ]);
-
+const options = ref([
+  {
+    value: "zhejiang",
+    label: "Zhejiang",
+    children: [
+      {
+        value: "hangzhou",
+        label: "Hangzhou",
+        children: [
+          {
+            value: "xihu",
+            label: "West Lake",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    value: "jiangsu",
+    label: "Jiangsu",
+    children: [
+      {
+        value: "nanjing",
+        label: "Nanjing",
+        children: [
+          {
+            value: "zhonghuamen",
+            label: "Zhong Hua Men",
+          },
+        ],
+      },
+    ],
+  },
+]);
 // 当前图层
 const currentLayer = ref("天地图卫星");
 
@@ -431,10 +480,10 @@ const switchLayer = (layerType) => {
 
 // 地图准备就绪
 const onMapReady = (mapInstance) => {
-  console.log("当前地图中心:", mapCenter.value);
+  console.log("当前地图中心:", mapCenter);
   map.value = mapInstance; // 设置 map 变量
   mapMarkersConfig = useMapMarkers(mapInstance);
-
+  // 使用类型图层
   useTypeLayer.value = true;
   // 初始化标记点
   mapMarkersConfig.initMarkerLayer(useTypeLayer.value);
@@ -443,19 +492,38 @@ const onMapReady = (mapInstance) => {
   getMarkerData();
 };
 
+// 点击地图添加临时标记点
+const addClickMarker = (event) => {
+  if (clickMarkerId.value) {
+    mapMarkersConfig.removeMarker(clickMarkerId.value);
+  }
+  clickMarkerId.value = mapMarkersConfig.addMarker(event.lonLat, {
+    type: "icon",
+    useTypeLayer: useTypeLayer.value,
+    style: {
+      icon: {
+        src: getIconPathMarkIcons("icon20"),
+        size: [18, 18],
+        anchor: [0, 0],
+      },
+    },
+  });
+};
+
 // 地图点击事件
 const onMapClick = (event) => {
   console.log("地图点击事件", event);
+  if (isGeneratingMarker.value) {
+    addClickMarker(event);
+  }
   clickedCoordinate.value = event.lonLat;
   const features = map.value.getFeaturesAtPixel(event.pixel, {
     layerFilter: (layer) => {
       if (useTypeLayer.value) {
         // 检查是否是类型图层
         const layerType = layer.get("type");
-        if (
-          layerType &&
-          mapMarkersConfig.markerLayersByType.value[layerType] === layer
-        ) {
+        const instance = mapMarkersConfig.markerLayersByType.value[layerType];
+        if (layerType && instance === layer) {
           return true;
         }
         // 备用方案：检查是否在类型图层列表中
@@ -475,6 +543,10 @@ const onMapClick = (event) => {
     const markerId = feature.get("id");
     const markerData = feature.getProperties();
 
+    // TODO: 是否需要添加临时标记点
+    if (markerData.popupType === "icon") {
+      isGeneratingMarker.value = true;
+    }
     // 触发标记点点击事件
     onMarkerClick({
       markerId,
@@ -495,10 +567,8 @@ const onMapDoubleClick = (event) => {
       if (useTypeLayer.value) {
         // 检查是否是类型图层
         const layerType = layer.get("type");
-        if (
-          layerType &&
-          mapMarkersConfig.markerLayersByType.value[layerType] === layer
-        ) {
+        const instance = mapMarkersConfig.markerLayersByType.value[layerType];
+        if (layerType && instance === layer) {
           return true;
         }
         // 备用方案：检查是否在类型图层列表中
@@ -522,13 +592,54 @@ const onMapDoubleClick = (event) => {
   }
 };
 
+// 地图右击事件
+const onMapRightClick = (event) => {
+  const features = map.value.getFeaturesAtPixel(event.pixel, {
+    layerFilter: (layer) => {
+      if (useTypeLayer.value) {
+        // 检查是否是类型图层
+        const layerType = layer.get("type");
+        const instance = mapMarkersConfig.markerLayersByType.value[layerType];
+        if (layerType && instance === layer) {
+          return true;
+        }
+        // 备用方案：检查是否在类型图层列表中
+        return Object.values(
+          mapMarkersConfig.markerLayersByType.value
+        ).includes(layer);
+      } else {
+        // 检查是否是默认标记点图层
+        return mapMarkersConfig.markerLayer.value === layer;
+      }
+    },
+  });
+
+  if (features.length > 0) {
+    const feature = features[0];
+    const markerId = feature.get("id");
+    const markerData = feature.getProperties();
+    console.log("🚀 ~ onMapRightClick ~ markerData:", markerData);
+    if (markerData.popupType !== "ship") {
+      return;
+    }
+    // 触发标记点点击事件
+    onMarkerClick({
+      flat: true,
+      markerId,
+      markerData,
+      feature,
+      coordinate: event.coordinate,
+      lonLat: toLonLat(event.coordinate),
+      pixel: event.pixel,
+    });
+  }
+};
 /**
  * 轨迹回放
  * @param {String} markerId - 标记点ID
  */
 const trackBack = (markerId) => {
   console.log("轨迹回放:", markerId);
-  console.log(mapMarkersConfig.tracks.value);
   mapMarkersConfig.toggleMarkerVisibilityByLayer("轨迹", true);
   // 先清除之前的轨迹
   mapMarkersConfig.clearTrackRoutes();
@@ -544,7 +655,7 @@ const trackBack = (markerId) => {
   ];
 
   // 生成轨迹路线
-  mapMarkersConfig.generateTrackRoute(coordinates, {
+  const trackFeature = mapMarkersConfig.generateTrackRoute(coordinates, {
     showStartEnd: true,
     animation: true,
     animationDuration: 2000,
@@ -557,6 +668,11 @@ const trackBack = (markerId) => {
       lineJoin: "round",
     },
   });
+  const id = trackFeature.getProperties().id;
+  console.log("🚀 ~ trackBack ~ trackFeature:", id);
+  setTimeout(() => {
+    mapMarkersConfig.removeTrackRoute(id);
+  }, 5000);
 };
 
 /**
@@ -565,6 +681,11 @@ const trackBack = (markerId) => {
  */
 const viewMoreShip = (markerId) => {
   console.log("查看更多船舶:", markerId);
+  initShowPanel();
+  keyVesselsPopupVisible.value = true;
+  nextTick(() => {
+    keyVesselsPopupRef.value.handleDetail(markerId);
+  });
 };
 /**
  * 设置重点船舶
@@ -581,11 +702,12 @@ const shipQuery = (markerId) => {
   console.log("船舶查询:", markerId);
 };
 /**
- * 查看更多
+ * 查看可疑车辆更多
  * @param {*} markerId
  */
 const viewMore = (markerId) => {
-  console.log("查看更多:", markerId);
+  console.log("查看可疑车辆更多:", markerId);
+  initShowPanel();
   suspiciousVehiclePopupVisible.value = true;
   // activeBottomMenu.value = 3;
   nextTick(() => {
@@ -599,13 +721,39 @@ const viewMore = (markerId) => {
  */
 const trackCorrect = (markerId) => {
   console.log("风险点轨迹纠正:", markerId);
+  const markerData = mapMarkersConfig.getMarker(markerId);
+  Modal.confirm({
+    title: "是否确认纠正坐标？",
+    content: "确认后，坐标将纠正为当前点击坐标",
+    centered: true,
+    mask: false,
+    getContainer: ".ui-container",
+    class: "track-correct-modal",
+    onOk: () => {
+      mapMarkersConfig.setMarkerCoordinates(markerId, clickedCoordinate.value);
+      isGeneratingMarker.value = false;
+      mapMarkersConfig.removeMarker(clickMarkerId.value);
+    },
+  });
 };
 /**
  * 查看更多
  * @param {*} markerId
  */
 const viewMoreCorrect = (markerId) => {
+  initShowPanel();
   console.log("风险点查看更多:", markerId);
+  warningDrawerVisible.value = true;
+};
+/**
+ * 关闭风险点弹窗
+ * @param {*} markerId
+ */
+const cancelCorrect = (markerId) => {
+  console.log("风险点关闭弹窗:", markerId);
+  mapMarkersConfig.removeMarker(clickMarkerId.value);
+  isGeneratingMarker.value = false;
+  document.querySelector(".marker-popup-container").style.display = "none";
 };
 /**
  * 根据类型显示标记点弹窗
@@ -626,11 +774,25 @@ const showMarkerPopup = (coordinates, markerData) => {
       viewMore
     );
   } else if (markerData.popupType === "ship") {
-    mapMarkersConfig.markerPopupElement.value.innerHTML =
-      createPopupContentShip(markerData, setKeyShip, viewMoreShip, shipQuery);
+    if (markerData.flat) {
+      mapMarkersConfig.markerPopupElement.value.innerHTML = createPopupMenuShip(
+        markerData,
+        setKeyShip,
+        viewMoreShip,
+        shipQuery
+      );
+    } else {
+      mapMarkersConfig.markerPopupElement.value.innerHTML =
+        createPopupContentShip(markerData, setKeyShip, viewMoreShip, shipQuery);
+    }
   } else {
     mapMarkersConfig.markerPopupElement.value.innerHTML =
-      createPopupContentRisk(markerData, trackCorrect, viewMoreCorrect);
+      createPopupContentRisk(
+        markerData,
+        trackCorrect,
+        viewMoreCorrect,
+        cancelCorrect
+      );
   }
 
   // 设置弹窗位置
@@ -647,10 +809,11 @@ const showMarkerPopup = (coordinates, markerData) => {
 const onMarkerClick = (eventData) => {
   console.log("标记点被点击:", eventData);
 
-  const { markerId, markerData, coordinate, lonLat } = eventData;
+  const { markerId, markerData, coordinate, lonLat, flat } = eventData;
 
   // 显示弹窗
   showMarkerPopup([lonLat[0], lonLat[1]], {
+    flat,
     markerId,
     ...markerData,
     lonLat,
@@ -660,7 +823,8 @@ const onMarkerClick = (eventData) => {
 // 地图移动事件
 const onMapMove = (event) => {
   console.log("地图移动事件", event);
-  mapCenter.value = event.center;
+  const center = `${event.center[0].toFixed(4)}, ${event.center[1].toFixed(4)}`;
+  displayCenter.value = center;
   mapZoom.value = event.zoom;
   // 11.5以下隐藏
   const typeList = ["car", "ship", "icon"];
@@ -685,13 +849,6 @@ const handleLayerChange = () => {
   }
 };
 
-// 计算属性
-const displayCenter = computed(() => {
-  return mapCenter.value
-    ? `${mapCenter.value[0].toFixed(4)}, ${mapCenter.value[1].toFixed(4)}`
-    : "未获取";
-});
-
 const displayZoom = computed(() => {
   return mapZoom.value || "未获取";
 });
@@ -711,6 +868,7 @@ const handleSearch = () => {
 
 // 预警相关方法
 const handleWarningClick = () => {
+  initShowPanel();
   warningDrawerVisible.value = true;
 };
 
@@ -938,7 +1096,6 @@ const handleToolbarClear = () => {
   console.log("工具栏：清空按钮被点击");
   // 清空所有内容
   if (plotPanelRef.value && plotPanelRef.value.clearAll) {
-    console.log("调用 PlotPanel 的 clearAll 方法");
     plotPanelRef.value.clearAll();
   } else {
     console.log("PlotPanel 引用不存在或 clearAll 方法不存在");
@@ -950,6 +1107,7 @@ const handleToolbarClear = () => {
 const handleToolbarLocate = () => {
   console.log("工具栏：定位");
   // 可以定位到当前位置或指定位置
+  mapMarkersConfig.flyTo([121.92925185863172, 29.275393872226005], 10);
 };
 
 const handleToolbarZoomIn = () => {
@@ -1011,6 +1169,20 @@ const heatmaps = ref([
   { id: 17, name: "船舶运行热力图", visible: false, type: "heatmap" },
 ]);
 
+const allMarkerListConfigs = {
+  风险点: "icon",
+  电子围栏: "electronic-fence",
+  智能限高杆: "smart-height-bar",
+  视频感知设备: "video-sensing-device",
+  风险点热力图: "risk-hot",
+  船舶动态: "ship",
+  无走私村: "no-smuggling-village",
+  光电雷达覆盖区域: "optical-radar",
+  船舶运行热力图: "ship-running-heatmap",
+  车辆动态: "car",
+  交通要道: "traffic-road",
+  车辆运行热力图: "vehicle-running-heatmap",
+};
 // 控制图层面板事件处理
 const handleLayerToggle = (layer) => {
   console.log("图层切换:", layer);
@@ -1023,6 +1195,7 @@ const initShowPanel = () => {
   suspiciousVehiclePopupVisible.value = false;
   keyPersonnelPopupVisible.value = false;
   keyVesselsPopupVisible.value = false;
+  warningDrawerVisible.value = false;
 };
 
 const handleBottomMenuClick = (index) => {
@@ -1031,10 +1204,25 @@ const handleBottomMenuClick = (index) => {
   activeBottomMenu.value = index;
   if (index === 0) {
     console.log("岸线管控");
+    const defaultVisibleLayers = {
+      风险点: "icon",
+      电子围栏: "electronic-fence",
+      智能限高杆: "smart-height-bar",
+      视频感知设备: "video-sensing-device",
+      风险点热力图: "risk-hot",
+      站图标: "station",
+      无走私村: "no-smuggling-village",
+      案件: "case",
+    };
+    handleDefaultVisibleLayers(Object.keys(defaultVisibleLayers));
+
+    mapMarkersConfig.toggleMarkerVisibilityByLayer("ship", false);
+    mapMarkersConfig.toggleMarkerVisibilityByLayer("car", false);
+    mapMarkersConfig.toggleMarkerVisibilityByLayer("轨迹", false);
   } else if (index === 1) {
     console.log("重点船舶");
     const defaultVisibleLayers = {
-      船舶: "ship",
+      船舶动态: "ship",
       风险点: "icon",
       电子围栏: "electronic-fence",
       光电雷达覆盖区域: "optical-radar",
@@ -1046,29 +1234,28 @@ const handleBottomMenuClick = (index) => {
     handleDefaultVisibleLayers(Object.keys(defaultVisibleLayers));
     // 更新图层
     Object.values(defaultVisibleLayers).forEach((type) => {
-      mapMarkersConfig.toggleMarkerVisibilityList(type, true);
+      mapMarkersConfig.toggleMarkerVisibilityByLayer(type, true);
     });
-    mapMarkersConfig.toggleMarkerVisibilityList("icon", true);
-    mapMarkersConfig.toggleMarkerVisibilityList("ship", true);
-    mapMarkersConfig.toggleMarkerVisibilityList("car", false);
-    mapMarkersConfig.toggleMarkerVisibilityByLayer("轨迹", true);
+    mapMarkersConfig.toggleMarkerVisibilityByLayer("car", false);
+    mapMarkersConfig.toggleMarkerVisibilityByLayer("轨迹", false);
   } else if (index === 2) {
     console.log("重点人员");
     const defaultVisibleLayers = {
       站图标: "station",
-      无走私村图标: "no-smuggling-village",
+      无走私村: "no-smuggling-village",
       案件: "case",
     };
     keyPersonnelPopupVisible.value = true;
     handleDefaultVisibleLayers(Object.keys(defaultVisibleLayers));
     // 更新图层
     Object.values(defaultVisibleLayers).forEach((type) => {
-      mapMarkersConfig.toggleMarkerVisibilityList(type, true);
+      mapMarkersConfig.toggleMarkerVisibilityByLayer(type, true);
     });
-    mapMarkersConfig.toggleMarkerVisibilityList("icon", false);
-    mapMarkersConfig.toggleMarkerVisibilityList("ship", false);
-    mapMarkersConfig.toggleMarkerVisibilityList("car", false);
-    mapMarkersConfig.toggleMarkerVisibilityByLayer("轨迹", true);
+    mapMarkersConfig.toggleMarkerVisibilityByLayer("electronic-fence", false);
+    mapMarkersConfig.toggleMarkerVisibilityByLayer("icon", false);
+    mapMarkersConfig.toggleMarkerVisibilityByLayer("ship", false);
+    mapMarkersConfig.toggleMarkerVisibilityByLayer("car", false);
+    mapMarkersConfig.toggleMarkerVisibilityByLayer("轨迹", false);
   } else if (index === 3) {
     console.log("可疑车辆");
     const defaultVisibleLayers = {
@@ -1084,16 +1271,18 @@ const handleBottomMenuClick = (index) => {
     handleDefaultVisibleLayers(Object.keys(defaultVisibleLayers));
     // 更新图层
     Object.values(defaultVisibleLayers).forEach((type) => {
-      mapMarkersConfig.toggleMarkerVisibilityList(type, true);
+      mapMarkersConfig.toggleMarkerVisibilityByLayer(type, true);
     });
-    mapMarkersConfig.toggleMarkerVisibilityList("icon", false);
-    mapMarkersConfig.toggleMarkerVisibilityList("ship", false);
-    mapMarkersConfig.toggleMarkerVisibilityList("car", true);
+    mapMarkersConfig.toggleMarkerVisibilityByLayer("icon", false);
+    mapMarkersConfig.toggleMarkerVisibilityByLayer("ship", false);
     mapMarkersConfig.toggleMarkerVisibilityByLayer("轨迹", false);
   }
 };
 
 const handleDefaultVisibleLayers = (defaultVisibleLayers) => {
+  layers.value.forEach((val) => (val.visible = false));
+  sensingDevices.value.forEach((val) => (val.visible = false));
+  heatmaps.value.forEach((val) => (val.visible = false));
   layers.value.forEach(
     (val) => defaultVisibleLayers.includes(val.name) && (val.visible = true)
   );
@@ -1111,12 +1300,11 @@ const getMarkerData = () => {
     29.330254208488313,
     121.69077697750392,
     50,
-    15
+    10
   );
-
-  // 添加随机分布的标记点 风险点
-  randomCoords.forEach((coord, index) => {
-    mapMarkersConfig.addMarker([coord.lng, coord.lat], {
+  const riskList = randomCoords.map((coord, index) => ({
+    coordinates: [coord.lng, coord.lat],
+    options: {
       id: `random-marker-${index}`,
       type: "icon",
       useTypeLayer: useTypeLayer.value,
@@ -1149,27 +1337,81 @@ const getMarkerData = () => {
         riskLevel: "high",
         lastUpdate: new Date().toLocaleString(),
       },
-    });
+    },
+  }));
+  // 批量添加
+  mapMarkersConfig.addMarkers(riskList, {
+    useBatch: true,
+    batchSize: 1000,
+    // isEnableCluster: false,
+    onProgress: (progress) => {
+      console.log("进度:", progress);
+    },
   });
+  // 虚拟化添加
+  // mapMarkersConfig.addMarkersVirtualized(riskList, {
+  //   onViewportChange: (progress) => {
+  //     console.log("进度:", progress);
+  //   },
+  // });
+  // 单个添加
+  // 添加随机分布的标记点 风险点
+  // randomCoords.forEach((coord, index) => {
+  //   mapMarkersConfig.addMarker([coord.lng, coord.lat], {
+  //     id: `random-marker-${index}`,
+  //     type: "icon",
+  //     useTypeLayer: useTypeLayer.value,
+  //     style: {
+  //       icon: {
+  //         src: getIconPath("allIcon"),
+  //         size: [18, 18],
+  //         anchor: [0, 0],
+  //         scale: 1,
+  //         displacement: [9, -9],
+  //         offset: [18 * (index % 10), 0], // 使用不同的精灵图位置
+  //         borderSize: 25, // 外边框大小
+  //         borderColor: "#ffa502", // 外边框颜色
+  //         borderWidth: 2, // 外边框宽度
+  //         showBorder: false, // 初始隐藏边框
+  //       },
+  //     },
+  //     data: {
+  //       popupType: "icon",
+  //       title: `可疑车辆 ${index + 1}`,
+  //       description: `距离中心 ${coord.distance.toFixed(1)} 公里`,
+  //       distance: coord.distance,
+  //       cardId: `123456789${index}`,
+  //       type: "高栏货车",
+  //       状态: "行驶中",
+  //       shipName: `浙J${String(35470 + index).padStart(5, "0")}`,
+  //       vehicleType: "高栏货车",
+  //       status: "driving",
+  //       tag: "涉私车辆",
+  //       riskLevel: "high",
+  //       lastUpdate: new Date().toLocaleString(),
+  //     },
+  //   });
+  // });
   // 生成随机坐标点（50公里内） 可疑车辆
   const carCoords = generateRandomCoordinates(
     29.330254208488313,
     121.69077697750392,
     50,
-    6
+    10
   );
-  carCoords.forEach((coord, index) => {
-    mapMarkersConfig.addMarker([coord.lng, coord.lat], {
+  const carList = carCoords.map((coord, index) => ({
+    coordinates: [coord.lng, coord.lat],
+    options: {
       id: `random-car-${index}`,
       type: "car",
       useTypeLayer: useTypeLayer.value,
       style: {
         icon: {
           src: getIconPathMarkIcons("icon10"),
-          size: [30, 30],
+          size: [53, 53],
           anchor: [0, 0],
-          scale: 1,
-          displacement: [14, -14], // 偏移量
+          scale: 0.7,
+          displacement: [18, -18], // 偏移量
           borderSize: 30, // 外边框大小
           borderColor: "#ffa502", // 外边框颜色
           borderWidth: 2, // 外边框宽度
@@ -1186,7 +1428,7 @@ const getMarkerData = () => {
           bgScale: 0.7, // 缩放比例
           bgOpacity: 0.9, // 透明度
           font: "10px Arial",
-          showBackground: true,
+          showBackground: false,
         },
       },
       data: {
@@ -1204,18 +1446,92 @@ const getMarkerData = () => {
         riskLevel: "high",
         lastUpdate: new Date().toLocaleString(),
       },
-    });
+    },
+  }));
+  // 批量添加
+  mapMarkersConfig.addMarkers(carList, {
+    useBatch: true,
+    // isEnableCluster: false,
+    batchSize: 1000,
+    onProgress: (progress) => {
+      console.log("进度:", progress);
+    },
+    onComplete: () => {
+      // 启用指定类型的聚合
+      mapMarkersConfig.enableClustering("car", {
+        distance: 40, // 聚合距离
+        minDistance: 20, // 最小聚合距离
+      });
+      mapMarkersConfig.toggleClustering("car", true);
+    },
   });
+  // 虚拟化添加
+  // mapMarkersConfig.addMarkersVirtualized(carList, {
+  //   onViewportChange: (progress) => {
+  //     console.log("进度:", progress);
+  //   },
+  // });
+
+  // 单个添加
+  // carCoords.forEach((coord, index) => {
+  //   mapMarkersConfig.addMarker([coord.lng, coord.lat], {
+  //     id: `random-car-${index}`,
+  //     type: "car",
+  //     useTypeLayer: useTypeLayer.value,
+  //     style: {
+  //       icon: {
+  //         src: getIconPathMarkIcons("icon10"),
+  //         size: [53, 53],
+  //         anchor: [0, 0],
+  //         scale: 0.7,
+  //         displacement: [14, -14], // 偏移量
+  //         borderSize: 30, // 外边框大小
+  //         borderColor: "#ffa502", // 外边框颜色
+  //         borderWidth: 2, // 外边框宽度
+  //         showBorder: false, // 初始隐藏边框
+  //       },
+  //       text: {
+  //         content: "可疑车辆",
+  //         color: "#000000",
+  //         offsetX: 10,
+  //         offsetY: -17,
+  //         bgImage: "/src/assets/imgs/qb.png", // 背景图片路径
+  //         bgSize: [100, 50], // 背景图片尺寸
+  //         displacement: [18, 9], // 汽包位置偏移
+  //         bgScale: 0.7, // 缩放比例
+  //         bgOpacity: 0.9, // 透明度
+  //         font: "10px Arial",
+  //         showBackground: false,
+  //       },
+  //     },
+  //     data: {
+  //       popupType: "car",
+  //       title: `可疑车辆`,
+  //       description: `距离中心 0 公里`,
+  //       distance: 0,
+  //       cardId: `123456789`,
+  //       type: "高栏货车",
+  //       状态: "行驶中",
+  //       shipName: `浙J35470`,
+  //       vehicleType: "高栏货车",
+  //       status: "driving",
+  //       tag: "涉私车辆",
+  //       riskLevel: "high",
+  //       lastUpdate: new Date().toLocaleString(),
+  //     },
+  //   });
+  // });
 
   // 生成随机坐标点（50公里内） 船舶动态
   const shipDynamicCoords = generateRandomCoordinates(
     29.22087519433525,
     122.23688904613172,
     30,
-    16
+    6
   );
-  shipDynamicCoords.forEach((coord, index) => {
-    mapMarkersConfig.addMarker([coord.lng, coord.lat], {
+  const shipList = shipDynamicCoords.map((coord, index) => ({
+    coordinates: [coord.lng, coord.lat],
+    options: {
       id: `random-ship-dynamic-${index}`,
       type: "ship",
       useTypeLayer: useTypeLayer.value,
@@ -1242,7 +1558,7 @@ const getMarkerData = () => {
           bgScale: 0.7, // 缩放比例
           bgOpacity: 0.9, // 透明度
           font: "10px Arial",
-          showBackground: true,
+          showBackground: false,
         },
       },
       data: {
@@ -1252,8 +1568,66 @@ const getMarkerData = () => {
         distance: 0,
         cardId: `123456789`,
       },
-    });
+    },
+  }));
+  // 批量添加
+  mapMarkersConfig.addMarkers(shipList, {
+    useBatch: true,
+    batchSize: 1000,
+    onProgress: (progress) => {
+      console.log("进度:", progress);
+    },
   });
+  // 虚拟化添加
+  // mapMarkersConfig.addMarkersVirtualized(shipList, {
+  //   onViewportChange: (progress) => {
+  //     console.log("进度:", progress);
+  //   },
+  // });
+  // 单个添加
+  // shipDynamicCoords.forEach((coord, index) => {
+  //   mapMarkersConfig.addMarker(
+  //     [coord.lng, coord.lat],
+  //     {
+  //       id: `random-ship-dynamic-${index}`,
+  //       type: "ship",
+  //       useTypeLayer: useTypeLayer.value,
+  //       style: {
+  //         icon: {
+  //           src: getIconPathMarkIcons("icon16"),
+  //           size: [30, 30],
+  //           anchor: [0, 0],
+  //           scale: 1,
+  //           displacement: [14, -14], // 偏移量
+  //           borderSize: 30, // 外边框大小
+  //           borderColor: "#ffa502", // 外边框颜色
+  //           borderWidth: 2, // 外边框宽度
+  //           showBorder: false, // 初始隐藏边框
+  //         },
+  //         text: {
+  //           content: "华盛167",
+  //           color: "#000000",
+  //           offsetX: 10,
+  //           offsetY: -17,
+  //           bgImage: "/src/assets/imgs/qb.png", // 背景图片路径
+  //           bgSize: [100, 50], // 背景图片尺寸
+  //           displacement: [18, 9], // 汽包位置偏移
+  //           bgScale: 0.7, // 缩放比例
+  //           bgOpacity: 0.9, // 透明度
+  //           font: "10px Arial",
+  //           showBackground: false,
+  //         },
+  //       },
+  //       data: {
+  //         popupType: "ship",
+  //         title: `船舶动态`,
+  //         description: `距离中心 0 公里`,
+  //         distance: 0,
+  //         cardId: `123456789`,
+  //       },
+  //     }
+  //   );
+  // });
 
   const trackLines = [
     [
@@ -1282,7 +1656,8 @@ const getMarkerData = () => {
     mapMarkersConfig.generateTrackRoute(line, {
       showStartEnd: false,
       animation: false,
-      midpointText: "中间点1",
+      // animationDuration: 5000,
+      // midpointText: "中间点",
       style: {
         stroke: "#d65e37",
         strokeWidth: 3,
@@ -1292,6 +1667,32 @@ const getMarkerData = () => {
       },
     });
   });
+
+  const overlays = mapMarkersConfig.createMultipleMarkers([
+    [121.9251, 29.2748],
+  ]);
+
+  setTimeout(() => {
+    mapMarkersConfig.clearOverlaysByType();
+  }, 5000);
+  window.closeWarnMarker = function (e) {
+    e.stopPropagation();
+    e.target.parentElement.parentElement.style.display = "none";
+  };
+  window.disPlayWarnDetail = function (e) {
+    warningDrawerVisible.value = true;
+  };
+
+  mapMarkersConfig.drawFilledPolygon(
+    [
+      [122.1558, 29.4244],
+      [122.2012, 29.3227],
+      [122.2685, 29.3227],
+      [122.2863, 29.4244],
+      [122.219, 29.4758],
+    ],
+    { fillColor: "#c18a7e", strokeColor: "#fe3837", strokeWidth: 1 }
+  );
 
   // 添加带文本的标记点
   // const locationMarker = addMarker([120.31783498535157, 30.37189672436138], {
@@ -1354,26 +1755,37 @@ const getSliderIndicatorStyle = computed(() => {
     position: relative;
     height: 100%;
     .search-container {
-      width: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 600px;
       height: 40px;
       position: absolute;
       top: 40px;
-      left: 16%;
+      left: 5%;
       z-index: 9;
       pointer-events: auto;
-      background: rgba(18, 28, 43, 0.8);
       :deep(.ant-input-affix-wrapper) {
         height: 100%;
-        // .ant-input {
-        //   background: rgba(18, 28, 43, 0.8);
-        //   border: none;
-        //   border-radius: 4px;
-        //   color: #ffffff;
-        // }
-        // input::-webkit-input-placeholder {
-        //   /* Chrome, Safari */
-        //   color: #dedada;
-        // }
+      }
+      :deep(.ant-cascader) {
+        width: 280px;
+        margin-right: 10px;
+      }
+      :deep(.ant-select-selector) {
+        background: rgba(18, 28, 43, 0.8);
+        border: none;
+        border-radius: 0;
+        color: #ffffff;
+        height: 40px;
+        width: 280px;
+      }
+      :deep(.ant-select-selection-placeholder) {
+        line-height: 40px;
+        color: rgb(224, 224, 224) !important;
+      }
+      :deep(.ant-select-selection-item) {
+        line-height: 40px;
       }
     }
     .warning-container {
@@ -1535,7 +1947,9 @@ const getSliderIndicatorStyle = computed(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-
+    & * {
+      user-select: none;
+    }
     .bottom-menu-box {
       position: relative;
       display: flex;

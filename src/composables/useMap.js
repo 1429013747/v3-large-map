@@ -29,7 +29,6 @@ export function useMap(options = {}) {
     const map = ref(null);
     const mapContainer = ref(null);
     const isMapReady = ref(false);
-    const clickedCoordinate = ref(null);
     const mapCenter = ref(center);
     const mapZoom = ref(zoom);
     // const apiKey = ref("cff1fa4f29d5375c9d6290bd249ce077");
@@ -164,7 +163,6 @@ export function useMap(options = {}) {
             const coordinate = event.coordinate;
             // 将 Web Mercator 坐标转换为经纬度
             const lonLat = toLonLat(coordinate);
-            clickedCoordinate.value = lonLat;
 
             if (callbacks.onMapClick) {
                 callbacks.onMapClick({
@@ -181,7 +179,6 @@ export function useMap(options = {}) {
             const coordinate = event.coordinate;
             // 将 Web Mercator 坐标转换为经纬度
             const lonLat = toLonLat(coordinate);
-            clickedCoordinate.value = lonLat;
 
             if (callbacks.onMapDoubleClick) {
                 callbacks.onMapDoubleClick({
@@ -197,17 +194,38 @@ export function useMap(options = {}) {
         map.value.on("moveend", () => {
             const scope = map.value.getView().calculateExtent(map.value.getSize()); // 获取地图范围
             const center = map.value.getView().getCenter(); // 获取地图中心
+            // 将 Web Mercator 坐标转换为经纬度
+            const lonLat = toLonLat(center);
             const zoom = map.value.getView().getZoom(); // 获取地图缩放级别
 
             if (callbacks.onMapMove) {
                 callbacks.onMapMove({
                     scope,
                     zoom,
-                    center
+                    center: lonLat,
                 });
             }
         });
+        // 监听鼠标右击事件
+        map.value.on('contextmenu', function (event) {
+            // 阻止默认的右键菜单弹出
+            event.originalEvent.preventDefault();
+            // 阻止事件冒泡
+            event.originalEvent.stopPropagation();
 
+            const coordinate = event.coordinate;
+            // 将 Web Mercator 坐标转换为经纬度
+            const lonLat = toLonLat(coordinate);
+            if (callbacks.onMapRightClick) {
+                callbacks.onMapRightClick({
+                    coordinate: coordinate,
+                    lonLat: lonLat,
+                    pixel: event.pixel,
+                    event: event
+                });
+            }
+
+        });
         // 地图加载完成事件
         map.value.on("loadend", () => {
             console.log("地图加载完成");
@@ -438,7 +456,6 @@ export function useMap(options = {}) {
         map,
         mapContainer,
         isMapReady,
-        clickedCoordinate,
         mapCenter,
         mapZoom,
 

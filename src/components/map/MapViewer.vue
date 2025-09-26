@@ -33,6 +33,7 @@ const emit = defineEmits([
   "map-ready",
   "map-click",
   "map-double-click",
+  "map-right-click",
   "map-move",
   "layer-change",
 ]);
@@ -79,6 +80,9 @@ const {
     },
     onLayerChange: (layerName) => {
       emit("layer-change", layerName);
+    },
+    onMapRightClick: (event) => {
+      emit("map-right-click", event);
     },
   },
 });

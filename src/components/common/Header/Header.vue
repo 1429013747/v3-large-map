@@ -250,14 +250,11 @@ onMounted(() => {
     line-height: 15px;
     text-align: center;
     font-style: normal;
+    padding: 2px 10px;
     text-transform: none;
     color: #0edfb8;
     margin-right: 110px;
-    background: linear-gradient(
-      0deg,
-      #0edfb8 10%,
-      #ffffff 100%
-    );
+    background: linear-gradient(0deg, #0edfb8 10%, #ffffff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -348,8 +345,7 @@ onMounted(() => {
     }
   }
 
-  .return-btn,
-  .backend-btn {
+  .return-btn {
     padding: 6px 12px;
     font-size: 12px;
   }

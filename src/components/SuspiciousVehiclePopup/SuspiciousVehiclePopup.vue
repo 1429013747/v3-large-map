@@ -4,7 +4,7 @@
     title="可疑车辆"
     placement="left"
     getContainer=".ui-container"
-    :width="430"
+    :width="475"
     :closable="true"
     :mask="false"
     class="suspicious-vehicle-drawer"

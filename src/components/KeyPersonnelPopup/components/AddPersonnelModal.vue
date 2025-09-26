@@ -65,22 +65,25 @@
             />
           </a-form-item>
         </Col>
-        <Col :span="12">
-          <a-form-item label="标签" name="status">
-            <a-select v-model:value="formData.status" placeholder="请选择标签">
-              <a-select-option value="标签1">标签1</a-select-option>
-              <a-select-option value="标签2">标签2</a-select-option>
-              <a-select-option value="标签3">标签3</a-select-option>
-              <a-select-option value="标签4">标签4</a-select-option>
-              <a-select-option value="标签5">标签5</a-select-option>
-            </a-select>
+      </Row>
+      <Row :gutter="16">
+        <Col :span="20">
+          <a-form-item label="人员标签" name="status" :labelCol="{ span: 4 }">
+            <a-checkable-tag
+              v-for="(tag, index) in formData.tagsData"
+              :key="tag"
+              v-model:checked="formData.status[index]"
+              @change="(checked) => handleChange(tag, checked)"
+            >
+              {{ tag }}
+            </a-checkable-tag>
           </a-form-item>
         </Col>
       </Row>
 
       <Row :gutter="16">
-        <Col :span="12">
-          <a-form-item label="人员照片">
+        <Col :span="20">
+          <a-form-item label="人员照片" :labelCol="{ span: 4 }">
             <a-upload
               v-model:file-list="formData.photos"
               list-type="picture-card"
@@ -128,9 +131,10 @@ const formData = reactive({
   phone: "",
   idCard: "",
   photos: [],
-  status: null,
+  status: [false, true, false, false],
+  tagsData: ["前科人员", "非本地", "涉案人员", "失业人员"],
 });
-
+// const tagsData = reactive(["前科人员", "非本地", "涉案人员", "失业人员"]);
 // 表单验证规则
 const formRules = {
   name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
@@ -158,10 +162,12 @@ const resetForm = () => {
   formData.vehicleType = null;
   formData.idCard = "";
   formData.phone = "";
-  formData.status = null;
+  formData.status = [false, true, false, false];
   formRef.value?.resetFields();
 };
-
+const handleChange = (tag, checked) => {
+  console.log(tag, checked);
+};
 // 提交表单
 const handleSubmit = async () => {
   try {
@@ -230,6 +236,9 @@ const handlePreview = (file) => {
     .ant-upload-list-item-actions-delete {
       color: #ffffff;
     }
+  }
+  .ant-tag {
+    color: #ffffff;
   }
 }
 </style>

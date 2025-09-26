@@ -4,7 +4,7 @@
     title="预警中心"
     placement="left"
     getContainer=".ui-container"
-    :width="430"
+    :width="475"
     :closable="true"
     :mask="false"
     class="warning-drawer"
@@ -690,12 +690,13 @@ const handleDetailClose = () => {
 
         .status-tag {
           position: absolute;
-          right: -24px;
+          right: -14px;
           top: -16px;
           font-size: 11px;
           font-weight: 600;
           border: none;
           border-radius: 0 0 12px 12px;
+          padding: 0 8px;
         }
       }
 

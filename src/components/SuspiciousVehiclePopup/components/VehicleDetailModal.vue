@@ -314,6 +314,9 @@ const gangTableColumns = [
     key: "index",
     width: 80,
     align: "center",
+    customRender: ({ text, record, index }) => {
+      return index + 1;
+    },
   },
   {
     title: "查询单",
@@ -346,56 +349,48 @@ const gangTableColumns = [
 const gangTableData = ref([
   {
     key: "1",
-    index: 1,
     queryOrder: "浙123456团伙车辆的查询单",
     createTime: "2025/6/15 1:18",
     status: "查询中",
   },
   {
     key: "2",
-    index: 2,
     queryOrder: "浙123456团伙车辆的查询单",
     createTime: "2025/6/15 1:18",
     status: "已完成",
   },
   {
     key: "3",
-    index: 3,
     queryOrder: "浙123456团伙车辆的查询单",
     createTime: "2025/6/15 1:18",
     status: "已完成",
   },
   {
     key: "4",
-    index: 4,
     queryOrder: "浙123456团伙车辆的查询单",
     createTime: "2025/6/15 1:18",
     status: "已完成",
   },
   {
     key: "5",
-    index: 5,
     queryOrder: "浙123456团伙车辆的查询单",
     createTime: "2025/6/15 1:18",
     status: "已完成",
   },
   {
     key: "6",
-    index: 6,
     queryOrder: "浙123456团伙车辆的查询单",
     createTime: "2025/6/15 1:18",
     status: "已完成",
   },
   {
     key: "7",
-    index: 7,
     queryOrder: "浙123456团伙车辆的查询单",
     createTime: "2025/6/15 1:18",
     status: "已完成",
   },
   {
     key: "8",
-    index: 8,
     queryOrder: "浙123456团伙车辆的查询单",
     createTime: "2025/6/15 1:18",
     status: "已完成",
@@ -943,7 +938,7 @@ const handleViewElementDetail = (record) => {
             .alert-item-date,
             .case-item-date {
               color: rgba(255, 255, 255, 0.6);
-              font-size: 13px;
+              font-size: 15px;
             }
           }
         }
@@ -993,7 +988,7 @@ const handleViewElementDetail = (record) => {
         color: #00ffff;
         padding: 0;
         height: auto;
-        font-size: 12px;
+        font-size: 14px;
 
         &:hover {
           color: #ffffff;
@@ -1051,7 +1046,7 @@ const handleViewElementDetail = (record) => {
           color: #00ffff;
           padding: 0;
           height: auto;
-          font-size: 12px;
+          font-size: 14px;
 
           &:hover {
             color: #ffffff;
@@ -1113,7 +1108,7 @@ const handleViewElementDetail = (record) => {
             color: #00ffff;
             padding: 0;
             height: auto;
-            font-size: 12px;
+            font-size: 14px;
 
             &:hover {
               color: #ffffff;

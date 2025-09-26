@@ -238,7 +238,9 @@ const emit = defineEmits([
   width: 90px;
   height: 100%;
   z-index: 1000;
-
+  & * {
+    user-select: none;
+  }
   .toggle-btn {
     position: absolute;
     top: 50%;
@@ -678,8 +680,8 @@ const emit = defineEmits([
   }
 
   .zoom-btn {
-    width: 32px;
-    height: 32px;
+    width: 26px;
+    height: 26px;
     background: #ffffff;
     border-radius: 50%;
     display: flex;
@@ -691,13 +693,16 @@ const emit = defineEmits([
 
   .zoom-plus,
   .zoom-minus {
-    font-size: 28px;
+    font-size: 26px;
     font-weight: bold;
     color: #1e3a8a;
-    line-height: 1;
+    line-height: 24px;
     user-select: none;
   }
 
+  .zoom-plus {
+    font-size: 24px;
+  }
   // 新增：工具栏项目图标样式
   .layers-icon,
   .legend-icon,

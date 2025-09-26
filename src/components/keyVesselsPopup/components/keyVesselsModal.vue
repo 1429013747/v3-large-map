@@ -148,7 +148,7 @@
         <!-- 标签页区域 -->
         <div class="tabs-section">
           <a-tabs v-model:activeKey="activeTab" class="detail-tabs">
-            <a-tab-pane key="alerts" tab="船只档案">
+            <a-tab-pane key="boatFile" tab="船只档案">
               <div class="tab-content">
                 <!-- 预警子区域 -->
                 <a-collapse
@@ -163,81 +163,310 @@
                     <!-- <template #extra>
                       <span class="alert-count">本月4次</span>
                     </template> -->
-                    <div></div>
+                    <div class="boat-file-container">
+                      <div>
+                        <p>
+                          <span class="label">船籍社名称：</span>
+                          <span class="value-item">{{
+                            vesselData.boatFile.boatRankName
+                          }}</span>
+                        </p>
+                        <p>
+                          <span class="label">船舶所有公司名称：</span>
+                          <span class="value-item">{{
+                            vesselData.boatFile.boatCompanyName
+                          }}</span>
+                        </p>
+                        <p>
+                          <span class="label">船舶管理公司名称：</span>
+                          <span class="value-item">{{
+                            vesselData.boatFile.boatManagerCompanyName
+                          }}</span>
+                        </p>
+                        <p>
+                          <span class="label">船舶经营公司名称：</span>
+                          <span class="value-item">{{
+                            vesselData.boatFile.boatOperateCompanyName
+                          }}</span>
+                        </p>
+                        <p>
+                          <span class="label">DOC公司名称：</span>
+                          <span class="value-item">{{
+                            vesselData.boatFile.DocCompanyName
+                          }}</span>
+                        </p>
+                        <p>
+                          <span class="label">船舶注册公司名称：</span>
+                          <span class="value-item">{{
+                            vesselData.boatFile.boatSignCompanyName
+                          }}</span>
+                        </p>
+                        <p>
+                          <span class="label">船舶技术公司名称：</span>
+                          <span class="value-item">{{
+                            vesselData.boatFile.technologyCompanyName
+                          }}</span>
+                        </p>
+                        <p>
+                          <span class="label">建造公司名称：</span>
+                          <span class="value-item">{{
+                            vesselData.boatFile.buildCompanyName
+                          }}</span>
+                        </p>
+                        <p>
+                          <span class="label">主机信息：</span>
+                          <span class="value-item">{{
+                            vesselData.boatFile.hostInfo
+                          }}</span>
+                        </p>
+                        <p>
+                          <span class="label">数据更新时间：</span>
+                          <span class="value-item">{{
+                            vesselData.boatFile.lastTime
+                          }}</span>
+                        </p>
+                      </div>
+                      <div>
+                        <p>
+                          <span class="label">船东互保协会：</span>
+                          <span class="value-item">{{
+                            vesselData.boatFile.mutualInsuranceAssociation
+                          }}</span>
+                        </p>
+                        <p>
+                          <span class="label">船舶所有公司所属国籍：</span>
+                          <span class="value-item">{{
+                            vesselData.boatFile.countryOfOrigin
+                          }}</span>
+                        </p>
+                        <p>
+                          <span class="label">船舶管理公司所属国籍：</span>
+                          <span class="value-item">{{
+                            vesselData.boatFile.managerCompanyOfOrigin
+                          }}</span>
+                        </p>
+                        <p>
+                          <span class="label">船舶经营公司所属国籍：</span>
+                          <span class="value-item">{{
+                            vesselData.boatFile.operateCompanyOfOrigin
+                          }}</span>
+                        </p>
+                        <p>
+                          <span class="label">DOC公司所属国家：</span>
+                          <span class="value-item">{{
+                            vesselData.boatFile.DocCompanyOfOrigin
+                          }}</span>
+                        </p>
+                        <p>
+                          <span class="label">船舶注册公司所属国家：</span>
+                          <span class="value-item">{{
+                            vesselData.boatFile.boatSignCompanyOfOrigin
+                          }}</span>
+                        </p>
+                        <p>
+                          <span class="label">技术管理公司所属国家：</span>
+                          <span class="value-item">{{
+                            vesselData.boatFile.technologyCompanyOfOrigin
+                          }}</span>
+                        </p>
+                        <p>
+                          <span class="label">建造公司所属国家：</span>
+                          <span class="value-item">{{
+                            vesselData.boatFile.buildCompanyOfOrigin
+                          }}</span>
+                        </p>
+                        <p>
+                          <span class="label">辅助信息：</span>
+                          <span class="value-item">{{
+                            vesselData.boatFile.auxiliaryMachineInformation
+                          }}</span>
+                        </p>
+                      </div>
+                    </div>
                   </a-collapse-panel>
                 </a-collapse>
               </div>
             </a-tab-pane>
 
-            <a-tab-pane key="gang" tab="团伙车辆分析">
+            <a-tab-pane key="gang" tab="历史预警内容">
               <div class="tab-content">
-                <!-- 团伙车辆列表 -->
-                <div v-if="!showGangDetail" class="gang-list-view">
-                  <a-table
-                    :columns="gangTableColumns"
-                    :data-source="gangTableData"
-                    :pagination="false"
-                    :scroll="{ y: 300 }"
-                    class="gang-analysis-table"
-                    size="small"
-                  >
-                    <template #bodyCell="{ column, record }">
-                      <template v-if="column.key === 'status'">
-                        <span class="status-tag">{{ record.status }}</span>
-                      </template>
-                      <template v-if="column.key === 'action'">
-                        <a-button
-                          type="link"
-                          size="small"
-                          class="action-btn"
-                          @click="handleViewGangDetail(record)"
-                        >
-                          查看详情
-                        </a-button>
-                      </template>
+                <!-- 预警子区域 -->
+                <a-collapse
+                  v-model:activeKey="alertCollapseActive"
+                  class="alert-collapse"
+                >
+                  <a-collapse-panel key="1" header="预警" class="alert-panel">
+                    <template #extra>
+                      <span class="alert-count">本月4次</span>
                     </template>
-                  </a-table>
-                </div>
+                    <div class="alert-list">
+                      <div
+                        class="alert-item"
+                        v-for="(alert, index) in vesselData.historyAlerts"
+                        :key="index"
+                      >
+                        <div class="alert-item-content">
+                          <div class="alert-item-text">{{ alert.content }}</div>
+                          <div class="alert-item-date">{{ alert.date }}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </a-collapse-panel>
+                </a-collapse>
 
-                <!-- 团伙车辆详情表格 -->
-                <div v-if="showGangDetail" class="gang-detail-view">
-                  <div class="detail-header">
-                    <a-button
-                      type="link"
-                      size="small"
-                      class="back-btn"
-                      @click="handleBackToGangList"
-                    >
-                      <ArrowLeftOutlined />
-                      返回上级
-                    </a-button>
+                <!-- 历史案件关联子区域 -->
+                <a-collapse
+                  v-model:activeKey="caseCollapseActive"
+                  class="case-collapse"
+                >
+                  <a-collapse-panel
+                    key="1"
+                    header="历史案件关联"
+                    class="case-panel"
+                  >
+                    <template #extra>
+                      <span class="case-count">本月4次</span>
+                    </template>
+                    <div class="case-list">
+                      <div
+                        class="case-item"
+                        v-for="(caseItem, index) in vesselData.historyCases"
+                        :key="index"
+                      >
+                        <div class="case-item-content">
+                          <div class="case-item-text">
+                            {{ caseItem.content }}
+                          </div>
+                          <div class="case-item-date">{{ caseItem.date }}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </a-collapse-panel>
+                </a-collapse>
+              </div>
+            </a-tab-pane>
+            <a-tab-pane key="voyage" tab="航舶航次查询">
+              <div class="tab-content2">
+                <p style="margin: 10px 0 40px 0">
+                  <span class="icon">▶</span>
+                  <span>当前航次：</span>
+                </p>
+                <div class="voyage-content">
+                  <div class="voyage-item">
+                    <p>黄华</p>
+                    <p class="voyage-item-date">2025-03-02 12:00:00</p>
                   </div>
-
-                  <a-table
-                    :columns="gangDetailColumns"
-                    :data-source="gangDetailData"
-                    :pagination="false"
-                    :scroll="{ y: 300 }"
-                    class="gang-detail-table"
-                    size="small"
-                  >
-                    <template #bodyCell="{ column, record }">
-                      <template v-if="column.key === 'action'">
+                  <div class="voyage-line">
+                    <span class="voyage-status">在途</span>
+                    <div class="voyage-line-item"></div>
+                  </div>
+                  <div class="voyage-item">
+                    <p>宁波</p>
+                    <p class="voyage-item-date">2025-03-02 18:00:00</p>
+                  </div>
+                  <div class="voyage-info">
+                    <p>当前所在位置：象山港至温州海域</p>
+                    <p>已航行：200海里</p>
+                    <p>速度：10节</p>
+                  </div>
+                </div>
+                <p style="margin: 20px 0 20px 0">
+                  <span class="icon">▶</span>
+                  <span>航次查询：</span>
+                </p>
+                <div class="voyage-query">
+                  <!-- 港口查询界面 -->
+                  <div class="port-query-container">
+                    <!-- 查询控制区域 -->
+                    <div class="query-controls">
+                      <div class="time-input-section">
+                        <span class="time-label">时间段：</span>
+                        <a-range-picker
+                          v-model:value="timeRange"
+                          class="time-range-picker"
+                          :bordered="false"
+                        />
+                      </div>
+                      <div class="action-buttons">
                         <a-button
-                          type="link"
-                          size="small"
-                          class="action-btn"
-                          @click="handleViewTrajectory(record)"
+                          type="primary"
+                          class="query-btn2"
+                          @click="handlePortQuery"
                         >
-                          查看轨迹
+                          查询
                         </a-button>
-                      </template>
-                    </template>
-                  </a-table>
+                        <a-button class="reset-btn" @click="handleReset">
+                          重置
+                        </a-button>
+                        <a-button class="export-btn" @click="handleExport">
+                          <UploadOutlined />
+                          导出
+                        </a-button>
+                      </div>
+                    </div>
+
+                    <!-- 港口信息表格 -->
+                    <div class="port-table-container">
+                      <div class="table-header">
+                        <div class="header-cell">序号</div>
+                        <div class="header-cell">港口中文</div>
+                        <div class="header-cell">港口英文</div>
+                        <div class="header-cell">国家或地区</div>
+                        <div class="header-cell">到港时间</div>
+                        <div class="header-cell">靠泊时间</div>
+                        <div class="header-cell">离港时间</div>
+                      </div>
+
+                      <div class="table-body">
+                        <div
+                          class="data-row"
+                          v-for="(item, index) in portData"
+                          :key="`port-${index}`"
+                        >
+                          <div class="cell">{{ item.index }}</div>
+                          <div class="cell">{{ item.chineseName }}</div>
+                          <div class="cell">{{ item.englishName }}</div>
+                          <div class="cell">{{ item.country }}</div>
+                          <div class="cell">{{ item.arrivalTime }}</div>
+                          <div class="cell">{{ item.berthingTime }}</div>
+                          <div class="cell">{{ item.departureTime }}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </a-tab-pane>
-
+            <a-tab-pane key="voyageEvent" tab="航舶事件管理">
+              <div class="elements-list">
+                <a-table
+                  :columns="vesselsTableColumns"
+                  :data-source="vesselsTableData"
+                  :pagination="false"
+                  :scroll="{ y: 340 }"
+                  class="elements-table"
+                  size="small"
+                >
+                  <template #bodyCell="{ column, record }">
+                    <template v-if="column.key === 'element'">
+                      <div class="element-type">
+                        {{ record.element }}
+                      </div>
+                    </template>
+                    <template v-if="column.key === 'action'">
+                      <a-button
+                        type="link"
+                        size="small"
+                        class="action-btn"
+                        @click="handleViewTrack(record)"
+                      >
+                        查看轨迹
+                      </a-button>
+                    </template>
+                  </template>
+                </a-table>
+              </div>
+            </a-tab-pane>
             <a-tab-pane key="elements" tab="关键要素分析">
               <div class="tab-content">
                 <div class="key-elements-container">
@@ -309,6 +538,8 @@ import {
   CloseOutlined,
   WarningOutlined,
   ArrowLeftOutlined,
+  DownloadOutlined,
+  UploadOutlined,
 } from "@ant-design/icons-vue";
 
 // Props
@@ -324,221 +555,9 @@ const props = defineProps({
 const emit = defineEmits(["update:open", "setKeyVessel"]);
 
 // 响应式数据
-const activeTab = ref("alerts");
+const activeTab = ref("boatFile");
 const alertCollapseActive = ref(["1"]);
 const caseCollapseActive = ref(["1"]);
-const showGangDetail = ref(false);
-
-// 团伙车辆分析表格列配置
-const gangTableColumns = [
-  {
-    title: "序号",
-    dataIndex: "index",
-    key: "index",
-    width: 80,
-    align: "center",
-  },
-  {
-    title: "查询单",
-    dataIndex: "queryOrder",
-    key: "queryOrder",
-    ellipsis: true,
-  },
-  {
-    title: "创建时间",
-    dataIndex: "createTime",
-    key: "createTime",
-    width: 150,
-  },
-  {
-    title: "状态",
-    dataIndex: "status",
-    key: "status",
-    width: 100,
-    align: "center",
-  },
-  {
-    title: "操作",
-    key: "action",
-    width: 100,
-    align: "center",
-  },
-];
-
-// 团伙车辆分析表格数据
-const gangTableData = ref([
-  {
-    key: "1",
-    index: 1,
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "查询中",
-  },
-  {
-    key: "2",
-    index: 2,
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-  {
-    key: "3",
-    index: 3,
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-  {
-    key: "4",
-    index: 4,
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-  {
-    key: "5",
-    index: 5,
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-  {
-    key: "6",
-    index: 6,
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-  {
-    key: "7",
-    index: 7,
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-  {
-    key: "8",
-    index: 8,
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-]);
-
-// 团伙车辆详情表格列配置
-const gangDetailColumns = [
-  {
-    title: "序号",
-    dataIndex: "index",
-    key: "index",
-    width: 80,
-    align: "center",
-  },
-  {
-    title: "车牌号",
-    dataIndex: "plateNumber",
-    key: "plateNumber",
-    width: 120,
-  },
-  {
-    title: "车牌颜色",
-    dataIndex: "plateColor",
-    key: "plateColor",
-    width: 100,
-  },
-  {
-    title: "车辆类型",
-    dataIndex: "vehicleType",
-    key: "vehicleType",
-    width: 120,
-  },
-  {
-    title: "轨迹相似度",
-    dataIndex: "similarity",
-    key: "similarity",
-    width: 120,
-    align: "center",
-  },
-  {
-    title: "相似时间范围",
-    dataIndex: "timeRange",
-    key: "timeRange",
-    width: 200,
-  },
-  {
-    title: "操作",
-    key: "action",
-    width: 100,
-    align: "center",
-  },
-];
-
-// 团伙车辆详情表格数据
-const gangDetailData = ref([
-  {
-    key: "1",
-    index: 1,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "2",
-    index: 2,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "3",
-    index: 3,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "4",
-    index: 4,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "5",
-    index: 5,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "6",
-    index: 6,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "7",
-    index: 7,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-]);
 
 // 关键要素分析表格列配置
 const elementsTableColumns = [
@@ -566,12 +585,12 @@ const elementsTableColumns = [
 const elementsTableData = ref([
   {
     key: "1",
-    element: "车辆",
+    element: "船舶",
     name: "浙J89900",
   },
   {
     key: "2",
-    element: "车辆",
+    element: "船舶",
     name: "浙J33900",
   },
   {
@@ -586,7 +605,7 @@ const elementsTableData = ref([
   },
   {
     key: "5",
-    element: "车辆",
+    element: "船舶",
     name: "浙J89966",
   },
   {
@@ -600,18 +619,69 @@ const elementsTableData = ref([
     name: "华盛009",
   },
 ]);
+// 关键要素分析表格列配置
+const vesselsTableColumns = [
+  {
+    title: "序号",
+    dataIndex: "index",
+    key: "index",
+    width: 80,
+    align: "center",
+    customRender: ({ text, record, index }) => {
+      return index + 1;
+    },
+  },
+  {
+    title: "事件类型",
+    dataIndex: "eventType",
+    key: "eventType",
+    ellipsis: true,
+    align: "center",
+  },
+  {
+    title: "事件时间",
+    dataIndex: "eventTime",
+    key: "eventTime",
+    ellipsis: true,
+    align: "center",
+  },
+  {
+    title: "操作",
+    key: "action",
+    width: 600,
+  },
+];
+
+// 关键要素分析表格数据
+const vesselsTableData = ref([
+  {
+    key: "1",
+    eventType: "搭靠",
+    eventTime: "2025/09/23 10:00",
+  },
+  {
+    key: "2",
+    eventType: "搭靠",
+    eventTime: "2025/09/23 10:00",
+  },
+  {
+    key: "3",
+    eventType: "搭靠",
+    eventTime: "2025/09/23 10:00",
+  },
+]);
 
 // 树形组织图数据
 const treeData = ref({
   id: 1,
   label: "浙J89900",
-  type: "vehicle",
+  type: "vessel",
   children: [
     {
       id: 2,
       pid: 1,
       label: "浙J89900",
-      type: "vehicle",
+      type: "vessel",
       children: [],
     },
     {
@@ -625,12 +695,13 @@ const treeData = ref({
       id: 2,
       pid: 1,
       label: "马某某",
+      type: "person",
       children: [
         {
           id: 2,
           pid: 1,
           label: "浙J83900",
-          type: "vehicle",
+          type: "vessel",
           children: [],
         },
       ],
@@ -645,7 +716,7 @@ const treeData = ref({
           id: 2,
           pid: 1,
           label: "浙J82900",
-          type: "vehicle",
+          type: "vessel",
           children: [],
         },
       ],
@@ -653,11 +724,27 @@ const treeData = ref({
   ],
 });
 
+// 港口查询相关数据
+const timeRange = ref(null);
+
+// 航舶航次查询
+const portData = ref([
+  {
+    index: 1,
+    chineseName: "黄骅",
+    englishName: "Huanghua",
+    country: "中国",
+    arrivalTime: "2025/6/15 1:18",
+    berthingTime: "2025/6/16 8:42",
+    departureTime: "2025/6/16 8:42",
+  },
+]);
+
 // 获取节点图标
 const getNodeIcon = (node) => {
   switch (node.$$data.type) {
-    case "vehicle":
-      return "🚛";
+    case "vessel":
+      return "🛥️";
     case "person":
       return "👤";
     case "case":
@@ -688,7 +775,7 @@ watch(
   (newVal) => {
     if (newVal) {
       // 重置标签页状态
-      activeTab.value = "alerts";
+      activeTab.value = "boatFile";
       alertCollapseActive.value = ["1"];
       caseCollapseActive.value = ["1"];
     }
@@ -704,20 +791,8 @@ const handleCancel = () => {
 const handleSetKeyVessel = () => {
   emit("setKeyVessel", props.vesselData);
 };
-
-// 查看团伙车辆详情
-const handleViewGangDetail = (record) => {
-  console.log("查看团伙船舶详情:", record);
-  showGangDetail.value = true;
-};
-
-// 返回团伙船舶列表
-const handleBackToGangList = () => {
-  showGangDetail.value = false;
-};
-
-// 查看轨迹
-const handleViewTrajectory = (record) => {
+//  查看轨迹
+const handleViewTrack = (record) => {
   console.log("查看轨迹:", record);
 };
 
@@ -725,6 +800,23 @@ const handleViewTrajectory = (record) => {
 const handleViewElementDetail = (record) => {
   console.log("查看要素详情:", record);
   message.info(`查看${record.element} ${record.name} 的详情`);
+};
+
+// 港口查询相关方法
+const handlePortQuery = () => {
+  console.log("执行港口查询", timeRange.value);
+  // 这里可以添加查询逻辑
+  message.success("查询成功");
+};
+
+const handleReset = () => {
+  timeRange.value = null;
+  console.log("重置查询条件");
+};
+
+const handleExport = () => {
+  console.log("导出港口数据");
+  message.success("导出成功");
 };
 </script>
 
@@ -862,6 +954,11 @@ const handleViewElementDetail = (record) => {
 
             .value {
               color: rgba(255, 255, 255, 0.7);
+              width: 155px;
+              display: inline-block;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
             }
           }
         }
@@ -906,11 +1003,41 @@ const handleViewElementDetail = (record) => {
     }
     .alert-collapse,
     .case-collapse {
+      .boat-file-container {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        color: #ffffff;
+        font-size: 15px;
+        div {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          p {
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            .label {
+              color: #ffffff;
+              width: 166px;
+              display: inline-block;
+              text-align: right;
+            }
+            .value-item {
+              width: 240px;
+              display: inline-block;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+          }
+        }
+      }
       :deep(.ant-collapse-item) {
         background: transparent;
         border: none;
         margin-bottom: 8px;
-        width: 32%;
+        width: 82%;
       }
 
       :deep(.ant-collapse-header) {
@@ -958,13 +1085,13 @@ const handleViewElementDetail = (record) => {
             .alert-item-text,
             .case-item-text {
               color: #ffffff;
-              font-size: 13px;
+              font-size: 15px;
             }
 
             .alert-item-date,
             .case-item-date {
               color: rgba(255, 255, 255, 0.6);
-              font-size: 12px;
+              font-size: 15px;
             }
           }
         }
@@ -1014,7 +1141,7 @@ const handleViewElementDetail = (record) => {
         color: #00ffff;
         padding: 0;
         height: auto;
-        font-size: 12px;
+        font-size: 14px;
 
         &:hover {
           color: #ffffff;
@@ -1072,7 +1199,7 @@ const handleViewElementDetail = (record) => {
           color: #00ffff;
           padding: 0;
           height: auto;
-          font-size: 12px;
+          font-size: 14px;
 
           &:hover {
             color: #ffffff;
@@ -1090,57 +1217,6 @@ const handleViewElementDetail = (record) => {
         flex: 0 0 500px;
         display: flex;
         flex-direction: column;
-
-        .elements-table {
-          flex: 1;
-          :deep(.ant-table) {
-            background: transparent;
-            color: #ffffff;
-          }
-
-          :deep(.ant-table-thead > tr > th) {
-            background: rgba(0, 255, 255, 0.1);
-            color: #ffffff;
-            border: none;
-            font-weight: 600;
-            padding: 12px 8px;
-          }
-
-          :deep(.ant-table-tbody > tr > td) {
-            background: transparent;
-            color: rgba(255, 255, 255, 0.8);
-            border: none;
-            padding: 12px 8px;
-          }
-
-          :deep(.ant-table-tbody > tr:hover > td) {
-            background: rgba(0, 255, 255, 0.05);
-          }
-
-          .element-type {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-
-            .vehicle-icon,
-            .person-icon,
-            .ship-icon,
-            .case-icon {
-              font-size: 16px;
-            }
-          }
-
-          .action-btn {
-            color: #00ffff;
-            padding: 0;
-            height: auto;
-            font-size: 12px;
-
-            &:hover {
-              color: #ffffff;
-            }
-          }
-        }
 
         .filter-options {
           display: flex;
@@ -1184,6 +1260,274 @@ const handleViewElementDetail = (record) => {
           .node-text {
             font-size: 13px;
             width: 70px;
+          }
+        }
+      }
+    }
+    .elements-table {
+      flex: 1;
+      :deep(.ant-table) {
+        background: transparent;
+        color: #ffffff;
+      }
+
+      :deep(.ant-table-thead > tr > th) {
+        background: rgba(0, 255, 255, 0.1);
+        color: #ffffff;
+        border: none;
+        font-weight: 600;
+        padding: 12px 8px;
+      }
+
+      :deep(.ant-table-tbody > tr > td) {
+        background: transparent;
+        color: rgba(255, 255, 255, 0.8);
+        border: none;
+        padding: 12px 8px;
+      }
+
+      :deep(.ant-table-tbody > tr:hover > td) {
+        background: rgba(0, 255, 255, 0.05);
+      }
+
+      .element-type {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .vehicle-icon,
+        .person-icon,
+        .ship-icon,
+        .case-icon {
+          font-size: 16px;
+        }
+      }
+
+      .action-btn {
+        color: #00ffff;
+        padding: 0;
+        height: auto;
+        font-size: 14px;
+
+        &:hover {
+          color: #ffffff;
+        }
+      }
+    }
+    .tab-content2 {
+      color: #ffffff;
+      p {
+        display: flex;
+        align-items: center;
+        font-size: 18px;
+        .icon {
+          font-size: 10px;
+          color: #00ffff;
+          margin-right: 6px;
+        }
+      }
+      .voyage-content {
+        display: flex;
+        align-items: center;
+        gap: 50px;
+        padding: 0 50px;
+        .voyage-line {
+          display: flex;
+          align-items: center;
+          flex-direction: column;
+          gap: 10px;
+          margin-top: -100px;
+          .voyage-status {
+            font-size: 16px;
+          }
+          .voyage-line-item {
+            width: 200px;
+            height: 2px;
+            background: #ffffff;
+            position: relative;
+          }
+          // 短线前箭头
+          .voyage-line-item::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 11px;
+            height: 2px;
+            background: #ffffff;
+            transform: rotate(45deg);
+            transform-origin: bottom right;
+          }
+          // 箭头
+          .voyage-line-item::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 10px;
+            height: 2px;
+            background: #ffffff;
+            transform: rotate(-45deg);
+            transform-origin: bottom right;
+          }
+        }
+        .voyage-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 6px;
+          .voyage-item-date {
+            font-size: 15px;
+          }
+        }
+        .voyage-info {
+          margin-left: 60px;
+          display: flex;
+          flex-direction: column;
+          margin-top: -20px;
+          gap: 6px;
+          P {
+            font-size: 15px;
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+  }
+
+  // 港口查询界面样式
+  .voyage-query {
+    .port-query-container {
+      .query-controls {
+        display: flex;
+        align-items: center;
+        padding: 16px;
+
+        .time-input-section {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+
+          .time-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: 500;
+          }
+
+          .time-range-picker {
+            width: 300px;
+            background: transparent;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.9);
+
+            &:focus,
+            &:hover {
+              border-color: #00ffff;
+              box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.1);
+            }
+
+            &::placeholder {
+              color: rgba(255, 255, 255, 0.5);
+            }
+          }
+        }
+
+        .action-buttons {
+          display: flex;
+          gap: 12px;
+          margin-left: 20px;
+          .query-btn2 {
+            background: #263746;
+            border-color: #026767;
+            color: rgba(255, 255, 255, 0.8);
+            border-radius: 0px;
+
+            &:hover {
+              border-color: #00ffff;
+            }
+          }
+
+          .reset-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.8);
+
+            border-radius: 0px;
+            &:hover {
+              border-color: #00ffff;
+            }
+          }
+
+          .export-btn {
+            background: #263746;
+            border-color: #026767;
+            color: rgba(255, 255, 255, 0.8);
+            border-radius: 0px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+
+            &:hover {
+              border-color: #00e6e6;
+            }
+          }
+        }
+      }
+    }
+  }
+  .port-table-container {
+    border-radius: 6px;
+    overflow: hidden;
+
+    .table-header {
+      display: flex;
+      background: rgba(0, 255, 255, 0.1);
+
+      .header-cell {
+        flex: 1;
+        padding: 12px 8px;
+        color: #fff;
+        font-weight: 600;
+        font-size: 14px;
+        text-align: center;
+
+        &:last-child {
+          border-right: none;
+        }
+
+        &:first-child {
+          flex: 0.3;
+        }
+      }
+    }
+
+    .table-body {
+      .data-row {
+        display: flex;
+
+        &:hover {
+          background: rgba(0, 255, 255, 0.05);
+        }
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        .cell {
+          flex: 1;
+          padding: 12px 8px;
+          color: rgba(255, 255, 255, 0.9);
+          font-size: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          &:last-child {
+            border-right: none;
+          }
+
+          &:first-child {
+            flex: 0.3;
           }
         }
       }

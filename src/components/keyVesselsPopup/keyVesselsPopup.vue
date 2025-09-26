@@ -4,7 +4,7 @@
     title="重点船舶"
     placement="left"
     getContainer=".ui-container"
-    :width="430"
+    :width="475"
     :closable="true"
     :mask="false"
     class="suspicious-vehicle-drawer"
@@ -278,7 +278,7 @@ const visibleModal = computed({
   set(value) {
     emit("update:open", value);
   },
-});;
+});
 // 分类选项
 const categories = [
   { value: "all", label: "全部船舶" },
@@ -311,7 +311,7 @@ const vessels = ref([
     bowDirection: "120°",
     draft: "10米",
     nationality: "中国",
-    markerId: "random-car-1",
+    markerId: "random-ship-dynamic-1",
     category: "key",
     coordinates: [121.68068618480358, 29.374172264358947],
     description: "重点可疑船舶，多次出现在高风险区域",
@@ -339,7 +339,7 @@ const vessels = ref([
     bowDirection: "120°",
     draft: "10米",
     nationality: "中国",
-    markerId: "random-car-2",
+    markerId: "random-ship-dynamic-2",
     isKey: true,
     category: "key",
     coordinates: [121.92238540355359, 29.327488946826932],
@@ -367,7 +367,7 @@ const vessels = ref([
     bowDirection: "120°",
     draft: "10米",
     nationality: "中国",
-    markerId: "random-car-1",
+    markerId: "random-ship-dynamic-3",
     status: "行驶中",
     isKey: true,
     category: "key",
@@ -396,7 +396,7 @@ const vessels = ref([
     bowDirection: "120°",
     draft: "10米",
     nationality: "中国",
-    markerId: "random-car-1",
+    markerId: "random-ship-dynamic-4",
     status: "停靠",
     isKey: false,
     category: "suspicious",
@@ -425,7 +425,7 @@ const vessels = ref([
     bowDirection: "120°",
     draft: "10米",
     nationality: "中国",
-    markerId: "random-car-1",
+    markerId: "random-ship-dynamic-5",
     status: "行驶中",
     isKey: false,
     category: "suspicious",
@@ -454,7 +454,7 @@ const vessels = ref([
     bowDirection: "120°",
     draft: "10米",
     nationality: "中国",
-    markerId: "random-car-1",
+    markerId: "random-ship-dynamic-6",
     status: "停靠",
     isKey: false,
     category: "suspicious",
@@ -482,7 +482,7 @@ const vessels = ref([
     nationality: "中国",
     draft: "10米",
     bowDirection: "120°",
-    markerId: "random-car-1",
+    markerId: "random-ship-dynamic-7",
     lastUpdate: "2025-01-15 04:00:00",
     status: "行驶中",
     isKey: false,
@@ -579,8 +579,11 @@ const handleTrack = (vessel) => {
 
 const handleDetail = (vessel) => {
   selectedVessel.value = vessel;
+  if (typeof vessel !== "object") {
+    selectedVessel.value = vessels.value.find((el) => el.markerId === vessel);
+  }
   selectedVesselData.value = {
-    ...vessel,
+    ...selectedVessel.value,
     // 添加详情弹窗需要的额外数据
     image: getIconPath("ship-test"),
     lastUpdateTime: vessel.lastUpdate || "2025-06-11 13:00:00",
@@ -609,6 +612,16 @@ const handleDetail = (vessel) => {
       buildCompanyOfOrigin: "美国",
       auxiliaryMachineInformation: "无",
     },
+    historyAlerts: [
+      { content: "重点船舶浙XXXX进入风险点", date: "2025-03-02" },
+      { content: "重点船舶浙XXXX进入风险点", date: "2025-03-02" },
+      { content: "重点船舶浙XXXX进入风险点", date: "2025-03-02" },
+    ],
+    historyCases: [
+      { content: "白岩码头冻品走私案件", date: "2025-03-02" },
+      { content: "白岩码头冻品走私案件", date: "2025-03-02" },
+      { content: "白岩码头冻品走私案件", date: "2025-03-02" },
+    ],
   };
   vesselsDetailModalVisible.value = true;
   emit("view-more", vessel);

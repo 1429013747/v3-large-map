@@ -61,7 +61,7 @@ export function createPopupContentCar(markerData, trackBack, viewMore) {
  * @param {Object} markerData - 标记点数据
  * @returns {String} HTML内容
  */
-export function createPopupContentRisk(markerData, trackCorrect, viewMoreCorrect) {
+export function createPopupContentRisk(markerData, trackCorrect, viewMoreCorrect, cancelCorrect) {
   // 将函数绑定到全局对象，以便在HTML中调用
   if (trackCorrect && typeof trackCorrect === 'function') {
     window.trackCorrectFunction = trackCorrect;
@@ -70,12 +70,15 @@ export function createPopupContentRisk(markerData, trackCorrect, viewMoreCorrect
   if (viewMoreCorrect && typeof viewMoreCorrect === 'function') {
     window.viewMoreCorrectFunction = viewMoreCorrect;
   }
+  if (cancelCorrect && typeof cancelCorrect === 'function') {
+    window.cancelCorrectFunction = cancelCorrect;
+  }
 
   return `
     <div class="vehicle-popup">
       <div class="popup-header">
         <h3 class="popup-title">${markerData.title1 || '风险点'}</h3>
-        <button class="popup-close" onclick="this.closest('.marker-popup-container').style.display='none'">×</button>
+        <button class="popup-close" onclick="window.cancelCorrectFunction && window.cancelCorrectFunction('${markerData.markerId}')">×</button>
       </div>
       <div class="popup-content">
         <div class="vehicle-image">
@@ -246,6 +249,187 @@ export function createPopupContentShip(markerData, setKeyShip, viewMore, shipQue
             <button class="query-btn" onclick="window.shipQueryFunction && window.shipQueryFunction('${markerData.markerId}')">查询</button>
             <button class="cancel-btn">取消</button>
           </div>
+        </div>
+      </div>
+    </div>
+  `;
+};
+/**
+ * 创建船舶弹窗内容
+ * @param {Object} markerData - 标记点数据
+ * @returns {String} HTML内容
+ */
+export function createPopupMenuShip(markerData, setKeyShip, viewMore, shipQuery) {
+  // 将函数绑定到全局对象，以便在HTML中调用
+  if (setKeyShip && typeof setKeyShip === 'function') {
+    window.setKeyShipFunction = setKeyShip;
+  }
+
+  if (viewMore && typeof viewMore === 'function') {
+    window.viewMoreShipFunction = viewMore;
+  }
+
+  if (shipQuery && typeof shipQuery === 'function') {
+    window.shipQueryFunction = shipQuery;
+  }
+
+  // 绑定其他功能函数
+  window.startTargetIndicationFunction = (markerId) => {
+    console.log("启动目标指示:", markerId);
+  };
+
+  window.selectMultiPhotoelectricFunction = (markerId) => {
+    console.log("选择多光电指示:", markerId);
+    // 切换子菜单显示状态
+    const submenu = document.querySelector('.photoelectric-submenu');
+    if (submenu) {
+      submenu.style.display = submenu.style.display === 'none' ? 'block' : 'none';
+    }
+  };
+
+  // 光电设备选择功能
+  window.selectPhotoelectricDevice = (markerId, deviceName, distance, event) => {
+    event.stopPropagation();
+    console.log("选择光电设备:", deviceName, "距离:", distance, "船舶ID:", markerId, "事件:", event);
+
+    // 切换复选框状态
+    const checkbox = event.target.querySelector('.checkbox');
+    if (checkbox) {
+      if (checkbox.textContent === '☐') {
+        checkbox.textContent = '☑';
+        checkbox.style.color = '#00ffff';
+      } else {
+        checkbox.textContent = '☐';
+        checkbox.style.color = 'rgba(255, 255, 255, 0.7)';
+      }
+    }
+
+  };
+
+  window.cancelAllTrackingFunction = (markerId) => {
+    console.log("取消所有跟踪:", markerId);
+  };
+
+  window.displayAllTracksFunction = (markerId) => {
+    console.log("显示所有航迹:", markerId);
+  };
+
+  window.cancelAllTracksFunction = (markerId) => {
+    console.log("取消所有航迹:", markerId);
+  };
+
+  window.displayTargetProfileFunction = (markerId) => {
+    console.log("显示目标档案:", markerId);
+  };
+
+  window.copyTargetIdFunction = (markerId) => {
+    console.log("复制当前目标ID:", markerId);
+    const targetId = markerData.id || markerData.markerId || '未知ID';
+    navigator.clipboard.writeText(targetId).then(() => {
+      console.log("目标ID已复制到剪贴板");
+    });
+  };
+
+  window.copyTargetMmsiFunction = (markerId) => {
+    console.log("复制当前目标MMSI:", markerId);
+    const mmsi = markerData.mmsi || '未知MMSI';
+    navigator.clipboard.writeText(mmsi).then(() => {
+      console.log("MMSI已复制到剪贴板");
+    });
+  };
+
+  window.copyCoordinatesFunction = (markerId) => {
+    console.log("复制当前坐标:", markerId);
+    const coordinates = `${markerData.longitude || '0'}, ${markerData.latitude || '0'}`;
+    navigator.clipboard.writeText(coordinates).then(() => {
+      console.log("坐标已复制到剪贴板");
+    });
+  };
+
+  return `
+    <div class="ship-context-menu">
+      <div class="menu-section">
+        <div class="close-submenu" onclick="this.closest('.ship-context-menu').style.display='none'">
+          ×
+        </div>
+        <div class="menu-item" onclick="window.startTargetIndicationFunction('${markerData.markerId}')">
+          启动目标指示
+        </div>
+        <div class="menu-item menu-item-with-submenu" onclick="window.selectMultiPhotoelectricFunction('${markerData.markerId}')">
+          选择多光电指示
+          <div class="photoelectric-submenu" style="display: none;">
+            <div class="submenu-item" onclick="window.selectPhotoelectricDevice('${markerData.markerId}', '乐清西门岛', '175.92', event)">
+              <span class="checkbox">☐</span>
+              乐清西门岛 (175.92 Km)
+            </div>
+            <div class="submenu-item" onclick="window.selectPhotoelectricDevice('${markerData.markerId}', '乐清管委会', '197.21', event)">
+              <span class="checkbox">☐</span>
+              乐清管委会 (197.21 Km)
+            </div>
+            <div class="submenu-item" onclick="window.selectPhotoelectricDevice('${markerData.markerId}', '乐清黄华民兵哨所', '220.61', event)">
+              <span class="checkbox">☐</span>
+              乐清黄华民兵哨所 (220.61 Km)
+            </div>
+            <div class="submenu-item" onclick="window.selectPhotoelectricDevice('${markerData.markerId}', '永嘉东蒙山', '224.85', event)">
+              <span class="checkbox">☐</span>
+              永嘉东蒙山 (224.85 Km)
+            </div>
+            <div class="submenu-item" onclick="window.selectPhotoelectricDevice('${markerData.markerId}', '瑞安阅巷油库', '260.56', event)">
+              <span class="checkbox">☐</span>
+              瑞安阅巷油库 (260.56 Km)
+            </div>
+            <div class="submenu-item" onclick="window.selectPhotoelectricDevice('${markerData.markerId}', '平阳鳌江圣荣池', '274.24', event)">
+              <span class="checkbox">☐</span>
+              平阳鳌江圣荣池 (274.24 Km)
+            </div>
+          </div>
+        </div>
+        <div class="menu-item" onclick="window.cancelAllTrackingFunction('${markerData.markerId}')">
+          取消所有跟踪
+        </div>
+      </div>
+      
+      <div class="menu-divider"></div>
+      
+      <div class="menu-section">
+        <div class="menu-item menu-item-with-submenu" onclick="window.shipQueryFunction('${markerData.markerId}')">
+          航迹
+        </div>
+      </div>
+      
+      <div class="menu-divider"></div>
+      
+      <div class="menu-section">
+        <div class="menu-item" onclick="window.displayAllTracksFunction('${markerData.markerId}')">
+          显示所有航迹
+        </div>
+        <div class="menu-item" onclick="window.cancelAllTracksFunction('${markerData.markerId}')">
+          取消所有航迹
+        </div>
+      </div>
+      
+      <div class="menu-divider"></div>
+      
+      <div class="menu-section">
+        <div class="menu-item" onclick="window.setKeyShipFunction('${markerData.markerId}')">
+          设为重点船舶
+        </div>
+        <div class="menu-item" onclick="window.displayTargetProfileFunction('${markerData.markerId}')">
+          显示目标档案
+        </div>
+      </div>
+      
+      <div class="menu-divider"></div>
+      
+      <div class="menu-section">
+        <div class="menu-item" onclick="window.copyTargetIdFunction('${markerData.markerId}')">
+          复制当前目标ID
+        </div>
+        <div class="menu-item" onclick="window.copyTargetMmsiFunction('${markerData.markerId}')">
+          复制当前目标MMSI
+        </div>
+        <div class="menu-item" onclick="window.copyCoordinatesFunction('${markerData.markerId}')">
+          复制当前坐标
         </div>
       </div>
     </div>

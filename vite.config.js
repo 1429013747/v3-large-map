@@ -21,7 +21,8 @@ export default defineConfig(({ mode }) => {
     // 部署时的基础路径，默认是 '/'
     base: env.VITE_PUBLIC_PATH || './',
     server: {
-      host: true, // 监听所有地址，包括局域网和公网地址
+      // host: true, // 监听所有地址，包括局域网和公网地址
+      host: 'localhost', // 监听localhost地址
       proxy: {
         '/api': {
           target: 'http://192.168.113.174:6018',
@@ -45,10 +46,11 @@ export default defineConfig(({ mode }) => {
             resolveIcons: true // 自动导入图标
           })
         ],
-        dts: true,
+        dts: true, // 生成组件类型
+        dirs: ['src/components', 'src/layouts'], // 指定组件目录
         types: [{
-          from: 'vue-router',
-          names: ['RouterLink', 'RouterView']
+          from: 'vue-router', // 生成路由类型
+          names: ['RouterLink', 'RouterView'] // 生成路由类型
         }]
       }),
       AutoImport({
@@ -58,8 +60,8 @@ export default defineConfig(({ mode }) => {
           'pinia',
           '@vueuse/core'
         ],
-        dts: false,
-        dirs: ['src/composables', 'src/stores'],
+        dts: false, // 生成组件类型
+        dirs: ['src/composables', 'src/stores'], // 指定组合式函数目录
         vueTemplate: true
       }),
       // gzip 压缩
@@ -85,7 +87,17 @@ export default defineConfig(({ mode }) => {
     css: {
       preprocessorOptions: {
         scss: {
-          // additionalData: `@use "@/styles/variables.scss" as *;`
+          additionalData: `
+          @use "@/styles/variables.scss" as *;
+          @use "@/styles/measure.scss" as *;
+          @use "@/styles/ship-context-menu.scss" as *;
+          @use "@/styles/layer-control.scss" as *;
+          @use "@/styles/ship-popup.scss" as *;
+          @use "@/styles/bottom-statistics.scss" as *;
+          @use "@/styles/popup-common.scss" as *;
+          @use "@/styles/marker-popup.scss" as *;
+          @use "@/styles/global.scss" as *;
+          `
         }
       }
     },
