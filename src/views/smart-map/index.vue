@@ -337,11 +337,6 @@ import {
 } from "@/composables/createPopupContent.js";
 import { useDefaultConfigStore } from "@/stores/defaultConfig.js";
 import { toLonLat, fromLonLat } from "ol/proj";
-import Feature from "ol/Feature";
-import { Polygon as OlPolygon } from "ol/geom";
-import { Style, Fill, Stroke } from "ol/style";
-import VectorSource from "ol/source/Vector";
-import VectorLayer from "ol/layer/Vector";
 
 const defaultConfigStore = useDefaultConfigStore();
 // 地图配置
