@@ -10,12 +10,7 @@
     class="key-personnel-drawer"
   >
     <template #closeIcon>
-      <img
-        height="24px"
-        style="margin-top: -6px"
-        src="@/assets/imgs/key-p.png"
-        alt=""
-      />
+      <img height="24px" src="@/assets/imgs/key-p.png" alt="" />
     </template>
     <template #extra>
       <CloseOutlined @click="handleClose" />
@@ -418,7 +413,7 @@ const handleDetail = (personnel) => {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 20px;
 
       .filter-row-item-dropdown {
         flex: 1;

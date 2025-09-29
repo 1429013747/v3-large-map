@@ -10,12 +10,7 @@
     class="suspicious-vehicle-drawer"
   >
     <template #closeIcon>
-      <img
-        height="24px"
-        style="margin-top: -6px"
-        src="@/assets/imgs/truck.png"
-        alt=""
-      />
+      <img height="24px" src="@/assets/imgs/truck.png" alt="" />
     </template>
     <template #extra>
       <CloseOutlined @click="handleClose" />
@@ -293,7 +288,7 @@ const vehicles = ref([
     color: "黄色",
     vehicleType: "高栏货车",
     location: "台州市黄岩区",
-    lastUpdate: "2025-01-15 10:30:00",
+    lastUpdate: "2025-01-15 10:30",
     status: "行驶中",
     isKey: true,
     markerId: "random-car-1",
@@ -592,7 +587,7 @@ defineExpose({
     .filter-row {
       .filter-row-item {
         display: flex;
-        gap: 8px;
+        gap: 15px;
         align-items: center;
         justify-content: space-between;
         .filter-row-item-dropdown {

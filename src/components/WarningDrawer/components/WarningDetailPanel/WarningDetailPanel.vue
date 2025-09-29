@@ -22,40 +22,43 @@
             <div class="info-grid">
               <div class="info-item">
                 <span class="label">预警类型：</span>
-                <span class="value">{{
-                  warningData?.warningType || "一般多AIS"
-                }}</span>
+                <span class="value">{{ warningData?.warningType }}</span>
               </div>
 
               <div class="info-item">
-                <span class="label">处理状态：</span>
-                <span class="value">{{ warningData?.status || "待处置" }}</span>
+                <span class="label">预警对象：</span>
+                <span class="value">{{ warningData?.name }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">状态：</span>
+                <span class="risk-point">{{ warningData?.status }}</span>
               </div>
               <div class="info-item">
                 <span class="label">预警位置：</span>
                 <span class="value">{{
-                  warningData?.location || "台州市温岭市白岩码头"
-                }}</span>
-              </div>
-              <div class="info-item">
-                <span class="label">预警时间：</span>
-                <span class="value">{{
-                  warningData?.warningTime || "2025.06.12 21:00:09"
+                  warningData?.coordinates.join(",")
                 }}</span>
               </div>
               <div class="info-item">
                 <span class="label">关联风险点：</span>
-                <span class="risk-point">{{
-                  warningData?.riskPoint || "白岩码头"
-                }}</span>
+                <span class="risk-point">{{ warningData?.riskPoint }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">预警时间：</span>
+                <span class="value">{{ warningData?.createTime }}</span>
               </div>
 
               <div class="reason-text">
-                <span class="label">预警原因：</span>
-                <span class="value">{{
-                  warningData?.reason ||
-                  "浙普渔87392 2025.06.12 21:00:09在高风险点白岩码头停靠"
-                }}</span>
+                <span class="label">伪造信号开始时间：</span>
+                <span class="value">{{ warningData?.forgeStartTime }}</span>
+              </div>
+              <div class="reason-text">
+                <span class="label">伪造信号结束时间：</span>
+                <span class="value">{{ warningData?.forgeEndTime }}</span>
+              </div>
+              <div class="reason-text">
+                <span class="label">真实信号复现时间：</span>
+                <span class="value">{{ warningData?.appearTime }}</span>
               </div>
             </div>
           </div>
@@ -73,7 +76,7 @@
                 @map-ready="onMapReady"
               />
               <div class="map-overlay">
-                <button class="trace-btn">预警追溯</button>
+                <button class="trace-btn" @click="getwarning">预警追溯</button>
               </div>
             </div>
           </div>
@@ -84,17 +87,10 @@
           <h3 class="section-title">预警提醒</h3>
 
           <div class="reminder-info">
-            <div class="info-grid">
+            <div class="info-grid2">
               <div class="info-item">
                 <span class="label">通知人：</span>
                 <span class="value">{{ warningData?.notifier || "王五" }}</span>
-              </div>
-
-              <div class="info-item">
-                <span class="label">通知时间：</span>
-                <span class="value">{{
-                  warningData?.notificationTime || "2025.06.12 21:00:09"
-                }}</span>
               </div>
 
               <div class="info-item">
@@ -103,27 +99,41 @@
                   warningData?.notificationMethod || "浙征钉、站内信"
                 }}</span>
               </div>
+              <div class="info-item">
+                <span class="label">通知时间：</span>
+                <span class="value">{{
+                  warningData?.notificationTime || "2025.06.12 21:00:09"
+                }}</span>
+              </div>
+
+              <div class="info-item">
+                <span class="label">通知内容：</span>
+                <span class="value">{{
+                  warningData?.infoContent || "您收到一条船舶走私预警请及时查看"
+                }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">通知对象：</span>
+                <span class="value">{{ warningData?.name }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">通知类型：</span>
+                <span class="value">{{ warningData?.warningType }}</span>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- 预警送达区域 -->
         <div class="warning-delivery-section">
-          <h3 class="section-title">预警送达</h3>
+          <h3 class="section-title">预警处置</h3>
 
           <div class="delivery-info">
-            <div class="info-grid">
+            <div class="info-grid2">
               <div class="info-item">
                 <span class="label">送达时间：</span>
                 <span class="value">{{
                   warningData?.deliveryTime || "2025.06.12 21:00"
-                }}</span>
-              </div>
-
-              <div class="info-item">
-                <span class="label">送达系统：</span>
-                <span class="value">{{
-                  warningData?.deliverySystem || "--"
                 }}</span>
               </div>
 
@@ -133,12 +143,59 @@
                   warningData?.deliveryArea || "宁波象山县"
                 }}</span>
               </div>
+              <div class="info-item">
+                <span class="label">送达系统：</span>
+                <span class="value">{{
+                  warningData?.deliverySystem || "--"
+                }}</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+  <!-- 预警明细弹框（按指定位置补全） -->
+  <a-modal
+    :open="warnDetailVisibale"
+    title="预警明细"
+    :footer="null"
+    :mask="false"
+    width="520px"
+    getContainer=".ui-container"
+    @cancel="warnDetailVisibale = false"
+    class="modal-container warn-detail-t"
+  >
+    <template #closeIcon>
+      <CloseOutlined style="color: #ffffff; font-size: 16px" />
+    </template>
+
+    <!-- 顶部告警提示 -->
+    <div class="warning-tip">
+      <span class="dot">!</span>
+      <span class="tip-text">
+        {{ warningHeadline }}
+      </span>
+    </div>
+
+    <!-- 明细表格 -->
+    <div class="detail-table">
+      <div class="table-header">
+        <div class="th">风险类型</div>
+        <div class="th">开始时间</div>
+        <div class="th">结束时间</div>
+        <div class="th">持续时间</div>
+      </div>
+      <div class="table-body">
+        <div class="tr" v-for="(row, idx) in tableData" :key="idx">
+          <div class="td">{{ row.type }}</div>
+          <div class="td">{{ row.start }}</div>
+          <div class="td">{{ row.end }}</div>
+          <div class="td">{{ row.duration }}</div>
+        </div>
+      </div>
+    </div>
+  </a-modal>
 </template>
 
 <script setup>
@@ -160,12 +217,13 @@ const props = defineProps({
 });
 
 // Emits
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["close", "getwarning"]);
 
 // 响应式数据
 const detailMapViewer = ref(null);
-const mapCenter = ref([121.81731411020978, 29.37908163477394]); // 台州市温岭市坐标
+const mapCenter = reactive([122.0281, 29.1875]);
 const mapZoom = ref(10);
+const warnDetailVisibale = ref(false);
 
 // 方法
 const getStatusClass = (status) => {
@@ -181,29 +239,40 @@ const getStatusText = (status) => {
   return status || "已送达";
 };
 
+const getwarning = () => {
+  emit("getwarning", props.warningData);
+  warnDetailVisibale.value = true;
+};
 const handleClose = () => {
   emit("close");
 };
 
 const onMapReady = (map) => {
   console.log("详情地图已加载完成", map);
-  const { addMarker, initMarkerLayer } = useMapMarkers(map);
+  const { addMarker, initMarkerLayer, generateTrackRoute } = useMapMarkers(map);
   initMarkerLayer();
   // 可以在这里添加预警点的标记
   if (detailMapViewer.value) {
     // 添加带文本的标记点
-    addMarker([120.31783498535157, 30.37189672436138], {
-      id: "location-marker",
-      type: "location",
-      showBorder: false,
+    const pos = [
+      [122.3299, 29.1671],
+      [122.2392, 29.0883],
+      [122.1514, 29.0895],
+      [122.0913, 29.0504],
+    ];
+
+    // 生成轨迹路线
+    generateTrackRoute(pos, {
+      showStartEnd: true,
+      animation: true,
+      animationDuration: 2000,
+      midpointText: "中间点",
       style: {
-        color: "#00ffff",
-        radius: 6,
-        text: {
-          content: "白岩码头",
-          color: "#ffffff",
-          offsetY: -20,
-        },
+        stroke: "#d65e37",
+        strokeWidth: 3,
+        lineDash: [],
+        lineCap: "round",
+        lineJoin: "round",
       },
     });
   }
@@ -219,6 +288,39 @@ watch(
   },
   { deep: true }
 );
+
+// ===== 预警明细弹框数据 =====
+const warningHeadline = computed(() => {
+  const name = props.warningData?.name || "华盛2220";
+  return `${name}船舶出现伪造信号预警`;
+});
+
+const tableData = computed(() => {
+  const items = props.warningData?.detailList;
+  if (Array.isArray(items) && items.length) {
+    return items.map((it) => ({
+      type: it.type || "伪造信号",
+      start: it.start || it.startTime || "--",
+      end: it.end || it.endTime || "--",
+      duration: it.duration || it.durationText || "--",
+    }));
+  }
+  // 默认两行示例，符合截图
+  return [
+    {
+      type: "伪造信号",
+      start: "2025/06/15 01:18",
+      end: "2025/06/15 03:18",
+      duration: "2小时",
+    },
+    {
+      type: "伪造信号",
+      start: "2025/06/15 01:18",
+      end: "2025/06/15 03:18",
+      duration: "2小时",
+    },
+  ];
+});
 </script>
 
 <style lang="scss" scoped>
@@ -245,6 +347,62 @@ watch(
 
   .panel-open & {
     transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* 预警明细弹框样式 */
+.modal-container {
+  .warning-tip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fd572d;
+    font-size: 14px;
+    margin-bottom: 12px;
+
+    .dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ff6b6b;
+      color: #102030;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+    .tip-text {
+      color: #ff4314;
+    }
+  }
+
+  .detail-table {
+    border-radius: 4px;
+    overflow: hidden;
+    .table-header {
+      display: grid;
+      grid-template-columns: 1.2fr 1.6fr 1.6fr 1fr;
+      background: rgba(0, 255, 255, 0.18);
+      color: #e7ffff;
+      font-weight: 600;
+      font-size: 14px;
+      .th {
+        padding: 10px 12px;
+        text-align: center;
+      }
+    }
+    .table-body {
+      .tr {
+        display: grid;
+        grid-template-columns: 1.2fr 1.6fr 1.6fr 1fr;
+        color: #fff;
+        font-size: 14px;
+        .td {
+          padding: 10px 12px;
+          text-align: center;
+        }
+      }
+    }
   }
 }
 
@@ -334,7 +492,7 @@ watch(
 
     .info-grid {
       display: grid;
-      grid-template-columns: 1fr 2fr;
+      grid-template-columns: repeat(3, 1fr);
       gap: 16px;
       margin-bottom: 16px;
 
@@ -345,7 +503,6 @@ watch(
         .label {
           color: rgba(255, 255, 255, 0.8);
           font-size: 16px;
-          min-width: 80px;
           flex-shrink: 0;
         }
 
@@ -357,14 +514,9 @@ watch(
         }
 
         .risk-point {
-          color: #00ffff;
+          color: #05c919;
           font-size: 14px;
           font-weight: 600;
-          background: rgba(0, 255, 255, 0.1);
-          padding: 3px 8px;
-          border-radius: 4px;
-          border: 1px solid rgba(0, 255, 255, 0.3);
-          height: fit-content;
         }
 
         .suspicious-btn {
@@ -408,7 +560,12 @@ watch(
         }
       }
     }
-
+    .info-grid2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
     .reason-text {
       display: flex;
       gap: 8px;

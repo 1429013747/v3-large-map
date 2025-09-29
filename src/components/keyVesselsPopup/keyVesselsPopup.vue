@@ -10,12 +10,7 @@
     class="suspicious-vehicle-drawer"
   >
     <template #closeIcon>
-      <img
-        height="24px"
-        style="margin-top: -6px"
-        src="@/assets/imgs/ship-icon.png"
-        alt=""
-      />
+      <img height="24px" src="@/assets/imgs/ship-icon.png" alt="" />
     </template>
     <template #extra>
       <CloseOutlined @click="handleClose" />
@@ -300,12 +295,12 @@ const vessels = ref([
     imo: "1234567890",
     speed: "90km/h",
     width: "10米",
-    predictedArrivalTime: "2025-01-15 10:30:00",
+    predictedArrivalTime: "2025-01-15 10:30",
     color: "黄色",
     vesselType: "客船",
     rotationAngleSpeed: "10°/s",
     location: "台州市黄岩区",
-    lastUpdate: "2025-01-15 10:30:00",
+    lastUpdate: "2025-01-15 10:30",
     status: "行驶中",
     isKey: true,
     bowDirection: "120°",
@@ -329,7 +324,7 @@ const vessels = ref([
     imo: "1234567890",
     speed: "90km/h",
     width: "10米",
-    predictedArrivalTime: "2025-01-15 10:30:00",
+    predictedArrivalTime: "2025-01-15 10:30",
     color: "黄色",
     vesselType: "客船",
     rotationAngleSpeed: "10°/s",
@@ -358,7 +353,7 @@ const vessels = ref([
     imo: "1234567890",
     speed: "90km/h",
     width: "10米",
-    predictedArrivalTime: "2025-01-15 10:30:00",
+    predictedArrivalTime: "2025-01-15 10:30",
     color: "黄色",
     vesselType: "客船",
     rotationAngleSpeed: "10°/s",
@@ -387,7 +382,7 @@ const vessels = ref([
     imo: "1234567890",
     speed: "90km/h",
     width: "10米",
-    predictedArrivalTime: "2025-01-15 10:30:00",
+    predictedArrivalTime: "2025-01-15 10:30",
     color: "黄色",
     vesselType: "客船",
     rotationAngleSpeed: "10°/s",
@@ -416,7 +411,7 @@ const vessels = ref([
     imo: "1234567890",
     speed: "90km/h",
     width: "10米",
-    predictedArrivalTime: "2025-01-15 10:30:00",
+    predictedArrivalTime: "2025-01-15 10:30",
     color: "黄色",
     vesselType: "客船",
     rotationAngleSpeed: "10°/s",
@@ -445,7 +440,7 @@ const vessels = ref([
     imo: "123467890",
     speed: "90km/h",
     width: "10米",
-    predictedArrivalTime: "2025-01-15 10:30:00",
+    predictedArrivalTime: "2025-01-15 10:30",
     color: "黄色",
     vesselType: "客船",
     rotationAngleSpeed: "10°/s",
@@ -474,7 +469,7 @@ const vessels = ref([
     imo: "1234567890",
     speed: "90km/h",
     width: "10米",
-    predictedArrivalTime: "2025-01-15 10:30:00",
+    predictedArrivalTime: "2025-01-15 10:30",
     color: "黄色",
     vesselType: "客船",
     rotationAngleSpeed: "10°/s",
@@ -724,7 +719,7 @@ defineExpose({
     .filter-row {
       .filter-row-item {
         display: flex;
-        gap: 8px;
+        gap: 25px;
         align-items: center;
         justify-content: space-between;
         .filter-row-item-dropdown {

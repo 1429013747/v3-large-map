@@ -19,6 +19,7 @@ declare module 'vue-router/auto-routes' {
    */
   export interface RouteNamedMap {
     '404': RouteRecordInfo<'404', '/:all(.*)', { all: ParamValue<true> }, { all: ParamValue<false> }>,
+    '/coast-line/': RouteRecordInfo<'/coast-line/', '/coast-line', Record<never, never>, Record<never, never>>,
     '/smart-map/': RouteRecordInfo<'/smart-map/', '/smart-map', Record<never, never>, Record<never, never>>,
     '/test/': RouteRecordInfo<'/test/', '/test', Record<never, never>, Record<never, never>>,
     '/test/clustering-test': RouteRecordInfo<'/test/clustering-test', '/test/clustering-test', Record<never, never>, Record<never, never>>,

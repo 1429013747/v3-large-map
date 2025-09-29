@@ -59,8 +59,7 @@ export function useMapMarkers(map) {
     startTrackRouteAnimation,
     clearTrackRoutes,
     removeTrackRoute,
-    viewMore: viewMoreTracks,
-    viewMoreCorrect: viewMoreCorrectTracks,
+    trackFeatureList,
     toggleTrackRouteVisibility,
     showTrackRoute,
   } = useMapTracks(map);
@@ -94,9 +93,19 @@ export function useMapMarkers(map) {
     customPolygonLayer.value = new VectorLayer({
       source: customPolygonSource.value,
       zIndex: 1008,
+      type: "electronic-fence",
       title: "electronic-fence",
     });
     map.addLayer(customPolygonLayer.value);
+
+    if (useTypeLayer) {
+      markerSource.value = new VectorSource();
+      markerLayer.value = new VectorLayer({
+        source: markerSource.value,
+        title: '标记点',
+        zIndex: 101
+      });
+    }
   };
 
   /**
@@ -353,7 +362,7 @@ export function useMapMarkers(map) {
     return styles.length === 1 ? styles[0] : styles;
   };
   // 样式缓存
-  const styleCache = new Map();
+  const styleCache = new WeakMap();
 
   // 批量添加队列
   const batchQueue = [];
@@ -391,9 +400,9 @@ export function useMapMarkers(map) {
     const styleKey = getStyleKey(options.style);
     let style = styleCache.get(styleKey);
     if (!style) {
-      style = createMarkerStyle(options.style);
       styleCache.set(styleKey, style);
     }
+    style = createMarkerStyle(options.style);
     feature.setStyle(style);
 
     // 保存到状态
@@ -434,8 +443,8 @@ export function useMapMarkers(map) {
    * @returns {String} 缓存键
    */
   const getStyleKey = (styleOptions) => {
-    if (!styleOptions) return 'default';
-    return JSON.stringify(styleOptions);
+    if (!styleOptions) return {};
+    return styleOptions;
   };
 
   /**
@@ -502,12 +511,6 @@ export function useMapMarkers(map) {
     if (options.type && options.useTypeLayer) {
       addMarkerToTypeLayer(options.type, marker.feature);
     } else {
-      markerSource.value = new VectorSource();
-      markerLayer.value = new VectorLayer({
-        source: markerSource.value,
-        title: '标记点',
-        zIndex: 1001
-      });
 
       map.addLayer(markerLayer.value);
       markerSource.value.addFeature(marker.feature);
@@ -732,7 +735,7 @@ export function useMapMarkers(map) {
     markerSource.value = new VectorSource();
     markerLayer.value = new VectorLayer({
       source: markerSource.value,
-      zIndex: 1010 + Object.keys(markerLayersByType.value).length, // 确保在基础图层之上，避免被图层切换影响
+      zIndex: 110 + Object.keys(markerLayersByType.value).length, // 确保在基础图层之上，避免被图层切换影响
       title: type,
       visible: true
     });
@@ -1608,6 +1611,9 @@ export function useMapMarkers(map) {
     flyTo,
     zoomIn,
     zoomOut,
+
+    // 轨迹
+    trackFeatureList,
     // 轨迹生成方法
     generateTrackRoute,
     startTrackRouteAnimation,

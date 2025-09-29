@@ -59,7 +59,7 @@
                 <span class="value">{{ vesselData.heading }}</span>
               </div>
               <div class="detail-item">
-                <span class="label">船长（米）:</span>
+                <span class="label">船长(米):</span>
                 <span class="value">{{ vesselData.length }}</span>
               </div>
               <div class="detail-item">
@@ -133,7 +133,7 @@
                   <span class="value">{{ vesselData.rotationAngleSpeed }}</span>
                 </div>
                 <div class="status-item">
-                  <span class="label">吃水深度（米）:</span>
+                  <span class="label">吃水深度(米):</span>
                   <span class="value">{{ vesselData.draft }}</span>
                 </div>
                 <div class="status-item">
@@ -898,7 +898,7 @@ const handleExport = () => {
 
     .vehicle-info-row {
       display: flex;
-      gap: 20px;
+      gap: 16px;
       align-items: flex-start;
 
       .vehicle-image {

@@ -63,6 +63,7 @@
             @warning-click="handleWarningItemClick"
             @track-click="handleTrackClick"
             @detail-click="handleDetailClick"
+            @getwarning="getwarning"
           />
           <!-- 右侧工具栏 -->
           <RightToolbar
@@ -144,6 +145,18 @@
             @add-vessels="handleAddVessel"
             @set-key="handleSetKeyVessel"
             @cancel-key="handleCancelKeyVessel"
+          />
+
+          <!-- 岸线管控弹窗 -->
+          <CoastlinePopup
+            ref="keyVesselsPopupRef"
+            v-model:open="CoastlinePopupVisible"
+            :coastlineData="selectedCoastlineData"
+            @track-back="handleCoastlineTrackBack"
+            @view-more="handleCoastlineViewMore"
+            @create-warning="handleCoastlineCreateWarning"
+            @coastline-click="handleCoastlineWarningClick"
+            @add-coastline="handleAddCoastline"
           />
 
           <!-- 重点人员弹窗 -->
@@ -310,23 +323,6 @@ import {
   watch,
 } from "vue";
 import { Modal } from "ant-design-vue";
-import MapLayout from "@/layouts/MapLayout.vue";
-import MapViewer from "@/components/map/MapViewer.vue";
-import WarningDrawer from "@/components/WarningDrawer/WarningDrawer.vue";
-import RightToolbar from "@/components/RightToolbar/RightToolbar.vue";
-import LegendPanel from "@/components/LegendPanel/LegendPanel.vue";
-import PlotPanel from "@/components/PlottingPanel/PlotPanel.vue";
-import LayerControlPanel from "@/components/LayerControlPanel/LayerControlPanel.vue";
-import ComprehensiveSearchPanel from "@/components/ComprehensiveSearchPanel/ComprehensiveSearchPanel.vue";
-import ShipEventsPanel from "@/components/ShipEventsPanel/ShipEventsPanel.vue";
-import TrackQueryPanel from "@/components/TrackQueryPanel/TrackQueryPanel.vue";
-import GangVehicleQueryPanel from "@/components/GangVehicleQueryPanel/GangVehicleQueryPanel.vue";
-import TideQueryPanel from "@/components/TideQueryPanel/TideQueryPanel.vue";
-import SuspiciousVehiclePopup from "@/components/SuspiciousVehiclePopup/SuspiciousVehiclePopup.vue";
-import KeyVesselsPopup from "@/components/keyVesselsPopup/keyVesselsPopup.vue";
-import KeyPersonnelPopup from "@/components/KeyPersonnelPopup/KeyPersonnelPopup.vue";
-import ClusterControlPanel from "@/components/ClusterControlPanel/ClusterControlPanel.vue";
-import { useMapMarkers } from "@/composables/useMapMarkers.js";
 import { generateRandomCoordinates } from "@/utils/coordinateGenerator.js";
 import { getIconPath, getIconPathMarkIcons } from "@/utils/utilstools.js";
 import {
@@ -385,6 +381,10 @@ const selectedVehicleData = ref({});
 const keyVesselsPopupVisible = ref(false);
 const selectedVesselData = ref({});
 
+//岸线管控弹窗
+const CoastlinePopupVisible = ref(false);
+const selectedCoastlineData = ref({});
+
 // 重点人员弹窗相关
 const keyPersonnelPopupVisible = ref(false);
 
@@ -397,6 +397,7 @@ const isGeneratingMarker = ref(false);
 const plotPanelRef = ref(null);
 
 let mapMarkersConfig = {};
+let heatmapConfig = {};
 const map = ref(null);
 
 // 是否使用类型图层
@@ -477,11 +478,14 @@ const switchLayer = (layerType) => {
 const onMapReady = (mapInstance) => {
   console.log("当前地图中心:", mapCenter);
   map.value = mapInstance; // 设置 map 变量
-  mapMarkersConfig = useMapMarkers(mapInstance);
+  mapMarkersConfig = useMapMarkers(map.value);
   // 使用类型图层
   useTypeLayer.value = true;
   // 初始化标记点
   mapMarkersConfig.initMarkerLayer(useTypeLayer.value);
+
+  // 初始化热力图
+  heatmapConfig = useMapHeatmap(map.value);
 
   // 模拟数据
   getMarkerData();
@@ -821,10 +825,10 @@ const onMapMove = (event) => {
   const center = `${event.center[0].toFixed(4)}, ${event.center[1].toFixed(4)}`;
   displayCenter.value = center;
   mapZoom.value = event.zoom;
-  // 11.5以下隐藏
+  // 13以下隐藏
   const typeList = ["car", "ship", "icon"];
   typeList.forEach((type) => {
-    if (mapZoom.value < 11.5) {
+    if (mapZoom.value < 13) {
       mapMarkersConfig.toggleMarkerTextVisibilityByType(type, false);
     } else {
       mapMarkersConfig.toggleMarkerTextVisibilityByType(type, true);
@@ -872,10 +876,31 @@ const handleWarningItemClick = (warning) => {
 };
 
 const handleTrackClick = (warning) => {
-  console.log("查看轨迹", warning);
-  if (mapViewer.value && warning.coordinates) {
-    mapViewer.value.setCenter(warning.coordinates);
-    mapViewer.value.setZoom(15);
+  console.log("列表查看轨迹", warning);
+  if (warning.coordinates) {
+    const pos = [
+      [121.72482419397187, 29.34646109911479],
+      [121.77201003734264, 29.34544660015939],
+      [121.82213515941295, 29.34065820190017],
+      [121.7919227570692, 29.2915641536963],
+      [121.83106155101451, 29.278388561873953],
+      [121.8633338898817, 29.266409276796225],
+    ];
+
+    // 生成轨迹路线
+    mapMarkersConfig.generateTrackRoute(pos, {
+      showStartEnd: true,
+      animation: true,
+      animationDuration: 2000,
+      midpointText: "中间点",
+      style: {
+        stroke: "#d65e37",
+        strokeWidth: 3,
+        lineDash: [],
+        lineCap: "round",
+        lineJoin: "round",
+      },
+    });
   }
 };
 
@@ -883,14 +908,41 @@ const handleDetailClick = (warning) => {
   console.log("查看详情", warning);
   // 这里可以添加详情查看逻辑
 };
+const getwarning = (warning) => {
+  console.log("预警追溯", warning);
+  warningDrawerVisible.value = false;
+  // 这里可以添加详情查看逻辑
+  mapMarkersConfig.flyTo([122.2389, 29.1355], 12, 500);
+
+  const pos = [
+    [122.3299, 29.1671],
+    [122.2392, 29.0883],
+    [122.1514, 29.0895],
+    [122.0913, 29.0504],
+  ];
+
+  // 生成轨迹路线
+  mapMarkersConfig.generateTrackRoute(pos, {
+    showStartEnd: true,
+    animation: true,
+    animationDuration: 2000,
+    midpointText: "中间点",
+    style: {
+      stroke: "#d65e37",
+      strokeWidth: 3,
+      lineDash: [],
+      lineCap: "round",
+      lineJoin: "round",
+    },
+  });
+};
 
 // 可疑车辆相关事件处理
 const handleVehicleTrackBack = (vehicleData) => {
   console.log("车辆轨迹回放", vehicleData);
   // 这里可以添加轨迹回放逻辑
-  if (mapViewer.value && vehicleData.coordinates) {
-    mapViewer.value.setCenter(vehicleData.coordinates);
-    mapViewer.value.setZoom(15);
+  if (vehicleData.coordinates) {
+    mapMarkersConfig.flyTo(vehicleData.coordinates, 15);
   }
 };
 
@@ -953,10 +1005,13 @@ const handleCancelKey = (vehicle) => {
   // 这里可以添加取消重点车辆的逻辑
   // 可以调用API更新车辆状态
 };
-
 const handleAddVessel = (formData) => {
   console.log("新增重点船舶数据:", formData);
   // 这里可以添加新增重点船舶的逻辑
+};
+const handleAddCoastline = (formData) => {
+  console.log("新增岸线管控数据:", formData);
+  // 这里可以添加新增岸线管控的逻辑
   // 可以调用API保存数据，或者在地图上添加新的标记点
 };
 
@@ -975,6 +1030,27 @@ const handleCancelKeyVessel = (vessel) => {
 const handleVesselTrackBack = (vesselData) => {
   console.log("船舶轨迹回放", vesselData);
   // 这里可以添加船舶轨迹回放的逻辑
+  const pos = [
+    [122.3299, 29.1671],
+    [122.2392, 29.0883],
+    [122.1514, 29.0895],
+    [122.0913, 29.0504],
+  ];
+
+  // 生成轨迹路线
+  mapMarkersConfig.generateTrackRoute(pos, {
+    showStartEnd: true,
+    animation: true,
+    animationDuration: 2000,
+    midpointText: "中间点",
+    style: {
+      stroke: "#d65e37",
+      strokeWidth: 3,
+      lineDash: [],
+      lineCap: "round",
+      lineJoin: "round",
+    },
+  });
 };
 
 const handleVesselViewMore = (vesselData) => {
@@ -990,6 +1066,26 @@ const handleVesselCreateWarning = (vesselData) => {
 const handleVesselWarningClick = (warning) => {
   console.log("点击船舶相关预警", warning);
   // 这里可以添加点击船舶相关预警的逻辑
+};
+
+const handleCoastlineWarningClick = (warning) => {
+  console.log("点击岸线管控相关预警", warning);
+  // 这里可以添加点击岸线管控相关预警的逻辑
+};
+
+const handleCoastlineTrackBack = (coastlineData) => {
+  console.log("岸线管控轨迹回放", coastlineData);
+  // 这里可以添加岸线管控轨迹回放的逻辑
+};
+
+const handleCoastlineViewMore = (coastlineData) => {
+  console.log("查看岸线管控更多信息", coastlineData);
+  // 这里可以添加查看岸线管控更多信息的逻辑
+};
+
+const handleCoastlineCreateWarning = (coastlineData) => {
+  console.log("为岸线管控创建预警", coastlineData);
+  // 这里可以添加为岸线管控创建预警的逻辑
 };
 
 const handleWarningClose = () => {
@@ -1191,6 +1287,7 @@ const initShowPanel = () => {
   keyPersonnelPopupVisible.value = false;
   keyVesselsPopupVisible.value = false;
   warningDrawerVisible.value = false;
+  CoastlinePopupVisible.value = false;
 };
 
 const handleBottomMenuClick = (index) => {
@@ -1209,6 +1306,7 @@ const handleBottomMenuClick = (index) => {
       无走私村: "no-smuggling-village",
       案件: "case",
     };
+    CoastlinePopupVisible.value = true;
     handleDefaultVisibleLayers(Object.keys(defaultVisibleLayers));
 
     mapMarkersConfig.toggleMarkerVisibilityByLayer("ship", false);
@@ -1270,7 +1368,7 @@ const handleBottomMenuClick = (index) => {
     });
     mapMarkersConfig.toggleMarkerVisibilityByLayer("icon", false);
     mapMarkersConfig.toggleMarkerVisibilityByLayer("ship", false);
-    mapMarkersConfig.toggleMarkerVisibilityByLayer("轨迹", false);
+    mapMarkersConfig.toggleMarkerVisibilityByLayer("轨迹", true);
   }
 };
 
@@ -1453,11 +1551,11 @@ const getMarkerData = () => {
     },
     onComplete: () => {
       // 启用指定类型的聚合
-      mapMarkersConfig.enableClustering("car", {
-        distance: 40, // 聚合距离
-        minDistance: 20, // 最小聚合距离
-      });
-      mapMarkersConfig.toggleClustering("car", true);
+      // mapMarkersConfig.enableClustering("car", {
+      //   distance: 40, // 聚合距离
+      //   minDistance: 20, // 最小聚合距离
+      // });
+      // mapMarkersConfig.toggleClustering("car", true);
     },
   });
   // 虚拟化添加
@@ -1645,9 +1743,8 @@ const getMarkerData = () => {
       [121.2302, 29.2257],
     ],
   ];
-
+  // 生成轨迹路线
   trackLines.forEach((line) => {
-    // 生成轨迹路线
     mapMarkersConfig.generateTrackRoute(line, {
       showStartEnd: false,
       animation: false,
@@ -1662,7 +1759,7 @@ const getMarkerData = () => {
       },
     });
   });
-
+  //绘制预警牌
   const overlays = mapMarkersConfig.createMultipleMarkers([
     [121.9251, 29.2748],
   ]);
@@ -1677,7 +1774,7 @@ const getMarkerData = () => {
   window.disPlayWarnDetail = function (e) {
     warningDrawerVisible.value = true;
   };
-
+  // 创建多边形
   mapMarkersConfig.drawFilledPolygon(
     [
       [122.1558, 29.4244],
@@ -1686,9 +1783,24 @@ const getMarkerData = () => {
       [122.2863, 29.4244],
       [122.219, 29.4758],
     ],
-    { fillColor: "#c18a7e", strokeColor: "#fe3837", strokeWidth: 1 }
+    { fillColor: "#c18a7e80", strokeColor: "#fe383790", strokeWidth: 1 }
   );
 
+  // 热力图
+  heatmapConfig.init({
+    title: "风险热力点",
+    type: "heatmap",
+    visible: true,
+    zIndex: 1500,
+    radius: 10,
+    blur: 20,
+    gradient: ["#00f", "#0ff", "#0f0", "#ff0", "#f00"],
+  });
+  heatmapConfig.setData([
+    { lon: 121.92, lat: 29.27, weight: 0.5 },
+    { lon: 121.95, lat: 29.29, weight: 0.9 },
+    { lon: 121.3314, lat: 29.1386, weight: 0.8 },
+  ]);
   // 添加带文本的标记点
   // const locationMarker = addMarker([120.31783498535157, 30.37189672436138], {
   //   id: "location-marker",
@@ -1938,7 +2050,7 @@ const getSliderIndicatorStyle = computed(() => {
     cursor: pointer;
     background: url("@/assets/imgs/footer-bg.png") no-repeat center / 100% 100%;
     width: 1143px;
-    height: 90px;
+    height: 76px;
     display: flex;
     align-items: center;
     justify-content: center;

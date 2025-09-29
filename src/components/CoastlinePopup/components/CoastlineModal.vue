@@ -2,7 +2,7 @@
   <div class="vehicle-detail-modal-container">
     <a-modal
       :open="open"
-      title="可疑车辆"
+      title="岸线管控"
       :width="1200"
       :centered="true"
       :mask-closable="false"
@@ -20,61 +20,63 @@
         <div class="basic-info-section">
           <div class="vehicle-header">
             <div class="vehicle-id">
-              <span class="vehicle-number">{{ vehicleData.plateNumber }}</span>
-              <a-button
-                type="primary"
-                size="small"
-                class="set-key-btn"
-                @click="handleSetKeyVehicle"
+              <span class="vehicle-number">{{ coastline.title }}</span>
+              <div
+                v-if="coastline.riskStatus"
+                :class="getRiskStatus(coastline.riskStatus).class"
               >
-                设置重点车辆
-              </a-button>
+                {{ getRiskStatus(coastline.riskStatus).text }}
+              </div>
             </div>
           </div>
 
           <div class="vehicle-info-row">
             <div class="vehicle-image">
-              <img :src="vehicleData.image" :alt="vehicleData.plateNumber" />
+              <img :src="coastline.image" :alt="coastline.title" />
             </div>
 
             <div class="vehicle-details">
               <div class="detail-item">
-                <span class="label">车牌号:</span>
-                <span class="value">{{ vehicleData.plateNumber }}</span>
+                <span class="label">单位责任人:</span>
+                <span class="value">{{ coastline.deptName }}</span>
               </div>
               <div class="detail-item">
-                <span class="label">车辆类型:</span>
-                <span class="value">{{ vehicleData.vehicleType }}</span>
+                <span class="label">责任人:</span>
+                <span class="value">{{ coastline.name }}</span>
               </div>
               <div class="detail-item">
-                <span class="label">车牌颜色:</span>
-                <span class="value">{{ vehicleData.plateColor }}</span>
+                <span class="label">位置:</span>
+                <span class="value">{{ coastline.locate }}</span>
               </div>
               <div class="detail-item">
-                <span class="label">最后定位发生时间:</span>
-                <span class="value">{{ vehicleData.lastUpdateTime }}</span>
+                <span class="label">经纬度:</span>
+                <span class="value">{{ coastline.coordinates }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="label more-d" @click="onMoreDetail">更多详情</span>
               </div>
             </div>
-
             <div class="status-info">
               <div class="status-details">
                 <div class="status-item">
-                  <span class="label">状态:</span>
-                  <span class="value">
-                    {{ vehicleData.status }}
-                  </span>
+                  <span class="label">类型:</span>
+                  <span class="value">{{ coastline.type }}</span>
                 </div>
                 <div class="status-item">
-                  <span class="label">速度:</span>
-                  <span class="value">{{ vehicleData.speed }}</span>
+                  <span class="label">周边环境:</span>
+                  <span class="value">{{ coastline.environment }}</span>
                 </div>
                 <div class="status-item">
-                  <span class="label">停车地点:</span>
-                  <span class="value">{{ vehicleData.parkingLocation }}</span>
+                  <span class="label">驳船条件:</span>
+                  <span class="value">{{ coastline.bargeConditions }}</span>
                 </div>
                 <div class="status-item">
-                  <span class="label">行驶方向:</span>
-                  <span class="value">{{ vehicleData.direction }}</span>
+                  <span class="label">交通条件:</span>
+                  <span class="value">{{ coastline.trafficConditions }}</span>
+                </div>
+                <div class="status-item">
+                  <span class="label">作业条件:</span>
+                  <span class="value">{{ coastline.workingConditions }}</span>
                 </div>
               </div>
             </div>
@@ -84,138 +86,58 @@
         <!-- 标签页区域 -->
         <div class="tabs-section">
           <a-tabs v-model:activeKey="activeTab" class="detail-tabs">
-            <a-tab-pane key="alerts" tab="历史预警内容">
-              <div class="tab-content">
-                <!-- 预警子区域 -->
-                <a-collapse
-                  v-model:activeKey="alertCollapseActive"
-                  class="alert-collapse"
-                >
-                  <a-collapse-panel
-                    key="1"
-                    header="预警 G104"
-                    class="alert-panel"
+            <a-tab-pane key="device" tab="物联设备感知">
+              <div class="device-perception-content">
+                <div class="device-list">
+                  <div
+                    v-for="device in deviceList"
+                    :key="device.id"
+                    class="device-item"
                   >
-                    <template #extra>
-                      <span class="alert-count">本月4次</span>
-                    </template>
-                    <div class="alert-list">
-                      <div
-                        class="alert-item"
-                        v-for="(alert, index) in vehicleData.historyAlerts"
-                        :key="index"
-                      >
-                        <div class="alert-item-content">
-                          <div class="alert-item-text">{{ alert.content }}</div>
-                          <div class="alert-item-date">{{ alert.date }}</div>
+                    <div class="device-info">
+                      <div class="device-icon">
+                        <div class="status-icon">
+                          <span
+                            v-if="device.status === 'online'"
+                            class="wifi-icon"
+                            >📶</span
+                          >
+                          <span
+                            v-else-if="device.status === 'offline'"
+                            class="wifi-off-icon"
+                            >📶</span
+                          >
+                          <span
+                            v-else-if="device.status === 'warning'"
+                            class="warning-icon"
+                            >⚠️</span
+                          >
                         </div>
+                        <div class="device-title">{{ device.name }}</div>
                       </div>
-                    </div>
-                  </a-collapse-panel>
-                </a-collapse>
-
-                <!-- 历史案件关联子区域 -->
-                <a-collapse
-                  v-model:activeKey="caseCollapseActive"
-                  class="case-collapse"
-                >
-                  <a-collapse-panel
-                    key="1"
-                    header="历史案件关联"
-                    class="case-panel"
-                  >
-                    <template #extra>
-                      <span class="case-count">本月4次</span>
-                    </template>
-                    <div class="case-list">
-                      <div
-                        class="case-item"
-                        v-for="(caseItem, index) in vehicleData.historyCases"
-                        :key="index"
-                      >
-                        <div class="case-item-content">
-                          <div class="case-item-text">
-                            {{ caseItem.content }}
-                          </div>
-                          <div class="case-item-date">{{ caseItem.date }}</div>
-                        </div>
-                      </div>
-                    </div>
-                  </a-collapse-panel>
-                </a-collapse>
-              </div>
-            </a-tab-pane>
-
-            <a-tab-pane key="gang" tab="团伙车辆分析">
-              <div class="tab-content">
-                <!-- 团伙车辆列表 -->
-                <div v-if="!showGangDetail" class="gang-list-view">
-                  <a-table
-                    :columns="gangTableColumns"
-                    :data-source="gangTableData"
-                    :pagination="false"
-                    :scroll="{ y: 300 }"
-                    class="gang-analysis-table"
-                    size="small"
-                  >
-                    <template #bodyCell="{ column, record }">
-                      <template v-if="column.key === 'status'">
-                        <span class="status-tag">{{ record.status }}</span>
-                      </template>
-                      <template v-if="column.key === 'action'">
+                      <div class="device-action">
                         <a-button
-                          type="link"
+                          type="primary"
+                          ghost
                           size="small"
-                          class="action-btn"
-                          @click="handleViewGangDetail(record)"
+                          class="action-button"
+                          @click="handleDeviceAction(device)"
                         >
-                          查看详情
+                          {{ device.actionText }}
                         </a-button>
-                      </template>
-                    </template>
-                  </a-table>
-                </div>
-
-                <!-- 团伙车辆详情表格 -->
-                <div v-if="showGangDetail" class="gang-detail-view">
-                  <div class="detail-header">
-                    <a-button
-                      type="link"
-                      size="small"
-                      class="back-btn"
-                      @click="handleBackToGangList"
-                    >
-                      <ArrowLeftOutlined />
-                      返回上级
-                    </a-button>
+                      </div>
+                    </div>
+                    <div class="device-tip">
+                      <div class="device-type">{{ device.type }}</div>
+                      <div class="device-location">
+                        位置:{{ device.location }}
+                      </div>
+                    </div>
                   </div>
-
-                  <a-table
-                    :columns="gangDetailColumns"
-                    :data-source="gangDetailData"
-                    :pagination="false"
-                    :scroll="{ y: 300 }"
-                    class="gang-detail-table"
-                    size="small"
-                  >
-                    <template #bodyCell="{ column, record }">
-                      <template v-if="column.key === 'action'">
-                        <a-button
-                          type="link"
-                          size="small"
-                          class="action-btn"
-                          @click="handleViewTrajectory(record)"
-                        >
-                          查看轨迹
-                        </a-button>
-                      </template>
-                    </template>
-                  </a-table>
                 </div>
               </div>
             </a-tab-pane>
-
-            <a-tab-pane key="elements" tab="关键要素分析">
+            <a-tab-pane key="elements" tab="要素关联分析">
               <div class="tab-content">
                 <div class="key-elements-container">
                   <!-- 左侧要素列表 -->
@@ -282,11 +204,9 @@
 <script setup>
 import { ref, reactive, watch } from "vue";
 import { message } from "ant-design-vue";
-import {
-  CloseOutlined,
-  WarningOutlined,
-  ArrowLeftOutlined,
-} from "@ant-design/icons-vue";
+import { CloseOutlined } from "@ant-design/icons-vue";
+
+const router = useRouter();
 
 // Props
 const props = defineProps({
@@ -294,225 +214,44 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  vehicleData: {},
+  coastline: {},
 });
 
 // Emits
-const emit = defineEmits(["update:open", "setKeyVehicle"]);
+const emit = defineEmits(["update:open"]);
 
 // 响应式数据
-const activeTab = ref("alerts");
-const alertCollapseActive = ref(["1"]);
-const caseCollapseActive = ref(["1"]);
-const showGangDetail = ref(false);
+const activeTab = ref("device");
 
-// 团伙车辆分析表格列配置
-const gangTableColumns = [
+// 设备列表数据
+const deviceList = ref([
   {
-    title: "序号",
-    dataIndex: "index",
-    key: "index",
-    width: 80,
-    align: "center",
-    customRender: ({ text, record, index }) => {
-      return index + 1;
-    },
+    id: 1,
+    name: "0838_白岩码头_雷达",
+    type: "雷达",
+    location: "白岩码头",
+    status: "online",
+    actionText: "远程控制",
   },
   {
-    title: "查询单",
-    dataIndex: "queryOrder",
-    key: "queryOrder",
-    ellipsis: true,
+    id: 2,
+    name: "0838_白岩码头_雷达",
+    type: "雷达",
+    location: "白岩码头",
+    status: "offline",
+    actionText: "实时视频预览",
   },
   {
-    title: "创建时间",
-    dataIndex: "createTime",
-    key: "createTime",
-    width: 150,
-  },
-  {
-    title: "状态",
-    dataIndex: "status",
-    key: "status",
-    width: 100,
-    align: "center",
-  },
-  {
-    title: "操作",
-    key: "action",
-    width: 100,
-    align: "center",
-  },
-];
-
-// 团伙车辆分析表格数据
-const gangTableData = ref([
-  {
-    key: "1",
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "查询中",
-  },
-  {
-    key: "2",
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-  {
-    key: "3",
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-  {
-    key: "4",
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-  {
-    key: "5",
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-  {
-    key: "6",
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-  {
-    key: "7",
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-  {
-    key: "8",
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
+    id: 3,
+    name: "0838_白岩码头(热成像)",
+    type: "热成像",
+    location: "白岩码头",
+    status: "warning",
+    actionText: "远程控制",
   },
 ]);
 
-// 团伙车辆详情表格列配置
-const gangDetailColumns = [
-  {
-    title: "序号",
-    dataIndex: "index",
-    key: "index",
-    width: 80,
-    align: "center",
-  },
-  {
-    title: "车牌号",
-    dataIndex: "plateNumber",
-    key: "plateNumber",
-    width: 120,
-  },
-  {
-    title: "车牌颜色",
-    dataIndex: "plateColor",
-    key: "plateColor",
-    width: 100,
-  },
-  {
-    title: "车辆类型",
-    dataIndex: "vehicleType",
-    key: "vehicleType",
-    width: 120,
-  },
-  {
-    title: "轨迹相似度",
-    dataIndex: "similarity",
-    key: "similarity",
-    width: 120,
-    align: "center",
-  },
-  {
-    title: "相似时间范围",
-    dataIndex: "timeRange",
-    key: "timeRange",
-    width: 200,
-  },
-  {
-    title: "操作",
-    key: "action",
-    width: 100,
-    align: "center",
-  },
-];
-
-// 团伙车辆详情表格数据
-const gangDetailData = ref([
-  {
-    key: "1",
-    index: 1,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "2",
-    index: 2,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "3",
-    index: 3,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "4",
-    index: 4,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "5",
-    index: 5,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "6",
-    index: 6,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "7",
-    index: 7,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-]);
-
-// 关键要素分析表格列配置
+// 要素分析表格列配置
 const elementsTableColumns = [
   {
     title: "要素",
@@ -534,16 +273,16 @@ const elementsTableColumns = [
   },
 ];
 
-// 关键要素分析表格数据
+// 要素分析表格数据
 const elementsTableData = ref([
   {
     key: "1",
-    element: "车辆",
+    element: "船舶",
     name: "浙J89900",
   },
   {
     key: "2",
-    element: "车辆",
+    element: "船舶",
     name: "浙J33900",
   },
   {
@@ -558,7 +297,7 @@ const elementsTableData = ref([
   },
   {
     key: "5",
-    element: "车辆",
+    element: "船舶",
     name: "浙J89966",
   },
   {
@@ -577,13 +316,13 @@ const elementsTableData = ref([
 const treeData = ref({
   id: 1,
   label: "浙J89900",
-  type: "vehicle",
+  type: "vessel",
   children: [
     {
       id: 2,
       pid: 1,
       label: "浙J89900",
-      type: "vehicle",
+      type: "vessel",
       children: [],
     },
     {
@@ -597,12 +336,13 @@ const treeData = ref({
       id: 2,
       pid: 1,
       label: "马某某",
+      type: "person",
       children: [
         {
           id: 2,
           pid: 1,
           label: "浙J83900",
-          type: "vehicle",
+          type: "vessel",
           children: [],
         },
       ],
@@ -617,7 +357,7 @@ const treeData = ref({
           id: 2,
           pid: 1,
           label: "浙J82900",
-          type: "vehicle",
+          type: "vessel",
           children: [],
         },
       ],
@@ -628,8 +368,8 @@ const treeData = ref({
 // 获取节点图标
 const getNodeIcon = (node) => {
   switch (node.$$data.type) {
-    case "vehicle":
-      return "🚛";
+    case "vessel":
+      return "🛥️";
     case "person":
       return "👤";
     case "case":
@@ -638,7 +378,22 @@ const getNodeIcon = (node) => {
       return "📄";
   }
 };
-
+const getRiskStatus = (type) => {
+  return type == 1
+    ? {
+        class: "key-badge1",
+        text: "低风险",
+      }
+    : type == 2
+    ? {
+        class: "key-badge2",
+        text: "中风险",
+      }
+    : {
+        class: "key-badge3",
+        text: "高风险",
+      };
+};
 // 获取节点样式类
 const getNodeClass = (node) => {
   const classes = [`${node.type}-node`];
@@ -648,56 +403,35 @@ const getNodeClass = (node) => {
   return classes.join(" ");
 };
 
-// 节点点击事件
-const handleNodeClick = (node) => {
-  console.log("点击节点:", node);
-  message.info(`点击了${node.label}`);
-};
-
 // 监听 visible 变化
 watch(
   () => props.open,
   (newVal) => {
     if (newVal) {
       // 重置标签页状态
-      activeTab.value = "alerts";
-      alertCollapseActive.value = ["1"];
-      caseCollapseActive.value = ["1"];
+      activeTab.value = "device";
     }
   }
 );
-
+//查看更多详情
+const onMoreDetail = () => {
+  router.push("/coast-line");
+};
 // 关闭弹窗
 const handleCancel = () => {
   emit("update:open", false);
-};
-
-// 设置重点车辆
-const handleSetKeyVehicle = () => {
-  emit("setKeyVehicle", props.vehicleData);
-  message.success("已设置为重点车辆");
-};
-
-// 查看团伙车辆详情
-const handleViewGangDetail = (record) => {
-  console.log("查看团伙车辆详情:", record);
-  showGangDetail.value = true;
-};
-
-// 返回团伙车辆列表
-const handleBackToGangList = () => {
-  showGangDetail.value = false;
-};
-
-// 查看轨迹
-const handleViewTrajectory = (record) => {
-  console.log("查看轨迹:", record);
 };
 
 // 查看要素详情
 const handleViewElementDetail = (record) => {
   console.log("查看要素详情:", record);
   message.info(`查看${record.element} ${record.name} 的详情`);
+};
+
+// 处理设备操作
+const handleDeviceAction = (device) => {
+  console.log("设备操作:", device);
+  message.info(`执行${device.actionText}操作`);
 };
 </script>
 
@@ -774,17 +508,39 @@ const handleViewElementDetail = (record) => {
             color: #00ffff;
           }
         }
+
+        .key-badge1 {
+          background: #006e69;
+          color: #ffffff;
+          padding: 4px 12px;
+          border-radius: 4px;
+          font-size: 12px;
+        }
+        .key-badge2 {
+          background: #ffa502;
+          color: #ffffff;
+          padding: 4px 12px;
+          border-radius: 4px;
+          font-size: 12px;
+        }
+        .key-badge3 {
+          background: #b4261e;
+          color: #ffffff;
+          padding: 4px 12px;
+          border-radius: 4px;
+          font-size: 12px;
+        }
       }
     }
 
     .vehicle-info-row {
       display: flex;
-      gap: 10px;
+      gap: 16px;
       align-items: flex-start;
 
       .vehicle-image {
         width: 280px;
-        height: 180px;
+        height: 160px;
 
         img {
           width: 100%;
@@ -797,7 +553,7 @@ const handleViewElementDetail = (record) => {
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 14px;
+        gap: 8px;
 
         .detail-item {
           display: flex;
@@ -811,6 +567,11 @@ const handleViewElementDetail = (record) => {
           .value {
             color: rgba(255, 255, 255, 0.7);
           }
+          .more-d {
+            color: #0c7bc5;
+            font-size: 14px;
+            cursor: pointer;
+          }
         }
       }
 
@@ -818,12 +579,11 @@ const handleViewElementDetail = (record) => {
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 12px;
 
         .status-details {
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 8px;
 
           .status-item {
             display: flex;
@@ -836,6 +596,11 @@ const handleViewElementDetail = (record) => {
 
             .value {
               color: rgba(255, 255, 255, 0.7);
+              width: 155px;
+              display: inline-block;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
             }
           }
         }
@@ -880,11 +645,41 @@ const handleViewElementDetail = (record) => {
     }
     .alert-collapse,
     .case-collapse {
+      .boat-file-container {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        color: #ffffff;
+        font-size: 15px;
+        div {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          p {
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            .label {
+              color: #ffffff;
+              width: 166px;
+              display: inline-block;
+              text-align: right;
+            }
+            .value-item {
+              width: 240px;
+              display: inline-block;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+          }
+        }
+      }
       :deep(.ant-collapse-item) {
         background: transparent;
         border: none;
         margin-bottom: 8px;
-        width: 32%;
+        width: 82%;
       }
 
       :deep(.ant-collapse-header) {
@@ -932,7 +727,7 @@ const handleViewElementDetail = (record) => {
             .alert-item-text,
             .case-item-text {
               color: #ffffff;
-              font-size: 14px;
+              font-size: 15px;
             }
 
             .alert-item-date,
@@ -1065,57 +860,6 @@ const handleViewElementDetail = (record) => {
         display: flex;
         flex-direction: column;
 
-        .elements-table {
-          flex: 1;
-          :deep(.ant-table) {
-            background: transparent;
-            color: #ffffff;
-          }
-
-          :deep(.ant-table-thead > tr > th) {
-            background: rgba(0, 255, 255, 0.1);
-            color: #ffffff;
-            border: none;
-            font-weight: 600;
-            padding: 12px 8px;
-          }
-
-          :deep(.ant-table-tbody > tr > td) {
-            background: transparent;
-            color: rgba(255, 255, 255, 0.8);
-            border: none;
-            padding: 12px 8px;
-          }
-
-          :deep(.ant-table-tbody > tr:hover > td) {
-            background: rgba(0, 255, 255, 0.05);
-          }
-
-          .element-type {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-
-            .vehicle-icon,
-            .person-icon,
-            .ship-icon,
-            .case-icon {
-              font-size: 16px;
-            }
-          }
-
-          .action-btn {
-            color: #00ffff;
-            padding: 0;
-            height: auto;
-            font-size: 14px;
-
-            &:hover {
-              color: #ffffff;
-            }
-          }
-        }
-
         .filter-options {
           display: flex;
           gap: 16px;
@@ -1158,6 +902,358 @@ const handleViewElementDetail = (record) => {
           .node-text {
             font-size: 13px;
             width: 70px;
+          }
+        }
+      }
+    }
+    .elements-table {
+      flex: 1;
+      :deep(.ant-table) {
+        background: transparent;
+        color: #ffffff;
+      }
+
+      :deep(.ant-table-thead > tr > th) {
+        background: rgba(0, 255, 255, 0.1);
+        color: #ffffff;
+        border: none;
+        font-weight: 600;
+        padding: 12px 8px;
+      }
+
+      :deep(.ant-table-tbody > tr > td) {
+        background: transparent;
+        color: rgba(255, 255, 255, 0.8);
+        border: none;
+        padding: 12px 8px;
+      }
+
+      :deep(.ant-table-tbody > tr:hover > td) {
+        background: rgba(0, 255, 255, 0.05);
+      }
+
+      .element-type {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .vehicle-icon,
+        .person-icon,
+        .ship-icon,
+        .case-icon {
+          font-size: 16px;
+        }
+      }
+
+      .action-btn {
+        color: #00ffff;
+        padding: 0;
+        height: auto;
+        font-size: 14px;
+
+        &:hover {
+          color: #ffffff;
+        }
+      }
+    }
+    .tab-content2 {
+      color: #ffffff;
+      p {
+        display: flex;
+        align-items: center;
+        font-size: 18px;
+        .icon {
+          font-size: 10px;
+          color: #00ffff;
+          margin-right: 6px;
+        }
+      }
+      .voyage-content {
+        display: flex;
+        align-items: center;
+        gap: 50px;
+        padding: 0 50px;
+        .voyage-line {
+          display: flex;
+          align-items: center;
+          flex-direction: column;
+          gap: 10px;
+          margin-top: -100px;
+          .voyage-status {
+            font-size: 16px;
+          }
+          .voyage-line-item {
+            width: 200px;
+            height: 2px;
+            background: #ffffff;
+            position: relative;
+          }
+          // 短线前箭头
+          .voyage-line-item::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 11px;
+            height: 2px;
+            background: #ffffff;
+            transform: rotate(45deg);
+            transform-origin: bottom right;
+          }
+          // 箭头
+          .voyage-line-item::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 10px;
+            height: 2px;
+            background: #ffffff;
+            transform: rotate(-45deg);
+            transform-origin: bottom right;
+          }
+        }
+        .voyage-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 6px;
+          .voyage-item-date {
+            font-size: 15px;
+          }
+        }
+        .voyage-info {
+          margin-left: 60px;
+          display: flex;
+          flex-direction: column;
+          margin-top: -20px;
+          gap: 6px;
+          P {
+            font-size: 15px;
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+  }
+
+  // 港口查询界面样式
+  .voyage-query {
+    .port-query-container {
+      .query-controls {
+        display: flex;
+        align-items: center;
+        padding: 16px;
+
+        .time-input-section {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+
+          .time-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: 500;
+          }
+
+          .time-range-picker {
+            width: 300px;
+            background: transparent;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.9);
+
+            &:focus,
+            &:hover {
+              border-color: #00ffff;
+              box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.1);
+            }
+
+            &::placeholder {
+              color: rgba(255, 255, 255, 0.5);
+            }
+          }
+        }
+
+        .action-buttons {
+          display: flex;
+          gap: 12px;
+          margin-left: 20px;
+          .query-btn2 {
+            background: #263746;
+            border-color: #026767;
+            color: rgba(255, 255, 255, 0.8);
+            border-radius: 0px;
+
+            &:hover {
+              border-color: #00ffff;
+            }
+          }
+
+          .reset-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.8);
+
+            border-radius: 0px;
+            &:hover {
+              border-color: #00ffff;
+            }
+          }
+
+          .export-btn {
+            background: #263746;
+            border-color: #026767;
+            color: rgba(255, 255, 255, 0.8);
+            border-radius: 0px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+
+            &:hover {
+              border-color: #00e6e6;
+            }
+          }
+        }
+      }
+    }
+  }
+  .port-table-container {
+    border-radius: 6px;
+    overflow: hidden;
+
+    .table-header {
+      display: flex;
+      background: rgba(0, 255, 255, 0.1);
+
+      .header-cell {
+        flex: 1;
+        padding: 12px 8px;
+        color: #fff;
+        font-weight: 600;
+        font-size: 14px;
+        text-align: center;
+
+        &:last-child {
+          border-right: none;
+        }
+
+        &:first-child {
+          flex: 0.3;
+        }
+      }
+    }
+
+    .table-body {
+      .data-row {
+        display: flex;
+
+        &:hover {
+          background: rgba(0, 255, 255, 0.05);
+        }
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        .cell {
+          flex: 1;
+          padding: 12px 8px;
+          color: rgba(255, 255, 255, 0.9);
+          font-size: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          &:last-child {
+            border-right: none;
+          }
+
+          &:first-child {
+            flex: 0.3;
+          }
+        }
+      }
+    }
+  }
+
+  // 物联设备感知界面样式
+  .device-perception-content {
+    .device-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px 0;
+
+      .device-item {
+        padding: 16px;
+        background: rgba(38, 50, 69, 0.6);
+        border: 1px solid rgba(0, 255, 255, 0.1);
+        transition: all 0.3s ease;
+        width: 40%;
+
+        &:hover {
+          background: rgba(38, 50, 69, 0.8);
+          border-color: rgba(0, 255, 255, 0.3);
+        }
+
+        .device-icon {
+          margin-right: 16px;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          .device-title {
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.4;
+          }
+        }
+
+        .device-info {
+          flex: 1;
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 10px;
+        }
+        .device-tip {
+          display: flex;
+          gap: 20px;
+
+          .device-type {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+          }
+
+          .device-location {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+          }
+        }
+
+        .device-action {
+          margin-left: 16px;
+
+          .action-button {
+            background: transparent;
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            color: #00ffff;
+            border-radius: 4px;
+            height: 32px;
+            padding: 0 16px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+
+            &:hover {
+              background: rgba(0, 255, 255, 0.1);
+              border-color: #00ffff;
+              color: #ffffff;
+            }
+
+            &:focus {
+              background: rgba(0, 255, 255, 0.1);
+              border-color: #00ffff;
+              color: #ffffff;
+            }
           }
         }
       }

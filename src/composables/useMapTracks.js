@@ -15,6 +15,7 @@ export function useMapTracks(map) {
     // 轨迹数据
     const trackLayer = ref(null);
     const trackSource = ref(null);
+    const trackFeatureList = ref([])
 
     // 轨迹配置
     const trackConfig = reactive({
@@ -56,7 +57,7 @@ export function useMapTracks(map) {
         trackLayer.value = new VectorLayer({
             source: trackSource.value,
             title: '轨迹',
-            zIndex: 101 // 轨迹在标记点上方
+            zIndex: 200 // 轨迹在标记点上方
         });
 
         map.addLayer(trackLayer.value);
@@ -120,6 +121,7 @@ export function useMapTracks(map) {
 
         // 添加到轨迹图层
         trackSource.value.addFeature(trackFeature);
+        trackFeatureList.value.push(trackSource.value)
 
         // 如果启用动画，开始轨迹动画
         if (animation) {
@@ -380,7 +382,7 @@ export function useMapTracks(map) {
         trackLayer,
         trackSource,
         trackConfig,
-
+        trackFeatureList,
         // 初始化
         initTrackLayer,
 

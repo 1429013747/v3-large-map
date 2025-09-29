@@ -175,7 +175,7 @@ const handleCancel = () => {
 
     .vehicle-info-row {
       display: flex;
-      gap: 20px;
+      gap: 10px;
       align-items: flex-start;
 
       .vehicle-image {
