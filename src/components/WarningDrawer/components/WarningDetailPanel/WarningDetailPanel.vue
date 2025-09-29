@@ -1,6 +1,6 @@
 <template>
   <!-- 遮罩层 -->
-  <div v-if="visible">
+  <div v-if="visible" class="warn-detail-container">
     <!-- 详情面板 -->
     <div class="panel-content">
       <!-- 头部 -->
@@ -324,10 +324,19 @@ const tableData = computed(() => {
 </script>
 
 <style lang="scss" scoped>
+.warn-detail-container {
+  position: absolute;
+  z-index: 9999;
+  top: -8%;
+  width: 100%;
+  height: 108%;
+  pointer-events: auto;
+  background-color: rgba(0, 0, 0, 0.45);
+}
 .panel-content {
   position: absolute;
   z-index: 1000;
-  top: 42%;
+  top: 50%;
   left: 50%;
   width: 1600px;
   background: linear-gradient(
