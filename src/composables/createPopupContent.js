@@ -4,7 +4,7 @@
  * @param {Object} markerData - 标记点数据
  * @returns {String} HTML内容
  */
-export function createPopupContentCar(markerData, trackBack, viewMore) {
+export function createPopupContentCar(markerData, trackBack, viewMore, cancelTrack) {
   // 将函数绑定到全局对象，以便在HTML中调用
   if (trackBack && typeof trackBack === 'function') {
     window.trackBackFunction = trackBack;
@@ -13,12 +13,15 @@ export function createPopupContentCar(markerData, trackBack, viewMore) {
   if (viewMore && typeof viewMore === 'function') {
     window.viewMoreFunction = viewMore;
   }
+  if (cancelTrack && typeof cancelTrack === 'function') {
+    window.cancelFunction = cancelTrack;
+  }
 
   return `
     <div class="vehicle-popup">
       <div class="popup-header">
         <h3 class="popup-title">${markerData.title || '可疑车辆'}</h3>
-        <button class="popup-close" onclick="this.closest('.marker-popup-container').style.display='none'">×</button>
+        <button class="popup-close" onclick="window.cancelFunction && window.cancelFunction('${markerData.markerId}')">×</button>
       </div>
       <div class="popup-content">
         <div class="vehicle-image">
@@ -71,14 +74,14 @@ export function createPopupContentRisk(markerData, trackCorrect, viewMoreCorrect
     window.viewMoreCorrectFunction = viewMoreCorrect;
   }
   if (cancelCorrect && typeof cancelCorrect === 'function') {
-    window.cancelCorrectFunction = cancelCorrect;
+    window.cancelFunction = cancelCorrect;
   }
 
   return `
     <div class="vehicle-popup">
       <div class="popup-header">
-        <h3 class="popup-title">${markerData.title1 || '风险点'}</h3>
-        <button class="popup-close" onclick="window.cancelCorrectFunction && window.cancelCorrectFunction('${markerData.markerId}')">×</button>
+        <h3 class="popup-title">${markerData.title || '风险点'}</h3>
+        <button class="popup-close" onclick="window.cancelFunction && window.cancelFunction('${markerData.markerId}')">×</button>
       </div>
       <div class="popup-content">
         <div class="vehicle-image">
@@ -121,7 +124,7 @@ export function createPopupContentRisk(markerData, trackCorrect, viewMoreCorrect
  * @param {Object} markerData - 标记点数据
  * @returns {String} HTML内容
  */
-export function createPopupContentShip(markerData, setKeyShip, viewMore, shipQuery) {
+export function createPopupContentShip(markerData, setKeyShip, viewMore, shipQuery,cancelShip) {
   // 将函数绑定到全局对象，以便在HTML中调用
   if (shipQuery && typeof shipQuery === 'function') {
     window.shipQueryFunction = shipQuery;
@@ -133,14 +136,16 @@ export function createPopupContentShip(markerData, setKeyShip, viewMore, shipQue
   if (setKeyShip && typeof setKeyShip === 'function') {
     window.setKeyShipFunction = setKeyShip;
   }
-
+  if (cancelShip && typeof cancelShip === 'function') {
+    window.cancelFunction = cancelShip;
+  }
   return `
     <div class="ship-popup">
       <div class="popup-header">
         <h3 class="popup-title">船舶信息</h3>
         <div class="popup-actions">
           <span class="view-detail" onclick="window.viewMoreShipFunction && window.viewMoreShipFunction('${markerData.markerId}')">查看详细信息 ></span>
-          <button class="popup-close" onclick="this.closest('.marker-popup-container').style.display='none'">×</button>
+          <button class="popup-close" onclick="window.cancelFunction && window.cancelFunction('${markerData.markerId}')">×</button>
         </div>
       </div>
       

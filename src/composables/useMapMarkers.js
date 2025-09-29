@@ -62,6 +62,7 @@ export function useMapMarkers(map) {
     trackFeatureList,
     toggleTrackRouteVisibility,
     showTrackRoute,
+    destroy: trackDestroy
   } = useMapTracks(map);
   initTrackLayer();
 
@@ -400,9 +401,9 @@ export function useMapMarkers(map) {
     const styleKey = getStyleKey(options.style);
     let style = styleCache.get(styleKey);
     if (!style) {
+      style = createMarkerStyle(options.style);
       styleCache.set(styleKey, style);
     }
-    style = createMarkerStyle(options.style);
     feature.setStyle(style);
 
     // 保存到状态
@@ -1326,13 +1327,6 @@ export function useMapMarkers(map) {
   };
 
   /**
-   * 清理样式缓存
-   */
-  const clearStyleCache = () => {
-    styleCache.clear();
-  };
-
-  /**
    * 清理已加载标记点记录
    */
   const clearLoadedMarkers = () => {
@@ -1490,8 +1484,6 @@ export function useMapMarkers(map) {
     // 清理聚合图层
     destroyClustering();
 
-    // 清理缓存和队列
-    clearStyleCache();
     clearLoadedMarkers(); // 清理已加载标记点记录
     batchQueue.length = 0;
     if (batchTimeout) {
@@ -1500,6 +1492,7 @@ export function useMapMarkers(map) {
     }
 
     markers.value = [];
+    trackFeatureList.value = [];
     markerLayer.value = null;
     markerSource.value = null;
     markerLayersByType.value = {};
@@ -1586,7 +1579,6 @@ export function useMapMarkers(map) {
     addMarkersBatch,
     addMarkersVirtualized,
     flushBatchQueue,
-    clearStyleCache,
     // 虚拟化渲染相关方法
     clearLoadedMarkers,
     getLoadedMarkersCount,
@@ -1622,6 +1614,8 @@ export function useMapMarkers(map) {
     showTrackRoute,
     removeTrackRoute,
     // 通用方法
-    destroy
+    destroy,
+    trackDestroy,
+    destroyClustering
   };
 }

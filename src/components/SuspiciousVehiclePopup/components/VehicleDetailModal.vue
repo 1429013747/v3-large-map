@@ -1,12 +1,13 @@
 <template>
-  <div class="vehicle-detail-modal-container">
+  <div>
     <a-modal
       :open="open"
       title="可疑车辆"
       :width="1200"
       :centered="true"
       :mask-closable="false"
-      getContainer=".vehicle-detail-modal-container"
+      getContainer=".ui-container"
+      class="modal-container"
       @cancel="handleCancel"
       :footer="null"
     >
@@ -702,44 +703,7 @@ const handleViewElementDetail = (record) => {
 </script>
 
 <style lang="scss" scoped>
-.vehicle-detail-modal-container {
-  :deep(.ant-modal-content) {
-    background: rgba(18, 28, 43, 0.95);
-    border: 1px solid rgba(0, 255, 255, 0.3);
-    border-radius: 8px;
-    padding: 0px;
-  }
 
-  :deep(.ant-modal-header) {
-    padding: 10px;
-    background: transparent;
-    border-bottom: 1px solid rgba(0, 255, 255, 0.2);
-
-    .ant-modal-title {
-      color: #ffffff;
-      font-size: 18px;
-      font-weight: 600;
-    }
-  }
-
-  :deep(.ant-modal-body) {
-    padding: 20px;
-    background: transparent;
-  }
-
-  .basic-info-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #ffffff;
-    margin-bottom: 10px;
-  }
-  :deep(.ant-table-cell):before {
-    display: none;
-  }
-  :deep(.ant-table-cell-scrollbar) {
-    box-shadow: none;
-  }
-}
 
 .vehicle-detail-content {
   color: #ffffff;

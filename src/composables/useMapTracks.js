@@ -56,7 +56,7 @@ export function useMapTracks(map) {
         trackSource.value = new VectorSource();
         trackLayer.value = new VectorLayer({
             source: trackSource.value,
-            title: '轨迹',
+            title: 'track-route',
             zIndex: 200 // 轨迹在标记点上方
         });
 
@@ -121,7 +121,7 @@ export function useMapTracks(map) {
 
         // 添加到轨迹图层
         trackSource.value.addFeature(trackFeature);
-        trackFeatureList.value.push(trackSource.value)
+        trackFeatureList.value.push(trackFeature)
 
         // 如果启用动画，开始轨迹动画
         if (animation) {
@@ -305,7 +305,7 @@ export function useMapTracks(map) {
         if (trackFeature) {
             trackSource.value.removeFeature(trackFeature);
         }
-
+        trackFeatureList.value = trackFeatureList.value.filter(val => val !== trackFeature)
         // 移除与当前轨迹相关的轨迹点（起点、终点、中间点）
         const trackPoints = features.filter(feature => {
             const properties = feature.getProperties();
@@ -330,6 +330,8 @@ export function useMapTracks(map) {
                 trackSource.value.removeFeature(feature);
             }
         });
+        trackFeatureList.value = []
+
     };
 
     /**

@@ -157,7 +157,13 @@
         color: rgba(255, 255, 255, 0.6) !important;
     }
 
+    .ant-table-header tr th::before {
+        background-color: transparent !important;
+    }
 
+    .ant-table-header tr th {
+        box-shadow: none !important;
+    }
 
     .ant-upload-select {
         width: 104px !important;

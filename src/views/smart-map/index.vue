@@ -132,7 +132,23 @@
             @set-key="handleSetKey"
             @cancel-key="handleCancelKey"
           />
-
+          <!-- 岸线管控弹窗 -->
+          <CoastlinePopup
+            ref="keyVesselsPopupRef"
+            v-model:open="CoastlinePopupVisible"
+            :coastlineData="selectedCoastlineData"
+            @view-more="handleCoastlineViewMore"
+          />
+          <!-- 应急标绘面板 -->
+          <PlotPanel
+            ref="plotPanelRef"
+            :map="map"
+            :visible="plottingPanelVisible"
+            @close="closePlottingPanel"
+            @featureCreated="handleFeatureCreated"
+            @featureSelected="handleFeatureSelected"
+            @featureDeleted="handleFeatureDeleted"
+          />
           <!-- 重点船舶弹窗 -->
           <KeyVesselsPopup
             ref="keyVesselsPopupRef"
@@ -145,18 +161,6 @@
             @add-vessels="handleAddVessel"
             @set-key="handleSetKeyVessel"
             @cancel-key="handleCancelKeyVessel"
-          />
-
-          <!-- 岸线管控弹窗 -->
-          <CoastlinePopup
-            ref="keyVesselsPopupRef"
-            v-model:open="CoastlinePopupVisible"
-            :coastlineData="selectedCoastlineData"
-            @track-back="handleCoastlineTrackBack"
-            @view-more="handleCoastlineViewMore"
-            @create-warning="handleCoastlineCreateWarning"
-            @coastline-click="handleCoastlineWarningClick"
-            @add-coastline="handleAddCoastline"
           />
 
           <!-- 重点人员弹窗 -->
@@ -322,7 +326,6 @@ import {
   ref,
   watch,
 } from "vue";
-import { Modal } from "ant-design-vue";
 import { generateRandomCoordinates } from "@/utils/coordinateGenerator.js";
 import { getIconPath, getIconPathMarkIcons } from "@/utils/utilstools.js";
 import {
@@ -331,6 +334,7 @@ import {
   createPopupContentShip,
   createPopupMenuShip,
 } from "@/composables/createPopupContent.js";
+import { useMapMarkers } from "@/composables/useMapMarkers.js";
 import { useDefaultConfigStore } from "@/stores/defaultConfig.js";
 import { toLonLat, fromLonLat } from "ol/proj";
 
@@ -371,11 +375,16 @@ const gangVehicleQueryPanelVisible = ref(false);
 const tideQueryPanelVisible = ref(false);
 const warningInfoVisible = ref(true);
 const suspiciousVehiclePopupRef = ref(null);
+const coastalControlPopupRef = ref(null);
+
 const keyVesselsPopupRef = ref(null);
 const valueArea = ref([]);
 // 可疑车辆弹窗相关
 const suspiciousVehiclePopupVisible = ref(false);
 const selectedVehicleData = ref({});
+
+// 暗线管控弹窗相关
+const coastalControlPopupVisible = ref(false);
 
 // 重点船舶弹窗相关
 const keyVesselsPopupVisible = ref(false);
@@ -546,6 +555,14 @@ const onMapClick = (event) => {
     if (markerData.popupType === "icon") {
       isGeneratingMarker.value = true;
     }
+    if (MarkerIds.value.length < 2) {
+      MarkerIds.value.push(markerId);
+    }
+    if (MarkerIds.value.length >= 2) {
+      mapMarkersConfig.toggleMarkerBorder(MarkerIds.value[0], false);
+      MarkerIds.value.shift();
+    }
+    mapMarkersConfig.toggleMarkerBorder(MarkerIds.value[0], true);
     // 触发标记点点击事件
     onMarkerClick({
       markerId,
@@ -744,15 +761,36 @@ const viewMoreCorrect = (markerId) => {
   console.log("风险点查看更多:", markerId);
   warningDrawerVisible.value = true;
 };
+
+const deayModal = (markerId) => {
+  mapMarkersConfig.toggleMarkerBorder(markerId, false);
+  mapMarkersConfig.removeMarker(clickMarkerId.value);
+  isGeneratingMarker.value = false;
+  document.querySelector(".marker-popup-container").style.display = "none";
+};
 /**
  * 关闭风险点弹窗
  * @param {*} markerId
  */
 const cancelCorrect = (markerId) => {
   console.log("风险点关闭弹窗:", markerId);
-  mapMarkersConfig.removeMarker(clickMarkerId.value);
-  isGeneratingMarker.value = false;
-  document.querySelector(".marker-popup-container").style.display = "none";
+  deayModal(markerId);
+};
+/**
+ * 关闭可疑车辆点弹窗
+ * @param {*} markerId
+ */
+const cancelTrack = (markerId) => {
+  console.log("可疑车辆关闭弹窗:", markerId);
+  deayModal(markerId);
+};
+/**
+ * 关闭可疑车辆点弹窗
+ * @param {*} markerId
+ */
+const cancelShip = (markerId) => {
+  console.log("可疑车辆关闭弹窗:", markerId);
+  deayModal(markerId);
 };
 /**
  * 根据类型显示标记点弹窗
@@ -770,7 +808,8 @@ const showMarkerPopup = (coordinates, markerData) => {
     mapMarkersConfig.markerPopupElement.value.innerHTML = createPopupContentCar(
       markerData,
       trackBack,
-      viewMore
+      viewMore,
+      cancelTrack
     );
   } else if (markerData.popupType === "ship") {
     if (markerData.flat) {
@@ -782,7 +821,13 @@ const showMarkerPopup = (coordinates, markerData) => {
       );
     } else {
       mapMarkersConfig.markerPopupElement.value.innerHTML =
-        createPopupContentShip(markerData, setKeyShip, viewMoreShip, shipQuery);
+        createPopupContentShip(
+          markerData,
+          setKeyShip,
+          viewMoreShip,
+          shipQuery,
+          cancelShip
+        );
     }
   } else {
     mapMarkersConfig.markerPopupElement.value.innerHTML =
@@ -811,7 +856,7 @@ const onMarkerClick = (eventData) => {
   const { markerId, markerData, coordinate, lonLat, flat } = eventData;
 
   // 显示弹窗
-  showMarkerPopup([lonLat[0], lonLat[1]], {
+  showMarkerPopup([lonLat[0], lonLat[1] + 0.03], {
     flat,
     markerId,
     ...markerData,
@@ -1009,11 +1054,7 @@ const handleAddVessel = (formData) => {
   console.log("新增重点船舶数据:", formData);
   // 这里可以添加新增重点船舶的逻辑
 };
-const handleAddCoastline = (formData) => {
-  console.log("新增岸线管控数据:", formData);
-  // 这里可以添加新增岸线管控的逻辑
-  // 可以调用API保存数据，或者在地图上添加新的标记点
-};
+
 
 const handleSetKeyVessel = (vessel) => {
   console.log("设置重点船舶", vessel);
@@ -1068,15 +1109,6 @@ const handleVesselWarningClick = (warning) => {
   // 这里可以添加点击船舶相关预警的逻辑
 };
 
-const handleCoastlineWarningClick = (warning) => {
-  console.log("点击岸线管控相关预警", warning);
-  // 这里可以添加点击岸线管控相关预警的逻辑
-};
-
-const handleCoastlineTrackBack = (coastlineData) => {
-  console.log("岸线管控轨迹回放", coastlineData);
-  // 这里可以添加岸线管控轨迹回放的逻辑
-};
 
 const handleCoastlineViewMore = (coastlineData) => {
   console.log("查看岸线管控更多信息", coastlineData);
@@ -1233,13 +1265,13 @@ const handleFeatureDeleted = (feature) => {
 
 // 图层数据
 const layers = ref([
-  { id: 1, name: "风险点", visible: true, type: "random-marker-7" },
-  { id: 2, name: "交通要道", visible: false, type: "main" },
+  { id: 1, name: "风险点", visible: true, type: "icon" },
+  { id: 2, name: "交通要道", visible: false, type: "traffic-road" },
   { id: 3, name: "工作站", visible: false, type: "main" },
   { id: 4, name: "无走私村", visible: false, type: "main" },
   { id: 5, name: "船舶动态", visible: true, type: "main" },
   { id: 6, name: "车辆动态", visible: true, type: "car" },
-  { id: 7, name: "电子围栏", visible: false, type: "main" },
+  { id: 7, name: "电子围栏", visible: false, type: "electronic-fence" },
   { id: 8, name: "案件", visible: false, type: "main" },
 ]);
 
@@ -1278,7 +1310,7 @@ const allMarkerListConfigs = {
 const handleLayerToggle = (layer) => {
   console.log("图层切换:", layer);
   // 这里可以添加实际的图层显示/隐藏逻辑
-  mapMarkersConfig.toggleMarkerVisibilityList(layer.type, layer.visible);
+  mapMarkersConfig.toggleMarkerVisibilityByLayer(layer.type, layer.visible);
 };
 
 // 初始化显示面板(关闭所有面板)
@@ -1287,6 +1319,7 @@ const initShowPanel = () => {
   keyPersonnelPopupVisible.value = false;
   keyVesselsPopupVisible.value = false;
   warningDrawerVisible.value = false;
+  coastalControlPopupVisible.value = false;
   CoastlinePopupVisible.value = false;
 };
 
@@ -1295,6 +1328,7 @@ const handleBottomMenuClick = (index) => {
   // 更新激活状态
   activeBottomMenu.value = index;
   if (index === 0) {
+    CoastlinePopupVisible.value = true;
     console.log("岸线管控");
     const defaultVisibleLayers = {
       风险点: "icon",
@@ -1306,12 +1340,10 @@ const handleBottomMenuClick = (index) => {
       无走私村: "no-smuggling-village",
       案件: "case",
     };
-    CoastlinePopupVisible.value = true;
     handleDefaultVisibleLayers(Object.keys(defaultVisibleLayers));
 
     mapMarkersConfig.toggleMarkerVisibilityByLayer("ship", false);
     mapMarkersConfig.toggleMarkerVisibilityByLayer("car", false);
-    mapMarkersConfig.toggleMarkerVisibilityByLayer("轨迹", false);
   } else if (index === 1) {
     console.log("重点船舶");
     const defaultVisibleLayers = {
@@ -1330,7 +1362,6 @@ const handleBottomMenuClick = (index) => {
       mapMarkersConfig.toggleMarkerVisibilityByLayer(type, true);
     });
     mapMarkersConfig.toggleMarkerVisibilityByLayer("car", false);
-    mapMarkersConfig.toggleMarkerVisibilityByLayer("轨迹", false);
   } else if (index === 2) {
     console.log("重点人员");
     const defaultVisibleLayers = {
@@ -1348,7 +1379,6 @@ const handleBottomMenuClick = (index) => {
     mapMarkersConfig.toggleMarkerVisibilityByLayer("icon", false);
     mapMarkersConfig.toggleMarkerVisibilityByLayer("ship", false);
     mapMarkersConfig.toggleMarkerVisibilityByLayer("car", false);
-    mapMarkersConfig.toggleMarkerVisibilityByLayer("轨迹", false);
   } else if (index === 3) {
     console.log("可疑车辆");
     const defaultVisibleLayers = {
@@ -1368,8 +1398,12 @@ const handleBottomMenuClick = (index) => {
     });
     mapMarkersConfig.toggleMarkerVisibilityByLayer("icon", false);
     mapMarkersConfig.toggleMarkerVisibilityByLayer("ship", false);
-    mapMarkersConfig.toggleMarkerVisibilityByLayer("轨迹", true);
+    // mapMarkersConfig.toggleMarkerVisibilityByLayer("track-route", false);
   }
+  console.log(
+    mapMarkersConfig.trackFeatureList,
+    "trackFeatureListtrackFeatureListtrackFeatureList"
+  );
 };
 
 const handleDefaultVisibleLayers = (defaultVisibleLayers) => {
@@ -1403,12 +1437,12 @@ const getMarkerData = () => {
       useTypeLayer: useTypeLayer.value,
       style: {
         icon: {
-          src: getIconPath("allIcon"),
-          size: [18, 18],
+          src: getIconPath("allIcon2"),
+          size: [36, 36],
           anchor: [0, 0],
-          scale: 1,
-          displacement: [9, -9],
-          offset: [18 * (index % 10), 0], // 使用不同的精灵图位置
+          scale: 0.7,
+          displacement: [13, -13],
+          offset: [36 * (index % 10), 0], // 使用不同的精灵图位置
           borderSize: 25, // 外边框大小
           borderColor: "#ffa502", // 外边框颜色
           borderWidth: 2, // 外边框宽度
@@ -1850,6 +1884,13 @@ const getSliderIndicatorStyle = computed(() => {
     transition: "all 0.3s ease",
     width: `${baseWidth}px`,
   };
+});
+
+onUnmounted(() => {
+  console.log("object");
+  mapMarkersConfig.trackDestroy();
+  mapMarkersConfig.destroy();
+  mapMarkersConfig.destroyClustering();
 });
 </script>
 

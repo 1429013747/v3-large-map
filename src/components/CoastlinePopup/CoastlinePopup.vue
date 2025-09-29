@@ -96,7 +96,6 @@
         v-for="(coastline, index) in filteredCoastlines"
         :key="coastline.id"
         class="vehicle-item"
-        @click.stop="handleCoastlineClick(coastline)"
       >
         <div class="vehicle-info">
           <div class="vehicle-basic">
@@ -155,14 +154,7 @@ const props = defineProps({
 // Emits
 const emit = defineEmits([
   "update:open",
-  "track-back",
   "view-more",
-  "create-warning",
-  "warning-click",
-  "coastline-click",
-  "add-coastline",
-  "set-key",
-  "cancel-key",
 ]);
 
 // 响应式数据
@@ -266,7 +258,7 @@ const filteredCoastlines = computed(() => {
   }
   if (riskStatusFilter.value) {
     filtered = filtered.filter((coastlines) =>
-      coastlines.riskStatus.includes(riskStatusFilter.value)
+      coastlines.riskStatus?.includes(riskStatusFilter.value)
     );
   }
 
@@ -274,7 +266,7 @@ const filteredCoastlines = computed(() => {
   if (searchKeyword.value) {
     filtered = filtered.filter(
       (coastlines) =>
-        coastlines.riskStatus.includes(searchKeyword.value) ||
+        coastlines?.riskStatus.includes(searchKeyword.value) ||
         coastlines.location.includes(searchKeyword.value)
     );
   }
@@ -308,9 +300,6 @@ const handleAreaChange = (area) => {
   areaFilter.value = area;
 };
 
-const handleCoastlineClick = (coastline) => {
-  emit("coastline-click", coastline);
-};
 
 const getRiskStatus = (type) => {
   return type == 1
@@ -346,14 +335,12 @@ const handleDetail = (coastline) => {
 };
 
 defineExpose({
-  handleCoastlineClick,
   handleDetail,
 });
 </script>
 
 <style lang="scss" scoped>
 .suspicious-vehicle-drawer {
-
   .search-section {
     margin-bottom: 20px;
 

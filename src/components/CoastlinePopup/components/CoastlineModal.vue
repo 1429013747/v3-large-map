@@ -6,7 +6,8 @@
       :width="1200"
       :centered="true"
       :mask-closable="false"
-      getContainer=".vehicle-detail-modal-container"
+      getContainer=".ui-container"
+      class="modal-container"
       @cancel="handleCancel"
       :footer="null"
     >
@@ -414,9 +415,7 @@ watch(
   }
 );
 //查看更多详情
-const onMoreDetail = () => {
-  router.push("/coast-line");
-};
+const onMoreDetail = () => {};
 // 关闭弹窗
 const handleCancel = () => {
   emit("update:open", false);
