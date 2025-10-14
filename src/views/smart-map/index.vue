@@ -1636,6 +1636,7 @@ const getSliderIndicatorStyle = computed(() => {
 });
 
 onMounted(async () => {
+  await nextTick();
   const layersData = [
     ...layers.value,
     ...sensingDevices.value,

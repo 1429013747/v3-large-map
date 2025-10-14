@@ -150,8 +150,6 @@ export default defineConfig(({ mode }) => {
           assetFileNames: 'assets/[ext]/[name]-[hash].[ext]'
         }
       },
-      // 设置最终构建的浏览器兼容目标
-      target: 'es2015',
       // 设置为 false 可以禁用最小化混淆
       minify: 'terser',
       // 启用/禁用 brotli 压缩大小报告
