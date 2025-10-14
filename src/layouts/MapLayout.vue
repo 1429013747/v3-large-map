@@ -188,6 +188,7 @@ onUnmounted(() => {
   z-index: 10;
   pointer-events: none;
   color: #ffffff;
+  background: linear-gradient(#000, transparent 20%);
 
   > * {
     pointer-events: auto;
@@ -211,7 +212,6 @@ onUnmounted(() => {
   right: 0;
   bottom: 0px;
   pointer-events: none;
-
 
   /* 子元素恢复交互 */
   > * {

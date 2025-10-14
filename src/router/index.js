@@ -12,6 +12,11 @@ const router = createRouter({
       path: "/",
       redirect: "/smart-map",
     },
+    {
+      path: "/coastline-detail",
+      name: "CoastlineDetail",
+      component: () => import("@/views/coastline-detail/index.vue"),
+    },
     ...routes,
   ],
   // routes: [

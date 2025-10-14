@@ -6,7 +6,7 @@ import axios from 'axios'
 let loadingInstance = null
 
 const service = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_BASE_API,
   timeout: 120000,
   headers: {
     'Content-Type': 'application/json'

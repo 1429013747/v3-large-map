@@ -1,6 +1,6 @@
 <template>
   <a-drawer
-    v-model:open="visible"
+    v-model:open="visibleModal"
     title="图例展示"
     placement="right"
     getContainer=".ui-container"
@@ -25,7 +25,7 @@
             :key="item.id"
           >
             <div class="legend-icon1">
-              <img :src="getIconPath(item.icon)" :alt="item.name" />
+              <img :src="getIconPathMarkIcons(item.icon)" :alt="item.name" />
             </div>
             <span class="legend-label">{{ item.name }}</span>
           </div>
@@ -42,7 +42,7 @@
             class="legend-item"
           >
             <div class="legend-icon1" :class="item.class">
-              <img :src="getIconPath(item.icon)" :alt="item.name" />
+              <img :src="getIconPathMarkIcons(item.icon)" :alt="item.name" />
             </div>
             <span class="legend-label">{{ item.name }}</span>
           </div>
@@ -59,7 +59,7 @@
             class="legend-item"
           >
             <div class="legend-icon">
-              <img :src="getIconPath(item.icon)" :alt="item.name" />
+              <img :src="getIconPathMarkIcons(item.icon)" :alt="item.name" />
             </div>
             <span class="legend-label">{{ item.name }}</span>
           </div>
@@ -76,7 +76,7 @@
             class="legend-item"
           >
             <div class="legend-icon2" :class="item.class">
-              <img :src="getIconPath(item.icon)" :alt="item.name" />
+              <img :src="getIconPathMarkIcons(item.icon)" :alt="item.name" />
             </div>
             <span class="legend-label">{{ item.name }}</span>
           </div>
@@ -89,7 +89,7 @@
 <script setup>
 import { ref, computed } from "vue";
 import { CloseOutlined } from "@ant-design/icons-vue";
-
+import { getIconPathMarkIcons } from "@/utils/utilstools.js";
 // Props
 const props = defineProps({
   open: {
@@ -102,9 +102,13 @@ const props = defineProps({
 const emit = defineEmits(["update:open"]);
 
 // 响应式数据
-const visible = computed({
-  get: () => props.open,
-  set: (value) => emit("update:open", value),
+const visibleModal = computed({
+  get() {
+    return props.open;
+  },
+  set(value) {
+    emit("update:open", value);
+  },
 });
 
 // 设备/对象数据
@@ -115,7 +119,7 @@ const equipmentItems = ref([
   { id: 4, name: "限高杆", icon: "icon4" },
   { id: 5, name: "可疑车辆", icon: "icon10" },
   { id: 3, name: "无走私村", icon: "icon5" },
-  { id: 6, name: "低风险", icon: "icon6" },
+  { id: 6, name: "工作站", icon: "icon6" },
 ]);
 
 // 风险等级数据
@@ -144,15 +148,9 @@ const vesselStatusItems = ref([
   { id: 7, name: "AIS信号", icon: "icon21" },
 ]);
 
-// 获取图标路径
-const getIconPath = (iconName) => {
-  return new URL(`../../assets/imgs/markIcons/${iconName}.png`, import.meta.url)
-    .href;
-};
-
 // 关闭抽屉
 const handleClose = () => {
-  visible.value = false;
+  emit("update:open", false);
 };
 </script>
 

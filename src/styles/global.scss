@@ -34,58 +34,8 @@
   --active-bg: rgba(0, 255, 255, 0.2);
 }
 
-// Ant Design 深色主题样式
-.dark {
 
-  // 覆盖 Ant Design 的默认样式
-  .ant-layout {
-    background: var(--background-color) !important;
-    color: var(--text-color) !important;
-  }
 
-  .ant-layout-content {
-    background: var(--background-color) !important;
-    color: var(--text-color) !important;
-  }
-
-  .ant-card {
-    background: var(--surface-color) !important;
-    border-color: var(--border-color) !important;
-    color: var(--text-color) !important;
-  }
-
-  .ant-card-head {
-    border-bottom-color: var(--border-color) !important;
-    color: var(--text-color) !important;
-  }
-
-  .ant-card-body {
-    color: var(--text-color) !important;
-  }
-}
-
-.ant-empty-description {
-  color: #fff;
-}
-
-// 重置样式
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-// 基础样式
-html,
-body {
-  height: 100%;
-  font-size: $font-size-md;
-  color: var(--text-color);
-  background-color: var(--background-color);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  transition: color 0.3s ease, background-color 0.3s ease;
-}
 
 #app {
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica,
@@ -161,396 +111,6 @@ body {
   text-fill-color: transparent;
 }
 
-/* 风险点弹窗样式 */
-.risk-point-selected-popup {
-  background: linear-gradient(135deg,
-      rgba(15, 25, 35, 0.95) 0%,
-      rgba(25, 35, 45, 0.95) 100%);
-  color: #ffffff;
-  padding: 0;
-  border-radius: 8px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(0, 255, 255, 0.3);
-  backdrop-filter: blur(10px);
-  min-width: 280px;
-  max-width: 350px;
-  z-index: 1000;
-
-  .selected-popup-content {
-    .selected-risk-header {
-      background: linear-gradient(90deg,
-          rgba(0, 255, 255, 0.1) 0%,
-          rgba(0, 255, 255, 0.05) 100%);
-      padding: 12px 16px;
-      border-bottom: 1px solid rgba(0, 255, 255, 0.2);
-      border-radius: 8px 8px 0 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      .selected-risk-name {
-        font-size: 16px;
-        font-weight: 600;
-        color: #00ffff;
-        margin: 0;
-      }
-
-      .selected-risk-status {
-        font-size: 12px;
-        font-weight: 500;
-        padding: 2px 8px;
-        border-radius: 4px;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-      }
-    }
-
-    .selected-risk-details {
-      padding: 12px 16px;
-
-      .detail-item {
-        display: flex;
-        margin-bottom: 8px;
-        font-size: 13px;
-
-        &:last-child {
-          margin-bottom: 0;
-        }
-
-        .detail-label {
-          color: rgba(0, 255, 255, 0.8);
-          font-weight: 500;
-          min-width: 80px;
-          flex-shrink: 0;
-        }
-
-        .detail-value {
-          color: rgba(255, 255, 255, 0.9);
-          word-break: break-all;
-          flex: 1;
-        }
-      }
-    }
-  }
-
-
-  /* 弹窗箭头 */
-  &::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 8px solid rgba(15, 25, 35, 0.95);
-  }
-
-  /* 弹窗箭头边框 */
-  &::before {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 9px solid transparent;
-    border-right: 9px solid transparent;
-    border-top: 9px solid rgba(0, 255, 255, 0.3);
-    z-index: -1;
-  }
-}
-
-/* 风险点悬停弹窗样式 */
-.risk-point-hover-popup {
-  background: linear-gradient(135deg,
-      rgba(15, 25, 35, 0.95) 0%,
-      rgba(25, 35, 45, 0.95) 100%);
-  color: #ffffff;
-  padding: 0;
-  border-radius: 8px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(0, 255, 255, 0.3);
-  backdrop-filter: blur(10px);
-  min-width: 240px;
-  max-width: 300px;
-  z-index: 1000;
-  transform: scale(1);
-  transition: all 0.2s ease;
-
-  &.animated {
-    animation: riskPointPopupFadeIn 0.3s ease-out;
-  }
-
-  .popup-content {
-    .risk-header {
-      background: linear-gradient(90deg,
-          rgba(0, 255, 255, 0.1) 0%,
-          rgba(0, 255, 255, 0.05) 100%);
-      padding: 10px 14px;
-      border-bottom: 1px solid rgba(0, 255, 255, 0.2);
-      border-radius: 8px 8px 0 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      .risk-point-name {
-        color: #00ffff;
-        font-weight: 600;
-        font-size: 14px;
-        margin: 0;
-      }
-
-      .risk-point-status {
-        font-size: 11px;
-        font-weight: 500;
-        padding: 2px 6px;
-        border-radius: 4px;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-      }
-    }
-
-    .risk-details {
-      padding: 10px 14px;
-
-      .detail-item {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 6px;
-        font-size: 12px;
-
-        &:last-child {
-          margin-bottom: 0;
-        }
-
-        .detail-label {
-          color: rgba(0, 255, 255, 0.8);
-          font-weight: 500;
-          flex-shrink: 0;
-          white-space: nowrap;
-        }
-
-        .detail-value {
-          color: rgba(255, 255, 255, 0.9);
-          text-align: right;
-          flex: 1;
-          margin-left: 8px;
-          word-break: break-all;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-      }
-    }
-  }
-
-  /* 弹窗箭头 - 左侧箭头，因为positioned是top-left */
-  &::after {
-    content: "";
-    position: absolute;
-    top: 12px;
-    left: -6px;
-    width: 0;
-    height: 0;
-    border-top: 6px solid transparent;
-    border-bottom: 6px solid transparent;
-    border-right: 6px solid rgba(15, 25, 35, 0.95);
-  }
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 11px;
-    left: -7px;
-    width: 0;
-    height: 0;
-    border-top: 7px solid transparent;
-    border-bottom: 7px solid transparent;
-    border-right: 7px solid rgba(0, 255, 255, 0.3);
-    z-index: -1;
-  }
-}
-
-/* 风险点弹窗动画 */
-@keyframes riskPointPopupFadeIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.8) translateY(-10px);
-  }
-
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-/* 告警条目样式 - 公共组件样式 */
-.alarm-item {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 5px 16px 5px 5px;
-  margin: 0 8px;
-  background: rgba(18, 28, 43, 0.6);
-  border: 1px solid transparent;
-  border-radius: 6px;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  overflow: auto;
-  position: relative;
-  min-height: 50px;
-
-  &:hover {
-    background: rgba(18, 28, 43, 0.8);
-    transform: translateX(4px);
-    border-color: rgba(0, 255, 255, 0.4);
-    box-shadow: 0 4px 12px rgba(0, 255, 255, 0.2);
-  }
-
-  // 添加左侧装饰线
-  &::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 60%;
-    background: linear-gradient(135deg, #00ffff, #0099cc);
-    border-radius: 0 2px 2px 0;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  &:hover::before {
-    opacity: 1;
-  }
-}
-
-.alarm-level {
-  flex-shrink: 0;
-  width: 65px;
-  height: 30px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 12px;
-  position: relative;
-  overflow: hidden;
-  background-image: url("@/assets/icons/alert.svg?url");
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  background-position: center;
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(45deg,
-        transparent 30%,
-        rgba(255, 255, 255, 0.1) 50%,
-        transparent 70%);
-    animation: shimmer 3s infinite;
-  }
-
-  .level-text {
-    font-size: 16px;
-    font-weight: bold;
-    margin-left: 16px;
-  }
-
-  .level-suffix {
-    font-size: 14px;
-    margin-left: 1px;
-  }
-
-  &.level-critical {
-    color: #fff;
-  }
-
-  &.level-high {
-    color: #fff;
-  }
-
-  &.level-medium {
-    color: #fff;
-  }
-}
-
-.alarm-content {
-  flex: 1;
-  min-width: 0;
-  overflow: auto;
-
-  .alarm-text {
-    font-size: 14px !important;
-    color: rgba(255, 255, 255, 0.8) !important;
-    line-height: 1.3 !important;
-    margin-bottom: 4px;
-    font-weight: 400 !important;
-    display: block !important;
-
-    // 覆盖 antd 默认样式
-    &.ant-typography {
-      color: rgba(255, 255, 255, 0.8) !important;
-      margin-bottom: 4px !important;
-    }
-  }
-
-  .alarm-time {
-    font-size: 14px;
-    display: none;
-    color: rgba(255, 255, 255, 0.6);
-  }
-}
-
-.alarm-action {
-  flex-shrink: 0;
-  margin-left: 10px;
-
-  .action-btn {
-    padding: 5px 12px;
-    background: linear-gradient(135deg, #00ffff, #0099cc);
-    color: #ffffff;
-    border: none;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 6px rgba(0, 255, 255, 0.3);
-    white-space: nowrap;
-
-    &:hover {
-      background: linear-gradient(135deg, #00cccc, #006699);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 10px rgba(0, 255, 255, 0.4);
-    }
-
-    &:active {
-      transform: translateY(0);
-      background: linear-gradient(135deg, #009999, #004466);
-    }
-  }
-}
-
-/* 告警条目闪烁动画 */
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-
-  100% {
-    transform: translateX(100%);
-  }
-}
 
 .flex {
   display: flex;
@@ -579,49 +139,78 @@ body {
   justify-content: flex-start;
 }
 
-/* 全局input边框移除 - 只移除内部input的边框，保留外层容器边框 */
-.ant-input {
-  border: none !important;
 
-  &:hover {
-    box-shadow: none !important;
+
+.warn-overlay {
+  font-size: 12px;
+  background: url(/src/assets/imgs/warn-marker.png) no-repeat center / 100% 100%;
+  width: 160px;
+  height: 125px;
+  padding: 3px 10px;
+  position: relative;
+
+  .warn-header {
+    position: relative;
+
+    .warn-time {
+      color: #fff;
+      font-size: 11px;
+      margin-left: 15px;
+    }
+
+    .close {
+      position: absolute;
+      top: 0px;
+      right: -4px;
+      cursor: pointer;
+      color: #ee0a24;
+    }
   }
 
-  &:focus {
-    box-shadow: none !important;
+  .warn-content {
+    padding: 10px 0 0 45px;
+
+    h4 {
+      color: #fff;
+    }
+
+    .warn-message {
+      color: #fff;
+    }
+  }
+
+  .tip-animation {
+    position: absolute;
+    bottom: -6px;
+    left: -2px;
+    width: 50px;
+    height: 50px;
+    border: 1px solid #ff0000;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ff0000, transparent);
+    z-index: -1;
+    // 分四步扩散
+    animation: tip-animation 4s steps(2, end) infinite;
+    // 景深
+    perspective: 1000px;
+
+    @keyframes tip-animation {
+      0% {
+        transform: scale(0) rotateX(36deg);
+        opacity: 1;
+      }
+
+      50% {
+        transform: scale(0.6) rotateX(36deg);
+        opacity: 0.8;
+      }
+
+      100% {
+        transform: scale(1) rotateX(36deg);
+        opacity: 0.6;
+        border: 1px solid #ff0000;
+      }
+
+    }
   }
 }
-
-.ant-input-password {
-  border: 1px solid rgba(0, 255, 255, 0.3) !important;
-
-  .ant-input {
-    border: none !important;
-  }
-
-  &:hover {
-    border-color: rgba(0, 255, 255, 0.5) !important;
-    box-shadow: 0 0 8px rgba(0, 255, 255, 0.2) !important;
-  }
-
-  &:focus-within {
-    border-color: #00FFFF !important;
-    box-shadow: 0 0 12px rgba(0, 255, 255, 0.3) !important;
-  }
-}
-
-.ant-select-selector,
-.ant-picker {
-  border: 1px solid rgba(0, 255, 255, 0.3) !important;
-
-  &:hover {
-    border-color: rgba(0, 255, 255, 0.5) !important;
-    box-shadow: 0 0 8px rgba(0, 255, 255, 0.2) !important;
-  }
-
-  &:focus {
-    border-color: #00FFFF !important;
-    box-shadow: 0 0 12px rgba(0, 255, 255, 0.3) !important;
-  }
-}
-

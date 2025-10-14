@@ -3,7 +3,7 @@ import { Col, Row } from "ant-design-vue";
 import Plot from "ol-plot";
 import { onMounted, reactive, ref, shallowRef, watch } from "vue";
 import "ol-plot/dist/ol-plot.css";
-import { Feature } from "ol";
+import { Feature, Overlay } from "ol";
 import { Point, LineString, Polygon } from "ol/geom";
 import { Style, Stroke, Fill, Text, Circle as CircleStyle } from "ol/style";
 import VectorSource from "ol/source/Vector";
@@ -26,6 +26,7 @@ const emit = defineEmits([
   "featureCreated",
   "featureSelected",
   "featureDeleted",
+  "measureDeleted",
 ]);
 
 // 标绘工具列表（参考原始 plot.vue）
@@ -140,6 +141,11 @@ function formatArea(area, precision = 2) {
   }
 }
 
+// 生成唯一ID
+function generateMeasureId() {
+  return `measure_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+}
+
 // 初始化测量图层
 function initMeasureLayer() {
   if (!props.map) return;
@@ -147,7 +153,8 @@ function initMeasureLayer() {
   measureSource.value = new VectorSource();
   measureLayer.value = new VectorLayer({
     source: measureSource.value,
-    zIndex: 999, // 在标绘图层之下
+    title: "测量",
+    zIndex: 1009, // 在标绘图层之下
   });
 
   props.map.addLayer(measureLayer.value);
@@ -175,56 +182,82 @@ function createMeasureStyle() {
   });
 }
 
-// 添加距离标签
-function addDistanceLabel(coordinates, distance) {
-  const feature = new Feature({
-    geometry: new Point(coordinates[coordinates.length - 1]),
-    type: "distance_label",
+// 添加标签
+function addDistanceLabel(coordinates, distance, measureId) {
+  // 创建HTML overlay
+  const overlayElement = document.createElement("div");
+  overlayElement.className = "measure-label-container";
+  overlayElement.innerHTML = `
+    <span class="measure-text">${distance}</span>
+    <span class="measure-delete-btn" data-measure-id="${measureId}">×</span>
+  `;
+
+  // 添加删除按钮点击事件
+  const deleteBtn = overlayElement.querySelector(".measure-delete-btn");
+  deleteBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const id = e.target.getAttribute("data-measure-id");
+    if (id) {
+      deleteMeasureById(id);
+      console.log(`已删除测量要素: ${id}`);
+      emit("measureDeleted", id);
+    }
   });
 
-  const textStyle = new Style({
-    text: new Text({
-      text: distance,
-      font: "bold 14px Arial",
-      fill: new Fill({ color: "#ffffff" }),
-      stroke: new Stroke({
-        color: "#ff6b6b",
-        width: 4,
-      }),
-      offsetY: -15,
-      textAlign: "center",
-      textBaseline: "middle",
-    }),
+  // 创建overlay
+  const overlay = new Overlay({
+    element: overlayElement,
+    position: coordinates[coordinates.length - 1],
+    positioning: "center-center",
+    offset: [0, -20],
+    stopEvent: false,
   });
 
-  feature.setStyle(textStyle);
-  measureSource.value.addFeature(feature);
+  // 将overlay添加到地图
+  props.map.addOverlay(overlay);
+
+  // 保存overlay引用以便后续管理
+  overlay.set("measureId", measureId);
+  overlay.set("measureType", "distance");
 }
 
 // 添加面积标签
-function addAreaLabel(coordinates, area) {
-  const feature = new Feature({
-    geometry: new Point(coordinates),
-    type: "area_label",
+function addAreaLabel(coordinates, area, measureId) {
+  // 创建HTML overlay
+  const overlayElement = document.createElement("div");
+  overlayElement.className = "measure-label-container";
+  overlayElement.innerHTML = `
+    <span class="measure-text">${area}</span>
+    <span class="measure-delete-btn" data-measure-id="${measureId}">×</span>
+  `;
+
+  // 添加删除按钮点击事件
+  const deleteBtn = overlayElement.querySelector(".measure-delete-btn");
+  deleteBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const id = e.target.getAttribute("data-measure-id");
+    if (id) {
+      deleteMeasureById(id);
+      console.log(`已删除测量要素: ${id}`);
+      emit("measureDeleted", id);
+    }
   });
 
-  const textStyle = new Style({
-    text: new Text({
-      text: area,
-      font: "bold 14px Arial",
-      fill: new Fill({ color: "#ffffff" }),
-      stroke: new Stroke({
-        color: "#ff6b6b",
-        width: 3,
-      }),
-      offsetY: -15,
-      textAlign: "center",
-      textBaseline: "middle",
-    }),
+  // 创建overlay
+  const overlay = new Overlay({
+    element: overlayElement,
+    position: coordinates,
+    positioning: "center-center",
+    offset: [0, -20],
+    stopEvent: false,
   });
 
-  feature.setStyle(textStyle);
-  measureSource.value.addFeature(feature);
+  // 将overlay添加到地图
+  props.map.addOverlay(overlay);
+
+  // 保存overlay引用以便后续管理
+  overlay.set("measureId", measureId);
+  overlay.set("measureType", "area");
 }
 
 // 监听样式变化并应用到标绘要素
@@ -333,13 +366,34 @@ function startMeasureDistance() {
     const feature = event.feature;
     const geometry = feature.getGeometry();
 
+    // 生成唯一ID
+    const measureId = generateMeasureId();
+
     // 计算距离
     const length = getLength(geometry);
     const formattedLength = formatLength(length, 2);
 
+    // 设置feature的样式和属性
+    feature.setStyle(
+      new Style({
+        stroke: new Stroke({
+          color: "#03df6d",
+          width: 4,
+          lineDash: [0, 0],
+        }),
+      })
+    );
+
+    // 为测量线添加ID属性
+    feature.setProperties({
+      measureId: measureId,
+      measureType: "distance",
+      isMeasure: true,
+    });
+
     // 添加距离标签
     const coordinates = geometry.getCoordinates();
-    addDistanceLabel(coordinates, formattedLength);
+    addDistanceLabel(coordinates, formattedLength, measureId);
 
     // 停止测量
     stopMeasure();
@@ -371,13 +425,23 @@ function startMeasureArea() {
     const feature = event.feature;
     const geometry = feature.getGeometry();
 
+    // 生成唯一ID
+    const measureId = generateMeasureId();
+
     // 计算面积
     const area = getArea(geometry);
     const formattedArea = formatArea(area, 2);
 
+    // 为测量多边形添加ID属性
+    feature.setProperties({
+      measureId: measureId,
+      measureType: "area",
+      isMeasure: true,
+    });
+
     // 添加面积标签
     const coordinates = geometry.getInteriorPoint().getCoordinates();
-    addAreaLabel(coordinates, formattedArea);
+    addAreaLabel(coordinates, formattedArea, measureId);
 
     // 停止测量
     stopMeasure();
@@ -401,6 +465,35 @@ function stopMeasure() {
   isMeasuring.value = false;
 }
 
+// 通过ID删除测量要素
+function deleteMeasureById(measureId) {
+  if (!props.map) return false;
+
+  let deleted = false;
+
+  // 删除测量数据源中的要素（线和多边形）
+  if (measureSource.value) {
+    const features = measureSource.value.getFeatures();
+    features.forEach((feature) => {
+      if (feature.get("measureId") === measureId) {
+        measureSource.value.removeFeature(feature);
+        deleted = true;
+      }
+    });
+  }
+
+  // 删除overlay标签
+  const overlays = props.map.getOverlays().getArray();
+  overlays.forEach((overlay) => {
+    if (overlay.get("measureId") === measureId) {
+      props.map.removeOverlay(overlay);
+      deleted = true;
+    }
+  });
+
+  return deleted;
+}
+
 // 清空测量
 function clearMeasure() {
   // 停止正在进行的测量
@@ -411,6 +504,16 @@ function clearMeasure() {
     measureSource.value.clear();
   } else {
     console.log("测量数据源不存在");
+  }
+
+  // 清空所有测量相关的overlay
+  if (props.map) {
+    const overlays = props.map.getOverlays().getArray();
+    overlays.forEach((overlay) => {
+      if (overlay.get("measureId")) {
+        props.map.removeOverlay(overlay);
+      }
+    });
   }
 }
 
@@ -498,7 +601,7 @@ function refreshTextArea(overlay) {
 function onDrawEnd({ feature }) {
   if (feature) {
     plot.value.plotEdit.activate(feature);
-    console.log(plot.value.plotEdit,'plot.value.plotEdit');
+    console.log(plot.value.plotEdit, "plot.value.plotEdit");
     // 立即设置透明度
     setTimeout(() => {
       if (plot.value && plot.value.plotEdit.activePlot) {
@@ -521,29 +624,6 @@ function activeTextArea({ overlay }) {
   plot.value.plotEdit.deactivate();
 }
 
-// 地图点击处理
-function handleClick(event) {
-  if (!props.map) return;
-  const feature = props.map.forEachFeatureAtPixel(event.pixel, (f) => f);
-  if (feature && feature.get("isPlot") && !plot.value.plotDraw.isDrawing()) {
-    plot.value.plotEdit.activate(feature);
-    // 设置透明度
-    setTimeout(() => {
-      if (plot.value && plot.value.plotEdit.activePlot) {
-        plot.value.plotUtils.setOpacity(
-          plot.value.plotEdit.activePlot,
-          styleState.opacity
-        );
-      }
-    }, 50);
-    activePanel(feature);
-    emit("featureSelected", feature);
-  } else {
-    plot.value.plotEdit.deactivate();
-  }
-  currentTextArea.value = null;
-}
-
 // 初始化标绘工具
 function initPlot() {
   if (!plot.value && props.map) {
@@ -553,7 +633,7 @@ function initPlot() {
     /* eslint new-cap: 0 */
     plot.value = new Plot(props.map, {
       zIndex: 1009,
-      zoomToExtent: true,
+      zoomToExtent: true, // 自动缩放
     });
     // 设置样式
     const plotStyle = new Plot.StyleFactory({
@@ -600,10 +680,6 @@ function initPlot() {
         }
       });
     }, 200);
-
-    // 移除之前的地图点击监听，添加新的
-    props.map.un("click", handleClick);
-    props.map.on("click", handleClick);
 
     console.log("标绘工具已初始化");
   }
@@ -673,6 +749,7 @@ defineExpose({
   startMeasureArea,
   stopMeasure,
   clearMeasure,
+  deleteMeasureById,
   deactivate: () => {
     if (plot.value) {
       plot.value.plotEdit.deactivate();
@@ -1302,6 +1379,41 @@ defineExpose({
     opacity: 1;
     transform: translateY(-50%) translateX(0);
   }
+}
+
+/* 测量标签样式 */
+:global(.measure-label-container) {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  pointer-events: auto;
+  z-index: 1002;
+  position: relative;
+  font-family: Arial, sans-serif;
+}
+
+:global(.measure-text) {
+  color: #00ffff;
+  font-size: 12px;
+  font-weight: 600;
+  text-shadow: 0 0 3px rgba(0, 255, 255, 0.5);
+  white-space: nowrap;
+}
+
+:global(.measure-delete-btn) {
+  background-color: #ff6b6b;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 30px;
+  width: 18px;
+  height: 18px;
+  text-align: center;
+  padding-right: 1.5px;
+  line-height: 20px;
+  opacity: 0;
+  transition: all 0.3s ease;
 }
 
 /* 响应式调整 */

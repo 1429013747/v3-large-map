@@ -1,10 +1,10 @@
 <template>
   <a-drawer
-    v-model:open="visible"
+    v-model:open="visibleModal"
     title="预警中心"
     placement="left"
     getContainer=".ui-container"
-    :width="430"
+    :width="475"
     :closable="true"
     :mask="false"
     class="warning-drawer"
@@ -38,7 +38,7 @@
           <div class="filter-row-item-dropdown">
             <a-dropdown>
               <a class="ant-dropdown-link" @click.prevent>
-                时间
+                {{ timeFilter || "时间" }}
                 <DownOutlined />
               </a>
               <template #overlay>
@@ -60,7 +60,7 @@
           <div class="filter-row-item-dropdown">
             <a-dropdown>
               <a class="ant-dropdown-link" @click.prevent>
-                状态
+                {{ statusFilter || "状态" }}
                 <DownOutlined />
               </a>
               <template #overlay>
@@ -189,12 +189,13 @@
     v-model:visible="detailDrawerVisible"
     :warning-data="selectedWarning"
     @close="handleDetailClose"
+    @getwarning="handleGetWarning"
   />
 </template>
 
 <script setup>
 import { ref, computed, watch } from "vue";
-import WarningDetailPanel from "@/components/WarningDetailPanel/WarningDetailPanel.vue";
+import WarningDetailPanel from "./components/WarningDetailPanel/WarningDetailPanel.vue";
 import {
   SearchOutlined,
   DownOutlined,
@@ -218,10 +219,10 @@ const emit = defineEmits([
   "warning-click",
   "track-click",
   "detail-click",
+  "getwarning",
 ]);
 
 // 响应式数据
-const visible = ref(props.open);
 const statusFilter = ref("");
 const locationFilter = ref("");
 const timeFilter = ref("");
@@ -229,6 +230,14 @@ const activeCategory = ref("all");
 const detailDrawerVisible = ref(false);
 const selectedWarning = ref(null);
 
+const visibleModal = computed({
+  get() {
+    return props.open;
+  },
+  set(value) {
+    emit("update:open", value);
+  },
+});
 // 分类选项
 const categories = [
   { value: "all", label: "全部预警" },
@@ -243,7 +252,7 @@ const warnings = ref([
     type: "团伙车辆聚集",
     location: "台州市黄岩区",
     time: "本周",
-    createTime: "2025-09-01 10:00:00",
+    createTime: "2025-09-01 10:00",
     status: "待处置",
     category: "vehicle",
     coordinates: [121.4, 28.6],
@@ -261,116 +270,182 @@ const warnings = ref([
     deliveryTime: "2025.06.12 21:00",
     deliverySystem: "--",
     deliveryArea: "宁波象山县",
+    warningType: "伪造信号",
+    name: "船舶123",
+    riskPoint: "手动关联",
+    forgeStartTime: "2025-09-01 10:00",
+    forgeEndTime: "2025-09-01 12:00",
+    appearTime: "2025-09-01 09:00",
   },
   {
     id: 2,
     type: "团伙车辆聚集",
     location: "台州市三门县",
     time: "本周",
-    createTime: "2025-09-01 10:00:00",
+    createTime: "2025-09-01 10:00",
     status: "待处置",
     category: "vehicle",
     coordinates: [121.5, 29.1],
     description: "三门县发现可疑车辆聚集，需要立即核实",
+    warningType: "伪造信号",
+    name: "船舶123",
+    riskPoint: "手动关联",
+    forgeStartTime: "2025-09-01 10:00",
+    forgeEndTime: "2025-09-01 12:00",
+    appearTime: "2025-09-01 09:00",
   },
   {
     id: 3,
     type: "一船多AIS",
     location: "台州市三门县",
     time: "本周",
-    createTime: "2025-09-01 10:00:00",
+    createTime: "2025-09-01 10:00",
     status: "已送达",
     category: "ship",
     coordinates: [121.5, 29.1],
     description: "检测到同一船只使用多个AIS设备，存在异常行为",
+    warningType: "伪造信号",
+    name: "船舶123",
+    riskPoint: "手动关联",
+    forgeStartTime: "2025-09-01 10:00",
+    forgeEndTime: "2025-09-01 12:00",
+    appearTime: "2025-09-01 09:00",
   },
   {
     id: 4,
     type: "一船多AIS",
     location: "台州市三门县",
     time: "今天",
-    createTime: "2025-09-01 10:00:00",
+    createTime: "2025-09-01 10:00",
     status: "已送达",
     category: "ship",
     coordinates: [121.5, 29.1],
     description: "再次检测到AIS设备异常，已发送预警通知",
+    warningType: "伪造信号",
+    name: "船舶123",
+    riskPoint: "手动关联",
+    forgeStartTime: "2025-09-01 10:00",
+    forgeEndTime: "2025-09-01 12:00",
+    appearTime: "2025-09-01 09:00",
   },
   {
     id: 5,
     type: "涉台异常船舶",
     location: "台州市椒江区",
     time: "今天",
-    createTime: "2025-09-01 10:00:00",
+    createTime: "2025-09-01 10:00",
     status: "已处理",
     category: "ship",
     coordinates: [121.4, 28.6],
     description: "发现与台湾相关的异常船舶活动，已处理完毕",
+    warningType: "伪造信号",
+    name: "船舶123",
+    riskPoint: "手动关联",
+    forgeStartTime: "2025-09-01 10:00",
+    forgeEndTime: "2025-09-01 12:00",
+    appearTime: "2025-09-01 09:00",
   },
   {
     id: 6,
     type: "可疑人员聚集",
     location: "台州市路桥区",
     time: "本月",
-    createTime: "2025-09-01 10:00:00",
+    createTime: "2025-09-01 10:00",
     status: "待处置",
     category: "vehicle",
     coordinates: [121.4, 28.6],
     description: "路桥区发现可疑人员聚集，疑似进行非法交易",
+    warningType: "伪造信号",
+    name: "船舶123",
+    riskPoint: "手动关联",
+    forgeStartTime: "2025-09-01 10:00",
+    forgeEndTime: "2025-09-01 12:00",
+    appearTime: "2025-09-01 09:00",
   },
   {
     id: 7,
     type: "可疑人员聚集",
     location: "台州市路桥区",
     time: "本月",
-    createTime: "2025-09-01 10:00:00",
+    createTime: "2025-09-01 10:00",
     status: "待处置",
     category: "vehicle",
     coordinates: [121.4, 28.6],
     description: "路桥区发现可疑人员聚集，疑似进行非法交易",
+    warningType: "伪造信号",
+    name: "船舶123",
+    riskPoint: "手动关联",
+    forgeStartTime: "2025-09-01 10:00",
+    forgeEndTime: "2025-09-01 12:00",
+    appearTime: "2025-09-01 09:00",
   },
   {
     id: 8,
     type: "可疑人员聚集",
     location: "台州市路桥区",
     time: "本月",
-    createTime: "2025-09-01 10:00:00",
+    createTime: "2025-09-01 10:00",
     status: "待处置",
     category: "vehicle",
     coordinates: [121.4, 28.6],
     description: "路桥区发现可疑人员聚集，疑似进行非法交易",
+    warningType: "伪造信号",
+    name: "船舶123",
+    riskPoint: "手动关联",
+    forgeStartTime: "2025-09-01 10:00",
+    forgeEndTime: "2025-09-01 12:00",
+    appearTime: "2025-09-01 09:00",
   },
   {
     id: 9,
     type: "可疑人员聚集",
     location: "台州市路桥区",
     time: "本月",
-    createTime: "2025-09-01 10:00:00",
+    createTime: "2025-09-01 10:00",
     status: "待处置",
     category: "vehicle",
     coordinates: [121.4, 28.6],
     description: "路桥区发现可疑人员聚集，疑似进行非法交易",
+    warningType: "伪造信号",
+    name: "船舶123",
+    riskPoint: "手动关联",
+    forgeStartTime: "2025-09-01 10:00",
+    forgeEndTime: "2025-09-01 12:00",
+    appearTime: "2025-09-01 09:00",
   },
   {
     id: 10,
     type: "可疑人员聚集",
     location: "台州市路桥区",
     time: "本月",
-    createTime: "2025-09-01 10:00:00",
+    createTime: "2025-09-01 10:00",
     status: "待处置",
     category: "vehicle",
     coordinates: [121.4, 28.6],
     description: "路桥区发现可疑人员聚集，疑似进行非法交易",
+    warningType: "伪造信号",
+    name: "船舶123",
+    riskPoint: "手动关联",
+    forgeStartTime: "2025-09-01 10:00",
+    forgeEndTime: "2025-09-01 12:00",
+    appearTime: "2025-09-01 09:00",
   },
   {
     id: 11,
     type: "可疑人员聚集",
     location: "台州市路桥区",
     time: "本月",
-    createTime: "2025-09-01 10:00:00",
+    createTime: "2025-09-01 10:00",
     status: "待处置",
     category: "vehicle",
     coordinates: [121.4, 28.6],
     description: "路桥区发现可疑人员聚集，疑似进行非法交易",
+    warningType: "伪造信号",
+    name: "船舶123",
+    riskPoint: "手动关联",
+    forgeStartTime: "2025-09-01 10:00",
+    forgeEndTime: "2025-09-01 12:00",
+    appearTime: "2025-09-01 09:00",
   },
 ]);
 
@@ -431,7 +506,6 @@ const getStatusText = (status) => {
 };
 
 const handleClose = () => {
-  visible.value = false;
   emit("update:open", false);
 };
 
@@ -464,21 +538,13 @@ const handleDetail = (warning) => {
   emit("detail-click", warning);
 };
 
+const handleGetWarning = (item) => {
+  emit("getwarning", item);
+  detailDrawerVisible.value = false;
+};
 const handleDetailClose = () => {
   detailDrawerVisible.value = false;
 };
-
-// 监听props变化
-watch(
-  () => props.open,
-  (newVal) => {
-    visible.value = newVal;
-  }
-);
-
-watch(visible, (newVal) => {
-  emit("update:open", newVal);
-});
 </script>
 
 <style lang="scss" scoped>
@@ -516,7 +582,7 @@ watch(visible, (newVal) => {
     .filter-row {
       .filter-row-item {
         display: flex;
-        gap: 8px;
+        gap: 15px;
         align-items: center;
         justify-content: space-between;
         .filter-row-item-dropdown {
@@ -696,8 +762,8 @@ watch(visible, (newVal) => {
 
         .status-tag {
           position: absolute;
-          right: -24px;
-          top: -16px;
+          right: -22px;
+          top: -14px;
           font-size: 11px;
           font-weight: 600;
           border: none;

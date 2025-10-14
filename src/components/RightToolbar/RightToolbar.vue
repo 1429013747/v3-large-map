@@ -1,127 +1,100 @@
 <!--
  * 右侧工具栏组件
  * @author: guoqiancheng
- * @since: 2025-01-27
+ * @since: 2025-09-27
 -->
 <template>
-  <div class="right-toolbar">
-    <!-- 控制图层 -->
-    <div class="toolbar-item" @click="handleLayerControl">
-      <div class="toolbar-icon">
-        <div class="layer-icon"></div>
-      </div>
-      <div class="toolbar-label">控制图层</div>
+  <div class="right-toolbar-container">
+    <!-- toggle按钮 -->
+    <div
+      class="toggle-btn"
+      @click="handleToggle"
+      :class="{ collapsed: !isVisible }"
+    >
+      <img src="@/assets/imgs/toggle-icon.png" alt="toggle" />
     </div>
-
-    <!-- 图例展示 -->
-    <div class="toolbar-item" @click="handleLegendDisplay">
-      <div class="toolbar-icon">
-        <div class="legend-icon"></div>
-      </div>
-      <div class="toolbar-label">图例展示</div>
-    </div>
-
-    <!-- 船舶事件 -->
-    <div class="toolbar-item" @click="handleShipEvents">
-      <div class="toolbar-icon">
-        <div class="ship-icon"></div>
-        <div class="badge" v-if="shipEventCount > 0">{{ shipEventCount }}</div>
-      </div>
-      <div class="toolbar-label">船舶事件</div>
-    </div>
-
-    <!-- 综合检索 -->
-    <div class="toolbar-item" @click="handleComprehensiveSearch">
-      <div class="toolbar-icon">
-        <div class="search-icon"></div>
-      </div>
-      <div class="toolbar-label">综合检索</div>
-    </div>
-
-    <!-- 轨迹查询 -->
-    <div class="toolbar-item" @click="handleTrackQuery">
-      <div class="toolbar-icon">
-        <div class="track-icon"></div>
-      </div>
-      <div class="toolbar-label">轨迹查询</div>
-    </div>
-
-    <!-- 团伙车辆查询 -->
-    <div class="toolbar-item" @click="handleGangVehicleQuery">
-      <div class="toolbar-icon">
-        <div class="vehicle-icon"></div>
-        <div class="badge" v-if="gangVehicleCount > 0">
-          {{ gangVehicleCount }}
+    <div class="right-toolbar" :class="{ collapsed: !isVisible }">
+      <!-- 工具栏项目循环 -->
+      <div class="toolbar-group">
+        <div
+          v-for="item in toolbarItems"
+          :key="item.id"
+          class="toolbar-item"
+          :class="{ active: activeTool === item.id }"
+          @click="handleToolbarItemClick(item)"
+        >
+          <div class="toolbar-icon" :class="`${item.icon}-icon`">
+            <div class="badge" v-if="item.nums > 0">
+              {{ item.nums }}
+            </div>
+          </div>
+          <div class="toolbar-label">{{ item.label }}</div>
         </div>
       </div>
-      <div class="toolbar-label">团伙车辆查询</div>
-    </div>
 
-    <!-- 潮汐查询 -->
-    <div class="toolbar-item" @click="handleTideQuery">
-      <div class="toolbar-icon">
-        <div class="tide-icon"></div>
-      </div>
-      <div class="toolbar-label">潮汐查询</div>
-    </div>
-
-    <!-- 分割线 -->
-    <div class="divider"></div>
-    <div class="toolbar-item-group">
-      <!-- 测距 -->
-      <div
-        class="toolbar-item"
-        style="width: 100%"
-        @click="handleMeasureDistance"
-      >
-        <div class="toolbar-icon">
-          <div class="measure-distance-icon"></div>
+      <!-- 分割线 -->
+      <div class="divider"></div>
+      <div class="toolbar-item-group">
+        <!-- 测距 -->
+        <div
+          class="toolbar-item"
+          style="width: 100%"
+          @click="handleMeasureDistance"
+        >
+          <div class="toolbar-icon">
+            <!-- <div class="measure-distance-icon"></div> -->
+            <img src="@/assets/imgs/ruler-a.png" alt="measure" />
+          </div>
+          <div class="toolbar-label">测距</div>
         </div>
-        <div class="toolbar-label">测距</div>
-      </div>
 
-      <!-- 测面 -->
-      <div class="toolbar-item" @click="handleMeasureArea">
-        <div class="toolbar-icon">
-          <div class="measure-area-icon"></div>
+        <!-- 测面 -->
+        <div class="toolbar-item" @click="handleMeasureArea">
+          <div class="toolbar-icon">
+            <!-- <div class="measure-area-icon"></div> -->
+            <img src="@/assets/imgs/area-a.png" alt="measure" />
+          </div>
+          <div class="toolbar-label">测面</div>
         </div>
-        <div class="toolbar-label">测面</div>
-      </div>
 
-      <!-- 标绘 -->
-      <div class="toolbar-item" @click="handlePlotting">
-        <div class="toolbar-icon">
-          <div class="plotting-icon"></div>
+        <!-- 标绘 -->
+        <div class="toolbar-item" @click="handlePlotting">
+          <div class="toolbar-icon">
+            <!-- <div class="plotting-icon"></div> -->
+            <img src="@/assets/imgs/draw-mark-a.png" alt="measure" />
+          </div>
+          <div class="toolbar-label">标绘</div>
         </div>
-        <div class="toolbar-label">标绘</div>
-      </div>
 
-      <!-- 清空 -->
-      <div class="toolbar-item" @click="handleClear">
-        <div class="toolbar-icon">
-          <div class="clear-icon"></div>
+        <!-- 清空 -->
+        <div class="toolbar-item" @click="handleClear">
+          <div class="toolbar-icon">
+            <!-- <div class="clear-icon"></div> -->
+            <img src="@/assets/imgs/clear-a.png" alt="measure" />
+          </div>
+          <div class="toolbar-label">清空</div>
         </div>
-        <div class="toolbar-label">清空</div>
-      </div>
 
-      <!-- 定位 -->
-      <div class="toolbar-item active" @click="handleLocate">
-        <div class="toolbar-icon">
-          <div class="locate-icon"></div>
+        <!-- 定位 -->
+        <div class="toolbar-item active" @click="handleLocate">
+          <div class="toolbar-icon">
+            <!-- <div class="locate-icon"></div> -->
+            <img src="@/assets/imgs/dw-a.png" alt="measure" />
+          </div>
+          <div class="toolbar-label">定位</div>
         </div>
-        <div class="toolbar-label">定位</div>
       </div>
-    </div>
-    <!-- 分割线 -->
-    <div class="divider"></div>
+      <!-- 分割线 -->
+      <div class="divider"></div>
 
-    <!-- 缩放控制 -->
-    <div class="zoom-controls">
-      <div class="zoom-btn" @click="handleZoomIn">
-        <div class="zoom-plus">+</div>
-      </div>
-      <div class="zoom-btn" @click="handleZoomOut">
-        <div class="zoom-minus">-</div>
+      <!-- 缩放控制 -->
+      <div class="zoom-controls">
+        <div class="zoom-btn" @click="handleZoomIn">
+          <div class="zoom-plus">+</div>
+        </div>
+        <div class="zoom-btn" @click="handleZoomOut">
+          <div class="zoom-minus">-</div>
+        </div>
       </div>
     </div>
   </div>
@@ -130,54 +103,69 @@
 <script setup>
 import { ref, inject } from "vue";
 
-// 事件数量
-const shipEventCount = ref(3);
-const gangVehicleCount = ref(1);
-
 // 当前激活的工具
 const activeTool = ref(null);
 
+// 工具栏显示状态
+const isVisible = ref(true);
+
+// 工具栏项目配置
+const toolbarItems = ref([
+  {
+    id: "layer-control",
+    label: "控制图层",
+    icon: "layers",
+    emit: "layer-control",
+  },
+  {
+    id: "legend-display",
+    label: "图例展示",
+    icon: "legend",
+    emit: "legend-display",
+  },
+  {
+    id: "ship-events",
+    label: "船舶事件",
+    icon: "ship",
+    handler: "handleShipEvents",
+    emit: "ship-events",
+    nums: 3,
+  },
+  {
+    id: "comprehensive-search",
+    label: "综合检索",
+    icon: "search-comprehensive",
+    emit: "comprehensive-search",
+  },
+  {
+    id: "track-query",
+    label: "轨迹查询",
+    icon: "track-search",
+    emit: "track-query",
+  },
+  {
+    id: "gang-vehicle-query",
+    label: "团伙车辆查询",
+    icon: "group-car",
+    emit: "gang-vehicle-query",
+    nums: 1,
+  },
+  {
+    id: "tide-query",
+    label: "潮汐查询",
+    icon: "tide-search",
+    emit: "tide-query",
+  },
+]);
+
 // 事件处理函数
-const handleLayerControl = () => {
-  console.log("控制图层");
-  // 可以触发图层控制面板的显示
-  emit("layer-control");
-};
 
-const handleLegendDisplay = () => {
-  console.log("图例展示");
-  // 可以触发图例面板的显示
-  emit("legend-display");
-};
-
-const handleShipEvents = () => {
-  console.log("船舶事件");
-  // 可以触发船舶事件面板的显示
-  emit("ship-events");
-};
-
-const handleComprehensiveSearch = () => {
-  console.log("综合检索");
-  // 可以触发综合检索面板的显示
-  emit("comprehensive-search");
-};
-
-const handleTrackQuery = () => {
-  console.log("轨迹查询");
-  // 可以触发轨迹查询面板的显示
-  emit("track-query");
-};
-
-const handleGangVehicleQuery = () => {
-  console.log("团伙车辆查询");
-  // 可以触发团伙车辆查询面板的显示
-  emit("gang-vehicle-query");
-};
-
-const handleTideQuery = () => {
-  console.log("潮汐查询");
-  // 可以触发潮汐查询面板的显示
-  emit("tide-query");
+const handleToolbarItemClick = (item) => {
+  console.log("工具栏项目被点击:", item);
+  // 切换激活状态
+  activeTool.value = item.id;
+  // 可以触发对应面板的显示
+  emit(item.emit);
 };
 
 const handleMeasureDistance = () => {
@@ -216,6 +204,12 @@ const handleZoomOut = () => {
   emit("zoom-out");
 };
 
+const handleToggle = () => {
+  isVisible.value = !isVisible.value;
+  console.log("工具栏显示状态:", isVisible.value ? "显示" : "隐藏");
+  emit("toggle", isVisible.value);
+};
+
 // 定义emit事件
 const emit = defineEmits([
   "layer-control",
@@ -232,10 +226,39 @@ const emit = defineEmits([
   "locate",
   "zoom-in",
   "zoom-out",
+  "toggle",
 ]);
 </script>
 
 <style lang="scss" scoped>
+.right-toolbar-container {
+  position: fixed;
+  right: 0px;
+  bottom: 0px;
+  width: 90px;
+  height: 100%;
+  z-index: 999;
+  & * {
+    user-select: none;
+  }
+  .toggle-btn {
+    position: absolute;
+    top: 50%;
+    left: -21px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    z-index: 1001;
+    pointer-events: auto;
+    transition: all 0.3s ease;
+    img {
+      height: 100px;
+      object-fit: cover;
+    }
+    &.collapsed {
+      transform: translate(470%, -50%);
+    }
+  }
+}
 .right-toolbar {
   position: fixed;
   right: 0px;
@@ -245,17 +268,21 @@ const emit = defineEmits([
   background: #131d2c;
   padding: 16px 8px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  z-index: 1000;
   display: flex;
   align-items: center;
   flex-direction: column;
   pointer-events: auto;
+  transition: all 0.3s ease;
+
+  &.collapsed {
+    transform: translateX(100%);
+  }
 
   .toolbar-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 12px 8px;
+    padding: 18px 8px;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
@@ -265,8 +292,17 @@ const emit = defineEmits([
     border-radius: 8px;
   }
 
+  .toolbar-group {
+    padding-top: 30px;
+    display: flex;
+    flex: 0.7;
+    flex-direction: column;
+    width: 100%;
+    gap: 6px;
+  }
   .toolbar-item-group {
     display: flex;
+    flex: 0.3;
     flex-direction: column;
     width: 100%;
     padding-top: 10px;
@@ -282,7 +318,7 @@ const emit = defineEmits([
       width: 100%;
     }
     .toolbar-label {
-      font-size: 14px;
+      font-size: 12px;
       color: #0ccef1;
       text-align: center;
       line-height: 1.2;
@@ -291,20 +327,28 @@ const emit = defineEmits([
   }
   .toolbar-icon {
     position: relative;
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 4px;
+    img {
+      height: 24px;
+      object-fit: cover;
+    }
   }
 
   .toolbar-label {
-    font-size: 14px;
+    font-size: 12px;
     color: #ffffff;
     text-align: center;
     line-height: 1.2;
     font-weight: 500;
+  }
+
+  .active .toolbar-label {
+    color: #0ccef1;
   }
 
   /* 图标样式 */
@@ -422,7 +466,6 @@ const emit = defineEmits([
     bottom: 2px;
     right: 2px;
   }
-
   .vehicle-icon {
     width: 20px;
     height: 12px;
@@ -608,14 +651,13 @@ const emit = defineEmits([
   /* 徽章样式 */
   .badge {
     position: absolute;
-    top: -4px;
-    right: -4px;
+    top: -10px;
+    right: -10px;
     background: #ef4444;
     color: #ffffff;
-    font-size: 10px;
-    font-weight: bold;
-    width: 16px;
-    height: 16px;
+    font-size: 12px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -637,12 +679,12 @@ const emit = defineEmits([
     align-items: center;
     justify-content: flex-end;
     gap: 12px;
-    height: 50%;
+    height: 90px;
   }
 
   .zoom-btn {
-    width: 32px;
-    height: 32px;
+    width: 26px;
+    height: 26px;
     background: #ffffff;
     border-radius: 50%;
     display: flex;
@@ -654,11 +696,87 @@ const emit = defineEmits([
 
   .zoom-plus,
   .zoom-minus {
-    font-size: 28px;
+    font-size: 26px;
     font-weight: bold;
     color: #1e3a8a;
-    line-height: 1;
+    line-height: 24px;
     user-select: none;
+  }
+
+  .zoom-plus {
+    font-size: 24px;
+  }
+  // 新增：工具栏项目图标样式
+  .layers-icon,
+  .legend-icon,
+  .ship-icon,
+  .search-comprehensive-icon,
+  .track-search-icon,
+  .group-car-icon,
+  .tide-search-icon {
+    width: 20px;
+    height: 20px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  // 控制图层图标
+  .layers-icon {
+    background: url("@/assets/imgs/layers.png") no-repeat center center;
+  }
+  .toolbar-item.active .layers-icon {
+    background: url("@/assets/imgs/layers-a.png") no-repeat center center;
+  }
+
+  // 图例展示图标
+  .legend-icon {
+    background: url("@/assets/imgs/legend.png") no-repeat center center;
+  }
+  .toolbar-item.active .legend-icon {
+    background: url("@/assets/imgs/legend-a.png") no-repeat center center;
+  }
+
+  // 船舶事件图标
+  .ship-icon {
+    background: url("@/assets/imgs/ship.png") no-repeat center center;
+  }
+  .toolbar-item.active .ship-icon {
+    background: url("@/assets/imgs/ship-a.png") no-repeat center center;
+  }
+
+  // 综合检索图标
+  .search-comprehensive-icon {
+    background: url("@/assets/imgs/search-comprehensive.png") no-repeat center
+      center;
+  }
+  .toolbar-item.active .search-comprehensive-icon {
+    background: url("@/assets/imgs/search-comprehensive-a.png") no-repeat center
+      center;
+  }
+
+  // 轨迹查询图标
+  .track-search-icon {
+    background: url("@/assets/imgs/track-search.png") no-repeat center center;
+  }
+  .toolbar-item.active .track-search-icon {
+    background: url("@/assets/imgs/track-search-a.png") no-repeat center center;
+  }
+
+  // 团伙车辆查询图标
+  .group-car-icon {
+    background: url("@/assets/imgs/group-car.png") no-repeat center center;
+  }
+  .toolbar-item.active .group-car-icon {
+    background: url("@/assets/imgs/group-car-a.png") no-repeat center center;
+  }
+
+  // 潮汐查询图标
+  .tide-search-icon {
+    background: url("@/assets/imgs/tide-search.png") no-repeat center center;
+  }
+  .toolbar-item.active .tide-search-icon {
+    background: url("@/assets/imgs/tide-search-a.png") no-repeat center center;
   }
 }
 </style>

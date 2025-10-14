@@ -109,11 +109,15 @@
 
 .vehicle-popup .info-value {
   font-size: 12px;
-  color: #bcc1c1;
+  color: #c1bebc;
   font-weight: 400;
   text-align: left;
   flex: 1;
   margin-left: 8px;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 
@@ -122,7 +126,7 @@
 .vehicle-popup .popup-footer {
   display: flex;
   align-items: center;
-  gap: 100px;
+  justify-content: space-between;
 
   padding-right: 8px;
 }

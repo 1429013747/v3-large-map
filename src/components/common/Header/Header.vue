@@ -114,7 +114,7 @@ onMounted(() => {
   top: 0;
   left: 0;
   right: 0;
-  height: 60px;
+  height: 88px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -215,7 +215,7 @@ onMounted(() => {
   margin: 0;
   font-family: YouSheBiaoTiHei, YouSheBiaoTiHei;
   font-weight: 600;
-  font-size: 24px;
+  font-size: 30px;
   color: #eff8fc;
   line-height: 29px;
   text-align: left;
@@ -250,14 +250,11 @@ onMounted(() => {
     line-height: 15px;
     text-align: center;
     font-style: normal;
+    padding: 2px 10px;
     text-transform: none;
     color: #0edfb8;
     margin-right: 110px;
-    background: linear-gradient(
-      0deg,
-      #0edfb8 10%,
-      #ffffff 100%
-    );
+    background: linear-gradient(0deg, #0edfb8 10%, #ffffff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -336,7 +333,7 @@ onMounted(() => {
 
 @media (max-width: 768px) {
   .header-container {
-    height: 60px;
+    height: 88px;
     padding: 0 10px;
   }
 
@@ -348,8 +345,7 @@ onMounted(() => {
     }
   }
 
-  .return-btn,
-  .backend-btn {
+  .return-btn {
     padding: 6px 12px;
     font-size: 12px;
   }

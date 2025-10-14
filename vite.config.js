@@ -22,11 +22,39 @@ export default defineConfig(({ mode }) => {
     base: env.VITE_PUBLIC_PATH || './',
     server: {
       host: true, // 监听所有地址，包括局域网和公网地址
+      // host: 'localhost', // 监听localhost地址
       proxy: {
-        '/api': {
-          target: 'http://192.168.113.174:6018',
-          changeOrigin: true
+        [env.VITE_API_BASE_API]: {
+          target: env.VITE_API_BASE_URL,
+          changeOrigin: true,
           // rewrite: path => path.replace(/^\/api/, '/ccgf')
+          configure: (proxy, options) => {
+            // 请求拦截
+            proxy.on('proxyReq', (proxyReq, req, res) => {
+              const timestamp = new Date().toISOString()
+              const method = req.method
+              const url = req.url
+              const target = options.target
+              const fullUrl = `${target}${url}`
+
+              console.log('🚀 ===== 请求开始 =====')
+              console.log(`📅 时间: ${timestamp}`)
+              console.log(`🔗 完整URL: ${fullUrl}`)
+              console.log(`📝 请求方法: ${method}`)
+              console.log(`🎯 目标地址: ${target}`)
+              console.log(`📍 请求路径: ${url}`)
+              console.log(`🌐 来源地址: ${req.headers.host}`)
+              console.log(`👤 用户代理: ${req.headers['user-agent'] || 'N/A'}`)
+            })
+
+            // 响应拦截
+            proxy.on('proxyRes', (proxyRes, req, res) => {
+              const timestamp = new Date().toISOString()
+              const statusCode = proxyRes.statusCode
+              const statusMessage = proxyRes.statusMessage
+              const responseTime = Date.now() - req.startTime
+            })
+          }
         }
       }
     },
@@ -37,7 +65,7 @@ export default defineConfig(({ mode }) => {
       }),
       vue(),
       svgLoader(),
-      // 配置自动导入组件
+      // 按需自动导入组件
       Components({
         resolvers: [
           AntDesignVueResolver({
@@ -45,12 +73,14 @@ export default defineConfig(({ mode }) => {
             resolveIcons: true // 自动导入图标
           })
         ],
-        dts: true,
+        dts: true, // 生成组件类型
+        dirs: ['src/components', 'src/layouts'], // 指定组件目录
         types: [{
-          from: 'vue-router',
-          names: ['RouterLink', 'RouterView']
+          from: 'vue-router', // 生成路由类型
+          names: ['RouterLink', 'RouterView'] // 生成路由类型
         }]
       }),
+      // 按需自动加载指定资源到每个页面
       AutoImport({
         imports: [
           'vue',
@@ -58,8 +88,8 @@ export default defineConfig(({ mode }) => {
           'pinia',
           '@vueuse/core'
         ],
-        dts: false,
-        dirs: ['src/composables', 'src/stores'],
+        dts: false, // 生成组件类型
+        dirs: ['src/composables', 'src/stores'], // 指定组合式函数目录
         vueTemplate: true
       }),
       // gzip 压缩
@@ -73,7 +103,6 @@ export default defineConfig(({ mode }) => {
       legacy({
         // targets: ['ie >= 11']
         targets: ['defaults', 'not IE 11']
-
       })
     ].filter(Boolean),
     resolve: {
@@ -85,7 +114,17 @@ export default defineConfig(({ mode }) => {
     css: {
       preprocessorOptions: {
         scss: {
-          additionalData: `@use "@/styles/variables.scss" as *;`
+          additionalData: `
+          @use "@/styles/variables.scss" as *;
+          @use "@/styles/measure.scss" as *;
+          @use "@/styles/ship-context-menu.scss" as *;
+          @use "@/styles/layer-control.scss" as *;
+          @use "@/styles/ship-popup.scss" as *;
+          @use "@/styles/bottom-statistics.scss" as *;
+          @use "@/styles/popup-common.scss" as *;
+          @use "@/styles/marker-popup.scss" as *;
+          @use "@/styles/global.scss" as *;
+          `
         }
       }
     },

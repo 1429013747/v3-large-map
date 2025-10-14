@@ -1,6 +1,6 @@
 <template>
   <a-drawer
-    v-model:open="visible"
+    v-model:open="visibleModal"
     title="控制图层"
     placement="right"
     getContainer=".ui-container"
@@ -95,91 +95,63 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  layers: {
+    type: Array,
+    default: [],
+  },
+  sensingDevices: {
+    type: Array,
+    default: [],
+  },
+  heatmaps: {
+    type: Array,
+    default: [],
+  },
 });
 
 // Emits
-const emit = defineEmits(["update:open", "layer-toggle", "layer-click"]);
+const emit = defineEmits([
+  "update:open",
+  "layer-toggle",
+  "layer-click",
+]);
 
 // 响应式数据
-const visible = ref(props.open);
-const searchKeyword = ref("");
+const visibleModal = computed({
+  get() {
+    return props.open;
+  },
+  set(value) {
+    emit("update:open", value);
+  },
+});;
 const selectedLayerId = ref(null);
-
-// 图层数据
-const layers = ref([
-  { id: 1, name: "风险点", visible: true, type: "main" },
-  { id: 2, name: "交通要道", visible: false, type: "main" },
-  { id: 3, name: "工作站", visible: true, type: "main" },
-  { id: 4, name: "无走私村", visible: true, type: "main" },
-  { id: 5, name: "船舶动态", visible: true, type: "main" },
-  { id: 6, name: "车辆动态", visible: false, type: "main" },
-  { id: 7, name: "电子围栏", visible: false, type: "main" },
-  { id: 8, name: "案件", visible: false, type: "main" },
-]);
-
-// 感知设备
-const sensingDevices = ref([
-  { id: 1, name: "光电雷达覆盖区域", visible: true, type: "main" },
-  { id: 2, name: "智能限高杆", visible: false, type: "main" },
-  { id: 3, name: "视频感知设备", visible: true, type: "main" },
-]);
-
-// 热力图数据
-const heatmaps = ref([
-  { id: 101, name: "风险点热力图", visible: true, type: "heatmap" },
-  { id: 102, name: "综合案件热力图", visible: false, type: "heatmap" },
-  { id: 103, name: "涉冻品案件热力图", visible: true, type: "heatmap" },
-  { id: 104, name: "涉成品油案件热力图", visible: false, type: "heatmap" },
-  { id: 105, name: "车辆运行热力图", visible: false, type: "heatmap" },
-  { id: 106, name: "船舶运行热力图", visible: false, type: "heatmap" },
-]);
 
 // 计算属性
 const filteredLayers = computed(() => {
-  if (!searchKeyword.value) return layers.value;
-  return layers.value.filter((layer) =>
-    layer.name.toLowerCase().includes(searchKeyword.value.toLowerCase())
-  );
+  return props.layers;
+});
+const sensingDevices = computed(() => {
+  return props.sensingDevices;
 });
 
 const filteredHeatmaps = computed(() => {
-  if (!searchKeyword.value) return heatmaps.value;
-  return heatmaps.value.filter((heatmap) =>
-    heatmap.name.toLowerCase().includes(searchKeyword.value.toLowerCase())
-  );
+  return props.heatmaps;
 });
 
 // 方法
 const handleClose = () => {
-  visible.value = false;
   emit("update:open", false);
-};
-
-const handleSearch = () => {
-  // 搜索逻辑
-  console.log("搜索:", searchKeyword.value);
 };
 
 const handleLayerClick = (layer) => {
   selectedLayerId.value = layer.id;
-  emit("layer-click", layer);
 };
 
 const handleLayerToggle = (layer) => {
   emit("layer-toggle", layer);
 };
 
-// 监听props变化
-watch(
-  () => props.open,
-  (newVal) => {
-    visible.value = newVal;
-  }
-);
-
-watch(visible, (newVal) => {
-  emit("update:open", newVal);
-});
 </script>
 
 <style lang="scss" scoped>

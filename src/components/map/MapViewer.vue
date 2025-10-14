@@ -32,9 +32,10 @@ const props = defineProps({
 const emit = defineEmits([
   "map-ready",
   "map-click",
+  "map-double-click",
+  "map-right-click",
   "map-move",
   "layer-change",
-  "map-zoom",
 ]);
 
 // 创建地图容器引用
@@ -71,11 +72,17 @@ const {
     onMapClick: (event) => {
       emit("map-click", event);
     },
+    onMapDoubleClick: (event) => {
+      emit("map-double-click", event);
+    },
     onMapMove: (event) => {
       emit("map-move", event);
     },
     onLayerChange: (layerName) => {
       emit("layer-change", layerName);
+    },
+    onMapRightClick: (event) => {
+      emit("map-right-click", event);
     },
   },
 });

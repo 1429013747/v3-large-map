@@ -1,0 +1,153 @@
+<template>
+  <div ref="chart" class="chart-container"></div>
+</template>
+
+<script setup>
+import { ref, watch, onMounted, onUnmounted } from "vue";
+import * as echarts from "echarts";
+
+const chart = ref(null);
+const chartInstance = ref(null);
+
+// 示例数据 - 实际使用时可以通过props传入
+const chartData = ref({
+  dates: ["1月", "2月", "3月", "4月", "5月", "6月", "7月"],
+  levels: [1, 2, 3, 1, 2, 3, 2], // 1:低风险, 2:中风险, 3:高风险
+});
+
+const initChart = () => {
+  if (!chart.value) return;
+
+  chartInstance.value = echarts.init(chart.value);
+
+  const option = {
+    tooltip: {
+     show: true,
+    },
+    xAxis: {
+      type: "category",
+      data: chartData.value.dates,
+      axisLabel: {
+        color: "#ffffff",
+      },
+      axisLine: {
+        lineStyle: {
+          color: "rgba(255, 255, 255, 0.3)",
+        },
+      },
+    },
+    yAxis: {
+      type: "value",
+      // name: "风险等级",
+      min: 0,
+      max: 4,
+      interval: 1,
+      axisLabel: {
+        color: "#ffffff",
+        formatter: (value) => {
+          const levelMap = { 1: "低风险", 2: "中风险", 3: "高风险" };
+          return levelMap[value] || "";
+        },
+      },
+      axisLine: {
+        lineStyle: {
+          color: "rgba(255, 255, 255, 0.3)",
+        },
+      },
+      splitLine: {
+        lineStyle: {
+          color: "rgba(255, 255, 255, 0.1)",
+        },
+      },
+    },
+    series: [
+      {
+        data: chartData.value.levels,
+        type: "line",
+        smooth: false,
+        lineStyle: {
+          color: "#FFD941",
+          width: 2,
+        },
+        itemStyle: {
+          color: "#FFD941",
+        },
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            {
+              offset: 0,
+              color: "rgb(255, 217, 65,.3)",
+            },
+            {
+              offset: 1,
+              color: "rgba(0, 255, 255, 0)",
+            },
+          ]),
+        },
+        symbolSize: 8,
+        symbol: "circle",
+      },
+    ],
+    grid: {
+      left: "10%",
+      right: "0%",
+      top: "10%",
+      bottom: "10%",
+      // containLabel: true,
+    },
+  };
+
+  chartInstance.value.setOption(option);
+
+  // 监听窗口大小变化
+  window.addEventListener("resize", handleResize);
+};
+
+const handleResize = () => {
+  if (chartInstance.value) {
+    chartInstance.value.resize();
+  }
+};
+
+// 销毁图表实例
+onUnmounted(() => {
+  if (chartInstance.value) {
+    chartInstance.value.dispose();
+  }
+  window.removeEventListener("resize", handleResize);
+});
+
+// 初始化图表
+onMounted(() => {
+  
+  // 添加下一个tick的resize确保图表占满容器
+  setTimeout(() => {
+    initChart();
+    if (chartInstance.value) {
+      chartInstance.value.resize();
+    }
+  }, 0);
+});
+
+// 监听数据变化，重新渲染图表
+watch(chartData, () => {
+  if (chartInstance.value) {
+    initChart();
+  }
+});
+
+// 定义暴露给父组件的方法
+defineExpose({
+  updateChartData: (data) => {
+    chartData.value = data;
+  },
+});
+</script>
+
+<style scoped>
+.chart-container {
+  width: 100%;
+  height: 100%;
+  min-width: 0; /* 添加此行以确保flex容器中正确计算宽度 */
+}
+</style>

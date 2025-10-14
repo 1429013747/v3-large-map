@@ -32,4 +32,5 @@ const theme = {
 
 <style lang="scss">
 @use "./styles/antd-custom-style.scss" as *;
+
 </style>

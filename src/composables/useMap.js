@@ -6,6 +6,7 @@ import OSM from "ol/source/OSM";
 import XYZ from "ol/source/XYZ";
 import { fromLonLat, toLonLat } from "ol/proj";
 import { defaults as defaultControls } from "ol/control";
+import { defaults as defaultInteractions } from 'ol/interaction';
 import { Attribution } from "ol/control";
 
 /**
@@ -21,23 +22,22 @@ export function useMap(options = {}) {
         zoom = 10,
         callbacks = {}
     } = options;
+    // 公交线路 天地图
+    // http://api.tianditu.gov.cn/transit?type=busline&postStr={"startposition":"116.427562,39.939677","endposition":"116.349329,39.939132","linetype":"1"}&tk=0a48cde9eb28189acac8149c3f047266
 
     // 响应式数据
     const map = ref(null);
     const mapContainer = ref(null);
     const isMapReady = ref(false);
-    const currentLayer = ref("天地图");
-    const clickedCoordinate = ref(null);
     const mapCenter = ref(center);
     const mapZoom = ref(zoom);
-    const apiKey = ref("0a48cde9eb28189acac8149c3f047266");
-
+    const apiKey = ref("cff1fa4f29d5375c9d6290bd249ce077");
+    // const apiKey = ref("0a48cde9eb28189acac8149c3f047266");
     // 更新中心坐标
     const updateCenter = (newCenter) => {
         mapCenter.value = newCenter;
         console.log("中心坐标已更新:", newCenter);
     };
-
 
     // 图层配置 - 支持多图层叠加
     const layerConfigs = {
@@ -47,17 +47,6 @@ export function useMap(options = {}) {
                 crossOrigin: "anonymous"
             }),
             title: "CartoDB",
-            visible: false,
-            opacity: 1.0,
-            zIndex: 0,
-            type: "base" // 基础图层
-        },
-        高德地图: {
-            source: new XYZ({
-                url: "https://webrd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}",
-                crossOrigin: "anonymous"
-            }),
-            title: "高德地图",
             visible: false,
             opacity: 1.0,
             zIndex: 0,
@@ -85,6 +74,17 @@ export function useMap(options = {}) {
             zIndex: 0,
             type: "base" // 基础图层
         },
+        高德地图: {
+            source: new XYZ({
+                url: "https://webrd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}",
+                crossOrigin: "anonymous"
+            }),
+            title: "高德地图",
+            visible: false,
+            opacity: 1.0,
+            zIndex: 0,
+            type: "base" // 基础图层
+        },
         高德卫星: {
             source: new XYZ({
                 url: "https://webst0{1-4}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
@@ -95,108 +95,9 @@ export function useMap(options = {}) {
             opacity: 1.0,
             zIndex: 0,
             type: "base" // 基础图层
-        },
-        Google卫星: {
-            source: new XYZ({
-                url: "https://mt{0-3}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
-                crossOrigin: "anonymous"
-            }),
-            title: "Google卫星",
-            visible: false,
-            opacity: 1.0,
-            zIndex: 0,
-            type: "base" // 基础图层
-        },
-        本地备用: {
-            source: new XYZ({
-                url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                crossOrigin: "anonymous",
-                subdomains: ['a', 'b', 'c']
-            }),
-            title: "本地备用",
-            visible: false,
-            opacity: 1.0,
-            zIndex: 0,
-            type: "base" // 基础图层
         }
     };
 
-    // 图层状态管理
-    const layerStates = ref({});
-    const activeLayers = ref([]); // 当前激活的图层列表
-
-    // 创建地图图层
-    const createLayers = () => {
-        const layers = [];
-        Object.values(layerConfigs).forEach((config, index) => {
-            const layer = new TileLayer({
-                source: config.source,
-                title: config.title,
-                visible: config.visible,
-                opacity: config.opacity,
-                zIndex: config.zIndex || index
-            });
-
-            // 添加错误处理
-            layer.getSource().on('tileloaderror', (event) => {
-                console.warn(`图层 ${config.title} 瓦片加载失败:`, event);
-                // 如果当前图层加载失败，尝试切换到备用图层
-                if (config.visible && activeLayers.value.includes(config.title)) {
-                    switchToFallbackLayer();
-                }
-            });
-
-            // 初始化图层状态
-            layerStates.value[config.title] = {
-                visible: config.visible,
-                opacity: config.opacity,
-                zIndex: config.zIndex || index
-            };
-
-            // 如果图层可见，添加到激活列表
-            if (config.visible) {
-                if (!activeLayers.value.includes(config.title)) {
-                    activeLayers.value.push(config.title);
-                }
-            }
-
-            layers.push(layer);
-        });
-        return layers;
-    };
-
-    // 切换到备用图层
-    const switchToFallbackLayer = () => {
-        const fallbackLayers = ['CartoDB', 'Stamen', '高德地图', '天地图', '本地备用'];
-        for (const layerName of fallbackLayers) {
-            if (layerConfigs[layerName]) {
-                console.log(`切换到备用图层: ${layerName}`);
-                switchLayer(layerName);
-                break;
-            }
-        }
-    };
-
-    // 创建地图控件
-    const createControls = () => {
-        return defaultControls({
-            attribution: false,
-            zoom: false,  // 禁用缩放控件
-            rotate: false
-        }).extend([
-            // 比例尺
-            // new ScaleLine({
-            //     units: "metric",
-            //     bar: true,
-            //     steps: 4,
-            //     text: true,
-            //     minWidth: 140
-            // }),
-            new Attribution({
-                collapsible: false
-            })
-        ]);
-    };
 
     // 初始化地图
     const initMap = (container) => {
@@ -228,7 +129,10 @@ export function useMap(options = {}) {
                 target: container,
                 layers: layers,
                 view: view,
-                controls: controls
+                controls: controls,
+                interactions: defaultInteractions({
+                    doubleClickZoom: false,   //屏蔽双击放大事件
+                })
             });
             mapContainer.value = container;
             // 绑定事件
@@ -254,17 +158,34 @@ export function useMap(options = {}) {
         if (!map.value) return;
 
         // 地图点击事件
-        map.value.on("click", (event) => {
+        map.value.on("singleclick", (event) => {
+
             const coordinate = event.coordinate;
             // 将 Web Mercator 坐标转换为经纬度
             const lonLat = toLonLat(coordinate);
-            clickedCoordinate.value = lonLat;
 
             if (callbacks.onMapClick) {
                 callbacks.onMapClick({
                     coordinate: coordinate,
                     lonLat: lonLat,
-                    pixel: event.pixel
+                    pixel: event.pixel,
+                    event: event
+                });
+            }
+        });
+        // 地图双击事件
+        map.value.on("dblclick", (event) => {
+
+            const coordinate = event.coordinate;
+            // 将 Web Mercator 坐标转换为经纬度
+            const lonLat = toLonLat(coordinate);
+
+            if (callbacks.onMapDoubleClick) {
+                callbacks.onMapDoubleClick({
+                    coordinate: coordinate,
+                    lonLat: lonLat,
+                    pixel: event.pixel,
+                    event: event
                 });
             }
         });
@@ -273,17 +194,38 @@ export function useMap(options = {}) {
         map.value.on("moveend", () => {
             const scope = map.value.getView().calculateExtent(map.value.getSize()); // 获取地图范围
             const center = map.value.getView().getCenter(); // 获取地图中心
+            // 将 Web Mercator 坐标转换为经纬度
+            const lonLat = toLonLat(center);
             const zoom = map.value.getView().getZoom(); // 获取地图缩放级别
 
             if (callbacks.onMapMove) {
                 callbacks.onMapMove({
                     scope,
                     zoom,
-                    center
+                    center: lonLat,
                 });
             }
         });
+        // 监听鼠标右击事件
+        map.value.on('contextmenu', function (event) {
+            // 阻止默认的右键菜单弹出
+            event.originalEvent.preventDefault();
+            // 阻止事件冒泡
+            event.originalEvent.stopPropagation();
 
+            const coordinate = event.coordinate;
+            // 将 Web Mercator 坐标转换为经纬度
+            const lonLat = toLonLat(coordinate);
+            if (callbacks.onMapRightClick) {
+                callbacks.onMapRightClick({
+                    coordinate: coordinate,
+                    lonLat: lonLat,
+                    pixel: event.pixel,
+                    event: event
+                });
+            }
+
+        });
         // 地图加载完成事件
         map.value.on("loadend", () => {
             console.log("地图加载完成");
@@ -309,7 +251,63 @@ export function useMap(options = {}) {
         });
     };
 
+    // 创建地图图层
+    const createLayers = () => {
+        const layers = [];
+        Object.values(layerConfigs).forEach((config, index) => {
+            const layer = new TileLayer({
+                source: config.source,
+                title: config.title,
+                visible: config.visible,
+                opacity: config.opacity,
+                zIndex: config.zIndex || index
+            });
 
+            // 添加错误处理
+            layer.getSource().on('tileloaderror', (event) => {
+                // console.warn(`图层 ${config.title} 瓦片加载失败:`, event);
+                // 如果当前图层加载失败，尝试切换到备用图层
+                if (config.visible) {
+                    switchToFallbackLayer();
+                }
+            });
+            layers.push(layer);
+        });
+        return layers;
+    };
+
+    // 切换到备用图层
+    const switchToFallbackLayer = () => {
+        const fallbackLayers = ['高德卫星', '天地图', 'CartoDB', '高德地图'];
+        for (const layerName of fallbackLayers) {
+            if (layerConfigs[layerName]) {
+                console.log(`切换到备用图层: ${layerName}`);
+                switchLayer(layerName);
+                break;
+            }
+        }
+    };
+
+    // 创建地图控件
+    const createControls = () => {
+        return defaultControls({
+            attribution: false,
+            zoom: false,  // 禁用缩放控件
+            rotate: false
+        }).extend([
+            // 比例尺
+            // new ScaleLine({
+            //     units: "metric",
+            //     bar: true,
+            //     steps: 4,
+            //     text: true,
+            //     minWidth: 140
+            // }),
+            new Attribution({
+                collapsible: false
+            })
+        ]);
+    };
     // 切换图层 - 支持叠加模式
     const switchLayer = (layerName) => {
         if (!map.value) return;
@@ -325,33 +323,23 @@ export function useMap(options = {}) {
         layers.forEach((layer) => {
             const isTarget = layer.get("title") === layerName;
             const layerZIndex = layer.getZIndex();
-
             // 只处理基础图层（zIndex < 1000），不影响标记点等特殊图层
-            if (layerZIndex < 1000) {
+            if (layerZIndex < 100) {
                 layer.setVisible(isTarget);
                 layer.setZIndex(isTarget ? 1 : -1);
             }
         });
 
-        // 更新所有图层状态
-        Object.keys(layerStates.value).forEach(key => {
-            layerStates.value[key].visible = key === layerName;
-        });
-
-        // 更新激活图层列表
-        activeLayers.value = [layerName];
-        currentLayer.value = layerName;
-
         // 调试：检查标记点图层状态
-        const markerLayers = layers.filter(layer => layer.getZIndex() >= 1000);
-        console.log('标记点图层状态:', markerLayers.map(layer => ({
-            title: layer.get('title') || '未命名',
-            visible: layer.getVisible(),
-            zIndex: layer.getZIndex()
-        })));
+        // const markerLayers = layers.filter(layer => layer.getZIndex() >= 1000);
+        // console.log('标记点图层状态:', markerLayers.map(layer => ({
+        //     title: layer.get('title') || '未命名',
+        //     visible: layer.getVisible(),
+        //     zIndex: layer.getZIndex()
+        // })));
 
         if (callbacks.onLayerChange) {
-            callbacks.onLayerChange(layerName,);
+            callbacks.onLayerChange(layerName);
         }
     };
 
@@ -371,10 +359,6 @@ export function useMap(options = {}) {
             const targetLayer = layers.find(layer => layer.get("title") === layerName);
             if (targetLayer) {
                 targetLayer.setVisible(true);
-                layerStates.value[layerName].visible = true;
-                if (!activeLayers.value.includes(layerName)) {
-                    activeLayers.value.push(layerName);
-                }
             }
         },
 
@@ -385,11 +369,6 @@ export function useMap(options = {}) {
             const targetLayer = layers.find(layer => layer.get("title") === layerName);
             if (targetLayer) {
                 targetLayer.setVisible(false);
-                layerStates.value[layerName].visible = false;
-                const index = activeLayers.value.indexOf(layerName);
-                if (index > -1) {
-                    activeLayers.value.splice(index, 1);
-                }
             }
         },
 
@@ -400,7 +379,6 @@ export function useMap(options = {}) {
             const targetLayer = layers.find(layer => layer.get("title") === layerName);
             if (targetLayer) {
                 targetLayer.setOpacity(opacity);
-                layerStates.value[layerName].opacity = opacity;
             }
         },
 
@@ -411,18 +389,7 @@ export function useMap(options = {}) {
             const targetLayer = layers.find(layer => layer.get("title") === layerName);
             if (targetLayer) {
                 targetLayer.setZIndex(zIndex);
-                layerStates.value[layerName].zIndex = zIndex;
             }
-        },
-
-        // 获取所有图层状态
-        getAllLayerStates: () => {
-            return layerStates.value;
-        },
-
-        // 获取激活的图层列表
-        getActiveLayers: () => {
-            return activeLayers.value;
         },
 
         // 重置所有图层（只显示一个基础图层）
@@ -432,15 +399,11 @@ export function useMap(options = {}) {
             layers.forEach((layer) => {
                 const isTarget = layer.get("title") === layerName;
                 const layerZIndex = layer.getZIndex();
-
                 // 只处理基础图层（zIndex < 1000），不影响标记点等特殊图层
-                if (layerZIndex < 1000) {
+                if (layerZIndex < 100) {
                     layer.setVisible(isTarget);
-                    layerStates.value[layer.get("title")].visible = isTarget;
                 }
             });
-            activeLayers.value = [layerName];
-            currentLayer.value = layerName;
         }
     };
 
@@ -493,12 +456,8 @@ export function useMap(options = {}) {
         map,
         mapContainer,
         isMapReady,
-        currentLayer,
-        clickedCoordinate,
         mapCenter,
         mapZoom,
-        layerStates,
-        activeLayers,
 
         // 方法
         initMap,
