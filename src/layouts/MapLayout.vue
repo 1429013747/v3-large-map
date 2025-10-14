@@ -244,19 +244,6 @@ onUnmounted(() => {
     background-position: center;
     background-repeat: no-repeat;
     transition: background-image 0.3s ease;
-
-    // 各个tab的背景图片
-    &.bg-tab1 {
-      background-image: url("@/assets/tab1-bg.png");
-    }
-
-    &.bg-tab2 {
-      background-image: url("@/assets/tab2-bg.png");
-    }
-
-    &.bg-tab3 {
-      background-image: url("@/assets/tab3-bg.png");
-    }
   }
 
   .control-tab {
