@@ -350,7 +350,6 @@ import { getMarkerData } from "@/mock/data.js";
 import { toLonLat, fromLonLat } from "ol/proj";
 import Modal from "ant-design-vue/es/modal";
 import { Vue3SeamlessScroll } from "vue3-seamless-scroll";
-import { getShorelineLayer, login } from "@/api/map.js";
 
 const defaultConfigStore = useDefaultConfigStore();
 // 地图配置
@@ -526,52 +525,6 @@ const onMapReady = async (mapInstance) => {
 
   // 初始化热力图
   heatmapConfig = useMapHeatmap(map.value);
-
-  getShorelineLayer().then((res) => {
-    if (res.success) {
-      const riskList = res.data.map((coord, index) => ({
-        coordinates: [coord.longitude, coord.latitude],
-        options: {
-          id: coord.id,
-          type: "risk-point",
-          useTypeLayer: useTypeLayer.value,
-          style: {
-            icon: {
-              src: getIconPath("allIcon2"),
-              size: [36, 36],
-              anchor: [0, 0],
-              scale: 0.7,
-              displacement: [13, -13],
-              offset: calculateRiskPointIconOffset(coord.riskLevel), // 使用不同的精灵图位置
-              borderSize: 25, // 外边框大小
-              borderColor: "#ffa502", // 外边框颜色
-              borderWidth: 2, // 外边框宽度
-              showBorder: false, // 初始隐藏边框
-            },
-          },
-          data: {
-            popupType: "risk-point",
-            dept: coord.orgName,
-            principal: coord.dutyName,
-            riskType: riskTyes[coord.riskPointType],
-            name: coord.riskPointName,
-            markerId: coord.id,
-            originData: coord,
-          },
-        },
-      }));
-      mapMarkersConfig.addMarkers(riskList, {
-        useBatch: true,
-        batchSize: 1000,
-        // isEnableCluster: true,
-        onProgress: (progress) => {
-          console.log("进度:", progress);
-        },
-      });
-      mapMarkersConfig.toggleShipMarkerStyle("risk-point", true); // 使用小绿点
-      useMapEvents.value = false;
-    }
-  });
 
   // 模拟数据
   getMarkerData(
