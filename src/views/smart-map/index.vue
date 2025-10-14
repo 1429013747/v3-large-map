@@ -1636,14 +1636,6 @@ const getSliderIndicatorStyle = computed(() => {
 });
 
 onMounted(async () => {
-  const res = await login({
-    password: "hXgeH7s92NwWreensbpp3g==",
-    account: "admin",
-  });
-  if (res.success) {
-    localStorage.setItem("token", res.data.token);
-  }
-
   const layersData = [
     ...layers.value,
     ...sensingDevices.value,
