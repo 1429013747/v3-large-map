@@ -1481,6 +1481,8 @@ const allMarkerListConfigs = {
   车辆动态: "car",
   交通要道: "track-route",
   车辆运行热力图: "vehicle-heatmap",
+  案件: "case",
+  工作站: "work-station",
 };
 // 控制图层面板事件处理
 const handleLayerToggle = (layer) => {
@@ -1501,6 +1503,9 @@ const initShowPanel = () => {
 
 const handleBottomMenuClick = (index) => {
   initShowPanel();
+  Object.values(allMarkerListConfigs).forEach((type) => {
+    mapMarkersConfig.toggleMarkerVisibilityByLayer(type, false);
+  });
   // 更新激活状态
   activeBottomMenu.value = index;
   if (index === 0) {
@@ -1512,14 +1517,14 @@ const handleBottomMenuClick = (index) => {
       智能限高杆: "height-bar",
       视频感知设备: "video-sensing",
       风险点热力图: "risk-hot",
-      站图标: "station",
+      工作站: "work-station",
       无走私村: "no-smuggling",
       案件: "case",
     };
     handleDefaultVisibleLayers(Object.keys(defaultVisibleLayers));
-
-    mapMarkersConfig.toggleMarkerVisibilityByLayer("ship", false);
-    mapMarkersConfig.toggleMarkerVisibilityByLayer("car", false);
+    Object.values(defaultVisibleLayers).forEach((type) => {
+      mapMarkersConfig.toggleMarkerVisibilityByLayer(type, true);
+    });
   } else if (index === 1) {
     console.log("重点船舶");
     const defaultVisibleLayers = {
@@ -1537,11 +1542,10 @@ const handleBottomMenuClick = (index) => {
     Object.values(defaultVisibleLayers).forEach((type) => {
       mapMarkersConfig.toggleMarkerVisibilityByLayer(type, true);
     });
-    mapMarkersConfig.toggleMarkerVisibilityByLayer("car", false);
   } else if (index === 2) {
     console.log("重点人员");
     const defaultVisibleLayers = {
-      站图标: "station",
+      工作站: "work-station",
       无走私村: "no-smuggling",
       案件: "case",
     };
@@ -1551,10 +1555,6 @@ const handleBottomMenuClick = (index) => {
     Object.values(defaultVisibleLayers).forEach((type) => {
       mapMarkersConfig.toggleMarkerVisibilityByLayer(type, true);
     });
-    mapMarkersConfig.toggleMarkerVisibilityByLayer("electronic-fence", false);
-    mapMarkersConfig.toggleMarkerVisibilityByLayer("risk-point", false);
-    mapMarkersConfig.toggleMarkerVisibilityByLayer("ship", false);
-    mapMarkersConfig.toggleMarkerVisibilityByLayer("car", false);
   } else if (index === 3) {
     console.log("可疑车辆");
     const defaultVisibleLayers = {
@@ -1572,23 +1572,14 @@ const handleBottomMenuClick = (index) => {
     Object.values(defaultVisibleLayers).forEach((type) => {
       mapMarkersConfig.toggleMarkerVisibilityByLayer(type, true);
     });
-    mapMarkersConfig.toggleMarkerVisibilityByLayer("risk-point", false);
-    mapMarkersConfig.toggleMarkerVisibilityByLayer("ship", false);
-    // mapMarkersConfig.toggleMarkerVisibilityByLayer("track-route", false);
   }
 };
 
 const handleDefaultVisibleLayers = (defaultVisibleLayers) => {
-  layers.value.forEach((val) => (val.visible = false));
-  sensingDevices.value.forEach((val) => (val.visible = false));
-  heatmaps.value.forEach((val) => (val.visible = false));
-  layers.value.forEach(
-    (val) => defaultVisibleLayers.includes(val.name) && (val.visible = true)
+  [...layers.value, ...sensingDevices.value, ...heatmaps.value].forEach(
+    (val) => (val.visible = false)
   );
-  sensingDevices.value.forEach(
-    (val) => defaultVisibleLayers.includes(val.name) && (val.visible = true)
-  );
-  heatmaps.value.forEach(
+  [...layers.value, ...sensingDevices.value, ...heatmaps.value].forEach(
     (val) => defaultVisibleLayers.includes(val.name) && (val.visible = true)
   );
 };
