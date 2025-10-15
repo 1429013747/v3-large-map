@@ -1,4 +1,4 @@
-import { ref, computed } from "vue";
+import { ref, computed, reactive } from "vue";
 import VectorSource from "ol/source/Vector";
 import VectorLayer from "ol/layer/Vector";
 import Heatmap from "ol/layer/Heatmap";
@@ -8,137 +8,224 @@ import Point from "ol/geom/Point";
 import { fromLonLat } from "ol/proj";
 
 /**
- * 热力图 Hook（OpenLayers）
+ * 多热力图 Hook（OpenLayers）
  * 依赖：传入现有的 map 实例（来自 useMap.getMap() 或 MapViewer 暴露的 map）
  *
  * 基本约定：
  * - 数据输入格式：[{ lon: number, lat: number, weight?: number }, ...]
  * - 或 GeoJSON FeatureCollection（Point）
+ * - 支持多个热力图层同时管理
  */
 export function useMapHeatmap(mapInstance) {
     const mapRef = ref(mapInstance || null);
-    const sourceRef = ref(null);
-    const heatmapLayerRef = ref(null);
-    const layerTitleRef = ref("热力图");
+    // 存储多个热力图层
+    const heatmapLayers = reactive(new Map());
 
-    const isReady = computed(() => !!mapRef.value && !!heatmapLayerRef.value);
+    const isReady = computed(() => !!mapRef.value);
+    const layerCount = computed(() => heatmapLayers.size);
 
-    const ensureLayer = (options = {}) => {
-        if (!mapRef.value) return;
-        if (heatmapLayerRef.value) return;
+    /**
+     * 创建新的热力图层
+     * @param {string} type 图层类型
+     * @param {Object} options 图层配置
+     * @returns {Object} 图层对象
+     */
+    const createLayer = (type, options = {}) => {
+        if (!mapRef.value) {
+            console.warn("地图实例不存在，无法创建热力图层");
+            return null;
+        }
+
+        if (heatmapLayers.has(type)) {
+            console.warn(`热力图层 ${type} 已存在`);
+            return heatmapLayers.get(type);
+        }
 
         const {
-            title = "热力图",
-            type = "heatmap",
+            title = `热力图-${type}`,
             visible = false,
             zIndex = 1000,
             blur = 15,
             radius = 8,
             gradient = undefined,
+            data = [],
         } = options;
 
-        layerTitleRef.value = title;
-        sourceRef.value = new VectorSource();
-        heatmapLayerRef.value = new Heatmap({
-            source: sourceRef.value,
+        const source = new VectorSource();
+        const heatmapLayer = new Heatmap({
+            source,
             visible,
             blur,
             radius,
             gradient,
         });
-        heatmapLayerRef.value.set("title", title);
-        heatmapLayerRef.value.set("type", type);
-        heatmapLayerRef.value.setZIndex(zIndex);
-        mapRef.value.addLayer(heatmapLayerRef.value);
-    };
 
-    const removeLayer = () => {
-        if (!mapRef.value || !heatmapLayerRef.value) return;
-        mapRef.value.removeLayer(heatmapLayerRef.value);
-        heatmapLayerRef.value = null;
-        sourceRef.value = null;
-    };
-    /**
-     * 热力图显示/隐藏
-     * @param {Boolean} visible 
-     * @returns 
-     */
-    const setVisible = (visible) => {
-        if (!heatmapLayerRef.value) return;
-        heatmapLayerRef.value.setVisible(visible);
-    };
+        heatmapLayer.set("title", title);
+        heatmapLayer.set("type", type);
+        heatmapLayer.setZIndex(zIndex);
 
-    /**
-     * 设置范围半径
-     * @param {Number} radius 
-     * @returns 
-     */
-    const setRadius = (radius) => {
-        if (!heatmapLayerRef.value) return;
-        heatmapLayerRef.value.setRadius(radius);
-    };
-    /**
-     * 设置范围模糊程度
-     * @param {Number} radius 
-     * @returns 
-     */
-    const setBlur = (blur) => {
-        if (!heatmapLayerRef.value) return;
-        heatmapLayerRef.value.setBlur(blur);
-    };
-    /**
-     * 设置范围径向渐变
-     * @param {Number} radius 
-     * @returns 
-     */
-    const setGradient = (gradient) => {
-        if (!heatmapLayerRef.value) return;
-        // gradient: string[] 颜色数组，如 ["#00f", "#0ff", "#0f0", "#ff0", "#f00"]
-        heatmapLayerRef.value.setGradient(gradient);
-    };
-    /**
-     * 清除所有热力图
-     */
-    const clear = () => {
-        if (!sourceRef.value) return;
-        sourceRef.value.clear();
+        mapRef.value.addLayer(heatmapLayer);
+
+        const layerInfo = {
+            type,
+            title,
+            layer: heatmapLayer,
+            source,
+            visible,
+            blur,
+            radius,
+            gradient,
+            zIndex,
+            createdAt: new Date()
+        };
+
+        heatmapLayers.set(type, layerInfo);
+
+        setLayerData(type, data);
+        return layerInfo;
     };
 
     /**
-     * 设置数据（数组点集）
+     * 删除指定热力图层
+     * @param {string} type 图层类型
+     */
+    const removeLayer = (type) => {
+        if (!mapRef.value || !heatmapLayers.has(type)) return;
+
+        const layerInfo = heatmapLayers.get(type);
+        mapRef.value.removeLayer(layerInfo.layer);
+        heatmapLayers.delete(type);
+    };
+
+    /**
+     * 删除所有热力图层
+     */
+    const removeAllLayers = () => {
+        if (!mapRef.value) return;
+
+        heatmapLayers.forEach((layerInfo) => {
+            mapRef.value.removeLayer(layerInfo.layer);
+        });
+        heatmapLayers.clear();
+    };
+    /**
+     * 设置指定图层显示/隐藏
+     * @param {string} type 图层类型
+     * @param {Boolean} visible 是否显示
+     */
+    const setLayerVisible = (type, visible) => {
+        const layerInfo = heatmapLayers.get(type);
+        if (!layerInfo) return;
+        layerInfo.layer.setVisible(visible);
+        layerInfo.visible = visible;
+    };
+
+    /**
+     * 切换指定图层显示状态
+     * @param {string} type 图层类型
+     */
+    const toggleLayerVisible = (type) => {
+        const layerInfo = heatmapLayers.get(type);
+        if (!layerInfo) return;
+        setLayerVisible(type, !layerInfo.visible);
+    };
+
+    /**
+     * 设置指定图层范围半径
+     * @param {string} type 图层类型
+     * @param {Number} radius 
+     */
+    const setLayerRadius = (type, radius) => {
+        const layerInfo = heatmapLayers.get(type);
+        if (!layerInfo) return;
+        layerInfo.layer.setRadius(radius);
+        layerInfo.radius = radius;
+    };
+
+    /**
+     * 设置指定图层范围模糊程度
+     * @param {string} type 图层类型
+     * @param {Number} blur 
+     */
+    const setLayerBlur = (type, blur) => {
+        const layerInfo = heatmapLayers.get(type);
+        if (!layerInfo) return;
+        layerInfo.layer.setBlur(blur);
+        layerInfo.blur = blur;
+    };
+
+    /**
+     * 设置指定图层范围径向渐变
+     * @param {string} type 图层类型
+     * @param {Array} gradient 颜色数组
+     */
+    const setLayerGradient = (type, gradient) => {
+        const layerInfo = heatmapLayers.get(type);
+        if (!layerInfo) return;
+        layerInfo.layer.setGradient(gradient);
+        layerInfo.gradient = gradient;
+    };
+
+    /**
+     * 清除指定图层数据
+     * @param {string} type 图层类型
+     */
+    const clearLayer = (type) => {
+        const layerInfo = heatmapLayers.get(type);
+        if (!layerInfo) return;
+        layerInfo.source.clear();
+    };
+
+    /**
+     * 清除所有图层数据
+     */
+    const clearAllLayers = () => {
+        heatmapLayers.forEach((layerInfo) => {
+            layerInfo.source.clear();
+        });
+    };
+
+    /**
+     * 设置指定图层数据（数组点集）
+     * @param {string} type 图层类型
      * @param {Array<{lon:number, lat:number, weight?:number}>} points
      */
-    const setData = (points = []) => {
-        if (!sourceRef.value) return;
+    const setLayerData = (type, points = []) => {
+        const layerInfo = heatmapLayers.get(type);
+        if (!layerInfo) return;
+
         const features = points.map((p) => {
             const feature = new Feature({
                 geometry: new Point(fromLonLat([p.lon, p.lat])),
                 weight: typeof p.weight === "number" ? p.weight : 1,
             });
-            // OpenLayers Heatmap 默认读取 feature.get('weight')
             return feature;
         });
-        sourceRef.value.clear();
-        sourceRef.value.addFeatures(features);
+        layerInfo.source.addFeatures(features);
     };
 
     /**
-     * 设置 GeoJSON 数据（Point FeatureCollection）
+     * 设置指定图层 GeoJSON 数据（Point FeatureCollection）
+     * @param {string} type 图层类型
      * @param {Object} geojson FeatureCollection
      * @param {Object} options { dataProjection?: string, featureProjection?: string, weightAttr?: string }
      */
-    const setGeoJSON = (geojson, options = {}) => {
-        if (!sourceRef.value || !geojson) return;
+    const setLayerGeoJSON = (type, geojson, options = {}) => {
+        const layerInfo = heatmapLayers.get(type);
+        if (!layerInfo || !geojson) return;
+
         const {
             dataProjection = "EPSG:4326",
             featureProjection = "EPSG:3857",
             weightAttr = "weight",
         } = options;
+
         const format = new GeoJSON();
         const features = format.readFeatures(geojson, {
             dataProjection,
             featureProjection,
         });
+
         // 归一化权重字段为 weight
         features.forEach((f) => {
             if (weightAttr !== "weight") {
@@ -147,25 +234,46 @@ export function useMapHeatmap(mapInstance) {
             }
             if (typeof f.get("weight") !== "number") f.set("weight", 1);
         });
-        sourceRef.value.clear();
-        sourceRef.value.addFeatures(features);
+
+        layerInfo.source.addFeatures(features);
     };
 
     /**
-     * 初始化或获取图层
-     */
-    const init = (options = {}) => {
-        ensureLayer(options);
-        return heatmapLayerRef.value;
-    };
-
-    /**
-     * 更新图层层级
+     * 设置指定图层层级
+     * @param {string} type 图层类型
      * @param {Number} zIndex
      */
-    const setZIndex = (zIndex) => {
-        if (!heatmapLayerRef.value) return;
-        heatmapLayerRef.value.setZIndex(zIndex);
+    const setLayerZIndex = (type, zIndex) => {
+        const layerInfo = heatmapLayers.get(type);
+        if (!layerInfo) return;
+        layerInfo.layer.setZIndex(zIndex);
+        layerInfo.zIndex = zIndex;
+    };
+
+    /**
+     * 获取所有图层信息
+     * @returns {Array} 图层信息数组
+     */
+    const getAllLayers = () => {
+        return Array.from(heatmapLayers.values());
+    };
+
+    /**
+     * 获取指定图层信息
+     * @param {string} type 图层类型
+     * @returns {Object|null} 图层信息
+     */
+    const getLayer = (type) => {
+        return heatmapLayers.get(type) || null;
+    };
+
+    /**
+     * 检查图层是否存在
+     * @param {string} type 图层类型
+     * @returns {Boolean}
+     */
+    const hasLayer = (type) => {
+        return heatmapLayers.has(type);
     };
 
     /**
@@ -173,49 +281,65 @@ export function useMapHeatmap(mapInstance) {
      */
     const setMap = (map) => {
         if (mapRef.value === map) return;
-        // 移除旧图层
-        if (mapRef.value && heatmapLayerRef.value) {
-            mapRef.value.removeLayer(heatmapLayerRef.value);
+
+        // 移除旧地图上的所有图层
+        if (mapRef.value) {
+            heatmapLayers.forEach((layerInfo) => {
+                mapRef.value.removeLayer(layerInfo.layer);
+            });
         }
+
         mapRef.value = map;
-        // 重新挂载
-        if (mapRef.value && heatmapLayerRef.value) {
-            mapRef.value.addLayer(heatmapLayerRef.value);
+
+        // 重新挂载所有图层到新地图
+        if (mapRef.value) {
+            heatmapLayers.forEach((layerInfo) => {
+                mapRef.value.addLayer(layerInfo.layer);
+            });
         }
     };
 
     /**
-     * 销毁
+     * 销毁所有热力图层
      */
     const destroy = () => {
-        removeLayer();
+        removeAllLayers();
         mapRef.value = null;
     };
 
     return {
         // 状态
         isReady,
-        layer: heatmapLayerRef,
-        source: sourceRef,
-        title: layerTitleRef,
+        layerCount,
+        heatmapLayers,
+
+        // 图层管理
+        createLayer,
+        removeLayer,
+        removeAllLayers,
+        getAllLayers,
+        getLayer,
+        hasLayer,
 
         // 生命周期/挂载
-        init,
         destroy,
         setMap,
 
-        // 数据
-        setData,
-        setGeoJSON,
-        clear,
+        // 数据操作
+        setLayerData,
+        setLayerGeoJSON,
+        clearLayer,
+        clearAllLayers,
 
-        // 外观
-        setVisible,
-        setRadius,
-        setBlur,
-        setGradient,
-        setZIndex,
+        // 外观控制
+        setLayerVisible,
+        toggleLayerVisible,
+        setLayerRadius,
+        setLayerBlur,
+        setLayerGradient,
+        setLayerZIndex,
     };
 }
+
 
 

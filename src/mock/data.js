@@ -340,19 +340,107 @@ export const getMarkerData = (mapMarkersConfig, useTypeLayer, heatmapConfig, war
         { fillColor: "#c18a7e80", strokeColor: "#fe383790", strokeWidth: 1 }
     );
 
-    // 热力图
-    heatmapConfig.init({
-        title: "风险热力点",
-        type: "heatmap",
-        visible: true,
+
+    // 风险热力点
+    heatmapConfig.createLayer("risk-hot", {
+        title: "风险热力图",
+        visible: false,
         zIndex: 1500,
-        radius: 10,
+        radius: 20,
         blur: 20,
         gradient: ["#00f", "#0ff", "#0f0", "#ff0", "#f00"],
+        data: [
+            { lon: 121.92, lat: 29.27, weight: 0.1 },
+            { lon: 121.95, lat: 29.29, weight: 0.9 },
+            { lon: 121.91, lat: 29.27, weight: 0.7 },
+            { lon: 121.99, lat: 29.30, weight: 0.9 },
+            { lon: 121.3314, lat: 29.1386, weight: 0.8 },
+        ],
     });
-    heatmapConfig.setData([
-        { lon: 121.92, lat: 29.27, weight: 0.5 },
-        { lon: 121.95, lat: 29.29, weight: 0.9 },
-        { lon: 121.3314, lat: 29.1386, weight: 0.8 },
-    ]);
+
+    // 综合案件热力点
+    heatmapConfig.createLayer("case-hot", {
+        title: "综合案件热力图",
+        visible: false,
+        zIndex: 1502,
+        radius: 20,
+        blur: 20,
+        gradient: ["#00f", "#0ff", "#0f0", "#ff0", "#f00"],
+        data: [
+            { lon: 121.62, lat: 29.07, weight: 0.1 },
+            { lon: 121.65, lat: 29.09, weight: 0.9 },
+            { lon: 121.61, lat: 29.07, weight: 0.7 },
+            { lon: 121.69, lat: 29.00, weight: 0.9 },
+            { lon: 121.6314, lat: 29.1386, weight: 0.8 },
+        ],
+    });
+
+    // 涉冻品案件热力点
+    heatmapConfig.createLayer("ice-hot", {
+        title: "涉冻品案件热力图",
+        visible: false,
+        zIndex: 1503,
+        radius: 20,
+        blur: 20,
+        gradient: ["#00f", "#0ff", "#0f0", "#ff0", "#f00"],
+        data: [
+            { lon: 121.12, lat: 28.27, weight: 0.1 },
+            { lon: 121.15, lat: 28.29, weight: 0.9 },
+            { lon: 121.11, lat: 28.27, weight: 0.7 },
+            { lon: 121.19, lat: 28.30, weight: 0.9 },
+            { lon: 121.3314, lat: 29.1386, weight: 0.8 },
+        ],
+    });
+
+    // 涉成品油案件热力点
+    heatmapConfig.createLayer("oil-hot", {
+        title: "涉成品油案件热力图",
+        visible: false,
+        zIndex: 1504,
+        radius: 20,
+        blur: 20,
+        gradient: ["#00f", "#0ff", "#0f0", "#ff0", "#f00"],
+        data: [
+            { lon: 121.52, lat: 29.67, weight: 0.1 },
+            { lon: 121.55, lat: 29.69, weight: 0.9 },
+            { lon: 121.51, lat: 29.67, weight: 0.7 },
+            { lon: 121.59, lat: 29.60, weight: 0.9 },
+            { lon: 121.5314, lat: 29.1386, weight: 0.8 },
+        ],
+    });
+
+    // 车辆运行热力图
+    heatmapConfig.createLayer("vehicle-heatmap", {
+        title: "车辆运行热力图",
+        visible: false,
+        zIndex: 1505,
+        radius: 15,
+        blur: 15,
+        gradient: ["#00f", "#0ff", "#0f0", "#ff0", "#f00"],
+        data: [
+            { lon: 121.72, lat: 29.17, weight: 0.3 },
+            { lon: 121.75, lat: 29.19, weight: 0.8 },
+            { lon: 121.71, lat: 29.17, weight: 0.6 },
+            { lon: 121.79, lat: 29.20, weight: 0.9 },
+            { lon: 121.7314, lat: 29.1386, weight: 0.7 },
+        ],
+    });
+
+    // 船舶运行热力图
+    heatmapConfig.createLayer("ship-heatmap", {
+        title: "船舶运行热力图",
+        visible: false,
+        zIndex: 1506,
+        radius: 18,
+        blur: 18,
+        gradient: ["#00f", "#0ff", "#0f0", "#ff0", "#f00"],
+        data: [
+            { lon: 121.82, lat: 29.37, weight: 0.4 },
+            { lon: 121.85, lat: 29.39, weight: 0.7 },
+            { lon: 121.81, lat: 29.37, weight: 0.5 },
+            { lon: 121.89, lat: 29.40, weight: 0.8 },
+            { lon: 121.8314, lat: 29.1386, weight: 0.6 },
+        ],
+    });
+
 };

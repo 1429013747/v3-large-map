@@ -1488,7 +1488,16 @@ const allMarkerListConfigs = {
 const handleLayerToggle = (layer) => {
   console.log("图层切换:", layer);
   // 这里可以添加实际的图层显示/隐藏逻辑
-  mapMarkersConfig.toggleMarkerVisibilityByLayer(layer.type, layer.visible);
+  const heatmap = heatmaps.value.find((heatmap) => heatmap.type === layer.type);
+  if (heatmap) {
+    // 只切换当前点击的热力图层，不影响其他图层
+    heatmaps.value.forEach((val) => {
+      val.visible = val.type === layer.type;
+      heatmapConfig.setLayerVisible(val.type, val.visible);
+    });
+  } else {
+    mapMarkersConfig.toggleMarkerVisibilityByLayer(layer.type, layer.visible);
+  }
 };
 
 // 初始化显示面板(关闭所有面板)
