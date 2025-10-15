@@ -1483,6 +1483,9 @@ const allMarkerListConfigs = {
   车辆运行热力图: "vehicle-heatmap",
   案件: "case",
   工作站: "work-station",
+  综合案件热力图: "case-hot",
+  涉冻品案件热力图: "ice-hot",
+  涉成品油案件热力图: "oil-hot",
 };
 // 控制图层面板事件处理
 const handleLayerToggle = (layer) => {

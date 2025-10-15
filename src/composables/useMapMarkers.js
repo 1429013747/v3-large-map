@@ -702,15 +702,17 @@ export function useMapMarkers(map) {
    */
   const toggleMarkerVisibilityByLayer = (type, visible) => {
     const layers = getAllLayers();
-    const targetLayer = layers.find(layer => layer.get("title") === type);
+    const targetLayers = layers.filter((layer, index) => layer.get("type") === type);
 
-    if (!targetLayer) {
+    if (targetLayers.length === 0) {
       console.warn(`类型 ${type} 的图层不存在`);
       return;
     }
 
     // 直接控制整个图层的可见性，而不是单个标记点
-    targetLayer.setVisible(visible);
+    targetLayers.forEach((layer) => {
+      layer.setVisible(visible);
+    });
 
     // 更新标记点的可见性状态
     const markerlist = markers.value.filter(m => m.options.type === type);

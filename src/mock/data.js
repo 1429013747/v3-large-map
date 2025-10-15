@@ -442,5 +442,4 @@ export const getMarkerData = (mapMarkersConfig, useTypeLayer, heatmapConfig, war
             { lon: 121.8314, lat: 29.1386, weight: 0.6 },
         ],
     });
-
 };
