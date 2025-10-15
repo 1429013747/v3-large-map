@@ -1,6 +1,7 @@
 
 import { generateRandomCoordinates } from "@/utils/coordinateGenerator.js";
 import { getIconPath, getIconPathMarkIcons } from "@/utils/utilstools.js";
+import { riskData } from "./riskData.js";
 export const getMarkerData = (mapMarkersConfig, useTypeLayer, heatmapConfig, warningDrawerVisible,
     initShowPanel) => {
     // 生成随机坐标点（50公里内）
@@ -346,16 +347,10 @@ export const getMarkerData = (mapMarkersConfig, useTypeLayer, heatmapConfig, war
         title: "风险热力图",
         visible: false,
         zIndex: 1500,
-        radius: 20,
+        radius: 10,
         blur: 20,
         gradient: ["#00f", "#0ff", "#0f0", "#ff0", "#f00"],
-        data: [
-            { lon: 121.92, lat: 29.27, weight: 0.1 },
-            { lon: 121.95, lat: 29.29, weight: 0.9 },
-            { lon: 121.91, lat: 29.27, weight: 0.7 },
-            { lon: 121.99, lat: 29.30, weight: 0.9 },
-            { lon: 121.3314, lat: 29.1386, weight: 0.8 },
-        ],
+        data: riskData
     });
 
     // 综合案件热力点
@@ -380,7 +375,7 @@ export const getMarkerData = (mapMarkersConfig, useTypeLayer, heatmapConfig, war
         title: "涉冻品案件热力图",
         visible: false,
         zIndex: 1503,
-        radius: 20,
+        radius: 10,
         blur: 20,
         gradient: ["#00f", "#0ff", "#0f0", "#ff0", "#f00"],
         data: [
@@ -397,7 +392,7 @@ export const getMarkerData = (mapMarkersConfig, useTypeLayer, heatmapConfig, war
         title: "涉成品油案件热力图",
         visible: false,
         zIndex: 1504,
-        radius: 20,
+        radius: 10,
         blur: 20,
         gradient: ["#00f", "#0ff", "#0f0", "#ff0", "#f00"],
         data: [
@@ -414,7 +409,7 @@ export const getMarkerData = (mapMarkersConfig, useTypeLayer, heatmapConfig, war
         title: "车辆运行热力图",
         visible: false,
         zIndex: 1505,
-        radius: 15,
+        radius: 10,
         blur: 15,
         gradient: ["#00f", "#0ff", "#0f0", "#ff0", "#f00"],
         data: [
@@ -431,7 +426,7 @@ export const getMarkerData = (mapMarkersConfig, useTypeLayer, heatmapConfig, war
         title: "船舶运行热力图",
         visible: false,
         zIndex: 1506,
-        radius: 18,
+        radius: 10,
         blur: 18,
         gradient: ["#00f", "#0ff", "#0f0", "#ff0", "#f00"],
         data: [
