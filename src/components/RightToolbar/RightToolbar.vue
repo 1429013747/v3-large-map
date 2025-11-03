@@ -35,55 +35,65 @@
       <!-- 分割线 -->
       <div class="divider"></div>
       <div class="toolbar-item-group">
-        <!-- 测距 -->
+        <div class="toolbar-item-group-inner" :class="{ expanded: isExpanded }">
+          <!-- 测距 -->
+          <div
+            class="toolbar-item"
+            style="width: 100%"
+            @click="handleMeasureDistance"
+          >
+            <div class="toolbar-icon">
+              <!-- <div class="measure-distance-icon"></div> -->
+              <img src="@/assets/imgs/ruler-a.png" alt="measure" />
+            </div>
+            <div class="toolbar-label">测距</div>
+          </div>
+
+          <!-- 测面 -->
+          <div class="toolbar-item" @click="handleMeasureArea">
+            <div class="toolbar-icon">
+              <!-- <div class="measure-area-icon"></div> -->
+              <img src="@/assets/imgs/area-a.png" alt="measure" />
+            </div>
+            <div class="toolbar-label">测面</div>
+          </div>
+
+          <!-- 标绘 -->
+          <div class="toolbar-item" @click="handlePlotting">
+            <div class="toolbar-icon">
+              <!-- <div class="plotting-icon"></div> -->
+              <img src="@/assets/imgs/draw-mark-a.png" alt="measure" />
+            </div>
+            <div class="toolbar-label">标绘</div>
+          </div>
+
+          <!-- 清空 -->
+          <div class="toolbar-item" @click="handleClear">
+            <div class="toolbar-icon">
+              <!-- <div class="clear-icon"></div> -->
+              <img src="@/assets/imgs/clear-a.png" alt="measure" />
+            </div>
+            <div class="toolbar-label">清空</div>
+          </div>
+
+          <!-- 定位 -->
+          <div class="toolbar-item active" @click="handleLocate">
+            <div class="toolbar-icon">
+              <!-- <div class="locate-icon"></div> -->
+              <img src="@/assets/imgs/dw-a.png" alt="measure" />
+            </div>
+            <div class="toolbar-label">定位</div>
+          </div>
+        </div>
         <div
-          class="toolbar-item"
-          style="width: 100%"
-          @click="handleMeasureDistance"
+          class="toolbar-item-group-inner-expand"
+          :class="{ expanded: isExpanded }"
+          @click="handleToggleExpand"
         >
-          <div class="toolbar-icon">
-            <!-- <div class="measure-distance-icon"></div> -->
-            <img src="@/assets/imgs/ruler-a.png" alt="measure" />
-          </div>
-          <div class="toolbar-label">测距</div>
-        </div>
-
-        <!-- 测面 -->
-        <div class="toolbar-item" @click="handleMeasureArea">
-          <div class="toolbar-icon">
-            <!-- <div class="measure-area-icon"></div> -->
-            <img src="@/assets/imgs/area-a.png" alt="measure" />
-          </div>
-          <div class="toolbar-label">测面</div>
-        </div>
-
-        <!-- 标绘 -->
-        <div class="toolbar-item" @click="handlePlotting">
-          <div class="toolbar-icon">
-            <!-- <div class="plotting-icon"></div> -->
-            <img src="@/assets/imgs/draw-mark-a.png" alt="measure" />
-          </div>
-          <div class="toolbar-label">标绘</div>
-        </div>
-
-        <!-- 清空 -->
-        <div class="toolbar-item" @click="handleClear">
-          <div class="toolbar-icon">
-            <!-- <div class="clear-icon"></div> -->
-            <img src="@/assets/imgs/clear-a.png" alt="measure" />
-          </div>
-          <div class="toolbar-label">清空</div>
-        </div>
-
-        <!-- 定位 -->
-        <div class="toolbar-item active" @click="handleLocate">
-          <div class="toolbar-icon">
-            <!-- <div class="locate-icon"></div> -->
-            <img src="@/assets/imgs/dw-a.png" alt="measure" />
-          </div>
-          <div class="toolbar-label">定位</div>
+          <img src="@/assets/imgs/toggle.png" alt="" />
         </div>
       </div>
+
       <!-- 分割线 -->
       <div class="divider"></div>
 
@@ -101,13 +111,18 @@
 </template>
 
 <script setup>
-import { ref, inject } from "vue";
-
+import { ref, inject, onMounted } from "vue";
+import { useDefaultConfigStore } from "@/stores/defaultConfig";
+const defaultConfigStore = useDefaultConfigStore();
+const loginUser = computed(() => defaultConfigStore.getLoginUser);
 // 当前激活的工具
 const activeTool = ref(null);
 
 // 工具栏显示状态
 const isVisible = ref(true);
+
+// 是否展开
+const isExpanded = ref(false);
 
 // 工具栏项目配置
 const toolbarItems = ref([
@@ -129,7 +144,6 @@ const toolbarItems = ref([
     icon: "ship",
     handler: "handleShipEvents",
     emit: "ship-events",
-    nums: 3,
   },
   {
     id: "comprehensive-search",
@@ -148,7 +162,6 @@ const toolbarItems = ref([
     label: "团伙车辆查询",
     icon: "group-car",
     emit: "gang-vehicle-query",
-    nums: 1,
   },
   {
     id: "tide-query",
@@ -204,11 +217,16 @@ const handleZoomOut = () => {
   emit("zoom-out");
 };
 
+const handleToggleExpand = () => {
+  isExpanded.value = !isExpanded.value;
+};
+
 const handleToggle = () => {
   isVisible.value = !isVisible.value;
   console.log("工具栏显示状态:", isVisible.value ? "显示" : "隐藏");
-  emit("toggle", isVisible.value);
 };
+
+onMounted(async () => {});
 
 // 定义emit事件
 const emit = defineEmits([
@@ -271,6 +289,7 @@ const emit = defineEmits([
   display: flex;
   align-items: center;
   flex-direction: column;
+  gap: 5px;
   pointer-events: auto;
   transition: all 0.3s ease;
 
@@ -293,38 +312,114 @@ const emit = defineEmits([
   }
 
   .toolbar-group {
-    padding-top: 30px;
     display: flex;
-    flex: 0.7;
     flex-direction: column;
     width: 100%;
-    gap: 6px;
+    gap: 4px;
   }
   .toolbar-item-group {
     display: flex;
-    flex: 0.3;
     flex-direction: column;
-    width: 100%;
-    padding-top: 10px;
-
-    .toolbar-item {
+    justify-content: flex-end;
+    height: 100%;
+    .toolbar-item-group-inner {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 4px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      position: relative;
       width: 100%;
+      gap: 6px;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+
+      &.expanded {
+        max-height: 500px;
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      .toolbar-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 4px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        width: 100%;
+        opacity: 0;
+        transform: translateY(150px);
+
+        &:nth-child(1) {
+          transition-delay: 0.1s;
+        }
+        &:nth-child(2) {
+          transition-delay: 0.15s;
+        }
+        &:nth-child(3) {
+          transition-delay: 0.2s;
+        }
+        &:nth-child(4) {
+          transition-delay: 0.25s;
+        }
+        &:nth-child(5) {
+          transition-delay: 0.3s;
+        }
+      }
+
+      &.expanded .toolbar-item {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .toolbar-label {
+        font-size: 12px;
+        color: #0ccef1;
+        text-align: center;
+        line-height: 1.2;
+        font-weight: 500;
+      }
     }
-    .toolbar-label {
-      font-size: 12px;
+    .toolbar-item-group-inner-expand {
+      cursor: pointer;
+      align-self: flex-end;
+      padding: 8px;
       color: #0ccef1;
-      text-align: center;
-      line-height: 1.2;
-      font-weight: 500;
+      font-size: 12px;
+      transition: all 0.3s ease;
+      border-radius: 4px;
+      margin: 20px 0 -10px 0;
+      img {
+        object-fit: contain;
+      }
+
+      &:hover {
+        background: rgba(12, 206, 241, 0.1);
+        transform: scale(1.05);
+      }
+
+      &::after {
+        content: "";
+        display: inline-block;
+        margin-left: 4px;
+        width: 0;
+        height: 0;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 4px solid #0ccef1;
+        transition: transform 0.3s ease;
+      }
+
+      &.expanded::after {
+        transform: rotate(180deg);
+      }
     }
   }
+
   .toolbar-icon {
     position: relative;
     width: 30px;
@@ -679,7 +774,7 @@ const emit = defineEmits([
     align-items: center;
     justify-content: flex-end;
     gap: 12px;
-    height: 90px;
+    padding-top: 10px;
   }
 
   .zoom-btn {

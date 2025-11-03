@@ -1492,7 +1492,7 @@ const handleLayerToggle = (layer) => {
   console.log("图层切换:", layer);
   // 这里可以添加实际的图层显示/隐藏逻辑
   const heatmap = heatmaps.value.find((heatmap) => heatmap.type === layer.type);
-  if (heatmap) {
+  if (heatmap.visible) {
     // 只切换当前点击的热力图层，不影响其他图层
     heatmaps.value.forEach((val) => {
       val.visible = val.type === layer.type;
