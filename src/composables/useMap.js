@@ -39,6 +39,8 @@ export function useMap(options = {}) {
         console.log("中心坐标已更新:", newCenter);
     };
 
+    let countIndex = 0;
+    let timer = null;
     // 图层配置 - 支持多图层叠加
     const layerConfigs = {
         CartoDB: {
@@ -95,9 +97,8 @@ export function useMap(options = {}) {
             opacity: 1.0,
             zIndex: 0,
             type: "base" // 基础图层
-        }
+        },
     };
-
 
     // 初始化地图
     const initMap = (container) => {
@@ -263,12 +264,22 @@ export function useMap(options = {}) {
                 zIndex: config.zIndex || index
             });
 
+            // 添加加载完成事件
+            layer.getSource().on('tileloadend', (event) => {
+                countIndex = 0;
+            });
+
             // 添加错误处理
             layer.getSource().on('tileloaderror', (event) => {
                 // console.warn(`图层 ${config.title} 瓦片加载失败:`, event);
                 // 如果当前图层加载失败，尝试切换到备用图层
                 if (config.visible) {
-                    switchToFallbackLayer();
+                    console.log("🚀 ~ createLayers ~ timer:", timer)
+                    if (timer) return;
+                    timer = setTimeout(() => {
+                        switchToFallbackLayer();
+                        timer = null;
+                    }, 200);
                 }
             });
             layers.push(layer);
@@ -279,13 +290,14 @@ export function useMap(options = {}) {
     // 切换到备用图层
     const switchToFallbackLayer = () => {
         const fallbackLayers = ['高德卫星', '天地图', 'CartoDB', '高德地图'];
-        for (const layerName of fallbackLayers) {
-            if (layerConfigs[layerName]) {
-                console.log(`切换到备用图层: ${layerName}`);
-                switchLayer(layerName);
-                break;
-            }
+        if (countIndex >= fallbackLayers.length) {
+            console.log('所有备用图层都已切换过');
+            return;
         }
+        const layerName = fallbackLayers[countIndex];
+        console.log(`切换到备用图层: ${layerName} index: ${countIndex}`);
+        switchLayer(layerName);
+        countIndex++;
     };
 
     // 创建地图控件
