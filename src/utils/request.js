@@ -27,6 +27,31 @@ service.interceptors.request.use(
       loadingInstance = message.loading('加载中...', 0)
     }
 
+    if (config.responseType === 'blob') {
+      // 检查response.data是否为Blob且类型为application/json
+      if (config.data instanceof Blob && config.data.type === 'application/json') {
+        // 解析Blob内容获取错误信息
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onload = () => {
+            try {
+              const data = JSON.parse(reader.result)
+              message.error(data.message || '请求出错')
+              reject(data)
+            } catch (e) {
+              message.error('请求出错')
+              reject(e)
+            }
+          }
+          reader.onerror = () => {
+            message.error('请求出错')
+            reject(new Error('解析错误'))
+          }
+          reader.readAsText(config.data)
+        })
+      }
+      return config
+    }
     return config
   },
   (error) => {
