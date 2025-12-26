@@ -18,7 +18,6 @@ const theme = {
     fontSizeHeading1: 32
   }
 };
-
 </script>
 
 <template>
