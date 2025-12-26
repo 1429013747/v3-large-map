@@ -6,7 +6,7 @@ name: 前端项目 CI/CD
 # 2. 手动触发（在 Actions 页面点击“Run workflow”）
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch: # 允许手动触发
 
 # 定义任务（Job）：所有任务在独立的 Runner 中执行
@@ -24,7 +24,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20.x # 替换为你的项目实际使用的 Node 版本（如 18.x）
-          cache: 'npm' # 缓存 npm 依赖，加速后续构建
+          cache: npm # 缓存 npm 依赖，加速后续构建
 
       # 步骤3：安装项目依赖
       - name: 安装依赖
@@ -50,7 +50,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
-          cache: 'npm'
+          cache: npm
 
       - name: 安装依赖
         run: npm install
