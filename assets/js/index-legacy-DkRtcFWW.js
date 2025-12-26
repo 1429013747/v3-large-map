@@ -1,0 +1,1 @@
+System.register(["./vue-vendor-legacy-BFAbShIo.js"],function(e,t){"use strict";var s,n;return{setters:[e=>{s=e.U,n=e.a3}],execute:function(){const t={class:"test-container"};e("default",{__name:"index",setup:e=>(e,r)=>(n(),s("div",t))})}}});
