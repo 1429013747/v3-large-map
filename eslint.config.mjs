@@ -17,6 +17,8 @@ export default antfu({
     'node/handle-callback-err': 'off',
     'no-unused-expressions': 'off',
     'eqeqeq': 'off',
+    'style/indent': 'off',
+    'style/brace-style': 'off',
     'import/no-duplicates': 'off',
     'perfectionist/sort-imports': 'off',
     'style/no-trailing-spaces': 'off',
