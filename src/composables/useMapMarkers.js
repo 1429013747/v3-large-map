@@ -1,20 +1,21 @@
-import { useMapClustering } from "@/composables/useMapClustering.js";
-import { useMapTracks } from "@/composables/useMapTracks.js";
-import { getIconPathMarkIcons } from "@/utils/utilstools.js";
+import { ref, reactive, nextTick, watch } from 'vue';
 import Feature from 'ol/Feature';
-import { Polygon as OlPolygon, Point } from 'ol/geom';
-import VectorLayer from 'ol/layer/Vector';
 import Overlay from 'ol/Overlay';
+import { Point, LineString, Polygon as OlPolygon } from 'ol/geom';
 import { fromLonLat, toLonLat } from 'ol/proj';
-
+import TileLayer from 'ol/layer/Tile';
+import { Style, Icon, Text, Circle, Fill, Stroke, RegularShape } from 'ol/style';
 import VectorSource from 'ol/source/Vector';
-import { Circle, Fill, Icon, RegularShape, Stroke, Style, Text } from 'ol/style';
-import { reactive, ref } from 'vue';
+import VectorLayer from 'ol/layer/Vector';
+
+import { useMapTracks } from '@/composables/useMapTracks.js';
+import { useMapClustering } from '@/composables/useMapClustering.js';
+import { getIconPathMarkIcons } from '@/utils/utilstools.js';
 
 /**
  * 地图标记点管理Hook
- * @param {object} map - OpenLayers地图实例
- * @returns {object} 标记点管理方法和状态
+ * @param {Object} map - OpenLayers地图实例
+ * @returns {Object} 标记点管理方法和状态
  */
 export function useMapMarkers(map) {
   // 标记点数据
@@ -27,6 +28,7 @@ export function useMapMarkers(map) {
   const markerSourcesByType = ref({});
 
   // Overlay 相关
+  const overlayList = ref([]);
   const markerPopupOverlay = ref(null);
   const markerPopupElement = ref(null);
 
@@ -34,13 +36,17 @@ export function useMapMarkers(map) {
   const customPolygonSource = ref(null);
   const customPolygonLayer = ref(null);
 
+  //扇形 相关
+  const markerIdCounter = ref(null);
+  const markerSectors = ref(null);
+
   // 点击事件回调
-  const onMarkerClickCallback = null;
+  let onMarkerClickCallback = null;
 
   // 标记点配置
   const markerConfig = reactive({
     defaultIcon: {
-      src: getIconPathMarkIcons("icon1"),
+      src: getIconPathMarkIcons('icon1'),
       size: [32, 32],
       anchor: [16, 32],
       displacement: [9, -9]
@@ -70,7 +76,9 @@ export function useMapMarkers(map) {
     showTrackRoute,
     getTrackVisibility,
     toggleTrackRoute,
-    destroy: trackDestroy
+    destroy: trackDestroy,
+    setSpeedValue,
+    getActiveAnimations
   } = useMapTracks(map);
   // 初始化轨迹图层
   initTrackLayer();
@@ -102,18 +110,27 @@ export function useMapMarkers(map) {
     customPolygonSource.value = new VectorSource();
     customPolygonLayer.value = new VectorLayer({
       source: customPolygonSource.value,
-      zIndex: 1008,
-      type: "electronic-fence",
-      title: "electronic-fence"
+      zIndex: 103,
+      type: 'electronic-fence',
+      title: 'electronic-fence'
     });
     map.addLayer(customPolygonLayer.value);
+    // 初始化扇形图层
+    markerIdCounter.value = new VectorSource();
+    markerSectors.value = new VectorLayer({
+      source: markerIdCounter.value,
+      zIndex: 100,
+      type: 'optical-radar',
+      title: 'optical-radar'
+    });
+    map.addLayer(markerSectors.value);
 
     if (!useTypeLayer) {
       markerSource.value = new VectorSource();
       markerLayer.value = new VectorLayer({
         source: markerSource.value,
         title: '标记点',
-        zIndex: 101
+        zIndex: 110
       });
       map.addLayer(markerLayer.value);
     }
@@ -122,7 +139,7 @@ export function useMapMarkers(map) {
   /**
    * 创建标记点弹窗 Overlay
    */
-  function createMarkerPopupOverlay() {
+  const createMarkerPopupOverlay = () => {
     if (!map) return;
 
     // 创建弹窗元素
@@ -147,7 +164,7 @@ export function useMapMarkers(map) {
    * @param {Function} contentFunction - overlay内容生成函数
    * @returns {Array} 创建的overlay ID列表
    */
-  function createMultipleMarkers(positions, contentFunction) {
+  const createMultipleMarkers = (positions, contentFunction) => {
     if (!Array.isArray(positions) || positions.length === 0) {
       console.warn('位置数组为空');
       return [];
@@ -155,7 +172,7 @@ export function useMapMarkers(map) {
 
     const createdOverlays = [];
 
-    positions.forEach((position) => {
+    positions.forEach((position, index) => {
       const [lng, lat] = position;
       const id = generateUniqueMarkerId('overlay');
 
@@ -164,11 +181,11 @@ export function useMapMarkers(map) {
       overlayElement.className = 'map-overlay';
       overlayElement.style.display = 'block';
 
+
       // 生成内容
       if (contentFunction && typeof contentFunction === 'function') {
         overlayElement.innerHTML = contentFunction(position);
-      }
-      else {
+      } else {
         overlayElement.innerHTML = `
             <div class="warn-overlay" onclick="window.disPlayWarnDetail&&window.disPlayWarnDetail(event)">
               <div class="warn-header">
@@ -182,20 +199,23 @@ export function useMapMarkers(map) {
               <div class="tip-animation">
               </div>
             </div>
-          `
+          `;
       }
 
       // 创建overlay
       const overlay = new Overlay({
         element: overlayElement,
         title: 'warn-overlay',
-        id,
+        type: 'warn-overlay',
+        id: id,
         stopEvent: true,
-        offset: [0, 0],
-        anchor: [0, 0],
-        positioning: 'bottom-center'
-      });
+        offset: [0, 20],
+        positioning: 'bottom-left',
+        // position: fromLonLat([lng, lat]),
+        // autoPan: false,
 
+      });
+      overlayList.value.push(overlay);
       // 设置位置并添加到地图
       overlay.setPosition(fromLonLat([lng, lat]));
       map.addOverlay(overlay);
@@ -204,24 +224,23 @@ export function useMapMarkers(map) {
     });
 
     return createdOverlays;
-  }
+  };
 
   /**
    * 清除所有Overlay
    */
-  function clearOverlaysByType() {
+  const clearOverlaysByType = () => {
     if (!map) return;
-    const overlays = map.getOverlays().getArray();
-    overlays.forEach((overlay) => {
-      if (overlay.options.title)
-        map.removeOverlay(overlay);
+    overlayList.value.forEach((overlay) => {
+      if (overlay.options.title) map.removeOverlay(overlay);
     });
-  }
+    overlayList.value = [];
+  };
 
   /**
    * 隐藏标记点弹窗
    */
-  function hideMarkerPopup() {
+  const hideMarkerPopup = () => {
     if (!markerPopupElement.value) return;
     markerPopupElement.value.style.display = 'none';
     if (markerPopupOverlay.value) {
@@ -231,10 +250,10 @@ export function useMapMarkers(map) {
 
   /**
    * 创建标记点样式
-   * @param {object} options - 样式选项
+   * @param {Object} options - 样式选项
    * @returns {Style} OpenLayers样式对象
    */
-  function createMarkerStyle(options = {}) {
+  const createMarkerStyle = (options = {}) => {
     const { icon, text } = options;
     const styles = [];
 
@@ -251,107 +270,152 @@ export function useMapMarkers(map) {
       const rotationOrigin = icon.rotationOrigin || 'center';
       const iconScale = icon.scale || 1;
       const iconOffset = icon.offset || [0, 0];
-      const iconSrc = icon.src || getIconPathMarkIcons("icon1");
+      const iconSrc = icon.src || getIconPathMarkIcons('icon1');
       const showBorder = icon.showBorder || false; // 默认不显示边框，除非明确设置为true
 
       // 外边框样式 - 根据showBorder决定是否显示
       if (showBorder) {
-        styles.push(new Style({
-          image: new RegularShape({
-            radius: borderSize,
-            points: 4, // 4个点构成正方形
-            angle: Math.PI / 4, // 旋转45度使其看起来是正方形而不是菱形
-            fill: new Fill({ color: 'transparent' }),
-            rotation: icon.rotation || 0, // 应用旋转（单位：弧度）
-            rotationOrigin: icon.rotationOrigin, // 随视图旋转
-            stroke: new Stroke({
-              color: borderColor,
-              width: borderWidth,
-              lineDash: [5, 5] // 虚线效果
-            }),
-            displacement // 使用 displacement 属性偏移
+        // styles.push(new Style({
+        //   image: new RegularShape({
+        //     radius: borderSize,
+        //     points: 4, // 4个点构成正方形
+        //     angle: Math.PI / 4, // 旋转45度使其看起来是正方形而不是菱形
+        //     fill: new Fill({ color: 'transparent' }),
+        //     rotation: icon.rotation || 0, // 应用旋转（单位：弧度）
+        //     rotationOrigin: icon.rotationOrigin, // 随视图旋转
+        //     stroke: new Stroke({
+        //       color: borderColor,
+        //       width: borderWidth,
+        //       lineDash: [20, 11] // 虚线效果
+        //     }),
+        //     displacement: displacement // 使用 displacement 属性偏移
+        //   })
+        // }));
+        styles.push(
+          new Style({
+            image: new Icon({
+              src: new URL('/src/assets/imgs/line.png', import.meta.url).href,
+              size: [46, 46],
+              anchor: [0.5, 0.5],
+              anchorXUnits: 'fraction',
+              anchorYUnits: 'fraction',
+              rotation: icon.rotation || 0, // 应用旋转（单位：弧度）
+              rotationOrigin: icon.rotationOrigin, // 随视图旋转
+              scale: 1,
+              offset: [0, 0], // 支持精灵图偏移
+              displacement: icon.isRadar ? [2, -1] : displacement
+            })
           })
-        }));
+        );
       }
 
       // 图标样式
-      styles.push(new Style({
-        image: new Icon({
-          src: iconSrc,
-          size: iconSize,
-          anchor: iconAnchor,
-          anchorXUnits: 'fraction',
-          anchorYUnits: 'fraction',
-          scale: iconScale,
-          offset: iconOffset, // 支持精灵图偏移
-          rotation: rotation || 0, // 弧度
-          rotationOrigin
+      styles.push(
+        new Style({
+          image: new Icon({
+            src: iconSrc,
+            size: iconSize,
+            anchor: iconAnchor,
+            anchorXUnits: 'fraction', // 锚点位置（背景中心对齐文本）
+            anchorYUnits: 'fraction', // 锚点位置（背景中心对齐文本）
+            scale: iconScale,
+            offset: iconOffset, // 支持精灵图偏移
+            rotation: rotation || 0, // 弧度
+            rotationOrigin: rotationOrigin
+          })
         })
-      }));
-    }
-    else {
+      );
+    } else {
       const borderSize = options.borderSize || 8 * 2.5;
       const borderColor = options.borderColor || '#ffa502';
+      const colorFill = options.colorFill || '#ffff00';
       const borderWidth = options.borderWidth || 2;
+      const borderStroke = options.borderStroke || '#00ff00';
       const showBorder = options.showBorder || false; // 默认不显示边框，除非明确设置为true
       const displacement = options.displacement || [9, -9];
-      const lineDash = options.lineDash || [5, 5];
+      const lineDash = options.lineDash || [0, 0];
+      const radius = options.radius || 4;
       // 外边框样式 - 根据showBorder决定是否显示
       if (showBorder) {
-        styles.push(new Style({
-          image: new RegularShape({
-            radius: borderSize,
-            points: 4, // 4个点构成正方形
-            angle: Math.PI / 4, // 旋转45度使其看起来是正方形而不是菱形
-            fill: new Fill({ color: 'transparent' }),
-            stroke: new Stroke({
-              color: borderColor,
-              width: borderWidth,
-              lineDash // 虚线效果
-            }),
-            displacement // 使用 displacement 属性偏移
+        // styles.push(new Style({
+        //   image: new RegularShape({
+        //     radius: borderSize,
+        //     points: 4, // 4个点构成正方形
+        //     angle: Math.PI / 4, // 旋转45度使其看起来是正方形而不是菱形
+        //     fill: new Fill({ color: 'transparent' }),
+        //     stroke: new Stroke({
+        //       color: borderColor,
+        //       width: borderWidth,
+        //       lineDash: lineDash // 虚线效果
+        //     }),
+        //     displacement: displacement // 使用 displacement 属性偏移
+        //   })
+        // }));
+
+        styles.push(
+          new Style({
+            image: new Icon({
+              src: new URL('/src/assets/imgs/line.png', import.meta.url).href,
+              size: [46, 46],
+              anchor: [0.5, 0.5],
+              anchorXUnits: 'fraction',
+              anchorYUnits: 'fraction',
+              rotation: icon.rotation || 0, // 应用旋转（单位：弧度）
+              rotationOrigin: icon.rotationOrigin, // 随视图旋转
+              scale: 1,
+              offset: [0, 0], // 支持精灵图偏移
+              displacement: icon.isRadar ? [2, -1] : displacement
+            })
           })
-        }));
+        );
       }
       // 淡绿色圆点
-      styles.push(new Style({
-        image: new Circle({
-          radius: 4,
-          fill: new Fill({ color: '#00ff00A0' }),
-          stroke: new Stroke({ color: '#00ff00', width: 1, lineDash: [2, 2] })
-
+      styles.push(
+        new Style({
+          image: new Circle({
+            radius: radius,
+            fill: new Fill({ color: colorFill }),
+            stroke: new Stroke({ color: borderStroke, width: borderWidth, lineDash: lineDash })
+          })
         })
-      }));
+      );
     }
 
     // 文本样式
-    if (text && text.showBackground) {
+    if (text && text.content && text.showBackground) {
       // 文本内容
-      styles.push(new Style({
-        text: new Text({
-          text: text.content || '',
-          font: text.font || '14px Arial',
-          fill: new Fill({ color: text.color || '#ffffff' }),
-          offsetX: text.offsetX || 10,
-          offsetY: text.offsetY || -17,
-          textAlign: text.align || 'center'
-          // 保持文字不随图标旋转
+      styles.push(
+        new Style({
+          text: new Text({
+            text: text.content || '',
+            font: text.font || '14px Arial',
+            fill: new Fill({ color: text.color || '#ffffff' }),
+            offsetX: text.offsetX || 10,
+            offsetY: text.offsetY || -17,
+            textAlign: text.align || 'center',
+            padding: [6, 12, 3, 12],
+            // 加背景色
+            backgroundFill: new Fill({ color: text.bgColor || '#ffffff' }),
+            backgroundPadding: [12, 12, 12, 12],
+            backgroundRadius: 5,
+            backgroundStroke: new Stroke({ color: text.bgStroke || '#000000', width: 1 })
+          })
         })
-      }));
+      );
 
       // 添加背景图片
-      styles.push(new Style({
-        image: new Icon({
-          src: text.bgImage || '/src/assets/imgs/qb.png',
-          size: text.bgSize || [100, 50], // 背景图片尺寸
-          anchor: [0.5, 0.5], // 锚点位置（背景中心对齐文本）
-          anchorXUnits: 'fraction',
-          anchorYUnits: 'fraction',
-          displacement: text.displacement || [18, 9], // 位置偏移
-          scale: text.bgScale || 1, // 缩放比例
-          opacity: text.bgOpacity || 1 // 透明度
-        })
-      }));
+      // styles.push(new Style({
+      //   image: new Icon({
+      //     src: text.bgImage || '/src/assets/imgs/qb.png',
+      //     size: text.bgSize || [100, 50], // 背景图片尺寸
+      //     anchor: [0.5, 0.5], // 锚点位置（背景中心对齐文本）
+      //     anchorXUnits: 'fraction',
+      //     anchorYUnits: 'fraction',
+      //     displacement: text.displacement || [18, 9], // 位置偏移
+      //     scale: text.bgScale || 1, // 缩放比例
+      //     opacity: text.bgOpacity || 1 // 透明度
+      //   })
+      // }));
     }
 
     return styles.length === 1 ? styles[0] : styles;
@@ -365,13 +429,27 @@ export function useMapMarkers(map) {
   let batchTimeout = null;
 
   /**
+   * 创建完全透明的样式（用于隐藏标记点）
+   * @returns {Style} 透明样式对象
+   */
+  const createInvisibleStyle = () => {
+    return new Style({
+      image: new Circle({
+        radius: 0, // 半径为0
+        fill: new Fill({ color: 'transparent' }), // 透明填充
+        stroke: new Stroke({ color: 'transparent', width: 0 }) // 透明边框
+      })
+    });
+  };
+
+  /**
    * 添加标记点 - 优化版本，支持批量处理
    * @param {Array} coordinates - 坐标 [经度, 纬度]
-   * @param {object} options - 标记点选项
-   * @param {boolean} useBatch - 是否使用批量处理
-   * @returns {string} 标记点ID
+   * @param {Object} options - 标记点选项
+   * @param {Boolean} useBatch - 是否使用批量处理
+   * @returns {String} 标记点ID
    */
-  function addMarker(coordinates, options = {}, useBatch = false) {
+  const addMarker = (coordinates, options = {}, useBatch = false) => {
     if (!map) {
       console.warn('地图或标记点图层未初始化');
       return null;
@@ -386,7 +464,7 @@ export function useMapMarkers(map) {
     // 创建要素
     const feature = new Feature({
       geometry: point,
-      id,
+      id: id,
       type: 'marker',
       ...options.data
     });
@@ -398,7 +476,6 @@ export function useMapMarkers(map) {
       style = createMarkerStyle(options.style);
       styleCache.set(styleKey, style);
     }
-    feature.setStyle(style);
 
     // 保存到状态
     const marker = {
@@ -406,9 +483,17 @@ export function useMapMarkers(map) {
       coordinates,
       feature,
       options,
-      visible: true
+      visible: options.visible !== undefined ? options.visible : true
     };
 
+    // 根据 visible 属性设置样式
+    if (marker.visible) {
+      feature.setStyle(style);
+    } else {
+      feature.setStyle(createInvisibleStyle());
+    }
+
+    markers.value.push(marker);
     if (useBatch) {
       // 添加到批量队列
       batchQueue.push(marker);
@@ -416,38 +501,35 @@ export function useMapMarkers(map) {
       // 如果队列达到批量大小，立即处理
       if (batchQueue.length >= BATCH_SIZE) {
         processBatchQueue();
-      }
-      else {
+      } else {
         // 延迟处理，等待更多标记点
         if (batchTimeout) {
           clearTimeout(batchTimeout);
         }
         batchTimeout = setTimeout(processBatchQueue, 16); // 约60fps
       }
-    }
-    else {
+    } else {
       // 立即添加到图层
       addMarkerToLayer(marker, options);
-      markers.value.push(marker);
     }
 
     return id;
-  }
+  };
 
   /**
    * 生成样式缓存键
-   * @param {object} styleOptions - 样式选项
-   * @returns {string} 缓存键
+   * @param {Object} styleOptions - 样式选项
+   * @returns {String} 缓存键
    */
-  function getStyleKey(styleOptions) {
+  const getStyleKey = (styleOptions) => {
     if (!styleOptions) return {};
     return styleOptions;
-  }
+  };
 
   /**
    * 处理批量队列
    */
-  function processBatchQueue() {
+  const processBatchQueue = () => {
     if (batchQueue.length === 0) return;
 
     const features = [];
@@ -463,15 +545,20 @@ export function useMapMarkers(map) {
           markersByType[marker.options.type] = [];
         }
         markersByType[marker.options.type].push(marker);
-      }
-      else {
+      } else {
         defaultMarkers.push(marker);
       }
     });
 
     // 批量添加到默认图层
     if (defaultMarkers.length > 0) {
-      const defaultFeatures = defaultMarkers.map(m => m.feature);
+      // 根据 visible 属性设置样式
+      defaultMarkers.forEach((m) => {
+        if (!m.visible) {
+          m.feature.setStyle(createInvisibleStyle());
+        }
+      });
+      const defaultFeatures = defaultMarkers.map((m) => m.feature);
       markerSource.value.addFeatures(defaultFeatures);
       markers.value.push(...defaultMarkers);
     }
@@ -479,7 +566,13 @@ export function useMapMarkers(map) {
     // 批量添加到类型图层
     Object.keys(markersByType).forEach((type) => {
       const typeMarkers = markersByType[type];
-      const typeFeatures = typeMarkers.map(m => m.feature);
+      // 根据 visible 属性设置样式
+      typeMarkers.forEach((m) => {
+        if (!m.visible) {
+          m.feature.setStyle(createInvisibleStyle());
+        }
+      });
+      const typeFeatures = typeMarkers.map((m) => m.feature);
 
       if (!markerSourcesByType.value[type]) {
         createMarkerLayerByType(type);
@@ -502,32 +595,35 @@ export function useMapMarkers(map) {
 
   /**
    * 添加标记点到图层
-   * @param {object} marker - 标记点对象
-   * @param {object} options - 选项
+   * @param {Object} marker - 标记点对象
+   * @param {Object} options - 选项
    */
-  function addMarkerToLayer(marker, options) {
+  const addMarkerToLayer = (marker, options) => {
+    // 如果 marker 不可见，确保使用透明样式
+    if (!marker.visible) {
+      marker.feature.setStyle(createInvisibleStyle());
+    }
+
     if (options.type && options.useTypeLayer) {
       addMarkerToTypeLayer(options.type, marker.feature);
-    }
-    else {
+    } else {
       markerSource.value.addFeature(marker.feature);
     }
-  }
+  };
 
   /**
    * 移除标记点
-   * @param {string} id - 标记点ID
+   * @param {String} id - 标记点ID
    */
-  function removeMarker(id) {
-    const markerIndex = markers.value.findIndex(m => m.id === id);
+  const removeMarker = (id) => {
+    const markerIndex = markers.value.findIndex((m) => m.id === id);
     if (markerIndex === -1) return;
 
     const marker = markers.value[markerIndex];
     // 如果标记点有类型且使用类型图层，从对应的类型图层中删除
     if (marker.options.type && marker.options.useTypeLayer) {
       removeMarkerFromTypeLayer(marker.options.type, marker.feature);
-    }
-    else if (markerSource.value) {
+    } else if (markerSource.value) {
       // 否则从默认图层中删除
       markerSource.value.removeFeature(marker.feature);
     }
@@ -537,11 +633,11 @@ export function useMapMarkers(map) {
 
   /**
    * 更新标记点
-   * @param {string} id - 标记点ID
-   * @param {object} updates - 更新内容
+   * @param {String} id - 标记点ID
+   * @param {Object} updates - 更新内容
    */
-  function updateMarker(id, updates = {}) {
-    const marker = markers.value.find(m => m.id === id);
+  const updateMarker = (id, updates = {}) => {
+    const marker = markers.value.find((m) => m.id === id);
     if (!marker) return;
 
     // 更新坐标
@@ -570,18 +666,16 @@ export function useMapMarkers(map) {
 
   /**
    * 显示/隐藏标记点边框
-   * @param {string} id - 标记点ID
-   * @param {boolean} show - 是否显示边框
+   * @param {String} id - 标记点ID
+   * @param {Boolean} show - 是否显示边框
    */
-  function toggleMarkerBorder(id, show = true) {
-    // const marker = markers.value.find(m => m.id === id);
+  const toggleMarkerBorder = (id, show = true) => {
     markers.value.forEach((marker) => {
-      if (marker.id === id) {
+      if (marker.id == id) {
         // 更新样式配置
         if (marker.options.style.icon) {
           marker.options.style.icon.showBorder = show;
-        }
-        else {
+        } else {
           marker.options.style.showBorder = show;
         }
         // 重新创建样式
@@ -592,56 +686,44 @@ export function useMapMarkers(map) {
   };
 
   /**
-   * 创建完全透明的样式（用于隐藏标记点）
-   * @returns {Style} 透明样式对象
-   */
-  function createInvisibleStyle() {
-    return new Style({
-      image: new Circle({
-        radius: 0, // 半径为0
-        fill: new Fill({ color: 'transparent' }), // 透明填充
-        stroke: new Stroke({ color: 'transparent', width: 0 }) // 透明边框
-      })
-    });
-  };
-
-  /**
    * 显示/隐藏标记点
-   * @param {string} id - 标记点ID
-   * @param {boolean} visible - 是否显示
+   * @param {String} id - 标记点ID
+   * @param {Boolean} visible - 是否显示
    */
-  function toggleMarkerVisibility(id, visible) {
-    const marker = markers.value.find(m => m.id === id);
+  const toggleMarkerVisibility = (id, visible) => {
+    const marker = markers.value.find((m) => m.id === id);
     if (!marker) return;
 
     marker.visible = visible;
     // 设置样式 visible false 时，使用完全透明的样式
-    marker.feature.setStyle(visible ? createMarkerStyle(marker.options.style) : createInvisibleStyle());
+    marker.feature.setStyle(
+      visible ? createMarkerStyle(marker.options.style) : createInvisibleStyle()
+    );
   };
 
   /**
    * 显示/隐藏标记点 - 优化版本，支持大量数据
-   * @param {string} type - 标记点类型
-   * @param {boolean} visible - 是否显示
+   * @param {String} type - 标记点类型
+   * @param {Boolean} visible - 是否显示
    */
-  function toggleMarkerVisibilityList(type, visible, isDelete = false) {
-    const markerlist = markers.value.filter(m => m.options.type === type);
+  const toggleMarkerVisibilityList = (type, visible, isDelete = false) => {
+    const markerlist = markers.value.filter((m) => m.options.type === type);
     if (markerlist.length === 0) return;
 
     // 如果数据量很大，使用批量更新
     if (markerlist.length > 1000) {
       if (isDelete) {
         batchToggleMarkerDelete(markerlist, type);
-      }
-      else {
+      } else {
         batchToggleMarkerVisibility(markerlist, visible);
       }
-    }
-    else {
+    } else {
       // 数据量较小时，直接更新
       markerlist.forEach((marker) => {
         marker.visible = visible;
-        marker.feature.setStyle(visible ? createMarkerStyle(marker.options.style) : createInvisibleStyle());
+        marker.feature.setStyle(
+          visible ? createMarkerStyle(marker.options.style) : createInvisibleStyle()
+        );
       });
     }
   };
@@ -649,9 +731,9 @@ export function useMapMarkers(map) {
   /**
    * 批量切换标记点可见性 - 使用 requestAnimationFrame 分批处理
    * @param {Array} markerlist - 标记点列表
-   * @param {boolean} visible - 是否显示
+   * @param {Boolean} visible - 是否显示
    */
-  function batchToggleMarkerVisibility(markerlist, visible) {
+  const batchToggleMarkerVisibility = (markerlist, visible) => {
     const batchSize = 1000; // 每批处理1000个
     let currentIndex = 0;
 
@@ -662,7 +744,9 @@ export function useMapMarkers(map) {
         const marker = markerlist[i];
         marker.visible = visible;
         // 检测性能
-        marker.feature.setStyle(visible ? createMarkerStyle(marker.options.style) : createInvisibleStyle());
+        marker.feature.setStyle(
+          visible ? createMarkerStyle(marker.options.style) : createInvisibleStyle()
+        );
       }
 
       currentIndex = endIndex;
@@ -679,9 +763,9 @@ export function useMapMarkers(map) {
   /**
    * 批量删除标记点 - 使用 requestAnimationFrame 分批处理
    * @param {Array} markerlist - 标记点列表
-   * @param {string} type - 标记点类型
+   * @param {String} type - 标记点类型
    */
-  function batchToggleMarkerDelete(markerlist, type) {
+  const batchToggleMarkerDelete = (markerlist, type) => {
     const batchSize = 1000; // 每批处理1000个
     let currentIndex = 0;
 
@@ -705,35 +789,49 @@ export function useMapMarkers(map) {
 
   /**
    * 基于图层的标记点可见性切换
-   * @param {string} type - 标记点类型
-   * @param {boolean} visible - 是否显示
+   * @param {String} type - 标记点类型
+   * @param {Boolean} visible - 是否显示
    */
-  function toggleMarkerVisibilityByLayer(type, visible) {
+  const toggleMarkerVisibilityByLayer = (type, visible) => {
     const layers = getAllLayers();
-    const targetLayers = layers.filter((layer, index) => layer.get("type") === type);
+    const targetLayers = layers.filter((layer, index) => layer.get('type') === type);
 
-    if (targetLayers.length === 0) {
-      console.warn(`类型 ${type} 的图层不存在`);
+    // 如果图层存在，控制图层可见性
+    if (targetLayers.length > 0) {
+      targetLayers.forEach((layer) => {
+        layer.setVisible(visible);
+      });
+    }
+
+    // 更新标记点的可见性状态和样式（无论图层是否存在都要更新）
+    const markerlist = markers.value.filter((m) => m.options.type === type);
+
+    if (markerlist.length === 0) {
+      // 如果没有找到对应类型的标记点，尝试使用 toggleMarkerVisibilityList
+      // 这样可以处理没有使用类型图层的情况
       return;
     }
 
-    // 直接控制整个图层的可见性，而不是单个标记点
-    targetLayers.forEach((layer) => {
-      layer.setVisible(visible);
-    });
-
-    // 更新标记点的可见性状态
-    const markerlist = markers.value.filter(m => m.options.type === type);
-    markerlist.forEach((marker) => {
-      marker.visible = visible;
-    });
+    // 如果数据量很大，使用批量更新
+    if (markerlist.length > 1000) {
+      batchToggleMarkerVisibility(markerlist, visible);
+    } else {
+      // 数据量较小时，直接更新
+      markerlist.forEach((marker) => {
+        marker.visible = visible;
+        // 更新样式：根据 visible 状态设置正常样式或透明样式
+        marker.feature.setStyle(
+          visible ? createMarkerStyle(marker.options.style) : createInvisibleStyle()
+        );
+      });
+    }
   };
 
   /**
    * 创建按类型分组的标记点图层
-   * @param {string} type - 标记点类型
+   * @param {String} type - 标记点类型
    */
-  function createMarkerLayerByType(type) {
+  const createMarkerLayerByType = (type) => {
     if (markerLayersByType.value[type]) {
       return markerLayersByType.value[type];
     }
@@ -763,28 +861,27 @@ export function useMapMarkers(map) {
 
   /**
    * 将标记点添加到指定类型的图层
-   * @param {string} type - 标记点类型
+   * @param {String} type - 标记点类型
    * @param {Feature} feature - 标记点要素
    */
-  function addMarkerToTypeLayer(type, feature) {
+  const addMarkerToTypeLayer = (type, feature) => {
     if (!markerSourcesByType.value[type]) {
       createMarkerLayerByType(type);
     }
 
     if (markerSourcesByType.value[type]) {
       markerSourcesByType.value[type].addFeature(feature);
-    }
-    else {
+    } else {
       console.error(`无法创建类型图层: ${type}`);
     }
   };
 
   /**
    * 从指定类型的图层移除标记点
-   * @param {string} type - 标记点类型
+   * @param {String} type - 标记点类型
    * @param {Feature} feature - 标记点要素
    */
-  function removeMarkerFromTypeLayer(type, feature) {
+  const removeMarkerFromTypeLayer = (type, feature) => {
     if (markerSourcesByType.value[type]) {
       markerSourcesByType.value[type].removeFeature(feature);
     }
@@ -792,21 +889,21 @@ export function useMapMarkers(map) {
 
   /**
    * 清除指定类型的所有标记点
-   * @param {string} type - 标记点类型
+   * @param {String} type - 标记点类型
    */
-  function clearMarkersByType(type) {
+  const clearMarkersByType = (type) => {
     if (markerSourcesByType.value[type]) {
       markerSourcesByType.value[type].clear();
+      // 从主标记点数组中移除
+      markers.value = markers.value.filter((m) => m.options.type !== type);
     }
-    // 从主标记点数组中移除
-    markers.value = markers.value.filter(m => m.options.type !== type);
   };
 
   /**
    * 获取所有图层
    * @returns {Array} 图层数组
    */
-  function getAllLayers() {
+  const getAllLayers = () => {
     return map.getLayers().getArray();
   };
 
@@ -814,17 +911,17 @@ export function useMapMarkers(map) {
    * 获取自定义图层
    * @returns {Array} 图层数组
    */
-  function getCustomLayers() {
+  const getCustomLayers = () => {
     return markerLayersByType.value;
   };
 
   /**
    * 显示/隐藏标记点的文本和气泡
-   * @param {string} id - 标记点ID
-   * @param {boolean} visible - 是否显示
+   * @param {String} id - 标记点ID
+   * @param {Boolean} visible - 是否显示
    */
-  function toggleMarkerTextVisibility(id, visible) {
-    const marker = markers.value.find(m => m.id === id);
+  const toggleMarkerTextVisibility = (id, visible) => {
+    const marker = markers.value.find((m) => m.id === id);
     if (!marker) return;
 
     // 更新文本可见性
@@ -839,11 +936,11 @@ export function useMapMarkers(map) {
 
   /**
    * 批量显示/隐藏文本和气泡
-   * @param {string} type - 标记点类型
-   * @param {boolean} visible - 是否显示
+   * @param {String} type - 标记点类型
+   * @param {Boolean} visible - 是否显示
    */
-  function toggleMarkerTextVisibilityByType(type, visible) {
-    const markerlist = markers.value.filter(m => m.options.type === type);
+  const toggleMarkerTextVisibilityByType = (type, visible) => {
+    const markerlist = markers.value.filter((m) => m.options.type === type);
     if (markerlist.length === 0) return;
 
     markerlist.forEach((marker) => {
@@ -857,94 +954,114 @@ export function useMapMarkers(map) {
 
   /**
    * 切换船舶标记样式（图标 vs 小绿点）
-   * @param {string} type - 标记点类型
-   * @param {boolean} useSimpleStyle - 是否使用简单样式（小绿点）
+   * @param {String} type - 标记点类型
+   * @param {Boolean} useSimpleStyle - 是否使用简单样式（小绿点）
    */
-  function toggleShipMarkerStyle(type, useSimpleStyle, style) {
-    markers.value.forEach((marker, index) => {
-      if (marker.options.type === type) {
-        const prevStyle = marker.options.style || {};
-        const prevText = prevStyle.text || prevStyle.prevtext
-        const prevIcon = prevStyle.icon || prevStyle.previcon
+  const toggleShipMarkerStyle = (type, useSimpleStyle, style) => {
+    return new Promise((resolve, reject) => {
+      markers.value.forEach((marker, index) => {
+        if (marker.options.type === type) {
+          const prevStyle = marker.options.style || {};
+          const prevText = prevStyle.text || prevStyle.prevtext;
+          const prevIcon = prevStyle.icon || prevStyle.previcon;
 
-        if (useSimpleStyle) {
-          // 使用小绿点样式，仅替换形状相关配置，保留文本配置
-          marker.options.style = {
-            ...prevIcon,
-            icon: null,
-            radius: 4,
-            fill: '#00ff00',
-            stroke: '#ffffff',
-            strokeWidth: 1,
-            displacement: [0, 0],
-            prevtext: prevText,
-            previcon: prevIcon
-          };
+          if (useSimpleStyle) {
+            // 使用小绿点样式，仅替换形状相关配置，保留文本配置
+            marker.options.style = {
+              ...prevIcon,
+              icon: null,
+              radius: 3,
+              colorFill: '#00ff00',
+              borderStroke: '#00ff00',
+              lineDash: [2, 2],
+              strokeWidth: 1,
+              displacement: [0, 0],
+              prevtext: prevText,
+              previcon: prevIcon
+            };
+          } else {
+            marker.options.style = {
+              icon: prevIcon,
+              text: prevText
+            };
+          }
+          const newStyle = createMarkerStyle(marker.options.style);
+          marker.feature.setStyle(newStyle);
         }
-        else {
-          marker.options.style = {
-            icon: prevIcon,
-            text: prevText
-          };
-        }
-        const newStyle = createMarkerStyle(marker.options.style);
-        marker.feature.setStyle(newStyle);
-      }
+      });
+      resolve();
     });
   };
 
   /**
    * 清除所有标记点
    */
-  function clearMarkers() {
-    if (!markerSource.value) return;
+  const clearMarkers = () => {
+    return new Promise((resolve, reject) => {
+      // 清除默认标记点图层
+      if (markerSource.value) {
+        markerSource.value.clear();
+      }
+      // 清除扇形图层
+      if (markerIdCounter.value) {
+        markerIdCounter.value.clear();
+      }
 
-    markerSource.value.clear();
-    markers.value = [];
+      // 清除所有类型图层的标记点
+      Object.keys(markerSourcesByType.value).forEach((type) => {
+        if (markerSourcesByType.value[type]) {
+          markerSourcesByType.value[type].clear();
+        }
+      });
+
+      // 清空标记点数组
+      markers.value = [];
+      resolve();
+    });
   };
 
   /**
    * 获取标记点
-   * @param {string} id - 标记点ID
-   * @returns {object | null} 标记点对象
+   * @param {String} id - 标记点ID
+   * @returns {Object|null} 标记点对象
    */
-  function getMarker(id) {
-    return markers.value.find(m => m.id === id) || null;
+  const getMarker = (id) => {
+    return markers.value.find((m) => m.id === id) || null;
   };
 
   /**
    * 获取所有标记点
    * @returns {Array} 标记点数组
    */
-  function getAllMarkers() {
+  const getAllMarkers = () => {
     return [...markers.value];
   };
 
   /**
    * 根据类型获取标记点
-   * @param {string} type - 标记点类型
+   * @param {String} type - 标记点类型
    * @returns {Array} 标记点数组
    */
-  function getMarkersByType(type) {
-    return markers.value.filter(m => m.options.type === type);
+  const getMarkersByType = (type) => {
+    return markers.value.filter((m) => m.options.type === type);
   };
 
   /**
    * 设置标记点配置
-   * @param {object} config - 配置对象
+   * @param {Object} config - 配置对象
    */
-  function setMarkerConfig(config) {
+  const setMarkerConfig = (config) => {
     Object.assign(markerConfig, config);
   };
 
   /**
    * 设置标记点坐标
-   * @param {string} id - 标记点ID
+   * @param {String} id - 标记点ID
    * @param {Array} coordinates - 坐标
    */
-  function setMarkerCoordinates(id, coordinates) {
+  const setMarkerCoordinates = (id, coordinates) => {
     const [lng, lat] = coordinates;
-    const marker = markers.value.find(m => m.id === id);
+    const marker = markers.value.find((m) => m.id === id);
     if (!marker) return;
     marker.feature.setGeometry(new Point(fromLonLat([lng, lat])));
   };
@@ -952,9 +1069,9 @@ export function useMapMarkers(map) {
   /**
    * 批量添加标记点 - 高性能版本
    * @param {Array} markerList - 标记点列表
-   * @param {object} batchOptions - 批量选项
+   * @param {Object} batchOptions - 批量选项
    */
-  function addMarkers(markerList, batchOptions = {}) {
+  const addMarkers = async (markerList, batchOptions = {}) => {
     const {
       useBatch = true,
       batchSize = BATCH_SIZE,
@@ -975,7 +1092,7 @@ export function useMapMarkers(map) {
             minDistance: 20 // 最小聚合距离
           });
           toggleClustering(el, true);
-        })
+        });
       }
       onComplete && onComplete();
       return;
@@ -987,164 +1104,178 @@ export function useMapMarkers(map) {
       onProgress,
       onComplete,
       isEnableCluster
-    }
+    };
     // 大数据量使用分批处理
-    addMarkersBatch(params);
+    await addMarkersBatch(params);
   };
 
   /**
    * 分批添加大量标记点
    * @param {Array} markerList - 标记点列表
-   * @param {number} batchSize - 每批大小
+   * @param {Number} batchSize - 每批大小
    * @param {Function} onProgress - 进度回调
    * @param {Function} onComplete - 完成回调
    */
-  function addMarkersBatch(params) {
+  const addMarkersBatch = (params) => {
     const { markerList, batchSize, onProgress, onComplete, isEnableCluster } = params;
-    let currentIndex = 0;
-    const total = markerList.length;
-    let processed = 0;
+    return new Promise((resolve, reject) => {
+      let currentIndex = 0;
+      const total = markerList.length;
+      let processed = 0;
 
-    const processBatch = () => {
-      const endIndex = Math.min(currentIndex + batchSize, total);
-      const batch = markerList.slice(currentIndex, endIndex);
+      const processBatch = () => {
+        const endIndex = Math.min(currentIndex + batchSize, total);
+        const batch = markerList.slice(currentIndex, endIndex);
 
-      // 创建要素数组和标记点数组
-      const features = [];
-      const markersToAdd = [];
+        // 创建要素数组和标记点数组
+        const features = [];
+        const markersToAdd = [];
+        batch.forEach(({ coordinates, options = {} }) => {
+          const id = options.id || generateUniqueMarkerId();
+          const [lng, lat] = coordinates;
 
-      batch.forEach(({ coordinates, options = {} }) => {
-        const id = options.id || generateUniqueMarkerId();
-        const [lng, lat] = coordinates;
+          // 创建几何点
+          const point = new Point(fromLonLat([lng, lat]));
 
-        // 创建几何点
-        const point = new Point(fromLonLat([lng, lat]));
+          // 创建要素
+          const feature = new Feature({
+            geometry: point,
+            id: id,
+            type: 'marker',
+            ...options.data
+          });
 
-        // 创建要素
-        const feature = new Feature({
-          geometry: point,
-          id,
-          type: 'marker',
-          ...options.data
-        });
-
-        // 使用缓存的样式
-        const styleKey = getStyleKey(options.style);
-        let style = styleCache.get(styleKey);
-        if (!style) {
-          style = createMarkerStyle(options.style);
-          styleCache.set(styleKey, style);
-        }
-        feature.setStyle(style);
-
-        features.push(feature);
-        markersToAdd.push({
-          id,
-          coordinates,
-          feature,
-          options,
-          visible: true
-        });
-      });
-
-      // 按类型分组
-      const markersByType = {};
-      const defaultMarkers = [];
-
-      markersToAdd.forEach((marker) => {
-        if (marker.options.type && marker.options.useTypeLayer) {
-          if (!markersByType[marker.options.type]) {
-            markersByType[marker.options.type] = [];
+          // 使用缓存的样式
+          const styleKey = getStyleKey(options.style);
+          let style = styleCache.get(styleKey);
+          if (!style) {
+            style = createMarkerStyle(options.style);
+            styleCache.set(styleKey, style);
           }
-          markersByType[marker.options.type].push(marker);
-        }
-        else {
-          defaultMarkers.push(marker);
-        }
-      });
 
-      // 批量添加到默认图层
-      if (defaultMarkers.length > 0) {
-        const defaultFeatures = defaultMarkers.map(m => m.feature);
-        markerSource.value.addFeatures(defaultFeatures);
-        markers.value.push(...defaultMarkers);
-      }
+          // 确定 visible 属性
+          const visible = options.visible !== undefined ? options.visible : true;
 
-      // 批量添加到类型图层
-      Object.keys(markersByType).forEach((type) => {
-        const typeMarkers = markersByType[type];
-        const typeFeatures = typeMarkers.map(m => m.feature);
+          // 根据 visible 属性设置样式
+          if (visible) {
+            feature.setStyle(style);
+          } else {
+            feature.setStyle(createInvisibleStyle());
+          }
 
-        if (!markerSourcesByType.value[type]) {
-          createMarkerLayerByType(type);
-        }
-        if (markerSourcesByType.value[type]) {
-          markerSourcesByType.value[type].addFeatures(typeFeatures);
-          markers.value.push(...typeMarkers);
-        }
-      });
-
-      processed += batch.length;
-      currentIndex = endIndex;
-
-      // 报告进度
-      if (onProgress) {
-        onProgress({
-          processed,
-          total,
-          percentage: Math.round((processed / total) * 100)
+          features.push(feature);
+          const marker = {
+            id,
+            coordinates,
+            feature,
+            options,
+            visible: visible
+          };
+          markersToAdd.push(marker);
+          markers.value.push(marker);
         });
-      }
 
-      // 如果还有数据需要处理，继续下一批
-      if (currentIndex < total) {
-        requestAnimationFrame(processBatch);
-      }
-      else {
-        if (isEnableCluster) {
-          // 启用指定类型的聚合
-          Object.keys(markerSourcesByType.value).forEach((el) => {
-            enableClustering(el, {
-              distance: 40, // 聚合距离
-              minDistance: 20 // 最小聚合距离
-            });
-            toggleClustering(el, true);
-          })
+        // 按类型分组
+        const markersByType = {};
+        const defaultMarkers = [];
+
+        markersToAdd.forEach((marker) => {
+          if (marker.options.type && marker.options.useTypeLayer) {
+            if (!markersByType[marker.options.type]) {
+              markersByType[marker.options.type] = [];
+            }
+            markersByType[marker.options.type].push(marker);
+          } else {
+            defaultMarkers.push(marker);
+          }
+        });
+
+        // 批量添加到默认图层
+        if (defaultMarkers.length > 0) {
+          const defaultFeatures = defaultMarkers.map((m) => m.feature);
+          markerSource.value.addFeatures(defaultFeatures);
+          markers.value.push(...defaultMarkers);
         }
-        // 所有数据处理完成
-        if (onComplete) {
-          onComplete({
+
+        // 批量添加到类型图层
+        Object.keys(markersByType).forEach((type) => {
+          const typeMarkers = markersByType[type];
+          const typeFeatures = typeMarkers.map((m) => m.feature);
+
+          if (!markerSourcesByType.value[type]) {
+            createMarkerLayerByType(type);
+          }
+          if (markerSourcesByType.value[type]) {
+            markerSourcesByType.value[type].addFeatures(typeFeatures);
+            markers.value.push(...typeMarkers);
+          }
+        });
+
+        processed += batch.length;
+        currentIndex = endIndex;
+
+        // 报告进度
+        if (onProgress) {
+          onProgress({
             processed,
             total,
-            percentage: 100
+            percentage: Math.round((processed / total) * 100)
           });
         }
-      }
-    };
 
-    processBatch();
+        // 如果还有数据需要处理，继续下一批
+        if (currentIndex < total) {
+          requestAnimationFrame(processBatch);
+        } else {
+          if (isEnableCluster) {
+            // 启用指定类型的聚合
+            Object.keys(markerSourcesByType.value).forEach((el) => {
+              enableClustering(el, {
+                distance: 40, // 聚合距离
+                minDistance: 20 // 最小聚合距离
+              });
+              toggleClustering(el, true);
+            });
+          }
+          // 所有数据处理完成
+          if (onComplete) {
+            onComplete({
+              processed,
+              total,
+              percentage: 100
+            });
+            resolve({
+              processed,
+              total,
+              percentage: 100
+            });
+          }
+        }
+      };
+
+      processBatch();
+    });
   };
 
   /**
    * 监听地图点击事件添加标记点
-   * @param {boolean} enabled - 是否启用
+   * @param {Boolean} enabled - 是否启用
    */
-  function enableClickToAdd(enabled = true) {
+  const enableClickToAdd = (enabled = true) => {
     if (!map) return;
 
     if (enabled) {
       map.on('click', handleMapClick);
-    }
-    else {
+    } else {
       map.un('click', handleMapClick);
     }
   };
 
   /**
    * 地图点击事件处理
-   * @param {object} event - 点击事件
+   * @param {Object} event - 点击事件
    */
-  function handleMapClick(event) {
+  const handleMapClick = (event) => {
     const coordinates = event.coordinate;
     const [lng, lat] = toLonLat(coordinates);
 
@@ -1164,19 +1295,19 @@ export function useMapMarkers(map) {
 
   /**
    * 检查标记点ID是否唯一
-   * @param {string} id - 标记点ID
-   * @returns {boolean} 是否唯一
+   * @param {String} id - 标记点ID
+   * @returns {Boolean} 是否唯一
    */
-  function isMarkerIdUnique(id) {
-    return !markers.value.some(marker => marker.id === id);
+  const isMarkerIdUnique = (id) => {
+    return !markers.value.some((marker) => marker.id === id);
   };
 
   /**
    * 生成唯一的标记点ID
-   * @param {string} prefix - ID前缀
-   * @returns {string} 唯一的ID
+   * @param {String} prefix - ID前缀
+   * @returns {String} 唯一的ID
    */
-  function generateUniqueMarkerId(prefix = 'marker') {
+  const generateUniqueMarkerId = (prefix = 'marker') => {
     let id;
     let counter = 0;
     do {
@@ -1190,17 +1321,26 @@ export function useMapMarkers(map) {
     }
 
     return id;
-  }
+  };
 
   // 存储已加载的标记点ID，用于避免重复加载
   const loadedMarkers = new Set();
 
   /**
+   * 生成标记点唯一标识
+   * @param {Object} marker - 标记点对象
+   * @returns {String} 标记点唯一标识
+   */
+  const getMarkerKey = (marker) => {
+    return marker.options?.id || `${marker.coordinates[0]}_${marker.coordinates[1]}`;
+  };
+
+  /**
    * 虚拟化渲染 - 只渲染当前视口内的标记点
    * @param {Array} markerList - 标记点列表
-   * @param {object} options - 选项
+   * @param {Object} options - 选项
    */
-  function addMarkersVirtualized(markerList, options = {}) {
+  const addMarkersVirtualized = (markerList, options = {}) => {
     const {
       viewportBuffer = 0.1, // 视口缓冲区（度）
       onViewportChange = null,
@@ -1228,13 +1368,17 @@ export function useMapMarkers(map) {
     const filterMarkersInViewport = (markers, bounds) => {
       return markers.filter(({ coordinates, id }) => {
         const [lng, lat] = coordinates;
-        return lng >= bounds.minLng && lng <= bounds.maxLng
-          && lat >= bounds.minLat && lat <= bounds.maxLat;
+        return (
+          lng >= bounds.minLng &&
+          lng <= bounds.maxLng &&
+          lat >= bounds.minLat &&
+          lat <= bounds.maxLat
+        );
       });
     };
 
     // 添加标记点到地图
-    function addMarkersToMap(markersToAdd) {
+    const addMarkersToMap = (markersToAdd) => {
       if (markersToAdd.length === 0) return;
 
       // 过滤出未加载的标记点
@@ -1248,7 +1392,9 @@ export function useMapMarkers(map) {
         return;
       }
 
-      console.log(`准备加载 ${newMarkers.length} 个新标记点，跳过 ${markersToAdd.length - newMarkers.length} 个已加载的标记点`);
+      console.log(
+        `准备加载 ${newMarkers.length} 个新标记点，跳过 ${markersToAdd.length - newMarkers.length} 个已加载的标记点`
+      );
 
       // 批量添加新标记点
       addMarkers(newMarkers, {
@@ -1260,13 +1406,15 @@ export function useMapMarkers(map) {
             const key = getMarkerKey(marker);
             loadedMarkers.add(key);
           });
-          console.log(`虚拟化渲染完成，新增渲染了 ${newMarkers.length} 个标记点，总计已加载 ${loadedMarkers.size} 个标记点`);
+          console.log(
+            `虚拟化渲染完成，新增渲染了 ${newMarkers.length} 个标记点，总计已加载 ${loadedMarkers.size} 个标记点`
+          );
         }
       });
-    }
+    };
 
     // 清理不在视口内的标记点
-    function cleanupMarkersOutsideViewport(currentVisibleKeys) {
+    const cleanupMarkersOutsideViewport = (currentVisibleKeys) => {
       if (!enableCleanup) return;
 
       const markersToRemove = [];
@@ -1289,12 +1437,12 @@ export function useMapMarkers(map) {
       if (markersToRemove.length > 0) {
         console.log(`清理了 ${markersToRemove.length} 个不在视口内的标记点`);
       }
-    }
+    };
 
     // 初始渲染
     const initialBounds = getViewportBounds();
     const visibleMarkers = filterMarkersInViewport(markerList, initialBounds);
-    console.log("🚀 ~ addMarkersVirtualized ~ visibleMarkers:", visibleMarkers);
+    console.log('🚀 ~ addMarkersVirtualized ~ visibleMarkers:', visibleMarkers);
 
     // 限制可见标记点数量
     const markersToRender = visibleMarkers.slice(0, maxVisibleMarkers);
@@ -1328,43 +1476,62 @@ export function useMapMarkers(map) {
     }
   };
 
-  // 生成标记点唯一标识
-  function getMarkerKey(marker) {
-    return marker.options.id || `${marker.coordinates[0]}_${marker.coordinates[1]}`;
-  };
-
   /**
    * 在地图上绘制带填充色的多边形
-   * @param {Array<[number, number]>} lonLatCoordinates - 多边形经纬度坐标（顺时针或逆时针），至少3个点
-   * @param {object} [options]
-   * @param {string} [options.fillColor] - 填充色，支持 rgba/hex，默认含0.5透明度
-   * @param {string} [options.strokeColor] - 边框颜色
-   * @param {number} [options.strokeWidth] - 边框宽度
+   * @param {Array<[number, number]>|Array<Array<[number, number]>>|Array<Array<Array<[number, number]>>>} lonLatCoordinates - 多边形经纬度坐标
+   * @param {Object} [options]
+   * @param {string} [options.fillColor="#1989fa80"] - 填充色，支持 rgba/hex，默认含0.5透明度
+   * @param {string} [options.strokeColor="#1989fa"] - 边框颜色
+   * @param {number} [options.strokeWidth=2] - 边框宽度
    * @returns {Feature|undefined} 返回创建的要素
    */
   const drawFilledPolygon = (
     lonLatCoordinates,
-    { fillColor = "#1989fa80", strokeColor = "#1989fa", strokeWidth = 2 } = {}
+    { fillColor = '#1989fa80', strokeColor = '#1989fa', strokeWidth = 2 } = {}
   ) => {
     if (!map) return;
-    if (!Array.isArray(lonLatCoordinates) || lonLatCoordinates.length < 3) {
-      console.warn("多边形坐标至少需要3个点");
+    if (!Array.isArray(lonLatCoordinates) || lonLatCoordinates.length < 1) {
+      console.warn('多边形坐标不能为空');
       return;
     }
 
-    // 闭合坐标环：若首尾不一致则自动闭合
-    const needClose
-      = lonLatCoordinates.length < 1
-      || lonLatCoordinates[0][0] !== lonLatCoordinates[lonLatCoordinates.length - 1][0]
-      || lonLatCoordinates[0][1] !== lonLatCoordinates[lonLatCoordinates.length - 1][1];
-    const ringLonLat = needClose
-      ? [...lonLatCoordinates, lonLatCoordinates[0]]
-      : lonLatCoordinates;
+    // 自动处理多层嵌套的坐标数组
+    const extractCoordinates = (arr) => {
+      // 如果是坐标对 [lng, lat]，直接返回
+      if (arr.length === 2 && typeof arr[0] === 'number') {
+        return arr;
+      }
+
+      // 如果是坐标环，返回
+      if (Array.isArray(arr[0]) && arr[0].length === 2) {
+        return arr;
+      }
+
+      // 递归处理
+      return extractCoordinates(arr[0]);
+    };
+
+    const coords = extractCoordinates(lonLatCoordinates);
+
+    // 确保是二维数组格式
+    const ringsLonLat = Array.isArray(coords[0]) ? [coords] : [[coords]];
+
+    // 处理每个环，确保它们都是闭合的
+    const closedRingsLonLat = ringsLonLat.map(ring => {
+      // 闭合坐标环：若首尾不一致则自动闭合
+      const needClose = ring.length < 1 ||
+        ring[0][0] !== ring[ring.length - 1][0] ||
+        ring[0][1] !== ring[ring.length - 1][1];
+
+      return needClose ? [...ring, ring[0]] : ring;
+    });
 
     // 转换为投影坐标
-    const ring3857 = ringLonLat.map(lngLat => fromLonLat(lngLat));
+    const rings3857 = closedRingsLonLat.map(ring =>
+      ring.map(lngLat => fromLonLat(lngLat))
+    );
 
-    const polygon = new OlPolygon([ring3857]);
+    const polygon = new OlPolygon(rings3857);
     const feature = new Feature({ geometry: polygon });
 
     feature.setStyle(
@@ -1377,49 +1544,203 @@ export function useMapMarkers(map) {
     customPolygonSource.value.addFeature(feature);
     return feature;
   };
+  /**
+   * 在地图上绘制带填充色的多边形
+   * @param {Array<[number, number]>|Array<Array<[number, number]>>|Array<Array<Array<[number, number]>>>} lonLatCoordinates - 多边形经纬度坐标
+   * @param {Object} [options]
+   * @param {string} [options.fillColor="#1989fa80"] - 填充色，支持 rgba/hex，默认含0.5透明度
+   * @param {string} [options.strokeColor="#1989fa"] - 边框颜色
+   * @param {number} [options.strokeWidth=2] - 边框宽度
+   * @returns {Feature|undefined} 返回创建的要素
+   */
+  const drawFilledPolygonCustom = (
+    lonLatCoordinates,
+    { fillColor = '#1989fa80', strokeColor = '#1989fa', strokeWidth = 2, type = 'electronic-fence-custom' } = {}
+  ) => {
+    if (!map) return;
+    if (!Array.isArray(lonLatCoordinates) || lonLatCoordinates.length < 1) {
+      console.warn('多边形坐标不能为空');
+      return;
+    }
+
+    const polygonSource = new VectorSource();
+    const polygonLayer = new VectorLayer({
+      source: polygonSource,
+      zIndex: 104,
+      type: type,
+      title: type
+    });
+    map.addLayer(polygonLayer);
+
+    // 自动处理多层嵌套的坐标数组
+    const extractCoordinates = (arr) => {
+      // 如果是坐标对 [lng, lat]，直接返回
+      if (arr.length === 2 && typeof arr[0] === 'number') {
+        return arr;
+      }
+
+      // 如果是坐标环，返回
+      if (Array.isArray(arr[0]) && arr[0].length === 2) {
+        return arr;
+      }
+
+      // 递归处理
+      return extractCoordinates(arr[0]);
+    };
+
+    const coords = extractCoordinates(lonLatCoordinates);
+
+    // 确保是二维数组格式
+    const ringsLonLat = Array.isArray(coords[0]) ? [coords] : [[coords]];
+
+    // 处理每个环，确保它们都是闭合的
+    const closedRingsLonLat = ringsLonLat.map(ring => {
+      // 闭合坐标环：若首尾不一致则自动闭合
+      const needClose = ring.length < 1 ||
+        ring[0][0] !== ring[ring.length - 1][0] ||
+        ring[0][1] !== ring[ring.length - 1][1];
+
+      return needClose ? [...ring, ring[0]] : ring;
+    });
+
+    // 转换为投影坐标
+    const rings3857 = closedRingsLonLat.map(ring =>
+      ring.map(lngLat => fromLonLat(lngLat))
+    );
+
+    const polygon = new OlPolygon(rings3857);
+    const feature = new Feature({ geometry: polygon });
+
+    feature.setStyle(
+      new Style({
+        fill: new Fill({ color: fillColor }),
+        stroke: new Stroke({ color: strokeColor, width: strokeWidth })
+      })
+    );
+
+    polygonSource.addFeature(feature);
+    return polygonSource;
+  };
+
+  /**
+   * 在地图上绘制扇形
+   * @param {Array<number>} center - 扇形中心点坐标 [经度, 纬度]
+   * @param {Object} [options]
+   * @param {number} [options.radius=1000] - 扇形半径(米)
+   * @param {number} [options.startAngle=0] - 起始角度(度)
+   * @param {number} [options.endAngle=90] - 结束角度(度)
+   * @param {number} [options.segments=32] - 扇形边缘线段分割数
+   * @param {string} [options.fillColor="#1989fa80"] - 填充色，支持 rgba/hex，默认含0.5透明度
+   * @param {string} [options.strokeColor="#1989fa"] - 边框颜色
+   * @param {number} [options.strokeWidth=2] - 边框宽度
+   * @returns {Feature|undefined} 返回创建的要素
+   */
+  const drawSector = (
+    center,
+    {
+      radius = 1000,
+      startAngle = 0,
+      endAngle = 90,
+      segments = 32,
+      fillColor = '#1989fa80',
+      strokeColor = '#1989fa',
+      strokeWidth = 2,
+      id = null,
+      visible = false
+    } = {}
+  ) => {
+    if (!map) return;
+    if (!Array.isArray(center) || center.length < 2) {
+      console.warn('中心点坐标必须包含经度和纬度');
+      return;
+    }
+
+    // 角度转换为弧度
+    const startRad = (startAngle * Math.PI) / 180;
+    const endRad = (endAngle * Math.PI) / 180;
+
+    // 确保起始角度小于结束角度
+    let deltaRad = endRad - startRad;
+    if (deltaRad <= 0) deltaRad += 2 * Math.PI;
+
+    // 计算扇形顶点坐标
+    const vertices = [];
+    vertices.push(center); // 中心点
+
+    // 计算圆弧上的点
+    const angularStep = deltaRad / segments;
+    for (let i = 0; i <= segments; i++) {
+      const angle = startRad + i * angularStep;
+      // 计算该角度下的地球表面上的点
+      const dx = radius * Math.sin(angle);
+      const dy = radius * Math.cos(angle);
+
+      // 将米转换为经纬度差值（近似）
+      const dLon = dx / (111320 * Math.cos((center[1] * Math.PI) / 180));
+      const dLat = dy / 111320;
+
+      vertices.push([center[0] + dLon, center[1] + dLat]);
+    }
+
+    // 转换为投影坐标
+    const ring3857 = vertices.map((lngLat) => fromLonLat(lngLat));
+
+    const polygon = new OlPolygon([ring3857]);
+    const feature = new Feature({ geometry: polygon, id: id });
+
+    feature.setStyle(
+      new Style({
+        fill: new Fill({ color: fillColor }),
+        stroke: new Stroke({ color: strokeColor, width: strokeWidth, lineDash: [5, 5] }),
+        visible: visible,
+      })
+    );
+    // console.log("🚀 ~ drawSector ~ center:", feature);
+    markerIdCounter.value.addFeature(feature);
+    return feature;
+  };
 
   /**
    * 清理已加载标记点记录
    */
-  function clearLoadedMarkers() {
+  const clearLoadedMarkers = () => {
     loadedMarkers.clear();
   };
 
   /**
    * 获取已加载标记点数量
-   * @returns {number} 已加载标记点数量
+   * @returns {Number} 已加载标记点数量
    */
-  function getLoadedMarkersCount() {
+  const getLoadedMarkersCount = () => {
     return loadedMarkers.size;
-  }
+  };
 
   /**
    * 检查标记点是否已加载
-   * @param {string | object} markerIdOrMarker - 标记点ID或标记点对象
-   * @returns {boolean} 是否已加载
+   * @param {String|Object} markerIdOrMarker - 标记点ID或标记点对象
+   * @returns {Boolean} 是否已加载
    */
-  function isMarkerLoaded(markerIdOrMarker) {
-    const key = typeof markerIdOrMarker === 'string'
-      ? markerIdOrMarker
-      : getMarkerKey(markerIdOrMarker);
+  const isMarkerLoaded = (markerIdOrMarker) => {
+    const key =
+      typeof markerIdOrMarker === 'string' ? markerIdOrMarker : getMarkerKey(markerIdOrMarker);
     return loadedMarkers.has(key);
-  }
+  };
 
   /**
    * 强制处理批量队列
    */
-  function flushBatchQueue() {
+  const flushBatchQueue = () => {
     if (batchQueue.length > 0) {
       processBatchQueue();
     }
-  }
+  };
 
   /**
    * 启用聚合功能
-   * @param {string} type - 标记点类型
-   * @param {object} options - 聚合选项
+   * @param {String} type - 标记点类型
+   * @param {Object} options - 聚合选项
    */
-  function enableClustering(type, options = {}) {
+  const enableClustering = (type, options = {}) => {
     const typeMarkers = getMarkersByType(type);
     if (typeMarkers.length === 0) {
       console.warn(`类型 ${type} 的标记点不存在`);
@@ -1427,7 +1748,7 @@ export function useMapMarkers(map) {
     }
 
     // 准备聚合数据
-    const clusterData = typeMarkers.map(marker => ({
+    const clusterData = typeMarkers.map((marker) => ({
       coordinates: marker.coordinates,
       data: {
         ...marker.options.data,
@@ -1452,9 +1773,9 @@ export function useMapMarkers(map) {
 
   /**
    * 禁用聚合功能
-   * @param {string} type - 标记点类型
+   * @param {String} type - 标记点类型
    */
-  function disableClustering(type) {
+  const disableClustering = (type) => {
     // 清除聚合图层
     clearClusterLayer(type);
 
@@ -1468,25 +1789,24 @@ export function useMapMarkers(map) {
 
   /**
    * 切换聚合功能
-   * @param {string} type - 标记点类型
-   * @param {boolean} enabled - 是否启用
+   * @param {String} type - 标记点类型
+   * @param {Boolean} enabled - 是否启用
    */
-  function toggleClustering(type, enabled) {
+  const toggleClustering = (type, enabled) => {
     if (enabled) {
       enableClustering(type);
-    }
-    else {
+    } else {
       disableClustering(type);
     }
   };
 
   /**
    * 更新聚合图层
-   * @param {string} type - 标记点类型
+   * @param {String} type - 标记点类型
    */
-  function refreshClusterLayer(type) {
+  const refreshClusterLayer = (type) => {
     const typeMarkers = getMarkersByType(type);
-    const clusterData = typeMarkers.map(marker => ({
+    const clusterData = typeMarkers.map((marker) => ({
       coordinates: marker.coordinates,
       data: {
         ...marker.options.data,
@@ -1499,26 +1819,189 @@ export function useMapMarkers(map) {
 
   /**
    * 设置聚合距离
-   * @param {string} type - 标记点类型
-   * @param {number} distance - 聚合距离
+   * @param {String} type - 标记点类型
+   * @param {Number} distance - 聚合距离
    */
-  function setClusterDistanceForType(type, distance) {
+  const setClusterDistanceForType = (type, distance) => {
     setClusterDistance(type, distance);
   };
 
   /**
    * 获取聚合信息
-   * @param {string} type - 标记点类型
-   * @returns {object} 聚合信息
+   * @param {String} type - 标记点类型
+   * @returns {Object} 聚合信息
    */
-  function getClusterInfoForType(type) {
+  const getClusterInfoForType = (type) => {
     return getClusterInfo(type);
+  };
+
+  /**
+   * 添加指定图层到地图
+   * @param {string} type 图层类型
+   * @param {Object} layer 图层对象
+   */
+  const addLayerToMap = (config) => {
+    if (!map) return;
+    const layer = new TileLayer({
+      source: config.source,
+      title: config.title,
+      type: config.type,
+      visible: config.visible,
+      opacity: config.opacity,
+      zIndex: config.zIndex
+    });
+    map.addLayer(layer);
+  };
+
+  /**
+   * 添加一个半透明淡蓝色图层，但排除指定的GeoJSON区域
+   * @param {Array} geoJsonCoordinates - GeoJSON格式的四维坐标数组
+   * @param {Object} options - 配置选项
+   * @param {String} options.excludeColor - 排除区域的颜色，默认为透明
+   * @param {String} options.overlayColor - 覆盖区域的颜色，默认为半透明淡蓝色
+   * @param {String} options.borderColor - 边框颜色，默认为深蓝色
+   * @param {Number} options.borderWidth - 边框宽度，默认为2
+   * @returns {Feature} 创建的要素
+   */
+  const addExcludedAreaLayer = (geoJsonCoordinates, options = {}) => {
+    if (!map) {
+      console.warn('地图未初始化');
+      return null;
+    }
+
+    const {
+      excludeColor = 'transparent',
+      overlayColor = 'rgb(25, 135, 255,.4)', // 半透明淡蓝色
+      borderColor = '#fff', // 白色边框
+      borderWidth = 4,
+      zIndex = 103
+    } = options;
+
+    // 创建一个覆盖整个地图的大矩形
+    const mapExtent = map.getView().getProjection().getExtent();
+    const expandedExtent = [
+      mapExtent[0] - (mapExtent[2] - mapExtent[0]) * 0.5,
+      mapExtent[1] - (mapExtent[3] - mapExtent[1]) * 0.5,
+      mapExtent[2] + (mapExtent[2] - mapExtent[0]) * 0.5,
+      mapExtent[3] + (mapExtent[3] - mapExtent[1]) * 0.5
+    ];
+
+    // 创建外部矩形环（顺时针）
+    const outerRing = [
+      [expandedExtent[0], expandedExtent[1]],
+      [expandedExtent[2], expandedExtent[1]],
+      [expandedExtent[2], expandedExtent[3]],
+      [expandedExtent[0], expandedExtent[3]],
+      [expandedExtent[0], expandedExtent[1]]
+    ];
+
+    // 处理GeoJSON坐标，确保正确的格式
+    let excludedRings = [];
+    if (Array.isArray(geoJsonCoordinates)) {
+      if (geoJsonCoordinates.length > 0) {
+        // 检查是否是嵌套数组（GeoJSON格式）
+        if (Array.isArray(geoJsonCoordinates[0])) {
+          if (Array.isArray(geoJsonCoordinates[0][0])) {
+            // 三维数组 [[[x,y], [x,y], ...]]
+            excludedRings = geoJsonCoordinates;
+          } else {
+            // 二维数组 [[x,y], [x,y], ...]
+            excludedRings = [geoJsonCoordinates];
+          }
+        } else {
+          console.warn('坐标格式不正确');
+          return null;
+        }
+      }
+    } else {
+      console.warn('坐标必须是一个数组');
+      return null;
+    }
+
+    // 确保排除区域是逆时针方向（作为孔洞）
+    const orientedRings = excludedRings.map(ringArray => {
+      // 如果是最内层数组是坐标点
+      let ring = Array.isArray(ringArray[0]) && Array.isArray(ringArray[0][0]) ? ringArray[0] : ringArray;
+
+      // 转换为投影坐标
+      const projectedRing = ring.map(coord => {
+        if (typeof coord[0] === 'number' && typeof coord[1] === 'number') {
+          // 如果是经纬度坐标（通常在-180到180和-90到90范围内），转换为投影坐标
+          if (Math.abs(coord[0]) <= 180 && Math.abs(coord[1]) <= 90) {
+            return fromLonLat([coord[0], coord[1]]);
+          }
+          // 否则假设已经是投影坐标
+          return [coord[0], coord[1]];
+        }
+        return coord;
+      });
+
+      // 检查是否需要反转方向以确保是孔洞（逆时针）
+      let area = 0;
+      for (let i = 0; i < projectedRing.length - 1; i++) {
+        area += (projectedRing[i][0] * projectedRing[i + 1][1] - projectedRing[i + 1][0] * projectedRing[i][1]);
+      }
+      area += (projectedRing[projectedRing.length - 1][0] * projectedRing[0][1] - projectedRing[0][0] * projectedRing[projectedRing.length - 1][1]);
+
+      // 如果是顺时针，反转数组以变成逆时针
+      if (area > 0) {
+        return projectedRing.slice().reverse();
+      }
+      return projectedRing;
+    });
+
+    // 构造带孔的多边形坐标
+    const polygonCoords = [outerRing, ...orientedRings];
+
+    // 创建多边形
+    const polygon = new OlPolygon(polygonCoords);
+    const feature = new Feature({
+      geometry: polygon,
+    });
+
+    // 设置带阴影效果的样式
+    feature.setStyle(new Style({
+      fill: new Fill({
+        color: overlayColor
+      }),
+      stroke: new Stroke({
+        color: borderColor,
+        width: borderWidth,
+        // 添加阴影效果
+        lineCap: 'round',
+        lineJoin: 'round'
+      })
+    }));
+
+    // 添加一个额外的阴影样式
+    const shadowStyle = new Style({
+      stroke: new Stroke({
+        color: 'hsla(0, 0%, 100%, 0.5)', // 半透明黑色阴影
+        width: borderWidth + 10, // 稍宽一些以形成阴影效果
+        lineCap: 'round',
+        lineJoin: 'round'
+      })
+    });
+
+    // 应用双重样式（阴影在下，主边框在上）
+    feature.setStyle([shadowStyle, feature.getStyle()]);
+
+    // 设置图层的zIndex
+    if (customPolygonLayer.value) {
+      customPolygonLayer.value.setZIndex(zIndex);
+      // 为边界图层设置独特的类型
+      customPolygonLayer.value.set('type', 'district-boundary');
+    }
+    // 添加到自定义图层
+    customPolygonSource.value.addFeature(feature);
+
+    return feature;
   };
 
   /**
    * 销毁标记点图层
    */
-  function destroy() {
+  const destroy = () => {
     if (map && markerLayer.value) {
       map.removeLayer(markerLayer.value);
     }
@@ -1552,21 +2035,39 @@ export function useMapMarkers(map) {
     markerSourcesByType.value = {};
   };
 
+  /**
+   * 获取地图边界
+   * @returns {Object} 地图边界
+   */
+  const getMapBounds = () => {
+    if (!map) return;
+    const view = map.getView().calculateExtent(map.getSize());
+    const [minX, minY, maxX, maxY] = view;
+    const [minLng, minLat] = toLonLat([minX, minY]);
+    const [maxLng, maxLat] = toLonLat([maxX, maxY]);
+    return {
+      minLng: minLng,
+      minLat: minLat,
+      maxLng: maxLng,
+      maxLat: maxLat
+    };
+  };
+
   // 动画飞行到指定位置
-  function flyTo(center, zoom, duration = 1000) {
+  const flyTo = (center, zoom, duration = 1000) => {
     if (!map) return;
     const view = map.getView();
     view.animate({
       center: fromLonLat(center),
-      zoom,
-      duration
+      zoom: zoom,
+      duration: duration
     });
   };
 
   /**
    * 放大
    */
-  function zoomIn() {
+  const zoomIn = () => {
     if (!map) return;
     const view = map.getView();
     const currentZoom = view.getZoom();
@@ -1576,7 +2077,7 @@ export function useMapMarkers(map) {
   /**
    * 缩小
    */
-  function zoomOut() {
+  const zoomOut = () => {
     if (!map) return;
     const view = map.getView();
     const currentZoom = view.getZoom();
@@ -1620,6 +2121,10 @@ export function useMapMarkers(map) {
     createMultipleMarkers,
     clearOverlaysByType,
     drawFilledPolygon,
+    drawFilledPolygonCustom,
+    drawSector,
+    addLayerToMap,
+    addExcludedAreaLayer,
 
     // 性能优化方法
     batchToggleMarkerVisibility,
@@ -1656,9 +2161,12 @@ export function useMapMarkers(map) {
     flyTo,
     zoomIn,
     zoomOut,
+    getMapBounds,
 
     // 轨迹
     trackFeatureList,
+    setSpeedValue,
+    getActiveAnimations,
     // 轨迹生成方法
     generateTrackRoute,
     startTrackRouteAnimation,
@@ -1675,6 +2183,7 @@ export function useMapMarkers(map) {
     // 通用方法
     destroy,
     trackDestroy,
-    destroyClustering
+    destroyClustering,
+    addExcludedAreaLayer // 添加的新方法
   };
 }

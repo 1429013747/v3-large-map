@@ -81,7 +81,7 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
           color: "#000000",
           offsetX: 10,
           offsetY: -17,
-          bgImage: "/src/assets/imgs/qb.png", // 背景图片路径
+          bgImage: new URL("../assets/imgs/qb.png", import.meta.url).href, // 背景图片路径
           bgSize: [100, 50], // 背景图片尺寸
           displacement: [18, 9], // 汽包位置偏移
           bgScale: 0.7, // 缩放比例
@@ -157,7 +157,7 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
           color: "#000000",
           offsetX: 10,
           offsetY: -17,
-          bgImage: "/src/assets/imgs/qb.png", // 背景图片路径
+          bgImage: new URL("../assets/imgs/qb.png", import.meta.url).href, // 背景图片路径
           bgSize: [100, 50], // 背景图片尺寸
           displacement: [18, 9], // 汽包位置偏移
           bgScale: 0.7, // 缩放比例
@@ -209,7 +209,7 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
   //           color: "#000000",
   //           offsetX: 10,
   //           offsetY: -17,
-  //           bgImage: "/src/assets/imgs/qb.png", // 背景图片路径
+  //           bgImage: "../assets/imgs/qb.png", // 背景图片路径
   //           bgSize: [100, 50], // 背景图片尺寸
   //           displacement: [18, 9], // 汽包位置偏移
   //           bgScale: 0.7, // 缩放比例

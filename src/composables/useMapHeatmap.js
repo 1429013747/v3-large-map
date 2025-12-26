@@ -1,10 +1,11 @@
-import Feature from "ol/Feature";
-import GeoJSON from "ol/format/GeoJSON";
-import Point from "ol/geom/Point";
-import Heatmap from "ol/layer/Heatmap";
-import { fromLonLat } from "ol/proj";
-import VectorSource from "ol/source/Vector";
-import { computed, reactive, ref } from "vue";
+import { ref, computed, reactive } from 'vue';
+import VectorSource from 'ol/source/Vector';
+import VectorLayer from 'ol/layer/Vector';
+import Heatmap from 'ol/layer/Heatmap';
+import GeoJSON from 'ol/format/GeoJSON';
+import Feature from 'ol/Feature';
+import Point from 'ol/geom/Point';
+import { fromLonLat } from 'ol/proj';
 
 /**
  * 多热力图 Hook（OpenLayers）
@@ -26,12 +27,12 @@ export function useMapHeatmap(mapInstance) {
   /**
    * 创建新的热力图层
    * @param {string} type 图层类型
-   * @param {object} options 图层配置
-   * @returns {object} 图层对象
+   * @param {Object} options 图层配置
+   * @returns {Object} 图层对象
    */
   const createLayer = (type, options = {}) => {
     if (!mapRef.value) {
-      console.warn("地图实例不存在，无法创建热力图层");
+      console.warn('地图实例不存在，无法创建热力图层');
       return null;
     }
 
@@ -59,8 +60,8 @@ export function useMapHeatmap(mapInstance) {
       gradient
     });
 
-    heatmapLayer.set("title", title);
-    heatmapLayer.set("type", type);
+    heatmapLayer.set('title', title);
+    heatmapLayer.set('type', type);
     heatmapLayer.setZIndex(zIndex);
 
     mapRef.value.addLayer(heatmapLayer);
@@ -110,20 +111,42 @@ export function useMapHeatmap(mapInstance) {
   /**
    * 设置指定图层显示/隐藏
    * @param {string} type 图层类型
-   * @param {boolean} visible 是否显示
+   * @param {Boolean} visible 是否显示
    */
-  function setLayerVisible(type, visible) {
+  const setLayerVisible = (type, visible) => {
     const layerInfo = heatmapLayers.get(type);
-    if (!layerInfo) return;
-    layerInfo.layer.setVisible(visible);
-    layerInfo.visible = visible;
+    if (!layerInfo) {
+      console.warn(`热力图图层 ${type} 不存在`);
+      return;
+    }
+    // 检查地图实例是否存在
+    if (!mapRef.value) {
+      console.warn('地图实例不存在，无法设置热力图可见性');
+      return;
+    }
+    // 检查地图的渲染器是否准备好（通过检查地图容器的 canvas）
+    try {
+      const mapElement = mapRef.value.getTargetElement();
+      if (!mapElement) {
+        console.warn('地图容器元素不存在');
+        return;
+      }
+      
+      // 使用 try-catch 捕获可能的渲染错误
+      layerInfo.layer.setVisible(visible);
+      layerInfo.visible = visible;
+    } catch (error) {
+      console.error(`设置热力图 ${type} 可见性时出错:`, error);
+      // 即使出错也更新状态，避免状态不一致
+      layerInfo.visible = visible;
+    }
   };
 
   /**
    * 切换指定图层显示状态
    * @param {string} type 图层类型
    */
-  function toggleLayerVisible(type) {
+  const toggleLayerVisible = (type) => {
     const layerInfo = heatmapLayers.get(type);
     if (!layerInfo) return;
     setLayerVisible(type, !layerInfo.visible);
@@ -132,9 +155,9 @@ export function useMapHeatmap(mapInstance) {
   /**
    * 设置指定图层范围半径
    * @param {string} type 图层类型
-   * @param {number} radius
+   * @param {Number} radius
    */
-  function setLayerRadius(type, radius) {
+  const setLayerRadius = (type, radius) => {
     const layerInfo = heatmapLayers.get(type);
     if (!layerInfo) return;
     layerInfo.layer.setRadius(radius);
@@ -144,9 +167,9 @@ export function useMapHeatmap(mapInstance) {
   /**
    * 设置指定图层范围模糊程度
    * @param {string} type 图层类型
-   * @param {number} blur
+   * @param {Number} blur
    */
-  function setLayerBlur(type, blur) {
+  const setLayerBlur = (type, blur) => {
     const layerInfo = heatmapLayers.get(type);
     if (!layerInfo) return;
     layerInfo.layer.setBlur(blur);
@@ -189,14 +212,14 @@ export function useMapHeatmap(mapInstance) {
    * @param {string} type 图层类型
    * @param {Array<{lon:number, lat:number, weight?:number}>} points
    */
-  function setLayerData(type, points = []) {
+  const setLayerData = (type, points = []) => {
     const layerInfo = heatmapLayers.get(type);
     if (!layerInfo) return;
 
     const features = points.map((p) => {
       const feature = new Feature({
         geometry: new Point(fromLonLat([p.lon, p.lat])),
-        weight: typeof p.weight === "number" ? p.weight : 1
+        weight: typeof p.weight === 'number' ? p.weight : 1
       });
       return feature;
     });
@@ -206,17 +229,17 @@ export function useMapHeatmap(mapInstance) {
   /**
    * 设置指定图层 GeoJSON 数据（Point FeatureCollection）
    * @param {string} type 图层类型
-   * @param {object} geojson FeatureCollection
-   * @param {object} options { dataProjection?: string, featureProjection?: string, weightAttr?: string }
+   * @param {Object} geojson FeatureCollection
+   * @param {Object} options { dataProjection?: string, featureProjection?: string, weightAttr?: string }
    */
-  function setLayerGeoJSON(type, geojson, options = {}) {
+  const setLayerGeoJSON = (type, geojson, options = {}) => {
     const layerInfo = heatmapLayers.get(type);
     if (!layerInfo || !geojson) return;
 
     const {
-      dataProjection = "EPSG:4326",
-      featureProjection = "EPSG:3857",
-      weightAttr = "weight"
+      dataProjection = 'EPSG:4326',
+      featureProjection = 'EPSG:3857',
+      weightAttr = 'weight'
     } = options;
 
     const format = new GeoJSON();
@@ -227,11 +250,11 @@ export function useMapHeatmap(mapInstance) {
 
     // 归一化权重字段为 weight
     features.forEach((f) => {
-      if (weightAttr !== "weight") {
+      if (weightAttr !== 'weight') {
         const w = f.get(weightAttr);
-        if (typeof w === "number") f.set("weight", w);
+        if (typeof w === 'number') f.set('weight', w);
       }
-      if (typeof f.get("weight") !== "number") f.set("weight", 1);
+      if (typeof f.get('weight') !== 'number') f.set('weight', 1);
     });
 
     layerInfo.source.addFeatures(features);
@@ -240,9 +263,9 @@ export function useMapHeatmap(mapInstance) {
   /**
    * 设置指定图层层级
    * @param {string} type 图层类型
-   * @param {number} zIndex
+   * @param {Number} zIndex
    */
-  function setLayerZIndex(type, zIndex) {
+  const setLayerZIndex = (type, zIndex) => {
     const layerInfo = heatmapLayers.get(type);
     if (!layerInfo) return;
     layerInfo.layer.setZIndex(zIndex);
@@ -253,32 +276,32 @@ export function useMapHeatmap(mapInstance) {
    * 获取所有图层信息
    * @returns {Array} 图层信息数组
    */
-  function getAllLayers() {
+  const getAllLayers = () => {
     return Array.from(heatmapLayers.values());
   };
 
   /**
    * 获取指定图层信息
    * @param {string} type 图层类型
-   * @returns {object | null} 图层信息
+   * @returns {Object|null} 图层信息
    */
-  function getLayer(type) {
+  const getLayer = (type) => {
     return heatmapLayers.get(type) || null;
   };
 
   /**
    * 检查图层是否存在
    * @param {string} type 图层类型
-   * @returns {boolean}
+   * @returns {Boolean}
    */
-  function hasLayer(type) {
+  const hasLayer = (type) => {
     return heatmapLayers.has(type);
   };
 
   /**
    * 替换地图实例（例如地图重建时）
    */
-  function setMap(map) {
+  const setMap = (map) => {
     if (mapRef.value === map) return;
 
     // 移除旧地图上的所有图层
@@ -301,7 +324,7 @@ export function useMapHeatmap(mapInstance) {
   /**
    * 销毁所有热力图层
    */
-  function destroy() {
+  const destroy = () => {
     removeAllLayers();
     mapRef.value = null;
   };
