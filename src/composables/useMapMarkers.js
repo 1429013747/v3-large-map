@@ -1,10 +1,10 @@
-import { ref, reactive, nextTick, watch } from 'vue';
+import { reactive, ref } from 'vue';
 import Feature from 'ol/Feature';
 import Overlay from 'ol/Overlay';
-import { Point, LineString, Polygon as OlPolygon } from 'ol/geom';
+import { Polygon as OlPolygon, Point } from 'ol/geom';
 import { fromLonLat, toLonLat } from 'ol/proj';
 import TileLayer from 'ol/layer/Tile';
-import { Style, Icon, Text, Circle, Fill, Stroke, RegularShape } from 'ol/style';
+import { Circle, Fill, Icon, Stroke, Style, Text } from 'ol/style';
 import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 
@@ -14,8 +14,8 @@ import { getIconPathMarkIcons } from '@/utils/utilstools.js';
 
 /**
  * 地图标记点管理Hook
- * @param {Object} map - OpenLayers地图实例
- * @returns {Object} 标记点管理方法和状态
+ * @param {object} map - OpenLayers地图实例
+ * @returns {object} 标记点管理方法和状态
  */
 export function useMapMarkers(map) {
   // 标记点数据
@@ -36,12 +36,12 @@ export function useMapMarkers(map) {
   const customPolygonSource = ref(null);
   const customPolygonLayer = ref(null);
 
-  //扇形 相关
+  // 扇形 相关
   const markerIdCounter = ref(null);
   const markerSectors = ref(null);
 
   // 点击事件回调
-  let onMarkerClickCallback = null;
+  const onMarkerClickCallback = null;
 
   // 标记点配置
   const markerConfig = reactive({
@@ -181,7 +181,6 @@ export function useMapMarkers(map) {
       overlayElement.className = 'map-overlay';
       overlayElement.style.display = 'block';
 
-
       // 生成内容
       if (contentFunction && typeof contentFunction === 'function') {
         overlayElement.innerHTML = contentFunction(position);
@@ -250,7 +249,7 @@ export function useMapMarkers(map) {
 
   /**
    * 创建标记点样式
-   * @param {Object} options - 样式选项
+   * @param {object} options - 样式选项
    * @returns {Style} OpenLayers样式对象
    */
   const createMarkerStyle = (options = {}) => {
@@ -445,9 +444,9 @@ export function useMapMarkers(map) {
   /**
    * 添加标记点 - 优化版本，支持批量处理
    * @param {Array} coordinates - 坐标 [经度, 纬度]
-   * @param {Object} options - 标记点选项
-   * @param {Boolean} useBatch - 是否使用批量处理
-   * @returns {String} 标记点ID
+   * @param {object} options - 标记点选项
+   * @param {boolean} useBatch - 是否使用批量处理
+   * @returns {string} 标记点ID
    */
   const addMarker = (coordinates, options = {}, useBatch = false) => {
     if (!map) {
@@ -518,8 +517,8 @@ export function useMapMarkers(map) {
 
   /**
    * 生成样式缓存键
-   * @param {Object} styleOptions - 样式选项
-   * @returns {String} 缓存键
+   * @param {object} styleOptions - 样式选项
+   * @returns {string} 缓存键
    */
   const getStyleKey = (styleOptions) => {
     if (!styleOptions) return {};
@@ -595,8 +594,8 @@ export function useMapMarkers(map) {
 
   /**
    * 添加标记点到图层
-   * @param {Object} marker - 标记点对象
-   * @param {Object} options - 选项
+   * @param {object} marker - 标记点对象
+   * @param {object} options - 选项
    */
   const addMarkerToLayer = (marker, options) => {
     // 如果 marker 不可见，确保使用透明样式
@@ -613,7 +612,7 @@ export function useMapMarkers(map) {
 
   /**
    * 移除标记点
-   * @param {String} id - 标记点ID
+   * @param {string} id - 标记点ID
    */
   const removeMarker = (id) => {
     const markerIndex = markers.value.findIndex((m) => m.id === id);
@@ -633,8 +632,8 @@ export function useMapMarkers(map) {
 
   /**
    * 更新标记点
-   * @param {String} id - 标记点ID
-   * @param {Object} updates - 更新内容
+   * @param {string} id - 标记点ID
+   * @param {object} updates - 更新内容
    */
   const updateMarker = (id, updates = {}) => {
     const marker = markers.value.find((m) => m.id === id);
@@ -666,8 +665,8 @@ export function useMapMarkers(map) {
 
   /**
    * 显示/隐藏标记点边框
-   * @param {String} id - 标记点ID
-   * @param {Boolean} show - 是否显示边框
+   * @param {string} id - 标记点ID
+   * @param {boolean} show - 是否显示边框
    */
   const toggleMarkerBorder = (id, show = true) => {
     markers.value.forEach((marker) => {
@@ -687,8 +686,8 @@ export function useMapMarkers(map) {
 
   /**
    * 显示/隐藏标记点
-   * @param {String} id - 标记点ID
-   * @param {Boolean} visible - 是否显示
+   * @param {string} id - 标记点ID
+   * @param {boolean} visible - 是否显示
    */
   const toggleMarkerVisibility = (id, visible) => {
     const marker = markers.value.find((m) => m.id === id);
@@ -703,8 +702,8 @@ export function useMapMarkers(map) {
 
   /**
    * 显示/隐藏标记点 - 优化版本，支持大量数据
-   * @param {String} type - 标记点类型
-   * @param {Boolean} visible - 是否显示
+   * @param {string} type - 标记点类型
+   * @param {boolean} visible - 是否显示
    */
   const toggleMarkerVisibilityList = (type, visible, isDelete = false) => {
     const markerlist = markers.value.filter((m) => m.options.type === type);
@@ -731,7 +730,7 @@ export function useMapMarkers(map) {
   /**
    * 批量切换标记点可见性 - 使用 requestAnimationFrame 分批处理
    * @param {Array} markerlist - 标记点列表
-   * @param {Boolean} visible - 是否显示
+   * @param {boolean} visible - 是否显示
    */
   const batchToggleMarkerVisibility = (markerlist, visible) => {
     const batchSize = 1000; // 每批处理1000个
@@ -763,7 +762,7 @@ export function useMapMarkers(map) {
   /**
    * 批量删除标记点 - 使用 requestAnimationFrame 分批处理
    * @param {Array} markerlist - 标记点列表
-   * @param {String} type - 标记点类型
+   * @param {string} type - 标记点类型
    */
   const batchToggleMarkerDelete = (markerlist, type) => {
     const batchSize = 1000; // 每批处理1000个
@@ -789,8 +788,8 @@ export function useMapMarkers(map) {
 
   /**
    * 基于图层的标记点可见性切换
-   * @param {String} type - 标记点类型
-   * @param {Boolean} visible - 是否显示
+   * @param {string} type - 标记点类型
+   * @param {boolean} visible - 是否显示
    */
   const toggleMarkerVisibilityByLayer = (type, visible) => {
     const layers = getAllLayers();
@@ -829,7 +828,7 @@ export function useMapMarkers(map) {
 
   /**
    * 创建按类型分组的标记点图层
-   * @param {String} type - 标记点类型
+   * @param {string} type - 标记点类型
    */
   const createMarkerLayerByType = (type) => {
     if (markerLayersByType.value[type]) {
@@ -861,7 +860,7 @@ export function useMapMarkers(map) {
 
   /**
    * 将标记点添加到指定类型的图层
-   * @param {String} type - 标记点类型
+   * @param {string} type - 标记点类型
    * @param {Feature} feature - 标记点要素
    */
   const addMarkerToTypeLayer = (type, feature) => {
@@ -878,7 +877,7 @@ export function useMapMarkers(map) {
 
   /**
    * 从指定类型的图层移除标记点
-   * @param {String} type - 标记点类型
+   * @param {string} type - 标记点类型
    * @param {Feature} feature - 标记点要素
    */
   const removeMarkerFromTypeLayer = (type, feature) => {
@@ -889,7 +888,7 @@ export function useMapMarkers(map) {
 
   /**
    * 清除指定类型的所有标记点
-   * @param {String} type - 标记点类型
+   * @param {string} type - 标记点类型
    */
   const clearMarkersByType = (type) => {
     if (markerSourcesByType.value[type]) {
@@ -917,8 +916,8 @@ export function useMapMarkers(map) {
 
   /**
    * 显示/隐藏标记点的文本和气泡
-   * @param {String} id - 标记点ID
-   * @param {Boolean} visible - 是否显示
+   * @param {string} id - 标记点ID
+   * @param {boolean} visible - 是否显示
    */
   const toggleMarkerTextVisibility = (id, visible) => {
     const marker = markers.value.find((m) => m.id === id);
@@ -936,8 +935,8 @@ export function useMapMarkers(map) {
 
   /**
    * 批量显示/隐藏文本和气泡
-   * @param {String} type - 标记点类型
-   * @param {Boolean} visible - 是否显示
+   * @param {string} type - 标记点类型
+   * @param {boolean} visible - 是否显示
    */
   const toggleMarkerTextVisibilityByType = (type, visible) => {
     const markerlist = markers.value.filter((m) => m.options.type === type);
@@ -954,8 +953,8 @@ export function useMapMarkers(map) {
 
   /**
    * 切换船舶标记样式（图标 vs 小绿点）
-   * @param {String} type - 标记点类型
-   * @param {Boolean} useSimpleStyle - 是否使用简单样式（小绿点）
+   * @param {string} type - 标记点类型
+   * @param {boolean} useSimpleStyle - 是否使用简单样式（小绿点）
    */
   const toggleShipMarkerStyle = (type, useSimpleStyle, style) => {
     return new Promise((resolve, reject) => {
@@ -1022,8 +1021,8 @@ export function useMapMarkers(map) {
 
   /**
    * 获取标记点
-   * @param {String} id - 标记点ID
-   * @returns {Object|null} 标记点对象
+   * @param {string} id - 标记点ID
+   * @returns {object | null} 标记点对象
    */
   const getMarker = (id) => {
     return markers.value.find((m) => m.id === id) || null;
@@ -1039,7 +1038,7 @@ export function useMapMarkers(map) {
 
   /**
    * 根据类型获取标记点
-   * @param {String} type - 标记点类型
+   * @param {string} type - 标记点类型
    * @returns {Array} 标记点数组
    */
   const getMarkersByType = (type) => {
@@ -1048,7 +1047,7 @@ export function useMapMarkers(map) {
 
   /**
    * 设置标记点配置
-   * @param {Object} config - 配置对象
+   * @param {object} config - 配置对象
    */
   const setMarkerConfig = (config) => {
     Object.assign(markerConfig, config);
@@ -1056,7 +1055,7 @@ export function useMapMarkers(map) {
 
   /**
    * 设置标记点坐标
-   * @param {String} id - 标记点ID
+   * @param {string} id - 标记点ID
    * @param {Array} coordinates - 坐标
    */
   const setMarkerCoordinates = (id, coordinates) => {
@@ -1069,7 +1068,7 @@ export function useMapMarkers(map) {
   /**
    * 批量添加标记点 - 高性能版本
    * @param {Array} markerList - 标记点列表
-   * @param {Object} batchOptions - 批量选项
+   * @param {object} batchOptions - 批量选项
    */
   const addMarkers = async (markerList, batchOptions = {}) => {
     const {
@@ -1112,7 +1111,7 @@ export function useMapMarkers(map) {
   /**
    * 分批添加大量标记点
    * @param {Array} markerList - 标记点列表
-   * @param {Number} batchSize - 每批大小
+   * @param {number} batchSize - 每批大小
    * @param {Function} onProgress - 进度回调
    * @param {Function} onComplete - 完成回调
    */
@@ -1259,7 +1258,7 @@ export function useMapMarkers(map) {
 
   /**
    * 监听地图点击事件添加标记点
-   * @param {Boolean} enabled - 是否启用
+   * @param {boolean} enabled - 是否启用
    */
   const enableClickToAdd = (enabled = true) => {
     if (!map) return;
@@ -1273,7 +1272,7 @@ export function useMapMarkers(map) {
 
   /**
    * 地图点击事件处理
-   * @param {Object} event - 点击事件
+   * @param {object} event - 点击事件
    */
   const handleMapClick = (event) => {
     const coordinates = event.coordinate;
@@ -1295,8 +1294,8 @@ export function useMapMarkers(map) {
 
   /**
    * 检查标记点ID是否唯一
-   * @param {String} id - 标记点ID
-   * @returns {Boolean} 是否唯一
+   * @param {string} id - 标记点ID
+   * @returns {boolean} 是否唯一
    */
   const isMarkerIdUnique = (id) => {
     return !markers.value.some((marker) => marker.id === id);
@@ -1304,8 +1303,8 @@ export function useMapMarkers(map) {
 
   /**
    * 生成唯一的标记点ID
-   * @param {String} prefix - ID前缀
-   * @returns {String} 唯一的ID
+   * @param {string} prefix - ID前缀
+   * @returns {string} 唯一的ID
    */
   const generateUniqueMarkerId = (prefix = 'marker') => {
     let id;
@@ -1328,8 +1327,8 @@ export function useMapMarkers(map) {
 
   /**
    * 生成标记点唯一标识
-   * @param {Object} marker - 标记点对象
-   * @returns {String} 标记点唯一标识
+   * @param {object} marker - 标记点对象
+   * @returns {string} 标记点唯一标识
    */
   const getMarkerKey = (marker) => {
     return marker.options?.id || `${marker.coordinates[0]}_${marker.coordinates[1]}`;
@@ -1338,7 +1337,7 @@ export function useMapMarkers(map) {
   /**
    * 虚拟化渲染 - 只渲染当前视口内的标记点
    * @param {Array} markerList - 标记点列表
-   * @param {Object} options - 选项
+   * @param {object} options - 选项
    */
   const addMarkersVirtualized = (markerList, options = {}) => {
     const {
@@ -1479,10 +1478,10 @@ export function useMapMarkers(map) {
   /**
    * 在地图上绘制带填充色的多边形
    * @param {Array<[number, number]>|Array<Array<[number, number]>>|Array<Array<Array<[number, number]>>>} lonLatCoordinates - 多边形经纬度坐标
-   * @param {Object} [options]
-   * @param {string} [options.fillColor="#1989fa80"] - 填充色，支持 rgba/hex，默认含0.5透明度
-   * @param {string} [options.strokeColor="#1989fa"] - 边框颜色
-   * @param {number} [options.strokeWidth=2] - 边框宽度
+   * @param {object} [options]
+   * @param {string} [options.fillColor] - 填充色，支持 rgba/hex，默认含0.5透明度
+   * @param {string} [options.strokeColor] - 边框颜色
+   * @param {number} [options.strokeWidth] - 边框宽度
    * @returns {Feature|undefined} 返回创建的要素
    */
   const drawFilledPolygon = (
@@ -1547,10 +1546,10 @@ export function useMapMarkers(map) {
   /**
    * 在地图上绘制带填充色的多边形
    * @param {Array<[number, number]>|Array<Array<[number, number]>>|Array<Array<Array<[number, number]>>>} lonLatCoordinates - 多边形经纬度坐标
-   * @param {Object} [options]
-   * @param {string} [options.fillColor="#1989fa80"] - 填充色，支持 rgba/hex，默认含0.5透明度
-   * @param {string} [options.strokeColor="#1989fa"] - 边框颜色
-   * @param {number} [options.strokeWidth=2] - 边框宽度
+   * @param {object} [options]
+   * @param {string} [options.fillColor] - 填充色，支持 rgba/hex，默认含0.5透明度
+   * @param {string} [options.strokeColor] - 边框颜色
+   * @param {number} [options.strokeWidth] - 边框宽度
    * @returns {Feature|undefined} 返回创建的要素
    */
   const drawFilledPolygonCustom = (
@@ -1625,14 +1624,14 @@ export function useMapMarkers(map) {
   /**
    * 在地图上绘制扇形
    * @param {Array<number>} center - 扇形中心点坐标 [经度, 纬度]
-   * @param {Object} [options]
-   * @param {number} [options.radius=1000] - 扇形半径(米)
-   * @param {number} [options.startAngle=0] - 起始角度(度)
-   * @param {number} [options.endAngle=90] - 结束角度(度)
-   * @param {number} [options.segments=32] - 扇形边缘线段分割数
-   * @param {string} [options.fillColor="#1989fa80"] - 填充色，支持 rgba/hex，默认含0.5透明度
-   * @param {string} [options.strokeColor="#1989fa"] - 边框颜色
-   * @param {number} [options.strokeWidth=2] - 边框宽度
+   * @param {object} [options]
+   * @param {number} [options.radius] - 扇形半径(米)
+   * @param {number} [options.startAngle] - 起始角度(度)
+   * @param {number} [options.endAngle] - 结束角度(度)
+   * @param {number} [options.segments] - 扇形边缘线段分割数
+   * @param {string} [options.fillColor] - 填充色，支持 rgba/hex，默认含0.5透明度
+   * @param {string} [options.strokeColor] - 边框颜色
+   * @param {number} [options.strokeWidth] - 边框宽度
    * @returns {Feature|undefined} 返回创建的要素
    */
   const drawSector = (
@@ -1709,7 +1708,7 @@ export function useMapMarkers(map) {
 
   /**
    * 获取已加载标记点数量
-   * @returns {Number} 已加载标记点数量
+   * @returns {number} 已加载标记点数量
    */
   const getLoadedMarkersCount = () => {
     return loadedMarkers.size;
@@ -1717,8 +1716,8 @@ export function useMapMarkers(map) {
 
   /**
    * 检查标记点是否已加载
-   * @param {String|Object} markerIdOrMarker - 标记点ID或标记点对象
-   * @returns {Boolean} 是否已加载
+   * @param {string | object} markerIdOrMarker - 标记点ID或标记点对象
+   * @returns {boolean} 是否已加载
    */
   const isMarkerLoaded = (markerIdOrMarker) => {
     const key =
@@ -1737,8 +1736,8 @@ export function useMapMarkers(map) {
 
   /**
    * 启用聚合功能
-   * @param {String} type - 标记点类型
-   * @param {Object} options - 聚合选项
+   * @param {string} type - 标记点类型
+   * @param {object} options - 聚合选项
    */
   const enableClustering = (type, options = {}) => {
     const typeMarkers = getMarkersByType(type);
@@ -1773,7 +1772,7 @@ export function useMapMarkers(map) {
 
   /**
    * 禁用聚合功能
-   * @param {String} type - 标记点类型
+   * @param {string} type - 标记点类型
    */
   const disableClustering = (type) => {
     // 清除聚合图层
@@ -1789,8 +1788,8 @@ export function useMapMarkers(map) {
 
   /**
    * 切换聚合功能
-   * @param {String} type - 标记点类型
-   * @param {Boolean} enabled - 是否启用
+   * @param {string} type - 标记点类型
+   * @param {boolean} enabled - 是否启用
    */
   const toggleClustering = (type, enabled) => {
     if (enabled) {
@@ -1802,7 +1801,7 @@ export function useMapMarkers(map) {
 
   /**
    * 更新聚合图层
-   * @param {String} type - 标记点类型
+   * @param {string} type - 标记点类型
    */
   const refreshClusterLayer = (type) => {
     const typeMarkers = getMarkersByType(type);
@@ -1819,8 +1818,8 @@ export function useMapMarkers(map) {
 
   /**
    * 设置聚合距离
-   * @param {String} type - 标记点类型
-   * @param {Number} distance - 聚合距离
+   * @param {string} type - 标记点类型
+   * @param {number} distance - 聚合距离
    */
   const setClusterDistanceForType = (type, distance) => {
     setClusterDistance(type, distance);
@@ -1828,8 +1827,8 @@ export function useMapMarkers(map) {
 
   /**
    * 获取聚合信息
-   * @param {String} type - 标记点类型
-   * @returns {Object} 聚合信息
+   * @param {string} type - 标记点类型
+   * @returns {object} 聚合信息
    */
   const getClusterInfoForType = (type) => {
     return getClusterInfo(type);
@@ -1838,7 +1837,7 @@ export function useMapMarkers(map) {
   /**
    * 添加指定图层到地图
    * @param {string} type 图层类型
-   * @param {Object} layer 图层对象
+   * @param {object} layer 图层对象
    */
   const addLayerToMap = (config) => {
     if (!map) return;
@@ -1856,11 +1855,11 @@ export function useMapMarkers(map) {
   /**
    * 添加一个半透明淡蓝色图层，但排除指定的GeoJSON区域
    * @param {Array} geoJsonCoordinates - GeoJSON格式的四维坐标数组
-   * @param {Object} options - 配置选项
-   * @param {String} options.excludeColor - 排除区域的颜色，默认为透明
-   * @param {String} options.overlayColor - 覆盖区域的颜色，默认为半透明淡蓝色
-   * @param {String} options.borderColor - 边框颜色，默认为深蓝色
-   * @param {Number} options.borderWidth - 边框宽度，默认为2
+   * @param {object} options - 配置选项
+   * @param {string} options.excludeColor - 排除区域的颜色，默认为透明
+   * @param {string} options.overlayColor - 覆盖区域的颜色，默认为半透明淡蓝色
+   * @param {string} options.borderColor - 边框颜色，默认为深蓝色
+   * @param {number} options.borderWidth - 边框宽度，默认为2
    * @returns {Feature} 创建的要素
    */
   const addExcludedAreaLayer = (geoJsonCoordinates, options = {}) => {
@@ -1921,7 +1920,7 @@ export function useMapMarkers(map) {
     // 确保排除区域是逆时针方向（作为孔洞）
     const orientedRings = excludedRings.map(ringArray => {
       // 如果是最内层数组是坐标点
-      let ring = Array.isArray(ringArray[0]) && Array.isArray(ringArray[0][0]) ? ringArray[0] : ringArray;
+      const ring = Array.isArray(ringArray[0]) && Array.isArray(ringArray[0][0]) ? ringArray[0] : ringArray;
 
       // 转换为投影坐标
       const projectedRing = ring.map(coord => {
@@ -2037,7 +2036,7 @@ export function useMapMarkers(map) {
 
   /**
    * 获取地图边界
-   * @returns {Object} 地图边界
+   * @returns {object} 地图边界
    */
   const getMapBounds = () => {
     if (!map) return;
@@ -2184,6 +2183,5 @@ export function useMapMarkers(map) {
     destroy,
     trackDestroy,
     destroyClustering,
-    addExcludedAreaLayer // 添加的新方法
   };
 }
