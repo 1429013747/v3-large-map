@@ -9,7 +9,6 @@ export default antfu({
     'vue/component-tags-order': ['error', {
       order: ['script', 'template', 'style']
     }],
-    // ✅ 允许使用 console
     'no-console': 'off',
     'style/semi': 'off',
     'style/quotes': 'off',
