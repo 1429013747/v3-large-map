@@ -193,7 +193,7 @@ export function useMapMarkers(map) {
               </div>
               <div class="warn-content">
                 <h4>华盛123</h4>
-                <p class="warn-message">伪造信号、套牌预警!</p>
+                <p class="warn-message">伪造信号预警!</p>
               </div>
               <div class="tip-animation">
               </div>
