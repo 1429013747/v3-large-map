@@ -1,13 +1,437 @@
+<script setup>
+import {
+  CloseOutlined,
+  ExportOutlined,
+  SearchOutlined
+} from "@ant-design/icons-vue";
+import { message } from "ant-design-vue";
+import { computed, ref } from "vue";
+
+const props = defineProps({
+  open: {
+    type: Boolean,
+    default: false
+  }
+});
+
+const emit = defineEmits(["update:open"]);
+
+const visibleModal = computed({
+  get() {
+    return props.open;
+  },
+  set(value) {
+    emit("update:open", value);
+  }
+});
+
+// 搜索和筛选数据
+const licensePlateNumber = ref("");
+const selectedPlateColor = ref();
+const selectedTimeRange = ref();
+const searchVisible = ref(false);
+const toggleView = ref(true);
+
+const inputRows = ref([
+  {
+    timeRange: null,
+    vehicleName: "",
+    plateColor: null
+  }
+]);
+
+// 团伙车辆查询表格列定义
+const gangVehicleColumns = [
+  {
+    title: "序号",
+    dataIndex: "index",
+    key: "index",
+    width: 60,
+    align: "center"
+  },
+  {
+    title: "查询单",
+    dataIndex: "queryName",
+    key: "queryName",
+    width: 200
+  },
+  {
+    title: "创建时间",
+    dataIndex: "createTime",
+    key: "createTime",
+    width: 120
+  },
+  {
+    title: "状态",
+    dataIndex: "status",
+    key: "status",
+    width: 80,
+    align: "center"
+  },
+  {
+    title: "操作",
+    key: "operation",
+    width: 80,
+    align: "center"
+  }
+];
+
+// 团伙车辆查询数据
+const gangVehicleData = ref([
+  {
+    key: "1",
+    index: 1,
+    queryName: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "查询中"
+  },
+  {
+    key: "2",
+    index: 2,
+    queryName: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "查询中"
+  },
+  {
+    key: "3",
+    index: 3,
+    queryName: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "查询中"
+  },
+  {
+    key: "4",
+    index: 4,
+    queryName: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "查询中"
+  },
+  {
+    key: "5",
+    index: 5,
+    queryName: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "查询中"
+  },
+  {
+    key: "6",
+    index: 6,
+    queryName: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "查询中"
+  },
+  {
+    key: "7",
+    index: 7,
+    queryName: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "查询中"
+  },
+  {
+    key: "8",
+    index: 8,
+    queryName: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "查询中"
+  },
+  {
+    key: "9",
+    index: 9,
+    queryName: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "查询中"
+  },
+  {
+    key: "10",
+    index: 10,
+    queryName: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "查询中"
+  },
+  {
+    key: "11",
+    index: 11,
+    queryName: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "查询中"
+  },
+  {
+    key: "12",
+    index: 12,
+    queryName: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "查询中"
+  },
+  {
+    key: "13",
+    index: 13,
+    queryName: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "查询中"
+  },
+  {
+    key: "14",
+    index: 14,
+    queryName: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "查询中"
+  },
+  {
+    key: "15",
+    index: 15,
+    queryName: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "查询中"
+  },
+  {
+    key: "16",
+    index: 16,
+    queryName: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "查询中"
+  },
+  {
+    key: "17",
+    index: 17,
+    queryName: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "查询中"
+  },
+  {
+    key: "18",
+    index: 18,
+    queryName: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "查询中"
+  }
+]);
+
+// 分页配置
+const paginationConfig = {
+  current: 1,
+  pageSize: 10,
+  total: gangVehicleData.value.length,
+  showSizeChanger: true,
+  showQuickJumper: true,
+  showTotal: total => `共${total}条`,
+  pageSizeOptions: ["10", "20", "30", "50"],
+  size: "small"
+};
+// 团伙车辆详情表格列配置
+const gangDetailColumns = [
+  {
+    title: "序号",
+    dataIndex: "index",
+    key: "index",
+    width: 80,
+    align: "center"
+  },
+  {
+    title: "车牌号",
+    dataIndex: "plateNumber",
+    key: "plateNumber",
+    width: 120
+  },
+  {
+    title: "车牌颜色",
+    dataIndex: "plateColor",
+    key: "plateColor",
+    width: 100
+  },
+  {
+    title: "车辆类型",
+    dataIndex: "vehicleType",
+    key: "vehicleType",
+    width: 120
+  },
+  {
+    title: "轨迹相似度",
+    dataIndex: "similarity",
+    key: "similarity",
+    width: 120,
+    align: "center"
+  },
+  {
+    title: "相似时间范围",
+    dataIndex: "timeRange",
+    key: "timeRange",
+    width: 200
+  },
+  {
+    title: "操作",
+    key: "action",
+    width: 100,
+    align: "center"
+  }
+];
+// 团伙车辆详情表格数据
+const gangDetailData = ref([
+  {
+    key: "1",
+    index: 1,
+    plateNumber: "浙XXXX",
+    plateColor: "蓝色",
+    vehicleType: "高栏货车",
+    similarity: "90%",
+    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42"
+  },
+  {
+    key: "2",
+    index: 2,
+    plateNumber: "浙XXXX",
+    plateColor: "蓝色",
+    vehicleType: "高栏货车",
+    similarity: "90%",
+    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42"
+  },
+  {
+    key: "3",
+    index: 3,
+    plateNumber: "浙XXXX",
+    plateColor: "蓝色",
+    vehicleType: "高栏货车",
+    similarity: "90%",
+    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42"
+  },
+  {
+    key: "4",
+    index: 4,
+    plateNumber: "浙XXXX",
+    plateColor: "蓝色",
+    vehicleType: "高栏货车",
+    similarity: "90%",
+    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42"
+  },
+  {
+    key: "5",
+    index: 5,
+    plateNumber: "浙XXXX",
+    plateColor: "蓝色",
+    vehicleType: "高栏货车",
+    similarity: "90%",
+    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42"
+  },
+  {
+    key: "6",
+    index: 6,
+    plateNumber: "浙XXXX",
+    plateColor: "蓝色",
+    vehicleType: "高栏货车",
+    similarity: "90%",
+    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42"
+  },
+  {
+    key: "7",
+    index: 7,
+    plateNumber: "浙XXXX",
+    plateColor: "蓝色",
+    vehicleType: "高栏货车",
+    similarity: "90%",
+    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42"
+  }
+]);
+function handleClose() {
+  emit("update:open", false);
+}
+
+function handleAddQuery() {
+  console.log("添加查询单");
+  searchVisible.value = true;
+}
+
+// 查询按钮
+function handleAddVehicleQuery() {
+  console.log("执行查询", inputRows.value);
+  // 这里可以添加查询逻辑
+}
+
+// 取消按钮
+function handleCancel() {
+  searchVisible.value = false;
+  // 重置输入数据
+  inputRows.value = [
+    {
+      timeRange: null,
+      vehicleName: "",
+      plateColor: null
+    }
+  ];
+}
+// 添加输入行
+function addInputRow() {
+  if (inputRows.value.length < 3) {
+    inputRows.value.push({
+      timeRange: null,
+      vehicleName: "",
+      plateColor: null
+    });
+  }
+  else {
+    message.error("最多添加3行");
+  }
+}
+
+// 删除输入行
+function removeInputRow(index) {
+  if (inputRows.value.length > 1) {
+    inputRows.value.splice(index, 1);
+  }
+}
+
+function handleBackToGangList() {
+  toggleView.value = true;
+}
+
+// 查看轨迹
+function handleViewTrajectory(record) {
+  console.log("查看轨迹:", record);
+}
+
+function handleQuery() {
+  console.log("查询团伙车辆", {
+    licensePlateNumber: licensePlateNumber.value,
+    plateColor: selectedPlateColor.value,
+    timeRange: selectedTimeRange.value
+  });
+}
+
+function handleExport() {
+  console.log("导出数据");
+}
+
+function handlePlateColorChange(value) {
+  selectedPlateColor.value = value;
+  console.log("选择车牌颜色:", value);
+}
+
+function handleTimeRangeChange(value) {
+  selectedTimeRange.value = value;
+  console.log("选择时间范围:", value);
+}
+
+function handleViewDetail(record) {
+  console.log("查看详情", record);
+  toggleView.value = false;
+}
+
+function handleTableChange(pagination, filters, sorter) {
+  console.log("分页、过滤和排序变化:", pagination, filters, sorter);
+  paginationConfig.current = pagination.current;
+  paginationConfig.pageSize = pagination.pageSize;
+  paginationConfig.total = gangVehicleData.value.length;
+}
+</script>
+
 <template>
   <a-drawer
     v-model:open="visibleModal"
     title="团伙车辆查询"
     placement="right"
-    getContainer=".ui-container"
+    get-container=".ui-container"
     :width="1080"
     :closable="true"
     :mask="false"
-    rootClassName="layer-box"
+    root-class-name="layer-box"
     class="layer-control-drawer"
   >
     <template #closeIcon>
@@ -25,8 +449,8 @@
               v-model:value="licensePlateNumber"
               placeholder="请输入车牌号"
               class="license-plate-input"
-              allowClear
-              @pressEnter="handleQuery"
+              allow-clear
+              @press-enter="handleQuery"
             >
               <template #prefix>
                 <SearchOutlined />
@@ -37,26 +461,42 @@
               v-model:value="selectedPlateColor"
               placeholder="请选择车牌颜色"
               class="plate-color-select"
-              allowClear
+              allow-clear
               @change="handlePlateColorChange"
             >
-              <a-select-option value="蓝色">蓝色</a-select-option>
-              <a-select-option value="黄色">黄色</a-select-option>
-              <a-select-option value="绿色">绿色</a-select-option>
-              <a-select-option value="白色">白色</a-select-option>
-              <a-select-option value="黑色">黑色</a-select-option>
+              <a-select-option value="蓝色">
+                蓝色
+              </a-select-option>
+              <a-select-option value="黄色">
+                黄色
+              </a-select-option>
+              <a-select-option value="绿色">
+                绿色
+              </a-select-option>
+              <a-select-option value="白色">
+                白色
+              </a-select-option>
+              <a-select-option value="黑色">
+                黑色
+              </a-select-option>
             </a-select>
 
             <a-select
               v-model:value="selectedTimeRange"
               placeholder="时间范围"
               class="time-range-select"
-              allowClear
+              allow-clear
               @change="handleTimeRangeChange"
             >
-              <a-select-option value="今天">今天</a-select-option>
-              <a-select-option value="本周">本周</a-select-option>
-              <a-select-option value="本月">本月</a-select-option>
+              <a-select-option value="今天">
+                今天
+              </a-select-option>
+              <a-select-option value="本周">
+                本周
+              </a-select-option>
+              <a-select-option value="本月">
+                本月
+              </a-select-option>
             </a-select>
           </div>
 
@@ -111,7 +551,7 @@
           >
             <!-- <ArrowLeftOutlined />
             返回上级 -->
-            <img src="@/assets/imgs/back.png" alt="返回上级" class="back-img" />
+            <img src="@/assets/imgs/back.png" alt="返回上级" class="back-img">
           </a-button>
         </div>
 
@@ -148,17 +588,25 @@
         <div class="query-table-container">
           <!-- 表格头部 -->
           <div class="table-header">
-            <div class="header-cell">时间范围</div>
-            <div class="header-cell">车牌号</div>
-            <div class="header-cell">车牌颜色</div>
-            <div class="header-cell">操作</div>
+            <div class="header-cell">
+              时间范围
+            </div>
+            <div class="header-cell">
+              车牌号
+            </div>
+            <div class="header-cell">
+              车牌颜色
+            </div>
+            <div class="header-cell">
+              操作
+            </div>
           </div>
 
           <!-- 输入行 1-4 -->
           <div
-            class="input-row"
             v-for="(item, index) in inputRows"
             :key="`input-${index}`"
+            class="input-row"
           >
             <div class="cell">
               <a-date-picker
@@ -183,10 +631,18 @@
                 class="color-select"
                 :bordered="false"
               >
-                <a-select-option value="蓝色">蓝色</a-select-option>
-                <a-select-option value="黄色">黄色</a-select-option>
-                <a-select-option value="绿色">绿色</a-select-option>
-                <a-select-option value="白色">白色</a-select-option>
+                <a-select-option value="蓝色">
+                  蓝色
+                </a-select-option>
+                <a-select-option value="黄色">
+                  黄色
+                </a-select-option>
+                <a-select-option value="绿色">
+                  绿色
+                </a-select-option>
+                <a-select-option value="白色">
+                  白色
+                </a-select-option>
               </a-select>
             </div>
             <div class="cell operation-cell">
@@ -221,435 +677,14 @@
           >
             查询
           </a-button>
-          <a-button class="cancel-btn" @click="handleCancel"> 取消 </a-button>
+          <a-button class="cancel-btn" @click="handleCancel">
+            取消
+          </a-button>
         </div>
       </div>
     </div>
   </a-drawer>
 </template>
-
-<script setup>
-import { ref, computed } from "vue";
-import { message } from "ant-design-vue";
-import {
-  CloseOutlined,
-  SearchOutlined,
-  ExportOutlined,
-} from "@ant-design/icons-vue";
-
-const props = defineProps({
-  open: {
-    type: Boolean,
-    default: false,
-  },
-});
-
-const emit = defineEmits(["update:open"]);
-
-const visibleModal = computed({
-  get() {
-    return props.open;
-  },
-  set(value) {
-    emit("update:open", value);
-  },
-});
-
-// 搜索和筛选数据
-const licensePlateNumber = ref("");
-const selectedPlateColor = ref();
-const selectedTimeRange = ref();
-const searchVisible = ref(false);
-const toggleView = ref(true);
-
-const inputRows = ref([
-  {
-    timeRange: null,
-    vehicleName: "",
-    plateColor: null,
-  },
-]);
-
-// 团伙车辆查询表格列定义
-const gangVehicleColumns = [
-  {
-    title: "序号",
-    dataIndex: "index",
-    key: "index",
-    width: 60,
-    align: "center",
-  },
-  {
-    title: "查询单",
-    dataIndex: "queryName",
-    key: "queryName",
-    width: 200,
-  },
-  {
-    title: "创建时间",
-    dataIndex: "createTime",
-    key: "createTime",
-    width: 120,
-  },
-  {
-    title: "状态",
-    dataIndex: "status",
-    key: "status",
-    width: 80,
-    align: "center",
-  },
-  {
-    title: "操作",
-    key: "operation",
-    width: 80,
-    align: "center",
-  },
-];
-
-// 团伙车辆查询数据
-const gangVehicleData = ref([
-  {
-    key: "1",
-    index: 1,
-    queryName: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "查询中",
-  },
-  {
-    key: "2",
-    index: 2,
-    queryName: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "查询中",
-  },
-  {
-    key: "3",
-    index: 3,
-    queryName: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "查询中",
-  },
-  {
-    key: "4",
-    index: 4,
-    queryName: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "查询中",
-  },
-  {
-    key: "5",
-    index: 5,
-    queryName: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "查询中",
-  },
-  {
-    key: "6",
-    index: 6,
-    queryName: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "查询中",
-  },
-  {
-    key: "7",
-    index: 7,
-    queryName: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "查询中",
-  },
-  {
-    key: "8",
-    index: 8,
-    queryName: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "查询中",
-  },
-  {
-    key: "9",
-    index: 9,
-    queryName: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "查询中",
-  },
-  {
-    key: "10",
-    index: 10,
-    queryName: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "查询中",
-  },
-  {
-    key: "11",
-    index: 11,
-    queryName: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "查询中",
-  },
-  {
-    key: "12",
-    index: 12,
-    queryName: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "查询中",
-  },
-  {
-    key: "13",
-    index: 13,
-    queryName: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "查询中",
-  },
-  {
-    key: "14",
-    index: 14,
-    queryName: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "查询中",
-  },
-  {
-    key: "15",
-    index: 15,
-    queryName: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "查询中",
-  },
-  {
-    key: "16",
-    index: 16,
-    queryName: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "查询中",
-  },
-  {
-    key: "17",
-    index: 17,
-    queryName: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "查询中",
-  },
-  {
-    key: "18",
-    index: 18,
-    queryName: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "查询中",
-  },
-]);
-
-// 分页配置
-const paginationConfig = {
-  current: 1,
-  pageSize: 10,
-  total: gangVehicleData.value.length,
-  showSizeChanger: true,
-  showQuickJumper: true,
-  showTotal: (total) => `共${total}条`,
-  pageSizeOptions: ["10", "20", "30", "50"],
-  size: "small",
-};
-// 团伙车辆详情表格列配置
-const gangDetailColumns = [
-  {
-    title: "序号",
-    dataIndex: "index",
-    key: "index",
-    width: 80,
-    align: "center",
-  },
-  {
-    title: "车牌号",
-    dataIndex: "plateNumber",
-    key: "plateNumber",
-    width: 120,
-  },
-  {
-    title: "车牌颜色",
-    dataIndex: "plateColor",
-    key: "plateColor",
-    width: 100,
-  },
-  {
-    title: "车辆类型",
-    dataIndex: "vehicleType",
-    key: "vehicleType",
-    width: 120,
-  },
-  {
-    title: "轨迹相似度",
-    dataIndex: "similarity",
-    key: "similarity",
-    width: 120,
-    align: "center",
-  },
-  {
-    title: "相似时间范围",
-    dataIndex: "timeRange",
-    key: "timeRange",
-    width: 200,
-  },
-  {
-    title: "操作",
-    key: "action",
-    width: 100,
-    align: "center",
-  },
-];
-// 团伙车辆详情表格数据
-const gangDetailData = ref([
-  {
-    key: "1",
-    index: 1,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "2",
-    index: 2,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "3",
-    index: 3,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "4",
-    index: 4,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "5",
-    index: 5,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "6",
-    index: 6,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "7",
-    index: 7,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-]);
-const handleClose = () => {
-  emit("update:open", false);
-};
-
-const handleAddQuery = () => {
-  console.log("添加查询单");
-  searchVisible.value = true;
-};
-
-// 查询按钮
-const handleAddVehicleQuery = () => {
-  console.log("执行查询", inputRows.value);
-  // 这里可以添加查询逻辑
-};
-
-// 取消按钮
-const handleCancel = () => {
-  searchVisible.value = false;
-  // 重置输入数据
-  inputRows.value = [
-    {
-      timeRange: null,
-      vehicleName: "",
-      plateColor: null,
-    },
-  ];
-};
-// 添加输入行
-const addInputRow = () => {
-  if (inputRows.value.length < 3) {
-    inputRows.value.push({
-      timeRange: null,
-      vehicleName: "",
-      plateColor: null,
-    });
-  } else {
-    message.error("最多添加3行");
-  }
-};
-
-// 删除输入行
-const removeInputRow = (index) => {
-  if (inputRows.value.length > 1) {
-    inputRows.value.splice(index, 1);
-  }
-};
-
-const handleBackToGangList = () => {
-  toggleView.value = true;
-};
-
-// 查看轨迹
-const handleViewTrajectory = (record) => {
-  console.log("查看轨迹:", record);
-};
-
-const handleQuery = () => {
-  console.log("查询团伙车辆", {
-    licensePlateNumber: licensePlateNumber.value,
-    plateColor: selectedPlateColor.value,
-    timeRange: selectedTimeRange.value,
-  });
-};
-
-const handleExport = () => {
-  console.log("导出数据");
-};
-
-const handlePlateColorChange = (value) => {
-  selectedPlateColor.value = value;
-  console.log("选择车牌颜色:", value);
-};
-
-const handleTimeRangeChange = (value) => {
-  selectedTimeRange.value = value;
-  console.log("选择时间范围:", value);
-};
-
-const handleViewDetail = (record) => {
-  console.log("查看详情", record);
-  toggleView.value = false;
-};
-
-const handleTableChange = (pagination, filters, sorter) => {
-  console.log("分页、过滤和排序变化:", pagination, filters, sorter);
-  paginationConfig.current = pagination.current;
-  paginationConfig.pageSize = pagination.pageSize;
-  paginationConfig.total = gangVehicleData.value.length;
-};
-</script>
 
 <style lang="scss" scoped>
 // 搜索和筛选区域样式

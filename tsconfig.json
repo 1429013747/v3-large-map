@@ -1,21 +1,12 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "useDefineForClassFields": true,
-    "module": "ESNext",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "skipLibCheck": true,
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
     "jsx": "preserve",
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "useDefineForClassFields": true,
     "baseUrl": ".",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "paths": {
       "@/*": ["src/*"],
       "~/*": ["src/assets/*"],
@@ -29,7 +20,16 @@
       "@/composables/*": ["src/composables/*"],
       "@/assets/*": ["src/assets/*"],
       "@/router/*": ["src/router/*"]
-    }
+    },
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "skipLibCheck": true
   },
   "include": [
     "src/**/*.js",
@@ -41,8 +41,5 @@
     "components.d.ts",
     "typed-router.d.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "exclude": ["node_modules", "dist"]
 }

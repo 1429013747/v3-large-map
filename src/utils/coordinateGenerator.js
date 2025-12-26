@@ -33,10 +33,10 @@ export function calculateDistance(lat1, lon1, lat2, lon2) {
   const R = 6371; // 地球半径（公里）
   const dLat = toRadians(lat2 - lat1);
   const dLon = toRadians(lon2 - lon1);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const a
+    = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+      + Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2))
+      * Math.sin(dLon / 2) * Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
@@ -65,8 +65,8 @@ export function generateRandomCoordinates(centerLat, centerLon, radiusKm, count 
     const lon1 = toRadians(centerLon);
 
     const lat2 = Math.asin(
-      Math.sin(lat1) * Math.cos(distance / R) +
-      Math.cos(lat1) * Math.sin(distance / R) * Math.cos(angle)
+      Math.sin(lat1) * Math.cos(distance / R)
+      + Math.cos(lat1) * Math.sin(distance / R) * Math.cos(angle)
     );
 
     const lon2 = lon1 + Math.atan2(
@@ -122,7 +122,7 @@ export function generateGridCoordinates(centerLat, centerLon, radiusKm, gridSize
         coordinates.push({
           lat: newLat,
           lng: newLon,
-          distance: distance,
+          distance,
           id: `grid_${i}_${j}`
         });
       }
@@ -153,8 +153,8 @@ export function generateCircleCoordinates(centerLat, centerLon, radiusKm, count 
     const lon1 = toRadians(centerLon);
 
     const lat2 = Math.asin(
-      Math.sin(lat1) * Math.cos(distance / R) +
-      Math.cos(lat1) * Math.sin(distance / R) * Math.cos(angle)
+      Math.sin(lat1) * Math.cos(distance / R)
+      + Math.cos(lat1) * Math.sin(distance / R) * Math.cos(angle)
     );
 
     const lon2 = lon1 + Math.atan2(
@@ -168,7 +168,7 @@ export function generateCircleCoordinates(centerLat, centerLon, radiusKm, count 
     coordinates.push({
       lat: newLat,
       lng: newLon,
-      distance: distance,
+      distance,
       id: `circle_${i + 1}`
     });
   }

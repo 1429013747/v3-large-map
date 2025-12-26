@@ -1,163 +1,10 @@
-<template>
-  <a-drawer
-    v-model:open="visibleModal"
-    title="重点人员"
-    placement="left"
-    getContainer=".ui-container"
-    :width="475"
-    :closable="true"
-    :mask="false"
-    class="key-personnel-drawer"
-  >
-    <template #closeIcon>
-      <img height="24px" src="@/assets/imgs/key-p.png" alt="" />
-    </template>
-    <template #extra>
-      <CloseOutlined @click="handleClose" />
-    </template>
-
-    <!-- 搜索和筛选区域 -->
-    <div class="search-section">
-      <div class="filter-row">
-        <div class="filter-row-item">
-          <div class="filter-row-item-dropdown">
-            <a-dropdown>
-              <a class="ant-dropdown-link" @click.prevent>
-                {{ selectedGender || "性别" }}
-                <DownOutlined />
-              </a>
-              <template #overlay>
-                <a-menu>
-                  <a-menu-item @click="handleGenderChange('')">
-                    全部
-                  </a-menu-item>
-                  <a-menu-item @click="handleGenderChange('男')">
-                    男
-                  </a-menu-item>
-                  <a-menu-item @click="handleGenderChange('女')">
-                    女
-                  </a-menu-item>
-                </a-menu>
-              </template>
-            </a-dropdown>
-          </div>
-
-          <div class="filter-row-item-dropdown">
-            <a-dropdown>
-              <a class="ant-dropdown-link" @click.prevent>
-                {{ selectedArea || "地区" }}
-                <DownOutlined />
-              </a>
-              <template #overlay>
-                <a-menu>
-                  <a-menu-item @click="handleAreaChange('')">
-                    全部
-                  </a-menu-item>
-                  <a-menu-item @click="handleAreaChange('台州市')">
-                    台州市
-                  </a-menu-item>
-                  <a-menu-item @click="handleAreaChange('温岭市')">
-                    温岭市
-                  </a-menu-item>
-                  <a-menu-item @click="handleAreaChange('黄岩区')">
-                    黄岩区
-                  </a-menu-item>
-                </a-menu>
-              </template>
-            </a-dropdown>
-          </div>
-        </div>
-        <div class="filter-row-item2">
-          <span class="search-label">姓名:</span>
-          <a-input
-            v-model:value="nameFilter"
-            placeholder=""
-            style="width: 120px; flex: 0.65"
-          />
-
-          <a-button
-            type="primary"
-            style="flex: 0.1725"
-            @click="handleQuery"
-            class="query-btn"
-          >
-            查询
-          </a-button>
-          <a-button @click="handleReset" style="flex: 0.1725" class="reset-btn">
-            重置
-          </a-button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 新增按钮 -->
-    <div class="add-section">
-      <a-button class="add-btn" size="small" @click="handleAddPersonnel">
-        + 新增重点人员
-      </a-button>
-    </div>
-
-    <!-- 人员列表 -->
-    <div class="personnel-list">
-      <div
-        v-for="(personnel, index) in filteredPersonnel"
-        :key="personnel.id"
-        class="personnel-item"
-        @click.stop="handlePersonnelClick(personnel)"
-      >
-        <div class="personnel-info">
-          <div class="personnel-basic">
-            <span class="personnel-name"
-              >{{ personnel.name }} / {{ personnel.gender }}</span
-            >
-            <div class="personnel-area">地区: {{ personnel.area }}</div>
-          </div>
-          <div class="personnel-status">
-            <a-tag
-              class="status-tag"
-              v-for="item in personnel.status.split(',')"
-              :key="item"
-            >
-              {{ item }}
-            </a-tag>
-          </div>
-        </div>
-
-        <div class="personnel-actions">
-          <a-button
-            type="link"
-            @click.stop="handleDetail(personnel)"
-            class="action-btn"
-          >
-            <FileTextOutlined />
-            详情
-          </a-button>
-        </div>
-      </div>
-    </div>
-  </a-drawer>
-
-  <!-- 新增重点人员弹窗 -->
-  <AddPersonnelModal
-    v-model:open="addPersonnelModalVisible"
-    @submit="handleAddPersonnelSubmit"
-    @cancel="handleAddPersonnelCancel"
-  />
-
-  <!-- 人员详情弹窗 -->
-  <PersonnelDetailModal
-    v-model:open="personnelDetailModalVisible"
-    :personnel-data="selectedPersonnelData"
-  />
-</template>
-
 <script setup>
-import { ref, computed, watch } from "vue";
 import {
   CloseOutlined,
-  FileTextOutlined,
   DownOutlined,
+  FileTextOutlined,
 } from "@ant-design/icons-vue";
+import { computed, ref } from "vue";
 import AddPersonnelModal from "./components/AddPersonnelModal.vue";
 import PersonnelDetailModal from "./components/PersonnelDetailModal.vue";
 
@@ -319,38 +166,38 @@ const filteredPersonnel = computed(() => {
 });
 
 // 方法
-const handleClose = () => {
+function handleClose() {
   emit("update:open", false);
-};
+}
 
-const handleGenderChange = (gender) => {
+function handleGenderChange(gender) {
   selectedGender.value = gender;
-};
+}
 
-const handleAreaChange = (area) => {
+function handleAreaChange(area) {
   selectedArea.value = area;
-};
+}
 
-const handleQuery = () => {
+function handleQuery() {
   // 查询逻辑已在计算属性中处理
   console.log("查询重点人员", {
     gender: selectedGender.value,
     area: selectedArea.value,
     name: nameFilter.value,
   });
-};
+}
 
-const handleReset = () => {
+function handleReset() {
   selectedGender.value = "";
   selectedArea.value = "";
   nameFilter.value = "";
-};
+}
 
-const handleAddPersonnel = () => {
+function handleAddPersonnel() {
   addPersonnelModalVisible.value = true;
-};
+}
 
-const handleAddPersonnelSubmit = (personnelData) => {
+function handleAddPersonnelSubmit(personnelData) {
   console.log("🚀 ~ handleAddPersonnelSubmit ~ personnelData:", personnelData);
   personnelData.status = personnelData.tagsData
     .map((item, index) => (personnelData.status[index] ? item : null))
@@ -364,21 +211,174 @@ const handleAddPersonnelSubmit = (personnelData) => {
   };
   personnelList.value.unshift(newPersonnel);
   addPersonnelModalVisible.value = false;
-};
+}
 
-const handleAddPersonnelCancel = () => {
+function handleAddPersonnelCancel() {
   addPersonnelModalVisible.value = false;
-};
+}
 
-const handlePersonnelClick = (personnel) => {
+function handlePersonnelClick(personnel) {
   console.log("点击人员:", personnel);
-};
+}
 
-const handleDetail = (personnel) => {
+function handleDetail(personnel) {
   selectedPersonnelData.value = personnel;
   personnelDetailModalVisible.value = true;
-};
+}
 </script>
+
+<template>
+  <a-drawer
+    v-model:open="visibleModal"
+    title="重点人员"
+    placement="left"
+    get-container=".ui-container"
+    :width="475"
+    :closable="true"
+    :mask="false"
+    class="key-personnel-drawer"
+  >
+    <template #closeIcon>
+      <img height="24px" src="@/assets/imgs/key-p.png" alt="">
+    </template>
+    <template #extra>
+      <CloseOutlined @click="handleClose" />
+    </template>
+
+    <!-- 搜索和筛选区域 -->
+    <div class="search-section">
+      <div class="filter-row">
+        <div class="filter-row-item">
+          <div class="filter-row-item-dropdown">
+            <a-dropdown>
+              <a class="ant-dropdown-link" @click.prevent>
+                {{ selectedGender || "性别" }}
+                <DownOutlined />
+              </a>
+              <template #overlay>
+                <a-menu>
+                  <a-menu-item @click="handleGenderChange('')">
+                    全部
+                  </a-menu-item>
+                  <a-menu-item @click="handleGenderChange('男')">
+                    男
+                  </a-menu-item>
+                  <a-menu-item @click="handleGenderChange('女')">
+                    女
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
+          </div>
+
+          <div class="filter-row-item-dropdown">
+            <a-dropdown>
+              <a class="ant-dropdown-link" @click.prevent>
+                {{ selectedArea || "地区" }}
+                <DownOutlined />
+              </a>
+              <template #overlay>
+                <a-menu>
+                  <a-menu-item @click="handleAreaChange('')">
+                    全部
+                  </a-menu-item>
+                  <a-menu-item @click="handleAreaChange('台州市')">
+                    台州市
+                  </a-menu-item>
+                  <a-menu-item @click="handleAreaChange('温岭市')">
+                    温岭市
+                  </a-menu-item>
+                  <a-menu-item @click="handleAreaChange('黄岩区')">
+                    黄岩区
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
+          </div>
+        </div>
+        <div class="filter-row-item2">
+          <span class="search-label">姓名:</span>
+          <a-input
+            v-model:value="nameFilter"
+            placeholder=""
+            style="width: 120px; flex: 0.65"
+          />
+
+          <a-button
+            type="primary"
+            style="flex: 0.1725"
+            class="query-btn"
+            @click="handleQuery"
+          >
+            查询
+          </a-button>
+          <a-button style="flex: 0.1725" class="reset-btn" @click="handleReset">
+            重置
+          </a-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 新增按钮 -->
+    <div class="add-section">
+      <a-button class="add-btn" size="small" @click="handleAddPersonnel">
+        + 新增重点人员
+      </a-button>
+    </div>
+
+    <!-- 人员列表 -->
+    <div class="personnel-list">
+      <div
+        v-for="personnel in filteredPersonnel"
+        :key="personnel.id"
+        class="personnel-item"
+        @click.stop="handlePersonnelClick(personnel)"
+      >
+        <div class="personnel-info">
+          <div class="personnel-basic">
+            <span class="personnel-name">{{ personnel.name }} / {{ personnel.gender }}</span>
+            <div class="personnel-area">
+              地区: {{ personnel.area }}
+            </div>
+          </div>
+          <div class="personnel-status">
+            <a-tag
+              v-for="item in personnel.status.split(',')"
+              :key="item"
+              class="status-tag"
+            >
+              {{ item }}
+            </a-tag>
+          </div>
+        </div>
+
+        <div class="personnel-actions">
+          <a-button
+            type="link"
+            class="action-btn"
+            @click.stop="handleDetail(personnel)"
+          >
+            <FileTextOutlined />
+            详情
+          </a-button>
+        </div>
+      </div>
+    </div>
+  </a-drawer>
+
+  <!-- 新增重点人员弹窗 -->
+  <AddPersonnelModal
+    v-model:open="addPersonnelModalVisible"
+    @submit="handleAddPersonnelSubmit"
+    @cancel="handleAddPersonnelCancel"
+  />
+
+  <!-- 人员详情弹窗 -->
+  <PersonnelDetailModal
+    v-model:open="personnelDetailModalVisible"
+    :personnel-data="selectedPersonnelData"
+  />
+</template>
 
 <style lang="scss" scoped>
 .key-personnel-drawer {

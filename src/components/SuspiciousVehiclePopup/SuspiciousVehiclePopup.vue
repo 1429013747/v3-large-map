@@ -1,236 +1,22 @@
-<template>
-  <a-drawer
-    v-model:open="visibleModal"
-    title="可疑车辆"
-    placement="left"
-    getContainer=".ui-container"
-    :width="475"
-    :closable="true"
-    :mask="false"
-    class="suspicious-vehicle-drawer"
-  >
-    <template #closeIcon>
-      <img height="24px" src="@/assets/imgs/truck.png" alt="" />
-    </template>
-    <template #extra>
-      <CloseOutlined @click="handleClose" />
-    </template>
-
-    <!-- 搜索和筛选区域 -->
-    <div class="search-section">
-      <div class="filter-row">
-        <div class="filter-row-item">
-          <div class="filter-row-item-dropdown">
-            <a-dropdown>
-              <a class="ant-dropdown-link" @click.prevent>
-                {{ areaFilter || "所属区域" }}
-                <DownOutlined />
-              </a>
-              <template #overlay>
-                <a-menu>
-                  <a-menu-item @click="handleAreaChange('台州市')">
-                    台州市
-                  </a-menu-item>
-                  <a-menu-item @click="handleAreaChange('温岭市')">
-                    温岭市
-                  </a-menu-item>
-                  <a-menu-item @click="handleAreaChange('黄岩区')">
-                    黄岩区
-                  </a-menu-item>
-                </a-menu>
-              </template>
-            </a-dropdown>
-          </div>
-
-          <div class="filter-row-item-dropdown">
-            <a-dropdown>
-              <a class="ant-dropdown-link" @click.prevent>
-                {{ typeFilter || "车辆类型" }}
-                <DownOutlined />
-              </a>
-              <template #overlay>
-                <a-menu>
-                  <a-menu-item @click="handleTypeChange('高栏货车')">
-                    高栏货车
-                  </a-menu-item>
-                  <a-menu-item @click="handleTypeChange('厢式货车')">
-                    厢式货车
-                  </a-menu-item>
-                  <a-menu-item @click="handleTypeChange('面包车')">
-                    面包车
-                  </a-menu-item>
-                </a-menu>
-              </template>
-            </a-dropdown>
-          </div>
-        </div>
-        <div class="filter-row-item2">
-          <span class="search-label">车牌号:</span>
-          <a-input
-            v-model:value="plateFilter"
-            placeholder=""
-            style="width: 120px; flex: 0.65"
-          />
-
-          <a-button
-            type="primary"
-            style="flex: 0.1725"
-            size="small"
-            @click="handleQuery"
-            class="query-btn"
-          >
-            查询
-          </a-button>
-          <a-button
-            @click="handleReset"
-            style="flex: 0.1725"
-            class="reset-btn"
-            size="small"
-          >
-            重置
-          </a-button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 分类标签和操作 -->
-    <div class="category-section">
-      <div class="category-tabs">
-        <a-button
-          :type="activeCategory === 'all' ? 'primary' : 'default'"
-          size="small"
-          @click="handleCategoryChange('all')"
-          class="category-tab"
-        >
-          全部车辆
-        </a-button>
-        <a-button
-          :type="activeCategory === 'key' ? 'primary' : 'default'"
-          size="small"
-          @click="handleCategoryChange('key')"
-          class="category-tab"
-        >
-          重点可疑车辆
-        </a-button>
-      </div>
-
-      <a-button class="add-btn" size="small" @click="handleAddVehicle">
-        + 新增可疑车辆
-      </a-button>
-    </div>
-
-    <!-- 车辆列表 -->
-    <div class="vehicle-list">
-      <div
-        v-for="(vehicle, index) in filteredVehicles"
-        :key="vehicle.id"
-        class="vehicle-item"
-        @click.stop="handleVehicleClick(vehicle)"
-      >
-        <div class="vehicle-info">
-          <div class="vehicle-basic">
-            <span class="plate-number">车牌号: {{ vehicle.plateNumber }}</span>
-            <span class="vehicle-color">车牌颜色: {{ vehicle.color }}</span>
-          </div>
-          <div v-if="vehicle.isKey" class="key-badge">重点可疑车辆</div>
-        </div>
-
-        <div class="vehicle-actions">
-          <a-button
-            v-if="vehicle.isKey"
-            type="link"
-            @click.stop="handleCancelKey(vehicle)"
-            class="action-btn"
-          >
-            <StarFilled />
-            取消重点
-          </a-button>
-          <a-button
-            v-else
-            type="link"
-            @click.stop="handleSetKey(vehicle)"
-            class="action-btn"
-          >
-            <StarOutlined />
-            设置重点
-          </a-button>
-
-          <a-button
-            type="link"
-            @click.stop="handleTrack(vehicle)"
-            class="action-btn"
-          >
-            <PlayCircleOutlined />
-            轨迹
-          </a-button>
-
-          <a-button
-            type="link"
-            @click.stop="handleDetail(vehicle)"
-            class="action-btn"
-          >
-            <FileTextOutlined />
-            详情
-          </a-button>
-        </div>
-      </div>
-    </div>
-  </a-drawer>
-
-  <!-- 车辆详情面板 -->
-
-  <!-- 新增可疑车辆弹窗 -->
-  <AddVehicleModal
-    v-model:open="addVehicleModalVisible"
-    @submit="handleAddVehicleSubmit"
-  />
-
-  <!-- 车辆详情弹窗 -->
-  <VehicleDetailModal
-    v-model:open="vehicleDetailModalVisible"
-    :vehicle-data="selectedVehicleData"
-    @set-key-vehicle="handleSetKeyVehicleFromDetail"
-  />
-  <a-modal
-    v-model:open="vehicleVisible"
-    centered
-    :mask="false"
-    width="340px"
-    title="确定设置为重点可疑车辆？"
-    ok-text="确认"
-    cancel-text="取消"
-    getContainer=".ui-container"
-    class="vehicle-detail-modal"
-    :z-index="99999"
-  >
-    <p class="info-text">
-      标记成功后对其进行为布控，实时分析相关车辆特征行为。
-    </p>
-    <template #footer>
-      <a-button type="primary" @click="onVehicleSubmit">确认</a-button>
-      <a-button @click="onVehicleCancel">取消</a-button>
-    </template>
-  </a-modal>
-</template>
-
 <script setup>
-import { ref, computed, watch } from "vue";
-import AddVehicleModal from "./components/AddVehicleModal.vue";
-import VehicleDetailModal from "./components/VehicleDetailModal.vue";
 import { getIconPath } from "@/utils/utilstools";
 import {
-  SearchOutlined,
-  DownOutlined,
-  PlayCircleOutlined,
-  FileTextOutlined,
   CloseOutlined,
+  DownOutlined,
+  FileTextOutlined,
+  PlayCircleOutlined,
   StarFilled,
   StarOutlined,
 } from "@ant-design/icons-vue";
+import { computed, defineOptions, ref } from "vue";
+import AddVehicleModal from "./components/AddVehicleModal.vue";
+import VehicleDetailModal from "./components/VehicleDetailModal.vue";
 
+defineOptions({
+  inheritAttrs: false,
+});
 // Props
 const props = defineProps({
-  inheritAttrs: false,
   open: {
     type: Boolean,
     default: true,
@@ -426,47 +212,47 @@ const filteredVehicles = computed(() => {
   return filtered;
 });
 
-const handleClose = () => {
+function handleClose() {
   emit("update:open", false);
-};
+}
 
-const handleQuery = () => {
+function handleQuery() {
   console.log("查询:", searchKeyword.value);
-};
+}
 
-const handleReset = () => {
+function handleReset() {
   searchKeyword.value = "";
   typeFilter.value = "";
   areaFilter.value = "";
   plateFilter.value = "";
   activeCategory.value = "all";
-};
+}
 
-const handleSearch = () => {
+function handleSearch() {
   console.log("搜索:", searchKeyword.value);
-};
+}
 
-const handleTypeChange = (type) => {
+function handleTypeChange(type) {
   typeFilter.value = type;
-};
+}
 
-const handleAreaChange = (area) => {
+function handleAreaChange(area) {
   areaFilter.value = area;
-};
+}
 
-const handleCategoryChange = (category) => {
+function handleCategoryChange(category) {
   activeCategory.value = category;
-};
+}
 
-const handleVehicleClick = (vehicle) => {
+function handleVehicleClick(vehicle) {
   emit("vehicle-click", vehicle);
-};
+}
 
-const handleTrack = (vehicle) => {
+function handleTrack(vehicle) {
   emit("track-back", vehicle);
-};
+}
 
-const handleDetail = (vehicle) => {
+function handleDetail(vehicle) {
   selectedVehicle.value = vehicle;
   selectedVehicleData.value = {
     ...vehicle,
@@ -491,37 +277,37 @@ const handleDetail = (vehicle) => {
     ],
   };
   vehicleDetailModalVisible.value = true;
-};
+}
 
-const handleDetailClose = () => {
+function handleDetailClose() {
   detailDrawerVisible.value = false;
-};
+}
 
-const handleAddVehicle = () => {
+function handleAddVehicle() {
   addVehicleModalVisible.value = true;
-};
+}
 
 // 新增车辆表单提交
-const handleAddVehicleSubmit = (formData) => {
+function handleAddVehicleSubmit(formData) {
   // 这里可以添加提交逻辑
   emit("add-vehicle", formData);
   vehicles.value.push(formData);
-};
+}
 
-const handleSetKey = (vehicle) => {
+function handleSetKey(vehicle) {
   vehicleVisible.value = true;
   selectedVehicle.value = vehicle;
-};
+}
 
-const handleCancelKey = (vehicle) => {
+function handleCancelKey(vehicle) {
   vehicle.isKey = false;
   emit("cancel-key", vehicle);
   console.log("取消重点:", vehicle);
-};
+}
 
 // 从详情弹窗设置重点车辆
-const handleSetKeyVehicleFromDetail = (vehicleData) => {
-  const vehicle = vehicles.value.find((v) => v.id === vehicleData.id);
+function handleSetKeyVehicleFromDetail(vehicleData) {
+  const vehicle = vehicles.value.find((el) => el.id === vehicleData.id);
   if (vehicle) {
     // 如果已经设置为重点车辆，则取消重点
     if (selectedVehicleData.value.isKey) {
@@ -532,26 +318,247 @@ const handleSetKeyVehicleFromDetail = (vehicleData) => {
     vehicleVisible.value = true;
     console.log("从详情弹窗设置重点:", vehicle);
   }
-};
+}
 
-const onVehicleSubmit = () => {
+function onVehicleSubmit() {
   selectedVehicle.value.isKey = true;
   vehicleVisible.value = false;
   // 设置为重点
   if (selectedVehicleData.value) {
     selectedVehicleData.value.isKey = true;
   }
-};
+}
 
-const onVehicleCancel = () => {
+function onVehicleCancel() {
   vehicleVisible.value = false;
-};
+}
 
 defineExpose({
   handleVehicleClick,
   handleDetail,
 });
 </script>
+
+<template>
+  <a-drawer
+    v-model:open="visibleModal"
+    title="可疑车辆"
+    placement="left"
+    get-container=".ui-container"
+    :width="475"
+    :closable="true"
+    :mask="false"
+    class="suspicious-vehicle-drawer"
+  >
+    <template #closeIcon>
+      <img height="24px" src="@/assets/imgs/truck.png" alt="">
+    </template>
+    <template #extra>
+      <CloseOutlined @click="handleClose" />
+    </template>
+
+    <!-- 搜索和筛选区域 -->
+    <div class="search-section">
+      <div class="filter-row">
+        <div class="filter-row-item">
+          <div class="filter-row-item-dropdown">
+            <a-dropdown>
+              <a class="ant-dropdown-link" @click.prevent>
+                {{ areaFilter || "所属区域" }}
+                <DownOutlined />
+              </a>
+              <template #overlay>
+                <a-menu>
+                  <a-menu-item @click="handleAreaChange('台州市')">
+                    台州市
+                  </a-menu-item>
+                  <a-menu-item @click="handleAreaChange('温岭市')">
+                    温岭市
+                  </a-menu-item>
+                  <a-menu-item @click="handleAreaChange('黄岩区')">
+                    黄岩区
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
+          </div>
+
+          <div class="filter-row-item-dropdown">
+            <a-dropdown>
+              <a class="ant-dropdown-link" @click.prevent>
+                {{ typeFilter || "车辆类型" }}
+                <DownOutlined />
+              </a>
+              <template #overlay>
+                <a-menu>
+                  <a-menu-item @click="handleTypeChange('高栏货车')">
+                    高栏货车
+                  </a-menu-item>
+                  <a-menu-item @click="handleTypeChange('厢式货车')">
+                    厢式货车
+                  </a-menu-item>
+                  <a-menu-item @click="handleTypeChange('面包车')">
+                    面包车
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
+          </div>
+        </div>
+        <div class="filter-row-item2">
+          <span class="search-label">车牌号:</span>
+          <a-input
+            v-model:value="plateFilter"
+            placeholder=""
+            style="width: 120px; flex: 0.65"
+          />
+
+          <a-button
+            type="primary"
+            style="flex: 0.1725"
+            size="small"
+            class="query-btn"
+            @click="handleQuery"
+          >
+            查询
+          </a-button>
+          <a-button
+            style="flex: 0.1725"
+            class="reset-btn"
+            size="small"
+            @click="handleReset"
+          >
+            重置
+          </a-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 分类标签和操作 -->
+    <div class="category-section">
+      <div class="category-tabs">
+        <a-button
+          :type="activeCategory === 'all' ? 'primary' : 'default'"
+          size="small"
+          class="category-tab"
+          @click="handleCategoryChange('all')"
+        >
+          全部车辆
+        </a-button>
+        <a-button
+          :type="activeCategory === 'key' ? 'primary' : 'default'"
+          size="small"
+          class="category-tab"
+          @click="handleCategoryChange('key')"
+        >
+          重点可疑车辆
+        </a-button>
+      </div>
+
+      <a-button class="add-btn" size="small" @click="handleAddVehicle">
+        + 新增可疑车辆
+      </a-button>
+    </div>
+
+    <!-- 车辆列表 -->
+    <div class="vehicle-list">
+      <div
+        v-for="vehicle in filteredVehicles"
+        :key="vehicle.id"
+        class="vehicle-item"
+        @click.stop="handleVehicleClick(vehicle)"
+      >
+        <div class="vehicle-info">
+          <div class="vehicle-basic">
+            <span class="plate-number">车牌号: {{ vehicle.plateNumber }}</span>
+            <span class="vehicle-color">车牌颜色: {{ vehicle.color }}</span>
+          </div>
+          <div v-if="vehicle.isKey" class="key-badge">
+            重点可疑车辆
+          </div>
+        </div>
+
+        <div class="vehicle-actions">
+          <a-button
+            v-if="vehicle.isKey"
+            type="link"
+            class="action-btn"
+            @click.stop="handleCancelKey(vehicle)"
+          >
+            <StarFilled />
+            取消重点
+          </a-button>
+          <a-button
+            v-else
+            type="link"
+            class="action-btn"
+            @click.stop="handleSetKey(vehicle)"
+          >
+            <StarOutlined />
+            设置重点
+          </a-button>
+
+          <a-button
+            type="link"
+            class="action-btn"
+            @click.stop="handleTrack(vehicle)"
+          >
+            <PlayCircleOutlined />
+            轨迹
+          </a-button>
+
+          <a-button
+            type="link"
+            class="action-btn"
+            @click.stop="handleDetail(vehicle)"
+          >
+            <FileTextOutlined />
+            详情
+          </a-button>
+        </div>
+      </div>
+    </div>
+  </a-drawer>
+
+  <!-- 车辆详情面板 -->
+
+  <!-- 新增可疑车辆弹窗 -->
+  <AddVehicleModal
+    v-model:open="addVehicleModalVisible"
+    @submit="handleAddVehicleSubmit"
+  />
+
+  <!-- 车辆详情弹窗 -->
+  <VehicleDetailModal
+    v-model:open="vehicleDetailModalVisible"
+    :vehicle-data="selectedVehicleData"
+    @set-key-vehicle="handleSetKeyVehicleFromDetail"
+  />
+  <a-modal
+    v-model:open="vehicleVisible"
+    centered
+    :mask="false"
+    width="340px"
+    title="确定设置为重点可疑车辆？"
+    ok-text="确认"
+    cancel-text="取消"
+    get-container=".ui-container"
+    class="vehicle-detail-modal"
+    :z-index="99999"
+  >
+    <p class="info-text">
+      标记成功后对其进行为布控，实时分析相关车辆特征行为。
+    </p>
+    <template #footer>
+      <a-button type="primary" @click="onVehicleSubmit">
+        确认
+      </a-button>
+      <a-button @click="onVehicleCancel">
+        取消
+      </a-button>
+    </template>
+  </a-modal>
+</template>
 
 <style lang="scss" scoped>
 .suspicious-vehicle-drawer {

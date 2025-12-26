@@ -1,32 +1,28 @@
-<template>
-  <div ref="mapContainer" class="map-viewer"></div>
-</template>
-
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from "vue";
 import { useMap } from "@/composables/useMap";
+import { onMounted, ref, watch } from "vue";
 
 const props = defineProps({
   // 地图中心点坐标 [经度, 纬度]
   center: {
     type: Array,
-    default: () => [120.1551, 30.2741], // 杭州坐标
+    default: () => [120.1551, 30.2741] // 杭州坐标
   },
   // 缩放级别
   zoom: {
     type: Number,
-    default: 10,
+    default: 10
   },
   // 地图高度
   height: {
     type: String,
-    default: "100%",
+    default: "100%"
   },
   // 地图宽度
   width: {
     type: String,
-    default: "100%",
-  },
+    default: "100%"
+  }
 });
 
 const emit = defineEmits([
@@ -35,7 +31,7 @@ const emit = defineEmits([
   "map-double-click",
   "map-right-click",
   "map-move",
-  "layer-change",
+  "layer-change"
 ]);
 
 // 创建地图容器引用
@@ -60,7 +56,7 @@ const {
   getMap,
   destroyMap,
   search,
-  layerManager,
+  layerManager
 } = useMap({
   center: props.center,
   zoom: props.zoom,
@@ -83,8 +79,8 @@ const {
     },
     onMapRightClick: (event) => {
       emit("map-right-click", event);
-    },
-  },
+    }
+  }
 });
 
 // 手动初始化地图
@@ -133,9 +129,13 @@ defineExpose({
   search,
   layerStates,
   activeLayers,
-  layerManager,
+  layerManager
 });
 </script>
+
+<template>
+  <div ref="mapContainer" class="map-viewer" />
+</template>
 
 <style lang="scss" scoped>
 .map-viewer {

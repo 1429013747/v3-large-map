@@ -1,13 +1,81 @@
+<script setup>
+import { getIconPathMarkIcons } from "@/utils/utilstools.js";
+import { CloseOutlined } from "@ant-design/icons-vue";
+import { computed, ref } from "vue";
+// Props
+const props = defineProps({
+  open: {
+    type: Boolean,
+    default: false
+  }
+});
+
+// Emits
+const emit = defineEmits(["update:open"]);
+
+// 响应式数据
+const visibleModal = computed({
+  get() {
+    return props.open;
+  },
+  set(value) {
+    emit("update:open", value);
+  }
+});
+
+// 设备/对象数据
+const equipmentItems = ref([
+  { id: 1, name: "无人机", icon: "icon1" },
+  { id: 2, name: "摄像头", icon: "icon2" },
+  { id: 3, name: "雷达", icon: "icon3" },
+  { id: 4, name: "限高杆", icon: "icon4" },
+  { id: 5, name: "可疑车辆", icon: "icon10" },
+  { id: 3, name: "无走私村", icon: "icon5" },
+  { id: 6, name: "工作站", icon: "icon6" }
+]);
+
+// 风险等级数据
+const riskLevelItems = ref([
+  { id: 1, name: "高风险", icon: "icon7" },
+  { id: 2, name: "中风险", icon: "icon8" },
+  { id: 3, name: "低风险", icon: "icon9" }
+]);
+
+// 聚合类型数据
+const aggregationItems = ref([
+  { id: 1, name: "风险点聚合", icon: "icon11" },
+  { id: 2, name: "案件聚合", icon: "icon12" },
+  { id: 3, name: "摄像头聚合", icon: "icon13" },
+  { id: 4, name: "雷达聚合", icon: "icon14" }
+]);
+
+// 船舶状态数据
+const vesselStatusItems = ref([
+  { id: 1, name: "船舶关注", icon: "icon15" },
+  { id: 2, name: "航行且转向", icon: "icon16" },
+  { id: 3, name: "航行", icon: "icon17" },
+  { id: 4, name: "静止", icon: "icon18" },
+  { id: 5, name: "AIS和雷达融合", icon: "icon19" },
+  { id: 6, name: "雷达", icon: "icon20" },
+  { id: 7, name: "AIS信号", icon: "icon21" }
+]);
+
+// 关闭抽屉
+function handleClose() {
+  emit("update:open", false);
+}
+</script>
+
 <template>
   <a-drawer
     v-model:open="visibleModal"
     title="图例展示"
     placement="right"
-    getContainer=".ui-container"
+    get-container=".ui-container"
     :width="460"
     :closable="true"
     :mask="false"
-    rootClassName="layer-box"
+    root-class-name="layer-box"
     class="layer-control-drawer"
   >
     <template #closeIcon>
@@ -21,11 +89,11 @@
         <div class="legend-grid">
           <div
             v-for="item in equipmentItems"
-            class="legend-item"
             :key="item.id"
+            class="legend-item"
           >
             <div class="legend-icon1">
-              <img :src="getIconPathMarkIcons(item.icon)" :alt="item.name" />
+              <img :src="getIconPathMarkIcons(item.icon)" :alt="item.name">
             </div>
             <span class="legend-label">{{ item.name }}</span>
           </div>
@@ -42,7 +110,7 @@
             class="legend-item"
           >
             <div class="legend-icon1" :class="item.class">
-              <img :src="getIconPathMarkIcons(item.icon)" :alt="item.name" />
+              <img :src="getIconPathMarkIcons(item.icon)" :alt="item.name">
             </div>
             <span class="legend-label">{{ item.name }}</span>
           </div>
@@ -59,7 +127,7 @@
             class="legend-item"
           >
             <div class="legend-icon">
-              <img :src="getIconPathMarkIcons(item.icon)" :alt="item.name" />
+              <img :src="getIconPathMarkIcons(item.icon)" :alt="item.name">
             </div>
             <span class="legend-label">{{ item.name }}</span>
           </div>
@@ -76,7 +144,7 @@
             class="legend-item"
           >
             <div class="legend-icon2" :class="item.class">
-              <img :src="getIconPathMarkIcons(item.icon)" :alt="item.name" />
+              <img :src="getIconPathMarkIcons(item.icon)" :alt="item.name">
             </div>
             <span class="legend-label">{{ item.name }}</span>
           </div>
@@ -85,74 +153,6 @@
     </div>
   </a-drawer>
 </template>
-
-<script setup>
-import { ref, computed } from "vue";
-import { CloseOutlined } from "@ant-design/icons-vue";
-import { getIconPathMarkIcons } from "@/utils/utilstools.js";
-// Props
-const props = defineProps({
-  open: {
-    type: Boolean,
-    default: false,
-  },
-});
-
-// Emits
-const emit = defineEmits(["update:open"]);
-
-// 响应式数据
-const visibleModal = computed({
-  get() {
-    return props.open;
-  },
-  set(value) {
-    emit("update:open", value);
-  },
-});
-
-// 设备/对象数据
-const equipmentItems = ref([
-  { id: 1, name: "无人机", icon: "icon1" },
-  { id: 2, name: "摄像头", icon: "icon2" },
-  { id: 3, name: "雷达", icon: "icon3" },
-  { id: 4, name: "限高杆", icon: "icon4" },
-  { id: 5, name: "可疑车辆", icon: "icon10" },
-  { id: 3, name: "无走私村", icon: "icon5" },
-  { id: 6, name: "工作站", icon: "icon6" },
-]);
-
-// 风险等级数据
-const riskLevelItems = ref([
-  { id: 1, name: "高风险", icon: "icon7" },
-  { id: 2, name: "中风险", icon: "icon8" },
-  { id: 3, name: "低风险", icon: "icon9" },
-]);
-
-// 聚合类型数据
-const aggregationItems = ref([
-  { id: 1, name: "风险点聚合", icon: "icon11" },
-  { id: 2, name: "案件聚合", icon: "icon12" },
-  { id: 3, name: "摄像头聚合", icon: "icon13" },
-  { id: 4, name: "雷达聚合", icon: "icon14" },
-]);
-
-// 船舶状态数据
-const vesselStatusItems = ref([
-  { id: 1, name: "船舶关注", icon: "icon15" },
-  { id: 2, name: "航行且转向", icon: "icon16" },
-  { id: 3, name: "航行", icon: "icon17" },
-  { id: 4, name: "静止", icon: "icon18" },
-  { id: 5, name: "AIS和雷达融合", icon: "icon19" },
-  { id: 6, name: "雷达", icon: "icon20" },
-  { id: 7, name: "AIS信号", icon: "icon21" },
-]);
-
-// 关闭抽屉
-const handleClose = () => {
-  emit("update:open", false);
-};
-</script>
 
 <style lang="scss" scoped>
 .legend-drawer {

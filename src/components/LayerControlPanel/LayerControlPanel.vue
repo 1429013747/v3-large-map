@@ -1,93 +1,6 @@
-<template>
-  <a-drawer
-    v-model:open="visibleModal"
-    title="控制图层"
-    placement="right"
-    getContainer=".ui-container"
-    :width="380"
-    :closable="true"
-    :mask="false"
-    rootClassName="layer-box"
-    class="layer-control-drawer"
-  >
-    <template #closeIcon>
-      <CloseOutlined @click="handleClose" />
-    </template>
-
-    <!-- 图层列表 -->
-    <div class="layer-list">
-      <!-- 主要图层 -->
-      <div class="layer-section">
-        <div
-          class="layer-item"
-          v-for="layer in filteredLayers"
-          :key="layer.id"
-          @click="handleLayerClick(layer)"
-          :class="{ active: selectedLayerId === layer.id }"
-        >
-          <div class="layer-info">
-            <span class="layer-name">{{ layer.name }}</span>
-          </div>
-          <div class="layer-toggle">
-            <a-switch
-              v-model:checked="layer.visible"
-              @change="handleLayerToggle(layer)"
-              size="small"
-            />
-          </div>
-        </div>
-      </div>
-      <!-- 感知设备 -->
-      <div class="sensing-device-section">
-        <div class="section-title">感知设备</div>
-        <div
-          class="layer-item"
-          v-for="sensingDevice in sensingDevices"
-          :key="sensingDevice.id"
-          @click="handleLayerClick(sensingDevice)"
-          :class="{ active: selectedLayerId === sensingDevice.id }"
-        >
-          <div class="layer-info">
-            <span class="layer-name">{{ sensingDevice.name }}</span>
-          </div>
-          <div class="layer-toggle">
-            <a-switch
-              v-model:checked="sensingDevice.visible"
-              @change="handleLayerToggle(sensingDevice)"
-              size="small"
-            />
-          </div>
-        </div>
-      </div>
-      <!-- 热力图部分 -->
-      <div class="heatmap-section">
-        <div class="section-title">热力图</div>
-        <div
-          class="layer-item"
-          v-for="heatmap in filteredHeatmaps"
-          :key="heatmap.id"
-          @click="handleLayerClick(heatmap)"
-          :class="{ active: selectedLayerId === heatmap.id }"
-        >
-          <div class="layer-info">
-            <span class="layer-name">{{ heatmap.name }}</span>
-          </div>
-          <div class="layer-toggle">
-            <a-switch
-              v-model:checked="heatmap.visible"
-              @change="handleLayerToggle(heatmap)"
-              size="small"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  </a-drawer>
-</template>
-
 <script setup>
-import { ref, computed, watch } from "vue";
-import { SearchOutlined, CloseOutlined } from "@ant-design/icons-vue";
+import { CloseOutlined } from "@ant-design/icons-vue";
+import { computed, ref } from "vue";
 
 // Props
 const props = defineProps({
@@ -97,24 +10,20 @@ const props = defineProps({
   },
   layers: {
     type: Array,
-    default: [],
+    default: () => [],
   },
   sensingDevices: {
     type: Array,
-    default: [],
+    default: () => [],
   },
   heatmaps: {
     type: Array,
-    default: [],
+    default: () => [],
   },
 });
 
 // Emits
-const emit = defineEmits([
-  "update:open",
-  "layer-toggle",
-  "layer-click",
-]);
+const emit = defineEmits(["update:open", "layer-toggle", "layer-click"]);
 
 // 响应式数据
 const visibleModal = computed({
@@ -124,7 +33,7 @@ const visibleModal = computed({
   set(value) {
     emit("update:open", value);
   },
-});;
+});
 const selectedLayerId = ref(null);
 
 // 计算属性
@@ -140,19 +49,109 @@ const filteredHeatmaps = computed(() => {
 });
 
 // 方法
-const handleClose = () => {
+function handleClose() {
   emit("update:open", false);
-};
+}
 
-const handleLayerClick = (layer) => {
+function handleLayerClick(layer) {
   selectedLayerId.value = layer.id;
-};
+}
 
-const handleLayerToggle = (layer) => {
+function handleLayerToggle(layer) {
   emit("layer-toggle", layer);
-};
-
+}
 </script>
+
+<template>
+  <a-drawer
+    v-model:open="visibleModal"
+    title="控制图层"
+    placement="right"
+    get-container=".ui-container"
+    :width="380"
+    :closable="true"
+    :mask="false"
+    root-class-name="layer-box"
+    class="layer-control-drawer"
+  >
+    <template #closeIcon>
+      <CloseOutlined @click="handleClose" />
+    </template>
+
+    <!-- 图层列表 -->
+    <div class="layer-list">
+      <!-- 主要图层 -->
+      <div class="layer-section">
+        <div
+          v-for="layer in filteredLayers"
+          :key="layer.id"
+          class="layer-item"
+          :class="{ active: selectedLayerId === layer.id }"
+          @click="handleLayerClick(layer)"
+        >
+          <div class="layer-info">
+            <span class="layer-name">{{ layer.name }}</span>
+          </div>
+          <div class="layer-toggle">
+            <a-switch
+              v-model:checked="layer.visible"
+              size="small"
+              @change="handleLayerToggle(layer)"
+            />
+          </div>
+        </div>
+      </div>
+      <!-- 感知设备 -->
+      <div class="sensing-device-section">
+        <div class="section-title">
+          感知设备
+        </div>
+        <div
+          v-for="sensingDevice in sensingDevices"
+          :key="sensingDevice.id"
+          class="layer-item"
+          :class="{ active: selectedLayerId === sensingDevice.id }"
+          @click="handleLayerClick(sensingDevice)"
+        >
+          <div class="layer-info">
+            <span class="layer-name">{{ sensingDevice.name }}</span>
+          </div>
+          <div class="layer-toggle">
+            <a-switch
+              v-model:checked="sensingDevice.visible"
+              size="small"
+              @change="handleLayerToggle(sensingDevice)"
+            />
+          </div>
+        </div>
+      </div>
+      <!-- 热力图部分 -->
+      <div class="heatmap-section">
+        <div class="section-title">
+          热力图
+        </div>
+        <div
+          v-for="heatmap in filteredHeatmaps"
+          :key="heatmap.id"
+          class="layer-item"
+          :class="{ active: selectedLayerId === heatmap.id }"
+          @click="handleLayerClick(heatmap)"
+        >
+          <div class="layer-info">
+            <span class="layer-name">{{ heatmap.name }}</span>
+          </div>
+          <div class="layer-toggle">
+            <a-switch
+              v-model:checked="heatmap.visible"
+              size="small"
+              @change="handleLayerToggle(heatmap)"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </a-drawer>
+</template>
 
 <style lang="scss" scoped>
 .layer-control-drawer {

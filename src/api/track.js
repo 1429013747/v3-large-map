@@ -7,7 +7,7 @@ import request from '@/utils/request'
 
 /**
  * 获取轨迹列表
- * @param {Object} params - 查询参数
+ * @param {object} params - 查询参数
  * @param {string} params.vesselId - 船舶ID
  * @param {string} params.startTime - 开始时间
  * @param {string} params.endTime - 结束时间
@@ -15,7 +15,7 @@ import request from '@/utils/request'
  * @param {number} params.size - 每页数量
  * @returns {Promise} API响应
  */
-export const getTrackList = (params) => {
+export function getTrackList(params) {
   return request({
     url: '/api/track/list',
     method: 'get',
@@ -28,7 +28,7 @@ export const getTrackList = (params) => {
  * @param {string} trackId - 轨迹ID
  * @returns {Promise} API响应
  */
-export const getTrackDetail = (trackId) => {
+export function getTrackDetail(trackId) {
   return request({
     url: `/api/track/${trackId}`,
     method: 'get'
@@ -37,7 +37,7 @@ export const getTrackDetail = (trackId) => {
 
 /**
  * 创建轨迹
- * @param {Object} data - 轨迹数据
+ * @param {object} data - 轨迹数据
  * @param {string} data.vesselId - 船舶ID
  * @param {string} data.vesselName - 船舶名称
  * @param {Array} data.coordinates - 坐标点数组
@@ -46,7 +46,7 @@ export const getTrackDetail = (trackId) => {
  * @param {string} data.description - 描述
  * @returns {Promise} API响应
  */
-export const createTrack = (data) => {
+export function createTrack(data) {
   return request({
     url: '/api/track',
     method: 'post',
@@ -57,10 +57,10 @@ export const createTrack = (data) => {
 /**
  * 更新轨迹
  * @param {string} trackId - 轨迹ID
- * @param {Object} data - 更新数据
+ * @param {object} data - 更新数据
  * @returns {Promise} API响应
  */
-export const updateTrack = (trackId, data) => {
+export function updateTrack(trackId, data) {
   return request({
     url: `/api/track/${trackId}`,
     method: 'put',
@@ -73,7 +73,7 @@ export const updateTrack = (trackId, data) => {
  * @param {string} trackId - 轨迹ID
  * @returns {Promise} API响应
  */
-export const deleteTrack = (trackId) => {
+export function deleteTrack(trackId) {
   return request({
     url: `/api/track/${trackId}`,
     method: 'delete'
@@ -85,7 +85,7 @@ export const deleteTrack = (trackId) => {
  * @param {Array} trackIds - 轨迹ID数组
  * @returns {Promise} API响应
  */
-export const batchDeleteTracks = (trackIds) => {
+export function batchDeleteTracks(trackIds) {
   return request({
     url: '/api/track/batch',
     method: 'delete',
@@ -98,7 +98,7 @@ export const batchDeleteTracks = (trackIds) => {
  * @param {string} trackId - 轨迹ID
  * @returns {Promise} API响应
  */
-export const getTrackAnimationConfig = (trackId) => {
+export function getTrackAnimationConfig(trackId) {
   return request({
     url: `/api/track/${trackId}/animation`,
     method: 'get'
@@ -108,14 +108,14 @@ export const getTrackAnimationConfig = (trackId) => {
 /**
  * 更新轨迹动画配置
  * @param {string} trackId - 轨迹ID
- * @param {Object} config - 动画配置
+ * @param {object} config - 动画配置
  * @param {number} config.duration - 动画持续时间(ms)
  * @param {string} config.color - 动画颜色
  * @param {boolean} config.autoPlay - 是否自动播放
  * @param {boolean} config.loop - 是否循环播放
  * @returns {Promise} API响应
  */
-export const updateTrackAnimationConfig = (trackId, config) => {
+export function updateTrackAnimationConfig(trackId, config) {
   return request({
     url: `/api/track/${trackId}/animation`,
     method: 'put',
@@ -125,13 +125,13 @@ export const updateTrackAnimationConfig = (trackId, config) => {
 
 /**
  * 获取轨迹统计信息
- * @param {Object} params - 查询参数
+ * @param {object} params - 查询参数
  * @param {string} params.startTime - 开始时间
  * @param {string} params.endTime - 结束时间
  * @param {string} params.vesselId - 船舶ID
  * @returns {Promise} API响应
  */
-export const getTrackStatistics = (params) => {
+export function getTrackStatistics(params) {
   return request({
     url: '/api/track/statistics',
     method: 'get',
@@ -141,12 +141,12 @@ export const getTrackStatistics = (params) => {
 
 /**
  * 导出轨迹数据
- * @param {Object} params - 导出参数
+ * @param {object} params - 导出参数
  * @param {Array} params.trackIds - 轨迹ID数组
  * @param {string} params.format - 导出格式 (json, csv, excel)
  * @returns {Promise} API响应
  */
-export const exportTrackData = (params) => {
+export function exportTrackData(params) {
   return request({
     url: '/api/track/export',
     method: 'post',
@@ -160,7 +160,7 @@ export const exportTrackData = (params) => {
  * @param {FormData} formData - 包含文件的表单数据
  * @returns {Promise} API响应
  */
-export const importTrackData = (formData) => {
+export function importTrackData(formData) {
   return request({
     url: '/api/track/import',
     method: 'post',
@@ -176,7 +176,7 @@ export const importTrackData = (formData) => {
  * @param {string} vesselId - 船舶ID
  * @returns {Promise} API响应
  */
-export const getTrackRealTimePosition = (vesselId) => {
+export function getTrackRealTimePosition(vesselId) {
   return request({
     url: `/api/track/realtime/${vesselId}`,
     method: 'get'
@@ -189,14 +189,15 @@ export const getTrackRealTimePosition = (vesselId) => {
  * @param {Function} callback - 回调函数
  * @returns {Function} 取消订阅函数
  */
-export const subscribeTrackRealTime = (vesselId, callback) => {
+export function subscribeTrackRealTime(vesselId, callback) {
   // 这里可以使用WebSocket或其他实时通信方式
   // 示例使用定时器模拟实时更新
   const interval = setInterval(async () => {
     try {
       const response = await getTrackRealTimePosition(vesselId)
       callback(response.data)
-    } catch (error) {
+    }
+    catch (error) {
       console.error('获取实时位置失败:', error)
     }
   }, 5000) // 每5秒更新一次

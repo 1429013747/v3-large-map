@@ -1,14 +1,6 @@
-<template>
-  <div v-if="scaleText" class="map-scale">
-    <div class="scale-content">
-      {{ scaleText }}
-    </div>
-  </div>
-</template>
-
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { get as getProjection } from 'ol/proj';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 
 const props = defineProps({
   map: {
@@ -19,7 +11,7 @@ const props = defineProps({
 
 const scaleText = ref('');
 
-let updateScale = () => {
+function updateScale() {
   if (!props.map) return;
 
   const view = props.map.getView();
@@ -63,27 +55,34 @@ let updateScale = () => {
   if (unit === 'km') {
     if (value >= 100) {
       displayValue = Math.round(value);
-    } else if (value >= 10) {
+    }
+    else if (value >= 10) {
       displayValue = Math.round(value);
-    } else if (value >= 1) {
+    }
+    else if (value >= 1) {
       displayValue = Math.round(value * 10) / 10;
-    } else {
+    }
+    else {
       displayValue = Math.round(value * 100) / 100;
     }
-  } else {
+  }
+  else {
     if (value >= 100) {
       displayValue = Math.round(value / 10) * 10;
-    } else if (value >= 10) {
+    }
+    else if (value >= 10) {
       displayValue = Math.round(value);
-    } else if (value >= 1) {
+    }
+    else if (value >= 1) {
       displayValue = Math.round(value * 10) / 10;
-    } else {
+    }
+    else {
       displayValue = Math.round(value * 100) / 100;
     }
   }
 
   scaleText.value = `${displayValue} ${unit}`;
-};
+}
 
 let moveEndListener = null;
 
@@ -115,6 +114,14 @@ onUnmounted(() => {
   }
 });
 </script>
+
+<template>
+  <div v-if="scaleText" class="map-scale">
+    <div class="scale-content">
+      {{ scaleText }}
+    </div>
+  </div>
+</template>
 
 <style lang="scss" scoped>
 .map-scale {

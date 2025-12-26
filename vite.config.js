@@ -47,13 +47,13 @@ export default defineConfig(({ mode }) => {
               console.log(`👤 用户代理: ${req.headers['user-agent'] || 'N/A'}`)
             })
 
-            // 响应拦截
-            proxy.on('proxyRes', (proxyRes, req, res) => {
-              const timestamp = new Date().toISOString()
-              const statusCode = proxyRes.statusCode
-              const statusMessage = proxyRes.statusMessage
-              const responseTime = Date.now() - req.startTime
-            })
+            // // 响应拦截
+            // proxy.on('proxyRes', (proxyRes, req, res) => {
+            //   const timestamp = new Date().toISOString()
+            //   const statusCode = proxyRes.statusCode
+            //   const statusMessage = proxyRes.statusMessage
+            //   const responseTime = Date.now() - req.startTime
+            // })
           }
         }
       }
@@ -164,6 +164,6 @@ export default defineConfig(({ mode }) => {
           drop_debugger: true
         }
       }
-    },
+    }
   }
 })

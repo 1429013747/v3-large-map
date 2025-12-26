@@ -1,3 +1,422 @@
+<script setup>
+import {
+  CloseOutlined
+} from "@ant-design/icons-vue";
+import { message } from "ant-design-vue";
+import { ref, watch } from "vue";
+
+// Props
+const props = defineProps({
+  open: {
+    type: Boolean,
+    default: false
+  },
+  vehicleData: {}
+});
+
+// Emits
+const emit = defineEmits(["update:open", "setKeyVehicle"]);
+
+// 响应式数据
+const activeTab = ref("alerts");
+const alertCollapseActive = ref(["1"]);
+const caseCollapseActive = ref(["1"]);
+const showGangDetail = ref(false);
+
+// 团伙车辆分析表格列配置
+const gangTableColumns = [
+  {
+    title: "序号",
+    dataIndex: "index",
+    key: "index",
+    width: 80,
+    align: "center",
+    customRender: ({ text, record, index }) => {
+      return index + 1;
+    }
+  },
+  {
+    title: "查询单",
+    dataIndex: "queryOrder",
+    key: "queryOrder",
+    ellipsis: true
+  },
+  {
+    title: "创建时间",
+    dataIndex: "createTime",
+    key: "createTime",
+    width: 150
+  },
+  {
+    title: "状态",
+    dataIndex: "status",
+    key: "status",
+    width: 100,
+    align: "center"
+  },
+  {
+    title: "操作",
+    key: "action",
+    width: 100,
+    align: "center"
+  }
+];
+
+// 团伙车辆分析表格数据
+const gangTableData = ref([
+  {
+    key: "1",
+    queryOrder: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "查询中"
+  },
+  {
+    key: "2",
+    queryOrder: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "已完成"
+  },
+  {
+    key: "3",
+    queryOrder: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "已完成"
+  },
+  {
+    key: "4",
+    queryOrder: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "已完成"
+  },
+  {
+    key: "5",
+    queryOrder: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "已完成"
+  },
+  {
+    key: "6",
+    queryOrder: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "已完成"
+  },
+  {
+    key: "7",
+    queryOrder: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "已完成"
+  },
+  {
+    key: "8",
+    queryOrder: "浙123456团伙车辆的查询单",
+    createTime: "2025/6/15 1:18",
+    status: "已完成"
+  }
+]);
+
+// 团伙车辆详情表格列配置
+const gangDetailColumns = [
+  {
+    title: "序号",
+    dataIndex: "index",
+    key: "index",
+    width: 80,
+    align: "center"
+  },
+  {
+    title: "车牌号",
+    dataIndex: "plateNumber",
+    key: "plateNumber",
+    width: 120
+  },
+  {
+    title: "车牌颜色",
+    dataIndex: "plateColor",
+    key: "plateColor",
+    width: 100
+  },
+  {
+    title: "车辆类型",
+    dataIndex: "vehicleType",
+    key: "vehicleType",
+    width: 120
+  },
+  {
+    title: "轨迹相似度",
+    dataIndex: "similarity",
+    key: "similarity",
+    width: 120,
+    align: "center"
+  },
+  {
+    title: "相似时间范围",
+    dataIndex: "timeRange",
+    key: "timeRange",
+    width: 200
+  },
+  {
+    title: "操作",
+    key: "action",
+    width: 100,
+    align: "center"
+  }
+];
+
+// 团伙车辆详情表格数据
+const gangDetailData = ref([
+  {
+    key: "1",
+    index: 1,
+    plateNumber: "浙XXXX",
+    plateColor: "蓝色",
+    vehicleType: "高栏货车",
+    similarity: "90%",
+    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42"
+  },
+  {
+    key: "2",
+    index: 2,
+    plateNumber: "浙XXXX",
+    plateColor: "蓝色",
+    vehicleType: "高栏货车",
+    similarity: "90%",
+    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42"
+  },
+  {
+    key: "3",
+    index: 3,
+    plateNumber: "浙XXXX",
+    plateColor: "蓝色",
+    vehicleType: "高栏货车",
+    similarity: "90%",
+    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42"
+  },
+  {
+    key: "4",
+    index: 4,
+    plateNumber: "浙XXXX",
+    plateColor: "蓝色",
+    vehicleType: "高栏货车",
+    similarity: "90%",
+    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42"
+  },
+  {
+    key: "5",
+    index: 5,
+    plateNumber: "浙XXXX",
+    plateColor: "蓝色",
+    vehicleType: "高栏货车",
+    similarity: "90%",
+    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42"
+  },
+  {
+    key: "6",
+    index: 6,
+    plateNumber: "浙XXXX",
+    plateColor: "蓝色",
+    vehicleType: "高栏货车",
+    similarity: "90%",
+    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42"
+  },
+  {
+    key: "7",
+    index: 7,
+    plateNumber: "浙XXXX",
+    plateColor: "蓝色",
+    vehicleType: "高栏货车",
+    similarity: "90%",
+    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42"
+  }
+]);
+
+// 关键要素分析表格列配置
+const elementsTableColumns = [
+  {
+    title: "要素",
+    dataIndex: "element",
+    key: "element",
+    width: 100
+  },
+  {
+    title: "名称",
+    dataIndex: "name",
+    key: "name",
+    ellipsis: true
+  },
+  {
+    title: "操作",
+    key: "action",
+    width: 100,
+    align: "center"
+  }
+];
+
+// 关键要素分析表格数据
+const elementsTableData = ref([
+  {
+    key: "1",
+    element: "车辆",
+    name: "浙J89900"
+  },
+  {
+    key: "2",
+    element: "车辆",
+    name: "浙J33900"
+  },
+  {
+    key: "3",
+    element: "人员",
+    name: "王某某"
+  },
+  {
+    key: "4",
+    element: "人员",
+    name: "王某某"
+  },
+  {
+    key: "5",
+    element: "车辆",
+    name: "浙J89966"
+  },
+  {
+    key: "6",
+    element: "船舶",
+    name: "华盛778"
+  },
+  {
+    key: "7",
+    element: "船舶",
+    name: "华盛009"
+  }
+]);
+
+// 树形组织图数据
+const treeData = ref({
+  id: 1,
+  label: "浙J89900",
+  type: "vehicle",
+  children: [
+    {
+      id: 2,
+      pid: 1,
+      label: "浙J89900",
+      type: "vehicle",
+      children: []
+    },
+    {
+      id: 2,
+      pid: 1,
+      label: "白岩码头走私冻品案件",
+      type: "case",
+      children: []
+    },
+    {
+      id: 2,
+      pid: 1,
+      label: "马某某",
+      children: [
+        {
+          id: 2,
+          pid: 1,
+          label: "浙J83900",
+          type: "vehicle",
+          children: []
+        }
+      ]
+    },
+    {
+      id: 2,
+      pid: 1,
+      label: "王某某",
+      type: "person",
+      children: [
+        {
+          id: 2,
+          pid: 1,
+          label: "浙J82900",
+          type: "vehicle",
+          children: []
+        }
+      ]
+    }
+  ]
+});
+
+// 获取节点图标
+function getNodeIcon(node) {
+  switch (node.$$data.type) {
+    case "vehicle":
+      return "🚛";
+    case "person":
+      return "👤";
+    case "case":
+      return "📄";
+    default:
+      return "📄";
+  }
+}
+
+// 获取节点样式类
+function getNodeClass(node) {
+  const classes = [`${node.type}-node`];
+  if (node.isRed) {
+    classes.push("red");
+  }
+  return classes.join(" ");
+}
+
+// 节点点击事件
+function handleNodeClick(node) {
+  console.log("点击节点:", node);
+  message.info(`点击了${node.label}`);
+}
+
+// 监听 visible 变化
+watch(
+  () => props.open,
+  (newVal) => {
+    if (newVal) {
+      // 重置标签页状态
+      activeTab.value = "alerts";
+      alertCollapseActive.value = ["1"];
+      caseCollapseActive.value = ["1"];
+    }
+  }
+);
+
+// 关闭弹窗
+function handleCancel() {
+  emit("update:open", false);
+}
+
+// 设置重点车辆
+function handleSetKeyVehicle() {
+  emit("setKeyVehicle", props.vehicleData);
+}
+
+// 查看团伙车辆详情
+function handleViewGangDetail(record) {
+  console.log("查看团伙车辆详情:", record);
+  showGangDetail.value = true;
+}
+
+// 返回团伙车辆列表
+function handleBackToGangList() {
+  showGangDetail.value = false;
+}
+
+// 查看轨迹
+function handleViewTrajectory(record) {
+  console.log("查看轨迹:", record);
+}
+
+// 查看要素详情
+function handleViewElementDetail(record) {
+  console.log("查看要素详情:", record);
+  message.info(`查看${record.element} ${record.name} 的详情`);
+}
+</script>
+
 <template>
   <div>
     <a-modal
@@ -6,17 +425,19 @@
       :width="1200"
       :centered="true"
       :mask-closable="false"
-      getContainer=".ui-container"
+      get-container=".ui-container"
       class="modal-container"
-      @cancel="handleCancel"
       :footer="null"
+      @cancel="handleCancel"
     >
       <template #closeIcon>
         <CloseOutlined style="color: #ffffff; font-size: 16px" />
       </template>
 
       <div class="vehicle-detail-content">
-        <div class="basic-info-title">基本信息</div>
+        <div class="basic-info-title">
+          基本信息
+        </div>
         <!-- 基本信息区域 -->
         <div class="basic-info-section">
           <div class="vehicle-header">
@@ -35,7 +456,7 @@
 
           <div class="vehicle-info-row">
             <div class="vehicle-image">
-              <img :src="vehicleData.image" :alt="vehicleData.plateNumber" />
+              <img :src="vehicleData.image" :alt="vehicleData.plateNumber">
             </div>
 
             <div class="vehicle-details">
@@ -84,12 +505,12 @@
 
         <!-- 标签页区域 -->
         <div class="tabs-section">
-          <a-tabs v-model:activeKey="activeTab" class="detail-tabs">
+          <a-tabs v-model:active-key="activeTab" class="detail-tabs">
             <a-tab-pane key="alerts" tab="历史预警内容">
               <div class="tab-content">
                 <!-- 预警子区域 -->
                 <a-collapse
-                  v-model:activeKey="alertCollapseActive"
+                  v-model:active-key="alertCollapseActive"
                   class="alert-collapse"
                 >
                   <a-collapse-panel
@@ -102,13 +523,17 @@
                     </template>
                     <div class="alert-list">
                       <div
-                        class="alert-item"
                         v-for="(alert, index) in vehicleData.historyAlerts"
                         :key="index"
+                        class="alert-item"
                       >
                         <div class="alert-item-content">
-                          <div class="alert-item-text">{{ alert.content }}</div>
-                          <div class="alert-item-date">{{ alert.date }}</div>
+                          <div class="alert-item-text">
+                            {{ alert.content }}
+                          </div>
+                          <div class="alert-item-date">
+                            {{ alert.date }}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -117,7 +542,7 @@
 
                 <!-- 历史案件关联子区域 -->
                 <a-collapse
-                  v-model:activeKey="caseCollapseActive"
+                  v-model:active-key="caseCollapseActive"
                   class="case-collapse"
                 >
                   <a-collapse-panel
@@ -130,15 +555,17 @@
                     </template>
                     <div class="case-list">
                       <div
-                        class="case-item"
                         v-for="(caseItem, index) in vehicleData.historyCases"
                         :key="index"
+                        class="case-item"
                       >
                         <div class="case-item-content">
                           <div class="case-item-text">
                             {{ caseItem.content }}
                           </div>
-                          <div class="case-item-date">{{ caseItem.date }}</div>
+                          <div class="case-item-date">
+                            {{ caseItem.date }}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -192,7 +619,7 @@
                         src="@/assets/imgs/back.png"
                         alt="返回上级"
                         class="back-img"
-                      />
+                      >
                     </a-button>
                   </div>
 
@@ -259,7 +686,7 @@
                     <vue3-tree-org
                       :data="treeData"
                       center
-                      :toolBar="false"
+                      :tool-bar="false"
                       :draggable="false"
                       :horizontal="false"
                       :collapsable="false"
@@ -269,8 +696,12 @@
                     >
                       <template #default="{ node }">
                         <div class="custom-node" :class="getNodeClass(node)">
-                          <div class="node-icon">{{ getNodeIcon(node) }}</div>
-                          <div class="node-text">{{ node.label }}</div>
+                          <div class="node-icon">
+                            {{ getNodeIcon(node) }}
+                          </div>
+                          <div class="node-text">
+                            {{ node.label }}
+                          </div>
                         </div>
                       </template>
                     </vue3-tree-org>
@@ -284,427 +715,6 @@
     </a-modal>
   </div>
 </template>
-
-<script setup>
-import { ref, reactive, watch } from "vue";
-import { message } from "ant-design-vue";
-import {
-  CloseOutlined,
-  WarningOutlined,
-  ArrowLeftOutlined,
-} from "@ant-design/icons-vue";
-
-// Props
-const props = defineProps({
-  open: {
-    type: Boolean,
-    default: false,
-  },
-  vehicleData: {},
-});
-
-// Emits
-const emit = defineEmits(["update:open", "setKeyVehicle"]);
-
-// 响应式数据
-const activeTab = ref("alerts");
-const alertCollapseActive = ref(["1"]);
-const caseCollapseActive = ref(["1"]);
-const showGangDetail = ref(false);
-
-// 团伙车辆分析表格列配置
-const gangTableColumns = [
-  {
-    title: "序号",
-    dataIndex: "index",
-    key: "index",
-    width: 80,
-    align: "center",
-    customRender: ({ text, record, index }) => {
-      return index + 1;
-    },
-  },
-  {
-    title: "查询单",
-    dataIndex: "queryOrder",
-    key: "queryOrder",
-    ellipsis: true,
-  },
-  {
-    title: "创建时间",
-    dataIndex: "createTime",
-    key: "createTime",
-    width: 150,
-  },
-  {
-    title: "状态",
-    dataIndex: "status",
-    key: "status",
-    width: 100,
-    align: "center",
-  },
-  {
-    title: "操作",
-    key: "action",
-    width: 100,
-    align: "center",
-  },
-];
-
-// 团伙车辆分析表格数据
-const gangTableData = ref([
-  {
-    key: "1",
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "查询中",
-  },
-  {
-    key: "2",
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-  {
-    key: "3",
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-  {
-    key: "4",
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-  {
-    key: "5",
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-  {
-    key: "6",
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-  {
-    key: "7",
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-  {
-    key: "8",
-    queryOrder: "浙123456团伙车辆的查询单",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-]);
-
-// 团伙车辆详情表格列配置
-const gangDetailColumns = [
-  {
-    title: "序号",
-    dataIndex: "index",
-    key: "index",
-    width: 80,
-    align: "center",
-  },
-  {
-    title: "车牌号",
-    dataIndex: "plateNumber",
-    key: "plateNumber",
-    width: 120,
-  },
-  {
-    title: "车牌颜色",
-    dataIndex: "plateColor",
-    key: "plateColor",
-    width: 100,
-  },
-  {
-    title: "车辆类型",
-    dataIndex: "vehicleType",
-    key: "vehicleType",
-    width: 120,
-  },
-  {
-    title: "轨迹相似度",
-    dataIndex: "similarity",
-    key: "similarity",
-    width: 120,
-    align: "center",
-  },
-  {
-    title: "相似时间范围",
-    dataIndex: "timeRange",
-    key: "timeRange",
-    width: 200,
-  },
-  {
-    title: "操作",
-    key: "action",
-    width: 100,
-    align: "center",
-  },
-];
-
-// 团伙车辆详情表格数据
-const gangDetailData = ref([
-  {
-    key: "1",
-    index: 1,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "2",
-    index: 2,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "3",
-    index: 3,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "4",
-    index: 4,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "5",
-    index: 5,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "6",
-    index: 6,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-  {
-    key: "7",
-    index: 7,
-    plateNumber: "浙XXXX",
-    plateColor: "蓝色",
-    vehicleType: "高栏货车",
-    similarity: "90%",
-    timeRange: "2025/6/15 1:18 - 2025/6/16 8:42",
-  },
-]);
-
-// 关键要素分析表格列配置
-const elementsTableColumns = [
-  {
-    title: "要素",
-    dataIndex: "element",
-    key: "element",
-    width: 100,
-  },
-  {
-    title: "名称",
-    dataIndex: "name",
-    key: "name",
-    ellipsis: true,
-  },
-  {
-    title: "操作",
-    key: "action",
-    width: 100,
-    align: "center",
-  },
-];
-
-// 关键要素分析表格数据
-const elementsTableData = ref([
-  {
-    key: "1",
-    element: "车辆",
-    name: "浙J89900",
-  },
-  {
-    key: "2",
-    element: "车辆",
-    name: "浙J33900",
-  },
-  {
-    key: "3",
-    element: "人员",
-    name: "王某某",
-  },
-  {
-    key: "4",
-    element: "人员",
-    name: "王某某",
-  },
-  {
-    key: "5",
-    element: "车辆",
-    name: "浙J89966",
-  },
-  {
-    key: "6",
-    element: "船舶",
-    name: "华盛778",
-  },
-  {
-    key: "7",
-    element: "船舶",
-    name: "华盛009",
-  },
-]);
-
-// 树形组织图数据
-const treeData = ref({
-  id: 1,
-  label: "浙J89900",
-  type: "vehicle",
-  children: [
-    {
-      id: 2,
-      pid: 1,
-      label: "浙J89900",
-      type: "vehicle",
-      children: [],
-    },
-    {
-      id: 2,
-      pid: 1,
-      label: "白岩码头走私冻品案件",
-      type: "case",
-      children: [],
-    },
-    {
-      id: 2,
-      pid: 1,
-      label: "马某某",
-      children: [
-        {
-          id: 2,
-          pid: 1,
-          label: "浙J83900",
-          type: "vehicle",
-          children: [],
-        },
-      ],
-    },
-    {
-      id: 2,
-      pid: 1,
-      label: "王某某",
-      type: "person",
-      children: [
-        {
-          id: 2,
-          pid: 1,
-          label: "浙J82900",
-          type: "vehicle",
-          children: [],
-        },
-      ],
-    },
-  ],
-});
-
-// 获取节点图标
-const getNodeIcon = (node) => {
-  switch (node.$$data.type) {
-    case "vehicle":
-      return "🚛";
-    case "person":
-      return "👤";
-    case "case":
-      return "📄";
-    default:
-      return "📄";
-  }
-};
-
-// 获取节点样式类
-const getNodeClass = (node) => {
-  const classes = [`${node.type}-node`];
-  if (node.isRed) {
-    classes.push("red");
-  }
-  return classes.join(" ");
-};
-
-// 节点点击事件
-const handleNodeClick = (node) => {
-  console.log("点击节点:", node);
-  message.info(`点击了${node.label}`);
-};
-
-// 监听 visible 变化
-watch(
-  () => props.open,
-  (newVal) => {
-    if (newVal) {
-      // 重置标签页状态
-      activeTab.value = "alerts";
-      alertCollapseActive.value = ["1"];
-      caseCollapseActive.value = ["1"];
-    }
-  }
-);
-
-// 关闭弹窗
-const handleCancel = () => {
-  emit("update:open", false);
-};
-
-// 设置重点车辆
-const handleSetKeyVehicle = () => {
-  emit("setKeyVehicle", props.vehicleData);
-};
-
-// 查看团伙车辆详情
-const handleViewGangDetail = (record) => {
-  console.log("查看团伙车辆详情:", record);
-  showGangDetail.value = true;
-};
-
-// 返回团伙车辆列表
-const handleBackToGangList = () => {
-  showGangDetail.value = false;
-};
-
-// 查看轨迹
-const handleViewTrajectory = (record) => {
-  console.log("查看轨迹:", record);
-};
-
-// 查看要素详情
-const handleViewElementDetail = (record) => {
-  console.log("查看要素详情:", record);
-  message.info(`查看${record.element} ${record.name} 的详情`);
-};
-</script>
 
 <style lang="scss" scoped>
 .vehicle-detail-content {

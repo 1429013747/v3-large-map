@@ -4,7 +4,7 @@ import request from '@/utils/request'
  * 获取地图配置
  * @returns {Promise} API响应
  */
-export const getShorelineLayer = () => {
+export function getShorelineLayer() {
   return request({
     url: '/fzsRiskPoint/shorelineLayer',
     method: 'get'
@@ -14,7 +14,7 @@ export const getShorelineLayer = () => {
  * 登录
  * @returns {Promise} API响应
  */
-export const login = (data) => {
+export function login(data) {
   return request({
     url: '/login',
     method: 'post',

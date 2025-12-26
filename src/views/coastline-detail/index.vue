@@ -1,12 +1,278 @@
+<script setup>
+import LevelChart from "@/components/CoastlinePopup/components/LevelChart.vue";
+import WarningChart from "@/components/CoastlinePopup/components/WarningChart.vue";
+import { message } from "ant-design-vue";
+import { ref } from "vue";
+import callThePolice from "~/imgs/call-the-police.png";
+import arrow from "~/imgs/detail-arrow.png";
+import offline from "~/imgs/offline.png";
+import online from "~/imgs/online.png";
+
+const coastlineData = ref({ riskName: "示例风险点" });
+const deviceData = ref([
+  {
+    id: "1",
+    name: "0838_白岩码头_雷达",
+    type: "1",
+    status: "online",
+    level: "1",
+    address: "白岩码头"
+  },
+  {
+    id: "2",
+    name: "0838_白岩码头_摄像头",
+    type: "2",
+    status: "offline",
+    level: "1",
+    address: "白岩码头"
+  },
+  {
+    id: "3",
+    name: "0838_白岩码头_警报器",
+    type: "3",
+    status: "online",
+    level: "1",
+    address: "白岩码头"
+  }
+]);
+const tableData = ref([
+  {
+    id: "1",
+    name: "示例",
+    type: "1",
+    status: "0",
+    level: "1",
+    riskName: "部署智能限高杆",
+    riskLevel: "1",
+    riskType: "1",
+    riskStatus: "1",
+    riskLevelName: "一级",
+    riskTypeName: "一级",
+    riskStatusName: "已完成"
+  },
+  {
+    id: "2",
+    name: "示例",
+    type: "1",
+    status: "1",
+    level: "1",
+    riskName: "部署视频感知设备3个",
+    riskLevel: "1",
+    riskType: "1",
+    riskStatus: "2",
+    riskLevelName: "一级",
+    riskTypeName: "一级",
+    riskStatusName: "进行中"
+  },
+  {
+    id: "3",
+    name: "示例",
+    type: "1",
+    status: "3",
+    level: "1",
+    riskName: "部署视频感知设备10个",
+    riskLevel: "1",
+    riskType: "1",
+    riskStatus: "3",
+    riskLevelName: "一级",
+    riskTypeName: "一级",
+    riskStatusName: "未完成"
+  },
+  {
+    id: "3",
+    name: "示例",
+    type: "1",
+    status: "3",
+    level: "1",
+    riskName: "部署视频感知设备10个",
+    riskLevel: "1",
+    riskType: "1",
+    riskStatus: "3",
+    riskLevelName: "一级",
+    riskTypeName: "一级",
+    riskStatusName: "未完成"
+  },
+  {
+    id: "3",
+    name: "示例",
+    type: "1",
+    status: "3",
+    level: "1",
+    riskName: "部署视频感知设备10个",
+    riskLevel: "1",
+    riskType: "1",
+    riskStatus: "3",
+    riskLevelName: "一级",
+    riskTypeName: "一级",
+    riskStatusName: "未完成"
+  }
+]);
+const activeCategory = ref("1");
+const warningChartData = ref({
+  dates: [
+    "1:45:04",
+    "2:45:04",
+    "3:45:04",
+    "4:45:04",
+    "5:45:04",
+    "6:45:04",
+    "7:45:04"
+  ],
+  levels: [10, 2, 3, 1, 2, 3, 2] // 1:低风险, 2:中风险, 3:高风险
+});
+function handleCategoryChange(category) {
+  activeCategory.value = category;
+  switch (category) {
+    case "1":
+      warningChartData.value = {
+        dates: [
+          "1:45:04",
+          "2:45:04",
+          "3:45:04",
+          "4:45:04",
+          "5:45:04",
+          "6:45:04",
+          "7:45:04"
+        ],
+        levels: [1, 2, 3, 1, 2, 3, 2]
+      };
+      break;
+    case "2":
+      warningChartData.value = {
+        dates: [
+          "1:45:04",
+          "2:45:04",
+          "3:45:04",
+          "4:45:04",
+          "5:45:04",
+          "6:45:04",
+          "7:45:04"
+        ],
+        levels: [10, 20, 30, 10, 20, 30, 40]
+      };
+      break;
+    case "3":
+      warningChartData.value = {
+        dates: [
+          "1:45:04",
+          "2:45:04",
+          "3:45:04",
+          "4:45:04",
+          "5:45:04",
+          "6:45:04",
+          "7:45:04"
+        ],
+        levels: [100, 200, 300, 100, 200, 300, 200]
+      };
+      break;
+    default:
+      break;
+  }
+}
+// 人防制度按钮触发
+function handlecivilDefense(device) {
+  switch (device) {
+    case 1:
+      message.info("查询人防制度");
+      break;
+    case 2:
+      message.info("查看巡查记录");
+      break;
+    case 3:
+      message.info("查看宣传记录");
+      break;
+    default:
+      break;
+  }
+}
+// 设备操作
+function getRiskStatus(status) {
+  switch (status) {
+    case "1":
+      return "normal";
+    case "2":
+      return "warning";
+    case "3":
+      return "danger";
+    default:
+      return "normal";
+  }
+}
+
+// 获取设备图标
+function getNodeIcon(type) {
+  switch (type) {
+    case "1":
+      return online;
+    case "2":
+      return offline;
+    case "3":
+      return callThePolice;
+    default:
+      return online;
+  }
+}
+// 获取设备类型
+function getNodeTile(type) {
+  switch (type) {
+    case "1":
+      return "雷达";
+    case "2":
+      return "摄像头";
+    case "3":
+      return "警报器";
+    default:
+      return "未知设备";
+  }
+}
+// 设备操作
+function handleDeviceAction(device) {
+  switch (device.type) {
+    case "1":
+      // 触发雷达
+      message.info("触发雷达");
+      break;
+    case "2":
+      // 触发摄像头
+      message.info("触发摄像头");
+      break;
+    case "3":
+      // 触发报警器
+      message.info("触发报警器");
+      break;
+    default:
+      break;
+  }
+}
+
+// 风险等级样式
+function getRiskStyle(status) {
+  switch (status) {
+    case 1:
+      return "key-badge1";
+    case 2:
+      return "key-badge2";
+    case 3:
+      return "key-badge3";
+    default:
+      return "key-badge1";
+  }
+}
+</script>
+
 <template>
   <div class="container">
-    <MapLayout :showMap="false" :enableScale="true" title="岸线管控详情">
+    <MapLayout :show-map="false" :enable-scale="true" title="岸线管控详情">
       <template #default>
         <div class="main-container">
           <div class="left-container">
-            <div class="headlines"><em>风险点信息</em></div>
+            <div class="headlines">
+              <em>风险点信息</em>
+            </div>
             <div class="info-card">
-              <div class="card-title">基本信息</div>
+              <div class="card-title">
+                基本信息
+              </div>
               <div class="card-content">
                 <div class="info-item info-item-title">
                   <div>
@@ -27,16 +293,18 @@
               </div>
             </div>
             <div class="info-card">
-              <div class="card-title">静态指标</div>
+              <div class="card-title">
+                静态指标
+              </div>
               <div class="card-content">
                 <div class="info-item">
-                  <span> <img :src="arrow" alt="" /> 风险点类型</span>
+                  <span> <img :src="arrow" alt=""> 风险点类型</span>
                 </div>
                 <div class="info-item">
                   <span> 正常码头 | 废弃码头</span>
                 </div>
                 <div class="info-item">
-                  <span> <img :src="arrow" alt="" /> 周边环境</span>
+                  <span> <img :src="arrow" alt=""> 周边环境</span>
                 </div>
                 <div class="info-item">
                   <span>附近有无居民社区或厂房</span>
@@ -51,7 +319,7 @@
                   <span>是</span>
                 </div>
                 <div class="info-item">
-                  <span> <img :src="arrow" alt="" /> 交通条件</span>
+                  <span> <img :src="arrow" alt=""> 交通条件</span>
                 </div>
                 <div class="info-item">
                   <span>附近有无居民社区或厂房</span>
@@ -60,14 +328,16 @@
               </div>
             </div>
             <div class="info-card">
-              <div class="card-title">动态指标</div>
+              <div class="card-title">
+                动态指标
+              </div>
               <div class="card-content">
-                <span> <img :src="arrow" alt="" /> 历史走私案件</span>
+                <span> <img :src="arrow" alt=""> 历史走私案件</span>
                 <div class="info-item">
                   <span>时间范围</span>
                   <span>1-3年内</span>
                 </div>
-                <span> <img :src="arrow" alt="" /> 防控措施</span>
+                <span> <img :src="arrow" alt=""> 防控措施</span>
                 <div class="info-item">
                   <span>挿型感型智能限高杆</span>
                   <span>已配置</span>
@@ -98,13 +368,13 @@
                   <img
                     src="https://tse2-mm.cn.bing.net/th/id/OIP-C.M_QGxTduyJtEBzOIqJafDgHaE7?w=282&h=187&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3"
                     alt=""
-                  />
+                  >
                 </div>
                 <div>
                   <img
                     src="https://tse2-mm.cn.bing.net/th/id/OIP-C.M_QGxTduyJtEBzOIqJafDgHaE7?w=282&h=187&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3"
                     alt=""
-                  />
+                  >
                 </div>
               </a-carousel>
             </div>
@@ -116,39 +386,43 @@
                 <LevelChart />
               </div>
               <div class="right-chart">
-                <div class="headlines"><em>风险点预警趋势</em></div>
+                <div class="headlines">
+                  <em>风险点预警趋势</em>
+                </div>
                 <div class="category-tabs">
                   <a-button
                     :type="activeCategory === '1' ? 'primary' : 'default'"
                     size="small"
-                    @click="handleCategoryChange('1')"
                     class="category-tab"
+                    @click="handleCategoryChange('1')"
                   >
                     今日
                   </a-button>
                   <a-button
                     :type="activeCategory === '2' ? 'primary' : 'default'"
                     size="small"
-                    @click="handleCategoryChange('2')"
                     class="category-tab"
+                    @click="handleCategoryChange('2')"
                   >
                     本周
                   </a-button>
                   <a-button
                     :type="activeCategory === '3' ? 'primary' : 'default'"
                     size="small"
-                    @click="handleCategoryChange('3')"
                     class="category-tab"
+                    @click="handleCategoryChange('3')"
                   >
                     本月
                   </a-button>
                 </div>
-                <WarningChart :chartData="warningChartData" />
+                <WarningChart :chart-data="warningChartData" />
               </div>
             </div>
           </div>
           <div class="right-container">
-            <div class="headlines"><em>一点一策</em></div>
+            <div class="headlines">
+              <em>一点一策</em>
+            </div>
             <div class="info-card">
               <div class="card-content">
                 <div class="info-item info-item-table-header">
@@ -157,31 +431,32 @@
                 </div>
                 <div class="info-item-table-body">
                   <div
-                    class="info-item"
                     v-for="(coastline, index) in tableData"
                     :key="index"
+                    class="info-item"
                   >
                     <span>{{ coastline.riskName }}</span>
                     <span
-                      :class="getRiskStatus(coastline.riskStatus) + ' status'"
-                      >{{ coastline.riskStatusName }}</span
-                    >
+                      :class="`${getRiskStatus(coastline.riskStatus)} status`"
+                    >{{ coastline.riskStatusName }}</span>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="headlines"><em>物联设备感知</em></div>
+            <div class="headlines">
+              <em>物联设备感知</em>
+            </div>
             <div class="info-card">
               <div class="card-content">
                 <div
-                  class="info-item device"
                   v-for="(device, index) in deviceData"
                   :key="index"
+                  class="info-item device"
                 >
                   <div class="info-item-device">
                     <div class="title-btn">
                       <div class="title">
-                        <img :src="getNodeIcon(device.type)" alt="" />
+                        <img :src="getNodeIcon(device.type)" alt="">
                         {{ device.name }}
                       </div>
                       <div class="btn">
@@ -197,32 +472,36 @@
                       </div>
                     </div>
                     <div class="type-address">
-                      <div class="type">{{ getNodeTile(device.type) }}</div>
-                      <div class="address">位置：白岩码头</div>
+                      <div class="type">
+                        {{ getNodeTile(device.type) }}
+                      </div>
+                      <div class="address">
+                        位置：白岩码头
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="headlines"><em>人防制度</em></div>
+            <div class="headlines">
+              <em>人防制度</em>
+            </div>
             <div class="info-card">
               <div class="card-content">
-                <div class="info-item">王某某 18888888888</div>
+                <div class="info-item">
+                  王某某 18888888888
+                </div>
                 <div class="info-item">
                   <span>人防制度：码长、段长、网格"三长制"</span>
                   <span class="btn" @click="handlecivilDefense(1)">查询</span>
                 </div>
                 <div class="info-item">
                   <span>现场巡查：每日</span>
-                  <span class="btn" @click="handlecivilDefense(2)"
-                    >巡查记录</span
-                  >
+                  <span class="btn" @click="handlecivilDefense(2)">巡查记录</span>
                 </div>
                 <div class="info-item">
                   <span>宣传教育：季度</span>
-                  <span class="btn" @click="handlecivilDefense(3)"
-                    >宣传记录</span
-                  >
+                  <span class="btn" @click="handlecivilDefense(3)">宣传记录</span>
                 </div>
               </div>
             </div>
@@ -232,267 +511,6 @@
     </MapLayout>
   </div>
 </template>
-
-<script setup>
-import online from "~/imgs/online.png";
-import offline from "~/imgs/offline.png";
-import callThePolice from "~/imgs/call-the-police.png";
-import arrow from "~/imgs/detail-arrow.png";
-import { ref, watch, computed } from "vue";
-import { message } from "ant-design-vue";
-import LevelChart from "@/components/CoastlinePopup/components/LevelChart.vue";
-import WarningChart from "@/components/CoastlinePopup/components/WarningChart.vue";
-const coastlineData = ref({ riskName: "示例风险点" });
-const deviceData = ref([
-  {
-    id: "1",
-    name: "0838_白岩码头_雷达",
-    type: "1",
-    status: "online",
-    level: "1",
-    address: "白岩码头",
-  },
-  {
-    id: "2",
-    name: "0838_白岩码头_摄像头",
-    type: "2",
-    status: "offline",
-    level: "1",
-    address: "白岩码头",
-  },
-  {
-    id: "3",
-    name: "0838_白岩码头_警报器",
-    type: "3",
-    status: "online",
-    level: "1",
-    address: "白岩码头",
-  },
-]);
-const tableData = ref([
-  {
-    id: "1",
-    name: "示例",
-    type: "1",
-    status: "0",
-    level: "1",
-    riskName: "部署智能限高杆",
-    riskLevel: "1",
-    riskType: "1",
-    riskStatus: "1",
-    riskLevelName: "一级",
-    riskTypeName: "一级",
-    riskStatusName: "已完成",
-  },
-  {
-    id: "2",
-    name: "示例",
-    type: "1",
-    status: "1",
-    level: "1",
-    riskName: "部署视频感知设备3个",
-    riskLevel: "1",
-    riskType: "1",
-    riskStatus: "2",
-    riskLevelName: "一级",
-    riskTypeName: "一级",
-    riskStatusName: "进行中",
-  },
-  {
-    id: "3",
-    name: "示例",
-    type: "1",
-    status: "3",
-    level: "1",
-    riskName: "部署视频感知设备10个",
-    riskLevel: "1",
-    riskType: "1",
-    riskStatus: "3",
-    riskLevelName: "一级",
-    riskTypeName: "一级",
-    riskStatusName: "未完成",
-  },
-  {
-    id: "3",
-    name: "示例",
-    type: "1",
-    status: "3",
-    level: "1",
-    riskName: "部署视频感知设备10个",
-    riskLevel: "1",
-    riskType: "1",
-    riskStatus: "3",
-    riskLevelName: "一级",
-    riskTypeName: "一级",
-    riskStatusName: "未完成",
-  },
-  {
-    id: "3",
-    name: "示例",
-    type: "1",
-    status: "3",
-    level: "1",
-    riskName: "部署视频感知设备10个",
-    riskLevel: "1",
-    riskType: "1",
-    riskStatus: "3",
-    riskLevelName: "一级",
-    riskTypeName: "一级",
-    riskStatusName: "未完成",
-  },
-]);
-const activeCategory = ref("1");
-const warningChartData = ref({
-  dates: [
-    "1:45:04",
-    "2:45:04",
-    "3:45:04",
-    "4:45:04",
-    "5:45:04",
-    "6:45:04",
-    "7:45:04",
-  ],
-  levels: [10, 2, 3, 1, 2, 3, 2], // 1:低风险, 2:中风险, 3:高风险
-});
-const handleCategoryChange = (category) => {
-  activeCategory.value = category;
-  switch (category) {
-    case "1":
-      warningChartData.value = {
-        dates: [
-          "1:45:04",
-          "2:45:04",
-          "3:45:04",
-          "4:45:04",
-          "5:45:04",
-          "6:45:04",
-          "7:45:04",
-        ],
-        levels: [1, 2, 3, 1, 2, 3, 2],
-      };
-      break;
-    case "2":
-      warningChartData.value = {
-        dates: [
-          "1:45:04",
-          "2:45:04",
-          "3:45:04",
-          "4:45:04",
-          "5:45:04",
-          "6:45:04",
-          "7:45:04",
-        ],
-        levels: [10, 20, 30, 10, 20, 30, 40],
-      };
-      break;
-    case "3":
-      warningChartData.value = {
-        dates: [
-          "1:45:04",
-          "2:45:04",
-          "3:45:04",
-          "4:45:04",
-          "5:45:04",
-          "6:45:04",
-          "7:45:04",
-        ],
-        levels: [100, 200, 300, 100, 200, 300, 200],
-      };
-      break;
-    default:
-      break;
-  }
-};
-// 人防制度按钮触发
-const handlecivilDefense = (device) => {
-  switch (device) {
-    case 1:
-      message.info("查询人防制度");
-      break;
-    case 2:
-      message.info("查看巡查记录");
-      break;
-    case 3:
-      message.info("查看宣传记录");
-      break;
-    default:
-      break;
-  }
-};
-// 设备操作
-const getRiskStatus = (status) => {
-  switch (status) {
-    case "1":
-      return "normal";
-    case "2":
-      return "warning";
-    case "3":
-      return "danger";
-    default:
-      return "normal";
-  }
-};
-
-// 获取设备图标
-const getNodeIcon = (type) => {
-  switch (type) {
-    case "1":
-      return online;
-    case "2":
-      return offline;
-    case "3":
-      return callThePolice;
-    default:
-      return online;
-  }
-};
-// 获取设备类型
-const getNodeTile = (type) => {
-  switch (type) {
-    case "1":
-      return "雷达";
-    case "2":
-      return "摄像头";
-    case "3":
-      return "警报器";
-    default:
-      return "未知设备";
-  }
-};
-// 设备操作
-const handleDeviceAction = (device) => {
-  switch (device.type) {
-    case "1":
-      // 触发雷达
-      message.info("触发雷达");
-      break;
-    case "2":
-      // 触发摄像头
-      message.info("触发摄像头");
-      break;
-    case "3":
-      // 触发报警器
-      message.info("触发报警器");
-      break;
-    default:
-      break;
-  }
-};
-
-// 风险等级样式
-const getRiskStyle = (status) => {
-  switch (status) {
-    case 1:
-      return "key-badge1";
-    case 2:
-      return "key-badge2";
-    case 3:
-      return "key-badge3";
-    default:
-      return "key-badge1";
-  }
-};
-</script>
 
 <style lang="scss" scoped>
 .container {

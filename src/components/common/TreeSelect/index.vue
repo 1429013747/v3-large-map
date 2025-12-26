@@ -3,31 +3,9 @@
  * @since: 2025-01-XX
  * @description: 基于 a-tree-select 的树形选择器组件
 -->
-<template>
-  <div class="tree-select-container">
-    <a-tree-select
-      v-model:value="modelValue"
-      :tree-data="treeData"
-      :placeholder="placeholder"
-      :allow-clear="allowClear"
-      :tree-default-expand-all="treeDefaultExpandAll"
-      :show-search="showSearch"
-      :tree-checkable="treeCheckable"
-      :multiple="multiple"
-      v-bind="$attrs"
-    />
-  </div>
-</template>
-
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue';
 import { getDictList } from '@/api/index.js';
-
-const modelValue = defineModel('value', {
-  type: [String, Number, Array, null],
-  required: false,
-  default: null
-});
+import { onMounted, ref, watch } from 'vue';
 
 const props = defineProps({
   // 字典代码，如果提供则从字典获取数据
@@ -82,33 +60,39 @@ const props = defineProps({
   }
 });
 
+const modelValue = defineModel('value', {
+  type: [String, Number, Array, null],
+  required: false,
+  default: null
+});
+
 // 树形数据
 const treeData = ref([]);
 
 // 将普通数组转换为树形结构（如果 options 是普通数组）
-const convertToTreeData = (data) => {
+function convertToTreeData(data) {
   if (!Array.isArray(data) || data.length === 0) {
     return [];
   }
 
   // 如果数据已经是树形结构（有 children），直接返回
-  const hasChildren = data.some((item) => item.children && Array.isArray(item.children));
+  const hasChildren = data.some(item => item.children && Array.isArray(item.children));
   if (hasChildren) {
     return formatTreeData(data);
   }
 
   // 如果是普通数组，转换为树形结构
   return formatTreeData(
-    data.map((item) => ({
+    data.map(item => ({
       title: item[props.fieldNames.label] || item.label,
       value: item[props.fieldNames.value] || item.value,
       key: item[props.fieldNames.value] || item.value
     }))
   );
-};
+}
 
 // 格式化树形数据
-const formatTreeData = (data) => {
+function formatTreeData(data) {
   return data.map((item) => {
     const node = {
       title: item[props.fieldNames.label] || item.label || item.title,
@@ -126,31 +110,33 @@ const formatTreeData = (data) => {
 
     return node;
   });
-};
+}
 
 // 从字典获取数据
-const fetchDictData = async () => {
+async function fetchDictData() {
   if (!props.dictCode) return;
 
   try {
     const res = await getDictList({ code: props.dictCode });
     if (res && res.data) {
-      const dictList = res.data.map((item) => ({
+      const dictList = res.data.map(item => ({
         label: item.value,
         value: item.code
       }));
       treeData.value = convertToTreeData(dictList);
     }
-  } catch (error) {
+  }
+  catch (error) {
     console.error('获取字典数据失败:', error);
   }
-};
+}
 
 // 初始化数据
 onMounted(() => {
   if (props.dictCode) {
     fetchDictData();
-  } else if (props.options && props.options.length > 0) {
+  }
+  else if (props.options && props.options.length > 0) {
     treeData.value = convertToTreeData(props.options);
   }
 });
@@ -166,6 +152,22 @@ watch(
   { deep: true }
 );
 </script>
+
+<template>
+  <div class="tree-select-container">
+    <a-tree-select
+      v-model:value="modelValue"
+      :tree-data="treeData"
+      :placeholder="placeholder"
+      :allow-clear="allowClear"
+      :tree-default-expand-all="treeDefaultExpandAll"
+      :show-search="showSearch"
+      :tree-checkable="treeCheckable"
+      :multiple="multiple"
+      v-bind="$attrs"
+    />
+  </div>
+</template>
 
 <style scoped>
 .tree-select-container {

@@ -1,7 +1,7 @@
-import { vLoading, loading } from './loading.js';
+import { loading, vLoading } from './loading.js';
 
 // 导出所有指令
-export { vLoading, loading };
+export { loading, vLoading };
 
 // 默认导出
 export default {

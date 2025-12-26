@@ -1,23 +1,22 @@
 <script setup>
 import { Col, Row } from "ant-design-vue";
+import { Overlay } from "ol";
 import Plot from "ol-plot";
-import { onMounted, reactive, ref, shallowRef, watch } from "vue";
-import "ol-plot/dist/ol-plot.css";
-import { Feature, Overlay } from "ol";
-import { Point, LineString, Polygon } from "ol/geom";
-import { Style, Stroke, Fill, Text, Circle as CircleStyle } from "ol/style";
-import VectorSource from "ol/source/Vector";
-import VectorLayer from "ol/layer/Vector";
 import { Draw } from "ol/interaction";
-import { getLength, getArea } from "ol/sphere";
+import VectorLayer from "ol/layer/Vector";
+import VectorSource from "ol/source/Vector";
+import { getArea, getLength } from "ol/sphere";
+import { Circle as CircleStyle, Fill, Stroke, Style } from "ol/style";
+import { reactive, ref, shallowRef, watch } from "vue";
+import "ol-plot/dist/ol-plot.css";
 
 // 定义组件属性
 const props = defineProps({
   map: Object,
   visible: {
     type: Boolean,
-    default: false,
-  },
+    default: false
+  }
 });
 
 // 定义事件
@@ -26,7 +25,7 @@ const emit = defineEmits([
   "featureCreated",
   "featureSelected",
   "featureDeleted",
-  "measureDeleted",
+  "measureDeleted"
 ]);
 
 // 标绘工具列表（参考原始 plot.vue）
@@ -36,38 +35,38 @@ const plotTools = [
     id: "AttackArrow",
     name: "进攻方向",
     alias: "AttackArrow",
-    src: "AttackArrow",
+    src: "AttackArrow"
   },
   {
     id: "AssaultDirection",
     name: "直箭头",
     alias: "AssaultDirection",
-    src: "AssaultDirection",
+    src: "AssaultDirection"
   },
   { id: "FineArrow", name: "斜箭头", alias: "FineArrow", src: "FineArrow" },
   {
     id: "DoubleArrow",
     name: "双箭头",
     alias: "DoubleArrow",
-    src: "DoubleArrow",
+    src: "DoubleArrow"
   },
   {
     id: "StraightArrow",
     name: "细直箭头",
     alias: "StraightArrow",
-    src: "StraightArrow",
+    src: "StraightArrow"
   },
   {
     id: "TailedAttackArrow",
     name: "燕尾曲箭头",
     alias: "TailedAttackArrow",
-    src: "TailedAttackArrow",
+    src: "TailedAttackArrow"
   },
   {
     id: "SquadCombat",
     name: "曲箭头",
     alias: "SquadCombat",
-    src: "SquadCombat",
+    src: "SquadCombat"
   },
   { id: "RectAngle", name: "矩形", alias: "RectAngle", src: "RectAngle" },
   { id: "Circle", name: "圆形", alias: "Circle", src: "Circle" },
@@ -76,7 +75,7 @@ const plotTools = [
   { id: "Sector", name: "扇形", alias: "Sector", src: "Sector" },
   { id: "Arc", name: "弓形", alias: "Arc", src: "Arc" },
   { id: "Polyline", name: "线", alias: "Polyline", src: "Polyline" },
-  { id: "Curve", name: "曲线", alias: "Curve", src: "Curve" },
+  { id: "Curve", name: "曲线", alias: "Curve", src: "Curve" }
   // { id: 'TextArea', name: '气泡', alias: 'TextArea', src: 'TextArea' }
 ];
 
@@ -103,7 +102,7 @@ const styleState = reactive({
   textAreaBorderColor: "rgba(25, 137, 250, 0.6)",
   textAreaColor: "#ffffff",
   textAreaFontSize: 14,
-  textAreaBorderWidth: 1,
+  textAreaBorderWidth: 1
 });
 
 // 获取图片路径
@@ -114,7 +113,8 @@ function getImageUrl(toolName, isActive = false, isHover = false) {
     // 使用 Vite 的动态导入来获取图片 URL
     return new URL(`../../assets/img/${toolName}${suffix}.png`, import.meta.url)
       .href;
-  } catch (error) {
+  }
+  catch (error) {
     console.warn(`图片加载失败: ${toolName}${suffix}.png`, error);
     // 返回默认占位符
     return `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23ffffff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>`;
@@ -125,7 +125,8 @@ function getImageUrl(toolName, isActive = false, isHover = false) {
 function formatLength(length, precision = 2) {
   if (length >= 1000) {
     return `${(length / 1000).toFixed(precision)} km`;
-  } else {
+  }
+  else {
     return `${length.toFixed(precision)} m`;
   }
 }
@@ -134,9 +135,11 @@ function formatLength(length, precision = 2) {
 function formatArea(area, precision = 2) {
   if (area >= 1000000) {
     return `${(area / 1000000).toFixed(precision)} km²`;
-  } else if (area >= 10000) {
+  }
+  else if (area >= 10000) {
     return `${(area / 10000).toFixed(precision)} 公顷`;
-  } else {
+  }
+  else {
     return `${area.toFixed(precision)} m²`;
   }
 }
@@ -154,7 +157,7 @@ function initMeasureLayer() {
   measureLayer.value = new VectorLayer({
     source: measureSource.value,
     title: "测量",
-    zIndex: 1009, // 在标绘图层之下
+    zIndex: 1009 // 在标绘图层之下
   });
 
   props.map.addLayer(measureLayer.value);
@@ -166,19 +169,19 @@ function createMeasureStyle() {
     stroke: new Stroke({
       color: "#ff6b6b",
       width: 3,
-      lineDash: [5, 5],
+      lineDash: [5, 5]
     }),
     fill: new Fill({
-      color: "rgba(255, 107, 107, 0.1)",
+      color: "rgba(255, 107, 107, 0.1)"
     }),
     image: new CircleStyle({
       radius: 6,
       fill: new Fill({ color: "#ff6b6b" }),
       stroke: new Stroke({
         color: "#ffffff",
-        width: 2,
-      }),
-    }),
+        width: 2
+      })
+    })
   });
 }
 
@@ -210,7 +213,7 @@ function addDistanceLabel(coordinates, distance, measureId) {
     position: coordinates[coordinates.length - 1],
     positioning: "center-center",
     offset: [0, -20],
-    stopEvent: false,
+    stopEvent: false
   });
 
   // 将overlay添加到地图
@@ -249,7 +252,7 @@ function addAreaLabel(coordinates, area, measureId) {
     position: coordinates,
     positioning: "center-center",
     offset: [0, -20],
-    stopEvent: false,
+    stopEvent: false
   });
 
   // 将overlay添加到地图
@@ -316,7 +319,7 @@ watch(
   (v) => {
     if (!currentTextArea.value || !v) return;
     currentTextArea.value.setStyle({
-      border: `${styleState.textAreaBorderWidth}px solid ${v}`,
+      border: `${styleState.textAreaBorderWidth}px solid ${v}`
     });
   }
 );
@@ -342,7 +345,7 @@ watch(
   (v) => {
     if (!currentTextArea.value || !v) return;
     currentTextArea.value.setStyle({
-      border: `${v}px solid ${styleState.textAreaBorderColor}`,
+      border: `${v}px solid ${styleState.textAreaBorderColor}`
     });
   }
 );
@@ -358,7 +361,7 @@ function startMeasureDistance() {
   drawInteraction.value = new Draw({
     source: measureSource.value,
     type: "LineString",
-    style: createMeasureStyle(),
+    style: createMeasureStyle()
   });
 
   // 添加绘制完成事件
@@ -379,16 +382,16 @@ function startMeasureDistance() {
         stroke: new Stroke({
           color: "#03df6d",
           width: 4,
-          lineDash: [0, 0],
-        }),
+          lineDash: [0, 0]
+        })
       })
     );
 
     // 为测量线添加ID属性
     feature.setProperties({
-      measureId: measureId,
+      measureId,
       measureType: "distance",
-      isMeasure: true,
+      isMeasure: true
     });
 
     // 添加距离标签
@@ -417,7 +420,7 @@ function startMeasureArea() {
   drawInteraction.value = new Draw({
     source: measureSource.value,
     type: "Polygon",
-    style: createMeasureStyle(),
+    style: createMeasureStyle()
   });
 
   // 添加绘制完成事件
@@ -434,9 +437,9 @@ function startMeasureArea() {
 
     // 为测量多边形添加ID属性
     feature.setProperties({
-      measureId: measureId,
+      measureId,
       measureType: "area",
-      isMeasure: true,
+      isMeasure: true
     });
 
     // 添加面积标签
@@ -502,7 +505,8 @@ function clearMeasure() {
   // 清空测量数据源
   if (measureSource.value) {
     measureSource.value.clear();
-  } else {
+  }
+  else {
     console.log("测量数据源不存在");
   }
 
@@ -525,7 +529,8 @@ function selectTool(tool) {
     stopMeasure();
     plot.value.plotEdit.deactivate();
     plot.value.plotDraw.activate(tool.alias);
-  } else {
+  }
+  else {
     console.warn("不存在的标绘类型！");
   }
 }
@@ -548,14 +553,14 @@ function refreshStyle(style) {
     if (style.fill) {
       // 保持透明度为当前设置的0.6，不被样式覆盖
       // styleState.opacity = style.fill.opacity || styleState.opacity
-      styleState.backgroundColor =
-        style.fill.fillColor || styleState.backgroundColor;
+      styleState.backgroundColor
+        = style.fill.fillColor || styleState.backgroundColor;
     }
     if (style.stroke) {
-      styleState.borderWidth =
-        style.stroke.strokeWidth || styleState.borderWidth;
-      styleState.borderColor =
-        style.stroke.strokeColor || styleState.borderColor;
+      styleState.borderWidth
+        = style.stroke.strokeWidth || styleState.borderWidth;
+      styleState.borderColor
+        = style.stroke.strokeColor || styleState.borderColor;
     }
   }
 }
@@ -633,16 +638,16 @@ function initPlot() {
     /* eslint new-cap: 0 */
     plot.value = new Plot(props.map, {
       zIndex: 1009,
-      zoomToExtent: true, // 自动缩放
+      zoomToExtent: true // 自动缩放
     });
     // 设置样式
     const plotStyle = new Plot.StyleFactory({
       fill: {
-        fillColor: styleState.backgroundColor,
+        fillColor: styleState.backgroundColor
       },
       stroke: {
         strokeColor: styleState.borderColor,
-        strokeWidth: styleState.borderWidth,
+        strokeWidth: styleState.borderWidth
       },
       image: {
         type: "icon",
@@ -652,9 +657,9 @@ function initPlot() {
           imageAnchorYUnits: "fraction",
           imageOpacity: 0.75,
           imageSrc:
-            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTM4IDc5LjE1OTgyNCwgMjAxNi8wOS8xNC0wMTowOTowMSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDpmODA3ZDlmZS1mOTRhLTRmZDktOWYwYS05ZTk3NjdkYTUxMjUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MDM3RkNGQUJDOEUyMTFFNkIwMDFGOUI0RDhFQUI4NEYiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MDM3RkNGQUFDOEUyMTFFNkIwMDFGOUI0RDhFQUI4NEYiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTcgKFdpbmRvd3MpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6ZDc5MmU0ODgtMzAxNC1kNDRiLWI4OWEtYmIxMzNhYWIyYjI1IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU1YWEwNTQ3LTlmMGQtNDllYS1hOGI4LTRkZWRhMmU1OGRiMSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PoW3u00AAAMESURBVHja7FdLaFNBFJ2Z1/eapCnUam0V6cYWEdd+FkUK4kIRF4pLxeJOV4IbpaDQgoiCK9d+loIIKi4V3CmuRJCCImpRW2ur5NP83oznJE1IXmZqEsVuvBA67717z5k5987cqTTGiLUwJdbI1oy4q/7h4INFp+PmHm/7csmczIVmbyE0I6ERG/jek2Ih8OTbmCefxbvkrc+Z8I0L4/Hhfjuxg3BrqqgvA/CoTSFOABPib89SXpzrDeS9Xl+dh/+7jqUeiKvjX7Lhq1TBHGsxLYq+iHmN2NMdEa+PqYvflvVtFH2i3fwhJobYG/0xNdUWMWf7PacvYSj/pIAWc3oSWGdaIh5KqNGFnL72t6oXWFeJuWpV09JFcx1SxW0gXH7SlyKBn68qYhS1EdmiYZwwdtnjKWBieMi54i1JbxsADthIsW3EYEKJvm4lApDKlYlwzHf85jkSkwEmsZ3E2ZI5YZNfVvJeW6XN+I0+Dg+1gm2XGntx3BaVrJOWhr0qxjYFkFmI53MFgS1UI6cvpG3CiGI3ECNfIzZi5rR+EpM7k2V5afuHAzH1Il3OcdXXRhzFbpA11GKdjTioW+2uQb9GSuOY7+olt1kUO5pPa480v3HopLE2EHtK/LQ5cctU7eVcUeBwqT1zzHc23wj2D2eOIdNMSZuBaBD3adBdkZD5m0ZOdw/5bBBlUlRs/dZxVf2Mkxit7Qmqb8xyqKBoTC3XJHo6W2gCL2C1LmJiO6VGP70DaG3L4cKyLgO7jN/oY+wnXkhsJzF7aI8vH1qrEojzWS2W8lrk8cDZ8ccx3/Fb6JgXMB9F+3PTWY3tcTZbCvdhAUnbytMr53LL1StFmpjpYrh6d5pNh+83xtUpm+TtGjGIRcyW+vHXrL6LJn6hwy1aE4gYxGrrBoL9eQWH/gSkyrR9OCCGscTo6M7Fqw+k2oGmcJ+V2YK0IX0Zw9iWr7cO2T/gzxHcIobRjSZwvR3H9XYUFdwHopIn5bzviU+83vpK3IT/x2q3WnWS//+F+Vf2S4ABAMe7cI4Rhe5DAAAAAElFTkSuQmCC",
-        },
-      },
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTM4IDc5LjE1OTgyNCwgMjAxNi8wOS8xNC0wMTowOTowMSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDpmODA3ZDlmZS1mOTRhLTRmZDktOWYwYS05ZTk3NjdkYTUxMjUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MDM3RkNGQUJDOEUyMTFFNkIwMDFGOUI0RDhFQUI4NEYiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MDM3RkNGQUFDOEUyMTFFNkIwMDFGOUI0RDhFQUI4NEYiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTcgKFdpbmRvd3MpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6ZDc5MmU0ODgtMzAxNC1kNDRiLWI4OWEtYmIxMzNhYWIyYjI1IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU1YWEwNTQ3LTlmMGQtNDllYS1hOGI4LTRkZWRhMmU1OGRiMSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PoW3u00AAAMESURBVHja7FdLaFNBFJ2Z1/eapCnUam0V6cYWEdd+FkUK4kIRF4pLxeJOV4IbpaDQgoiCK9d+loIIKi4V3CmuRJCCImpRW2ur5NP83oznJE1IXmZqEsVuvBA67717z5k5987cqTTGiLUwJdbI1oy4q/7h4INFp+PmHm/7csmczIVmbyE0I6ERG/jek2Ih8OTbmCefxbvkrc+Z8I0L4/Hhfjuxg3BrqqgvA/CoTSFOABPib89SXpzrDeS9Xl+dh/+7jqUeiKvjX7Lhq1TBHGsxLYq+iHmN2NMdEa+PqYvflvVtFH2i3fwhJobYG/0xNdUWMWf7PacvYSj/pIAWc3oSWGdaIh5KqNGFnL72t6oXWFeJuWpV09JFcx1SxW0gXH7SlyKBn68qYhS1EdmiYZwwdtnjKWBieMi54i1JbxsADthIsW3EYEKJvm4lApDKlYlwzHf85jkSkwEmsZ3E2ZI5YZNfVvJeW6XN+I0+Dg+1gm2XGntx3BaVrJOWhr0qxjYFkFmI53MFgS1UI6cvpG3CiGI3ECNfIzZi5rR+EpM7k2V5afuHAzH1Il3OcdXXRhzFbpA11GKdjTioW+2uQb9GSuOY7+olt1kUO5pPa480v3HopLE2EHtK/LQ5cctU7eVcUeBwqT1zzHc23wj2D2eOIdNMSZuBaBD3adBdkZD5m0ZOdw/5bBBlUlRs/dZxVf2Mkxit7Qmqb8xyqKBoTC3XJHo6W2gCL2C1LmJiO6VGP70DaG3L4cKyLgO7jN/oY+wnXkhsJzF7aI8vH1qrEojzWS2W8lrk8cDZ8ccx3/Fb6JgXMB9F+3PTWY3tcTZbCvdhAUnbytMr53LL1StFmpjpYrh6d5pNh+83xtUpm+TtGjGIRcyW+vHXrL6LJn6hwy1aE4gYxGrrBoL9eQWH/gSkyrR9OCCGscTo6M7Fqw+k2oGmcJ+V2YK0IX0Zw9iWr7cO2T/gzxHcIobRjSZwvR3H9XYUFdwHopIn5bzviU+83vpK3IT/x2q3WnWS//+F+Vf2S4ABAMe7cI4Rhe5DAAAAAElFTkSuQmCC"
+        }
+      }
     });
 
     plot.value.plotDraw.drawLayer.setStyle(plotStyle.style);
@@ -706,7 +711,8 @@ function deleteSelected() {
     plotLayer.getSource().removeFeature(feature);
     emit("featureDeleted", feature);
     console.log("已删除选中的标绘要素");
-  } else {
+  }
+  else {
     console.log("请先选择要删除的标绘要素");
   }
 }
@@ -757,7 +763,7 @@ defineExpose({
     }
     stopMeasure();
     selectedTool.value = "";
-  },
+  }
 });
 
 // onMounted(() => {
@@ -772,7 +778,9 @@ defineExpose({
     <!-- 面板头部 -->
     <div class="panel-header">
       <span class="panel-title">应急标绘</span>
-      <button class="close-btn" @click="closePanel">×</button>
+      <button class="close-btn" @click="closePanel">
+        ×
+      </button>
     </div>
 
     <!-- 工具列表 -->
@@ -801,11 +809,11 @@ defineExpose({
                   getImageUrl(
                     tool.src,
                     selectedTool === tool.alias,
-                    hoveredTool === tool.alias
+                    hoveredTool === tool.alias,
                   )
                 "
                 :alt="tool.name"
-              />
+              >
             </div>
             <span class="tool-name">{{ tool.name }}</span>
           </div>
@@ -815,9 +823,9 @@ defineExpose({
       <!-- 样式控制 (仅在选中非文本、非点工具时显示) -->
       <div
         v-if="
-          selectedTool &&
-          selectedTool !== 'TextArea' &&
-          selectedTool !== 'Point'
+          selectedTool
+            && selectedTool !== 'TextArea'
+            && selectedTool !== 'Point'
         "
         class="style-controls"
       >
@@ -827,7 +835,7 @@ defineExpose({
             v-model="styleState.backgroundColor"
             type="color"
             class="color-input"
-          />
+          >
         </div>
         <div class="control-group">
           <label>边框色:</label>
@@ -835,7 +843,7 @@ defineExpose({
             v-model="styleState.borderColor"
             type="color"
             class="color-input"
-          />
+          >
         </div>
         <div class="control-group">
           <label>线宽:</label>
@@ -845,7 +853,7 @@ defineExpose({
             min="1"
             max="10"
             class="range-input"
-          />
+          >
           <span class="value-display">{{ styleState.borderWidth }}</span>
         </div>
         <div class="control-group">
@@ -857,7 +865,7 @@ defineExpose({
             max="1"
             step="0.1"
             class="range-input"
-          />
+          >
           <span class="value-display">{{ styleState.opacity }}</span>
         </div>
       </div>
@@ -870,7 +878,7 @@ defineExpose({
             v-model="styleState.textAreaBackgroundColor"
             type="color"
             class="color-input"
-          />
+          >
         </div>
         <div class="control-group">
           <label>文字色:</label>
@@ -878,7 +886,7 @@ defineExpose({
             v-model="styleState.textAreaColor"
             type="color"
             class="color-input"
-          />
+          >
         </div>
         <div class="control-group">
           <label>字体大小:</label>
@@ -888,7 +896,7 @@ defineExpose({
             min="8"
             max="32"
             class="number-input"
-          />
+          >
         </div>
       </div>
 
@@ -897,7 +905,9 @@ defineExpose({
         <button class="action-btn delete-btn" @click="deleteSelected">
           删除选中
         </button>
-        <button class="action-btn clear-btn" @click="clearAll">清空全部</button>
+        <button class="action-btn clear-btn" @click="clearAll">
+          清空全部
+        </button>
       </div>
     </div>
   </div>

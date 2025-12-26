@@ -1,113 +1,5 @@
-<template>
-  <div class="cluster-control-panel" v-if="open">
-    <div class="panel-header">
-      <h3>聚合控制</h3>
-      <button class="close-btn" @click="closePanel">×</button>
-    </div>
-    
-    <div class="panel-content">
-      <!-- 聚合开关 -->
-      <div class="control-group">
-        <label class="control-label">启用聚合</label>
-        <a-switch 
-          v-model:checked="clusterEnabled" 
-          @change="handleClusterToggle"
-        />
-      </div>
-
-      <!-- 聚合距离控制 -->
-      <div class="control-group">
-        <label class="control-label">聚合距离</label>
-        <a-slider
-          v-model:value="clusterDistance"
-          :min="10"
-          :max="100"
-          :step="5"
-          @change="handleDistanceChange"
-        />
-        <span class="distance-value">{{ clusterDistance }}px</span>
-      </div>
-
-      <!-- 最小聚合距离控制 -->
-      <div class="control-group">
-        <label class="control-label">最小聚合距离</label>
-        <a-slider
-          v-model:value="minClusterDistance"
-          :min="5"
-          :max="50"
-          :step="5"
-          @change="handleMinDistanceChange"
-        />
-        <span class="distance-value">{{ minClusterDistance }}px</span>
-      </div>
-
-      <!-- 图层聚合控制 -->
-      <div class="control-group">
-        <label class="control-label">图层聚合</label>
-        <div class="layer-controls">
-          <div 
-            v-for="layer in availableLayers" 
-            :key="layer.type"
-            class="layer-item"
-          >
-            <a-checkbox 
-              v-model:checked="layer.clusterEnabled"
-              @change="handleLayerClusterToggle(layer.type, $event)"
-            >
-              {{ layer.name }}
-            </a-checkbox>
-            <span class="marker-count">({{ layer.count }})</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 聚合信息 -->
-      <div class="control-group">
-        <label class="control-label">聚合信息</label>
-        <div class="cluster-info">
-          <div class="info-item">
-            <span class="info-label">总标记点:</span>
-            <span class="info-value">{{ totalMarkers }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">聚合数量:</span>
-            <span class="info-value">{{ totalClusters }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">压缩比:</span>
-            <span class="info-value">{{ compressionRatio }}%</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 聚合样式预览 -->
-      <div class="control-group">
-        <label class="control-label">聚合样式</label>
-        <div class="style-preview">
-          <div class="preview-item">
-            <div class="preview-circle small"></div>
-            <span>1-5个</span>
-          </div>
-          <div class="preview-item">
-            <div class="preview-circle medium"></div>
-            <span>6-10个</span>
-          </div>
-          <div class="preview-item">
-            <div class="preview-circle large"></div>
-            <span>11-20个</span>
-          </div>
-          <div class="preview-item">
-            <div class="preview-circle xlarge"></div>
-            <span>20+个</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
 const props = defineProps({
   open: {
@@ -152,25 +44,25 @@ const compressionRatio = computed(() => {
 });
 
 // 事件处理
-const closePanel = () => {
+function closePanel() {
   emit('update:open', false);
-};
+}
 
-const handleClusterToggle = (enabled) => {
+function handleClusterToggle(enabled) {
   emit('cluster-toggle', { enabled, type: 'all' });
-};
+}
 
-const handleDistanceChange = (distance) => {
+function handleDistanceChange(distance) {
   emit('distance-change', { distance, type: 'all' });
-};
+}
 
-const handleMinDistanceChange = (distance) => {
+function handleMinDistanceChange(distance) {
   emit('distance-change', { distance, type: 'min', minDistance: distance });
-};
+}
 
-const handleLayerClusterToggle = (layerType, enabled) => {
+function handleLayerClusterToggle(layerType, enabled) {
   emit('cluster-toggle', { enabled, type: layerType });
-};
+}
 
 // 监听聚合状态变化
 watch(() => props.mapMarkers.clusterEnabled, (newVal) => {
@@ -191,6 +83,116 @@ onMounted(() => {
   }
 });
 </script>
+
+<template>
+  <div v-if="open" class="cluster-control-panel">
+    <div class="panel-header">
+      <h3>聚合控制</h3>
+      <button class="close-btn" @click="closePanel">
+        ×
+      </button>
+    </div>
+
+    <div class="panel-content">
+      <!-- 聚合开关 -->
+      <div class="control-group">
+        <label class="control-label">启用聚合</label>
+        <a-switch
+          v-model:checked="clusterEnabled"
+          @change="handleClusterToggle"
+        />
+      </div>
+
+      <!-- 聚合距离控制 -->
+      <div class="control-group">
+        <label class="control-label">聚合距离</label>
+        <a-slider
+          v-model:value="clusterDistance"
+          :min="10"
+          :max="100"
+          :step="5"
+          @change="handleDistanceChange"
+        />
+        <span class="distance-value">{{ clusterDistance }}px</span>
+      </div>
+
+      <!-- 最小聚合距离控制 -->
+      <div class="control-group">
+        <label class="control-label">最小聚合距离</label>
+        <a-slider
+          v-model:value="minClusterDistance"
+          :min="5"
+          :max="50"
+          :step="5"
+          @change="handleMinDistanceChange"
+        />
+        <span class="distance-value">{{ minClusterDistance }}px</span>
+      </div>
+
+      <!-- 图层聚合控制 -->
+      <div class="control-group">
+        <label class="control-label">图层聚合</label>
+        <div class="layer-controls">
+          <div
+            v-for="layer in availableLayers"
+            :key="layer.type"
+            class="layer-item"
+          >
+            <a-checkbox
+              v-model:checked="layer.clusterEnabled"
+              @change="handleLayerClusterToggle(layer.type, $event)"
+            >
+              {{ layer.name }}
+            </a-checkbox>
+            <span class="marker-count">({{ layer.count }})</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 聚合信息 -->
+      <div class="control-group">
+        <label class="control-label">聚合信息</label>
+        <div class="cluster-info">
+          <div class="info-item">
+            <span class="info-label">总标记点:</span>
+            <span class="info-value">{{ totalMarkers }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">聚合数量:</span>
+            <span class="info-value">{{ totalClusters }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">压缩比:</span>
+            <span class="info-value">{{ compressionRatio }}%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 聚合样式预览 -->
+      <div class="control-group">
+        <label class="control-label">聚合样式</label>
+        <div class="style-preview">
+          <div class="preview-item">
+            <div class="preview-circle small" />
+            <span>1-5个</span>
+          </div>
+          <div class="preview-item">
+            <div class="preview-circle medium" />
+            <span>6-10个</span>
+          </div>
+          <div class="preview-item">
+            <div class="preview-circle large" />
+            <span>11-20个</span>
+          </div>
+          <div class="preview-item">
+            <div class="preview-circle xlarge" />
+            <span>20+个</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style lang="scss" scoped>
 .cluster-control-panel {

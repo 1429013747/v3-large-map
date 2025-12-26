@@ -52,13 +52,13 @@ const autoscale = {
         timer = setTimeout(() => {
           keepFit(dw, dh, dom, ignore, limit, cssMode)
           isElRectification
-          && elRectification(currelRectification, currelRectificationIsKeepRatio, currelRectificationLevel)
+            && elRectification(currelRectification, currelRectificationIsKeepRatio, currelRectificationLevel)
         }, delay)
       }
       else {
         keepFit(dw, dh, dom, ignore, limit, cssMode)
         isElRectification
-        && elRectification(currelRectification, currelRectificationIsKeepRatio, currelRectificationLevel)
+          && elRectification(currelRectification, currelRectificationIsKeepRatio, currelRectificationLevel)
       }
     }
     resize && window.addEventListener('resize', resizeListener)
@@ -144,7 +144,7 @@ function keepFit(
   const clientHeight = document.documentElement.clientHeight
   const clientWidth = document.documentElement.clientWidth
   currScale
-      = clientWidth / clientHeight < dw / dh ? clientWidth / dw : clientHeight / dh
+    = clientWidth / clientHeight < dw / dh ? clientWidth / dw : clientHeight / dh
   currScale = Math.abs(1 - currScale) > limit ? currScale : 1
   autoscale.scale = +currScale
   const height = Math.round(clientHeight / Number(currScale))

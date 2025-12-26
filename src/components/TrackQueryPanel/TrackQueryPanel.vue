@@ -1,13 +1,305 @@
+<script setup>
+import { CloseOutlined } from "@ant-design/icons-vue";
+import { computed, ref } from "vue";
+
+const props = defineProps({
+  open: {
+    type: Boolean,
+    default: false
+  },
+  mapMarkersConfig: {
+    type: Object,
+    default: null
+  }
+});
+
+const emit = defineEmits(["update:open"]);
+
+const visibleModal = computed({
+  get() {
+    return props.open;
+  },
+  set(value) {
+    emit("update:open", value);
+  }
+});
+
+const searchVisible = ref(false);
+const detailVisible = ref(false);
+const detailData = ref({});
+const trackIds = ref([]);
+
+// 输入行数据
+const inputRows = ref([
+  {
+    timeRange: null,
+    vehicleName: "",
+    plateColor: null
+  },
+  {
+    timeRange: null,
+    vehicleName: "",
+    plateColor: null
+  },
+  {
+    timeRange: null,
+    vehicleName: "",
+    plateColor: null
+  }
+]);
+
+// 轨迹列表数据
+const trackList = ref([
+  {
+    index: 1,
+    subject: "浙A33390",
+    timeRange: "2025/6/15 01:18-2025/6/15 01:18"
+  },
+  {
+    index: 2,
+    subject: "华盛2220",
+    timeRange: "2025/6/15 01:18-2025/6/15 01:18"
+  }
+]);
+
+// 轨迹查询表格列定义
+const trackQueryColumns = [
+  {
+    title: "序号",
+    dataIndex: "index",
+    key: "index",
+    width: 60,
+    align: "center"
+  },
+  {
+    title: "查询单",
+    dataIndex: "queryName",
+    key: "queryName",
+    width: 200
+  },
+  {
+    title: "创建时间",
+    dataIndex: "createTime",
+    key: "createTime",
+    width: 120
+  },
+  {
+    title: "状态",
+    dataIndex: "status",
+    key: "status",
+    width: 80,
+    align: "center"
+  },
+  {
+    title: "操作",
+    key: "operation",
+    width: 80,
+    align: "center"
+  }
+];
+
+// 轨迹查询数据
+const trackQueryData = ref([
+  {
+    key: "1",
+    index: 1,
+    queryName: "浙123456,华盛123,华盛345的轨迹查询",
+    location: "桥镇",
+    warning: "伪造信号预警!",
+    createTime: "2025/6/15 1:18",
+    status: "查询中"
+  },
+  {
+    key: "2",
+    index: 2,
+    queryName: "浙123456,华盛123,华盛345的轨迹查询",
+    createTime: "2025/6/15 1:18",
+    status: "已完成"
+  },
+  {
+    key: "3",
+    index: 3,
+    queryName: "浙123456,华盛123,华盛345的轨迹查询",
+    createTime: "2025/6/15 1:18",
+    status: "已完成"
+  },
+  {
+    key: "4",
+    index: 4,
+    queryName: "浙123456,华盛123,华盛345的轨迹查询",
+    location: "涌泉镇",
+    createTime: "2025/6/15 1:18",
+    status: "已完成"
+  },
+  {
+    key: "5",
+    index: 5,
+    queryName: "浙123456,华盛123,华盛345的轨迹查询",
+    createTime: "2025/6/15 1:18",
+    status: "已完成"
+  }
+]);
+
+// 分页配置
+const paginationConfig = {
+  current: 1,
+  pageSize: 10,
+  total: trackQueryData.value.length,
+  showSizeChanger: true,
+  showQuickJumper: true,
+  showTotal: total => `共${total}条`,
+  pageSizeOptions: ["10", "20", "30", "50"],
+  size: "small"
+};
+
+function handleClose() {
+  emit("update:open", false);
+}
+
+function handleAddQuery() {
+  console.log("添加查询单");
+  searchVisible.value = true;
+}
+
+function handleViewDetail(record) {
+  console.log("查看详情", record);
+  // 这里可以打开详情弹窗或跳转到详情页面
+  handleQuery();
+}
+
+function handleTableChange(pagination, filters, sorter) {
+  console.log("分页、过滤和排序变化:", pagination, filters, sorter);
+  paginationConfig.current = pagination.current;
+  paginationConfig.pageSize = pagination.pageSize;
+  paginationConfig.total = trackQueryData.value.length;
+}
+
+// 添加输入行
+function addInputRow() {
+  inputRows.value.push({
+    timeRange: null,
+    vehicleName: "",
+    plateColor: null
+  });
+}
+
+// 删除输入行
+function removeInputRow(index) {
+  if (inputRows.value.length > 1) {
+    inputRows.value.splice(index, 1);
+  }
+}
+
+function handleDetailOk() {
+  detailVisible.value = false;
+}
+
+// 播放全部
+function handlePlayAll() {
+  console.log("播放全部轨迹");
+  // 这里可以添加播放全部轨迹的逻辑
+}
+
+// 显示与隐藏轨迹
+function handleViewTrack(item) {
+  console.log("查看轨迹详情", item);
+
+  trackIds.value.forEach((trackId) => {
+    props.mapMarkersConfig.toggleTrackRoute(trackId);
+  });
+}
+
+// 播放单个轨迹
+async function handlePlayTrack(item) {
+  console.log("播放轨迹", item);
+  // 这里可以添加播放单个轨迹的逻辑
+  if (trackIds.value.length > 0) {
+    trackIds.value.forEach(async (trackId) => {
+      await props.mapMarkersConfig.removeTrackRoute(trackId);
+    });
+  }
+  const pos = [
+    {
+      latLon: [122.3578, 29.2329],
+      text: "2025.06.15 01:18"
+    },
+    {
+      latLon: [122.4846, 29.179],
+      text: "2025.06.15 01:18",
+      tips: "伪造信号!"
+    },
+    {
+      latLon: [122.4204, 29.106],
+      text: "2025.06.15 01:18"
+    },
+    {
+      latLon: [122.2666, 29.0695],
+      text: "2025.06.15 01:18"
+    }
+  ];
+
+  // 生成轨迹路线
+  const trackFeature = await props.mapMarkersConfig.generateTrackRoute(pos, {
+    showStart: true,
+    showEnd: true,
+    showMidpoint: false,
+    showTips: true,
+    animation: true,
+    animationDuration: 600,
+    style: {
+      stroke: "#d65e37",
+      strokeWidth: 3,
+      lineDash: [],
+      lineCap: "round",
+      lineJoin: "round"
+    }
+  });
+  trackIds.value.push(trackFeature.get("trackId"));
+}
+
+// 查询按钮
+function handleQuery() {
+  console.log("执行查询", inputRows.value);
+  searchVisible.value = false;
+  visibleModal.value = false;
+  // 这里可以添加查询逻辑
+  detailVisible.value = true;
+}
+
+// 取消按钮
+function handleCancel() {
+  searchVisible.value = false;
+  // 重置输入数据
+  inputRows.value = [
+    {
+      timeRange: null,
+      vehicleName: "",
+      plateColor: null
+    },
+    {
+      timeRange: null,
+      vehicleName: "",
+      plateColor: null
+    },
+    {
+      timeRange: null,
+      vehicleName: "",
+      plateColor: null
+    }
+  ];
+}
+</script>
+
 <template>
   <a-drawer
     v-model:open="visibleModal"
     title="轨迹查询"
     placement="right"
-    getContainer=".ui-container"
+    get-container=".ui-container"
     :width="1080"
     :closable="true"
     :mask="false"
-    rootClassName="layer-box"
+    root-class-name="layer-box"
     class="layer-control-drawer"
   >
     <template #closeIcon>
@@ -52,17 +344,25 @@
         <div class="query-table-container">
           <!-- 表格头部 -->
           <div class="table-header">
-            <div class="header-cell">时间范围</div>
-            <div class="header-cell">车牌号/船舶名称</div>
-            <div class="header-cell">车牌颜色</div>
-            <div class="header-cell">操作</div>
+            <div class="header-cell">
+              时间范围
+            </div>
+            <div class="header-cell">
+              车牌号/船舶名称
+            </div>
+            <div class="header-cell">
+              车牌颜色
+            </div>
+            <div class="header-cell">
+              操作
+            </div>
           </div>
 
           <!-- 输入行 1-4 -->
           <div
-            class="input-row"
             v-for="(item, index) in inputRows"
             :key="`input-${index}`"
+            class="input-row"
           >
             <div class="cell">
               <a-date-picker
@@ -87,10 +387,18 @@
                 class="color-select"
                 :bordered="false"
               >
-                <a-select-option value="蓝色">蓝色</a-select-option>
-                <a-select-option value="黄色">黄色</a-select-option>
-                <a-select-option value="绿色">绿色</a-select-option>
-                <a-select-option value="白色">白色</a-select-option>
+                <a-select-option value="蓝色">
+                  蓝色
+                </a-select-option>
+                <a-select-option value="黄色">
+                  黄色
+                </a-select-option>
+                <a-select-option value="绿色">
+                  绿色
+                </a-select-option>
+                <a-select-option value="白色">
+                  白色
+                </a-select-option>
               </a-select>
             </div>
             <div class="cell operation-cell">
@@ -121,7 +429,9 @@
           <a-button type="primary" class="query-btn" @click="handleQuery">
             查询
           </a-button>
-          <a-button class="cancel-btn" @click="handleCancel"> 取消 </a-button>
+          <a-button class="cancel-btn" @click="handleCancel">
+            取消
+          </a-button>
         </div>
       </div>
     </div>
@@ -132,9 +442,9 @@
     class="modal-container _track-list-modal"
     :footer="false"
     :mask="false"
-    getContainer=".ui-container"
-    @ok="handleDetailOk"
+    get-container=".ui-container"
     :width="800"
+    @ok="handleDetailOk"
   >
     <div class="track-list-content">
       <!-- 播放全部按钮 -->
@@ -149,21 +459,35 @@
       <div class="track-list-container">
         <!-- 表格头部 -->
         <div class="table-header">
-          <div class="header-cell">序号</div>
-          <div class="header-cell">主体</div>
-          <div class="header-cell">查询时间范围</div>
-          <div class="header-cell">操作</div>
+          <div class="header-cell">
+            序号
+          </div>
+          <div class="header-cell">
+            主体
+          </div>
+          <div class="header-cell">
+            查询时间范围
+          </div>
+          <div class="header-cell">
+            操作
+          </div>
         </div>
 
         <!-- 轨迹数据行 -->
         <div
-          class="track-row"
           v-for="(item, index) in trackList"
           :key="`track-${index}`"
+          class="track-row"
         >
-          <div class="cell">{{ item.index }}</div>
-          <div class="cell">{{ item.subject }}</div>
-          <div class="cell">{{ item.timeRange }}</div>
+          <div class="cell">
+            {{ item.index }}
+          </div>
+          <div class="cell">
+            {{ item.subject }}
+          </div>
+          <div class="cell">
+            {{ item.timeRange }}
+          </div>
           <div class="cell operation-cell">
             <div class="action-buttons">
               <a-button
@@ -189,299 +513,6 @@
     </div>
   </a-modal>
 </template>
-
-<script setup>
-import { ref, computed } from "vue";
-import { CloseOutlined } from "@ant-design/icons-vue";
-import { useMapMarkers } from "@/composables/useMapMarkers.js";
-
-const props = defineProps({
-  open: {
-    type: Boolean,
-    default: false,
-  },
-  mapMarkersConfig: {
-    type: Object,
-    default: null,
-  },
-});
-
-const emit = defineEmits(["update:open"]);
-
-const visibleModal = computed({
-  get() {
-    return props.open;
-  },
-  set(value) {
-    emit("update:open", value);
-  },
-});
-
-const searchVisible = ref(false);
-const detailVisible = ref(false);
-const detailData = ref({});
-const trackIds = ref([]);
-
-// 输入行数据
-const inputRows = ref([
-  {
-    timeRange: null,
-    vehicleName: "",
-    plateColor: null,
-  },
-  {
-    timeRange: null,
-    vehicleName: "",
-    plateColor: null,
-  },
-  {
-    timeRange: null,
-    vehicleName: "",
-    plateColor: null,
-  },
-]);
-
-// 轨迹列表数据
-const trackList = ref([
-  {
-    index: 1,
-    subject: "浙A33390",
-    timeRange: "2025/6/15 01:18-2025/6/15 01:18",
-  },
-  {
-    index: 2,
-    subject: "华盛2220",
-    timeRange: "2025/6/15 01:18-2025/6/15 01:18",
-  },
-]);
-
-// 轨迹查询表格列定义
-const trackQueryColumns = [
-  {
-    title: "序号",
-    dataIndex: "index",
-    key: "index",
-    width: 60,
-    align: "center",
-  },
-  {
-    title: "查询单",
-    dataIndex: "queryName",
-    key: "queryName",
-    width: 200,
-  },
-  {
-    title: "创建时间",
-    dataIndex: "createTime",
-    key: "createTime",
-    width: 120,
-  },
-  {
-    title: "状态",
-    dataIndex: "status",
-    key: "status",
-    width: 80,
-    align: "center",
-  },
-  {
-    title: "操作",
-    key: "operation",
-    width: 80,
-    align: "center",
-  },
-];
-
-// 轨迹查询数据
-const trackQueryData = ref([
-  {
-    key: "1",
-    index: 1,
-    queryName: "浙123456,华盛123,华盛345的轨迹查询",
-    location: "桥镇",
-    warning: "伪造信号预警!",
-    createTime: "2025/6/15 1:18",
-    status: "查询中",
-  },
-  {
-    key: "2",
-    index: 2,
-    queryName: "浙123456,华盛123,华盛345的轨迹查询",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-  {
-    key: "3",
-    index: 3,
-    queryName: "浙123456,华盛123,华盛345的轨迹查询",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-  {
-    key: "4",
-    index: 4,
-    queryName: "浙123456,华盛123,华盛345的轨迹查询",
-    location: "涌泉镇",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-  {
-    key: "5",
-    index: 5,
-    queryName: "浙123456,华盛123,华盛345的轨迹查询",
-    createTime: "2025/6/15 1:18",
-    status: "已完成",
-  },
-]);
-
-// 分页配置
-const paginationConfig = {
-  current: 1,
-  pageSize: 10,
-  total: trackQueryData.value.length,
-  showSizeChanger: true,
-  showQuickJumper: true,
-  showTotal: (total) => `共${total}条`,
-  pageSizeOptions: ["10", "20", "30", "50"],
-  size: "small",
-};
-
-const handleClose = () => {
-  emit("update:open", false);
-};
-
-const handleAddQuery = () => {
-  console.log("添加查询单");
-  searchVisible.value = true;
-};
-
-const handleViewDetail = (record) => {
-  console.log("查看详情", record);
-  // 这里可以打开详情弹窗或跳转到详情页面
-  handleQuery();
-};
-
-const handleTableChange = (pagination, filters, sorter) => {
-  console.log("分页、过滤和排序变化:", pagination, filters, sorter);
-  paginationConfig.current = pagination.current;
-  paginationConfig.pageSize = pagination.pageSize;
-  paginationConfig.total = trackQueryData.value.length;
-};
-
-// 添加输入行
-const addInputRow = () => {
-  inputRows.value.push({
-    timeRange: null,
-    vehicleName: "",
-    plateColor: null,
-  });
-};
-
-// 删除输入行
-const removeInputRow = (index) => {
-  if (inputRows.value.length > 1) {
-    inputRows.value.splice(index, 1);
-  }
-};
-
-const handleDetailOk = () => {
-  detailVisible.value = false;
-};
-
-// 播放全部
-const handlePlayAll = () => {
-  console.log("播放全部轨迹");
-  // 这里可以添加播放全部轨迹的逻辑
-};
-
-// 显示与隐藏轨迹
-const handleViewTrack = (item) => {
-  console.log("查看轨迹详情", item);
-
-  trackIds.value.forEach((trackId) => {
-    props.mapMarkersConfig.toggleTrackRoute(trackId);
-  });
-};
-
-// 播放单个轨迹
-const handlePlayTrack = async (item) => {
-  console.log("播放轨迹", item);
-  // 这里可以添加播放单个轨迹的逻辑
-  if (trackIds.value.length > 0) {
-    trackIds.value.forEach(async (trackId) => {
-      await props.mapMarkersConfig.removeTrackRoute(trackId);
-    });
-  }
-  const pos = [
-    {
-      latLon: [122.3578, 29.2329],
-      text: "2025.06.15 01:18",
-    },
-    {
-      latLon: [122.4846, 29.179],
-      text: "2025.06.15 01:18",
-      tips: "伪造信号!",
-    },
-    {
-      latLon: [122.4204, 29.106],
-      text: "2025.06.15 01:18",
-    },
-    {
-      latLon: [122.2666, 29.0695],
-      text: "2025.06.15 01:18",
-    },
-  ];
-
-  // 生成轨迹路线
-  const trackFeature = await props.mapMarkersConfig.generateTrackRoute(pos, {
-    showStart: true,
-    showEnd: true,
-    showMidpoint: false,
-    showTips: true,
-    animation: true,
-    animationDuration: 600,
-    style: {
-      stroke: "#d65e37",
-      strokeWidth: 3,
-      lineDash: [],
-      lineCap: "round",
-      lineJoin: "round",
-    },
-  });
-  trackIds.value.push(trackFeature.get("trackId"));
-};
-
-// 查询按钮
-const handleQuery = () => {
-  console.log("执行查询", inputRows.value);
-  searchVisible.value = false;
-  visibleModal.value = false;
-  // 这里可以添加查询逻辑
-  detailVisible.value = true;
-};
-
-// 取消按钮
-const handleCancel = () => {
-  searchVisible.value = false;
-  // 重置输入数据
-  inputRows.value = [
-    {
-      timeRange: null,
-      vehicleName: "",
-      plateColor: null,
-    },
-    {
-      timeRange: null,
-      vehicleName: "",
-      plateColor: null,
-    },
-    {
-      timeRange: null,
-      vehicleName: "",
-      plateColor: null,
-    },
-  ];
-};
-</script>
 
 <style lang="scss" scoped>
 .layer-control-drawer {
@@ -933,6 +964,7 @@ const handleCancel = () => {
   }
 }
 </style>
+
 <style lang="scss">
 ._track-list-modal {
   margin: 0;

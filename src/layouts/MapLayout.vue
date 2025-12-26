@@ -1,3 +1,103 @@
+<script setup>
+import Header from "@/components/common/Header/Header.vue";
+import autoScale from "@/utils/autoScale.js";
+import { computed, onMounted, onUnmounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+
+// 定义props
+const props = defineProps({
+  // 是否显示地图
+  showMap: {
+    type: Boolean,
+    default: true
+  },
+  // 是否启用UI缩放
+  enableScale: {
+    type: Boolean,
+    default: true
+  },
+  // 页面标题（可选，会覆盖路由meta中的title）
+  title: {
+    type: String,
+    default: ""
+  }
+});
+
+const route = useRoute();
+const router = useRouter();
+
+// 获取页面标题
+const pageTitle = computed(() => {
+  if (props.title) {
+    return props.title;
+  }
+
+  // 根据路由路径返回默认标题
+  const titleMap = {
+    "/smart-map": "智慧云图分析平台"
+  };
+
+  return titleMap[route.path] || route.meta?.title || "浙江省反走私合防控平台";
+});
+
+// UI容器引用
+const uiContainer = ref(null);
+
+// 页面初始化
+onMounted(async () => {
+  if (props.enableScale && uiContainer.value) {
+    // 初始化自适应缩放 - 只对UI容器进行缩放
+    autoScale.init({
+      dw: 1920,
+      dh: 1080,
+      el: ".ui-container",
+      resize: true,
+      ignore: [
+        {
+          el: ".ant-tooltip"
+        },
+        {
+          el: ".ant-select-dropdown"
+        },
+        {
+          el: ".element-selected-popup"
+        },
+        {
+          el: ".element-hover-popup"
+        },
+        {
+          el: ".ant-picker-dropdown"
+        },
+        // {
+        //   el:'.ol-overlay-container'
+        // },
+        {
+          el: ".common-popup-selected-container"
+        },
+        {
+          el: ".common-popup-hover-container"
+        },
+        {
+          el: ".ant-dropdown-menu"
+        }
+      ],
+      //   transition: 0.3,
+      //   delay: 300,
+      //   limit: 0.1,
+      cssMode: "scale",
+      allowScroll: false
+    });
+  }
+});
+
+// 组件卸载时清理
+onUnmounted(() => {
+  if (props.enableScale && uiContainer.value) {
+    autoScale.off(uiContainer.value);
+  }
+});
+</script>
+
 <template>
   <div class="map-layout">
     <!-- 地图内容区域 - 全屏铺满，不受缩放影响 -->
@@ -19,111 +119,11 @@
 
       <!-- 底部控制栏 -->
       <footer class="map-footer">
-        <div class="control-tabs"></div>
+        <div class="control-tabs" />
       </footer>
     </div>
   </div>
 </template>
-<script setup>
-import autoScale from "@/utils/autoScale.js";
-import { computed, onMounted, onUnmounted, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import ThemeSwitch from "@/components/common/ThemeSwitch/ThemeSwitch.vue";
-import Header from "@/components/common/Header/Header.vue";
-
-// 定义props
-const props = defineProps({
-  // 是否显示地图
-  showMap: {
-    type: Boolean,
-    default: true,
-  },
-  // 是否启用UI缩放
-  enableScale: {
-    type: Boolean,
-    default: true,
-  },
-  // 页面标题（可选，会覆盖路由meta中的title）
-  title: {
-    type: String,
-    default: "",
-  },
-});
-
-const route = useRoute();
-const router = useRouter();
-
-// 获取页面标题
-const pageTitle = computed(() => {
-  if (props.title) {
-    return props.title;
-  }
-
-  // 根据路由路径返回默认标题
-  const titleMap = {
-    "/smart-map": "智慧云图分析平台",
-  };
-
-  return titleMap[route.path] || route.meta?.title || "浙江省反走私合防控平台";
-});
-
-// UI容器引用
-const uiContainer = ref(null);
-
-// 页面初始化
-onMounted(async () => {
-  if (props.enableScale && uiContainer.value) {
-    // 初始化自适应缩放 - 只对UI容器进行缩放
-    autoScale.init({
-      dw: 1920,
-      dh: 1080,
-      el: ".ui-container",
-      resize: true,
-      ignore: [
-        {
-          el: ".ant-tooltip",
-        },
-        {
-          el: ".ant-select-dropdown",
-        },
-        {
-          el: ".element-selected-popup",
-        },
-        {
-          el: ".element-hover-popup",
-        },
-        {
-          el: ".ant-picker-dropdown",
-        },
-        // {
-        //   el:'.ol-overlay-container'
-        // },
-        {
-          el: ".common-popup-selected-container",
-        },
-        {
-          el: ".common-popup-hover-container",
-        },
-        {
-          el: ".ant-dropdown-menu",
-        },
-      ],
-      //   transition: 0.3,
-      //   delay: 300,
-      //   limit: 0.1,
-      cssMode: "scale",
-      allowScroll: false,
-    });
-  }
-});
-
-// 组件卸载时清理
-onUnmounted(() => {
-  if (props.enableScale && uiContainer.value) {
-    autoScale.off(uiContainer.value);
-  }
-});
-</script>
 
 <style lang="scss" scoped>
 .map-layout {

@@ -1,3 +1,112 @@
+<script setup>
+import { PlusOutlined } from "@ant-design/icons-vue";
+import { Col, message, Row } from "ant-design-vue";
+import { reactive, ref, watch } from "vue";
+
+// Props
+const props = defineProps({
+  open: {
+    type: Boolean,
+    default: false
+  }
+});
+
+// Emits
+const emit = defineEmits(["update:open", "submit", "cancel"]);
+
+// 表单引用
+const formRef = ref(null);
+
+// 表单数据
+const formData = reactive({
+  plateNumber: "",
+  color: null,
+  vehicleType: null,
+  owner: "",
+  photos: []
+});
+
+// 表单验证规则
+const formRules = {
+  plateNumber: [
+    { required: true, message: "请输入车牌号", trigger: "blur" },
+    {
+      // 例子：浙J55566
+      pattern:
+        /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领][A-Z][A-Z0-9]{4}[A-Z0-9挂学警港澳]$/,
+      message: "请输入正确的车牌号格式",
+      trigger: "blur"
+    }
+  ],
+  color: [{ required: true, message: "请选择车牌颜色", trigger: "change" }],
+  vehicleType: [
+    { required: true, message: "请选择车辆类型", trigger: "change" }
+  ]
+};
+
+// 监听 visible 变化，重置表单
+watch(
+  () => props.open,
+  (newVal) => {
+    if (newVal) {
+      resetForm();
+    }
+  }
+);
+
+// 重置表单
+function resetForm() {
+  formData.plateNumber = "";
+  formData.color = null;
+  formData.vehicleType = null;
+  formData.owner = "";
+  formData.photos = [];
+  formRef.value?.resetFields();
+}
+
+// 提交表单
+async function handleSubmit() {
+  try {
+    await formRef.value.validate();
+
+    // 触发提交事件
+    emit("submit", { ...formData });
+
+    // 关闭弹窗
+    emit("update:open", false);
+  }
+  catch (error) {
+    console.log("表单验证失败:", error);
+  }
+}
+
+// 取消表单
+function handleCancel() {
+  emit("update:open", false);
+}
+
+// 文件上传前的处理
+function beforeUpload(file) {
+  const isImage = file.type.startsWith("image/");
+  if (!isImage) {
+    message.error("只能上传图片文件!");
+    return false;
+  }
+  const isLt2M = file.size / 1024 / 1024 < 2;
+  if (!isLt2M) {
+    message.error("图片大小不能超过 2MB!");
+    return false;
+  }
+  return false; // 阻止自动上传
+}
+
+// 图片预览
+function handlePreview(file) {
+  console.log("预览图片:", file);
+  // 这里可以添加图片预览逻辑
+}
+</script>
+
 <template>
   <a-modal
     :open="open"
@@ -5,10 +114,10 @@
     :width="700"
     :centered="true"
     :mask-closable="false"
-    getContainer=".ui-container"
+    get-container=".ui-container"
+    class="modal-container"
     @ok="handleSubmit"
     @cancel="handleCancel"
-    class="modal-container"
   >
     <a-form
       ref="formRef"
@@ -32,11 +141,21 @@
               v-model:value="formData.color"
               placeholder="请选择车牌颜色"
             >
-              <a-select-option value="蓝色">蓝色</a-select-option>
-              <a-select-option value="黄色">黄色</a-select-option>
-              <a-select-option value="绿色">绿色</a-select-option>
-              <a-select-option value="白色">白色</a-select-option>
-              <a-select-option value="黑色">黑色</a-select-option>
+              <a-select-option value="蓝色">
+                蓝色
+              </a-select-option>
+              <a-select-option value="黄色">
+                黄色
+              </a-select-option>
+              <a-select-option value="绿色">
+                绿色
+              </a-select-option>
+              <a-select-option value="白色">
+                白色
+              </a-select-option>
+              <a-select-option value="黑色">
+                黑色
+              </a-select-option>
             </a-select>
           </a-form-item>
         </Col>
@@ -49,11 +168,21 @@
               v-model:value="formData.vehicleType"
               placeholder="请选择车辆类型"
             >
-              <a-select-option value="货车">货车</a-select-option>
-              <a-select-option value="面包车">面包车</a-select-option>
-              <a-select-option value="轿车">轿车</a-select-option>
-              <a-select-option value="客车">客车</a-select-option>
-              <a-select-option value="摩托车">摩托车</a-select-option>
+              <a-select-option value="货车">
+                货车
+              </a-select-option>
+              <a-select-option value="面包车">
+                面包车
+              </a-select-option>
+              <a-select-option value="轿车">
+                轿车
+              </a-select-option>
+              <a-select-option value="客车">
+                客车
+              </a-select-option>
+              <a-select-option value="摩托车">
+                摩托车
+              </a-select-option>
             </a-select>
           </a-form-item>
         </Col>
@@ -77,10 +206,12 @@
               :before-upload="beforeUpload"
               @preview="handlePreview"
             >
-              <template #previewIcon> </template>
+              <template #previewIcon />
               <div v-if="formData.photos.length < 3">
                 <PlusOutlined />
-                <div style="margin-top: 8px">上传照片</div>
+                <div style="margin-top: 8px">
+                  上传照片
+                </div>
               </div>
             </a-upload>
           </a-form-item>
@@ -89,114 +220,6 @@
     </a-form>
   </a-modal>
 </template>
-
-<script setup>
-import { ref, reactive, watch } from "vue";
-import { message, Row, Col } from "ant-design-vue";
-import { PlusOutlined } from "@ant-design/icons-vue";
-
-// Props
-const props = defineProps({
-  open: {
-    type: Boolean,
-    default: false,
-  },
-});
-
-// Emits
-const emit = defineEmits(["update:open", "submit", "cancel"]);
-
-// 表单引用
-const formRef = ref(null);
-
-// 表单数据
-const formData = reactive({
-  plateNumber: "",
-  color: null,
-  vehicleType: null,
-  owner: "",
-  photos: [],
-});
-
-// 表单验证规则
-const formRules = {
-  plateNumber: [
-    { required: true, message: "请输入车牌号", trigger: "blur" },
-    {
-      // 例子：浙J55566
-      pattern:
-        /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领]{1}[A-Z]{1}[A-Z0-9]{4}[A-Z0-9挂学警港澳]{1}$/,
-      message: "请输入正确的车牌号格式",
-      trigger: "blur",
-    },
-  ],
-  color: [{ required: true, message: "请选择车牌颜色", trigger: "change" }],
-  vehicleType: [
-    { required: true, message: "请选择车辆类型", trigger: "change" },
-  ],
-};
-
-// 监听 visible 变化，重置表单
-watch(
-  () => props.open,
-  (newVal) => {
-    if (newVal) {
-      resetForm();
-    }
-  }
-);
-
-// 重置表单
-const resetForm = () => {
-  formData.plateNumber = "";
-  formData.color = null;
-  formData.vehicleType = null;
-  formData.owner = "";
-  formData.photos = [];
-  formRef.value?.resetFields();
-};
-
-// 提交表单
-const handleSubmit = async () => {
-  try {
-    await formRef.value.validate();
-
-    // 触发提交事件
-    emit("submit", { ...formData });
-
-    // 关闭弹窗
-    emit("update:open", false);
-  } catch (error) {
-    console.log("表单验证失败:", error);
-  }
-};
-
-// 取消表单
-const handleCancel = () => {
-  emit("update:open", false);
-};
-
-// 文件上传前的处理
-const beforeUpload = (file) => {
-  const isImage = file.type.startsWith("image/");
-  if (!isImage) {
-    message.error("只能上传图片文件!");
-    return false;
-  }
-  const isLt2M = file.size / 1024 / 1024 < 2;
-  if (!isLt2M) {
-    message.error("图片大小不能超过 2MB!");
-    return false;
-  }
-  return false; // 阻止自动上传
-};
-
-// 图片预览
-const handlePreview = (file) => {
-  console.log("预览图片:", file);
-  // 这里可以添加图片预览逻辑
-};
-</script>
 
 <style lang="scss" scoped>
 .modal-container {

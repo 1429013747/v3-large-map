@@ -1,11 +1,10 @@
 <script setup>
+import GlobalLoading from "@/components/common/GlobalLoading/GlobalLoading.vue";
 import { ConfigProvider } from "ant-design-vue";
 import zhCN from "ant-design-vue/es/locale/zh_CN";
-import GlobalLoading from "@/components/common/GlobalLoading/GlobalLoading.vue";
-import { useThemeStore } from "./stores/theme";
 import dayjs from "dayjs";
+import { useThemeStore } from "./stores/theme";
 import "dayjs/locale/zh-cn";
-import { computed } from "vue";
 
 dayjs.locale("zh-cn");
 
@@ -16,8 +15,8 @@ themeStore.initTheme("dark");
 const theme = {
   token: {
     fontSize: 16,
-    fontSizeHeading1: 32,
-  },
+    fontSizeHeading1: 32
+  }
 };
 </script>
 
@@ -32,5 +31,4 @@ const theme = {
 
 <style lang="scss">
 @use "./styles/antd-custom-style.scss" as *;
-
 </style>

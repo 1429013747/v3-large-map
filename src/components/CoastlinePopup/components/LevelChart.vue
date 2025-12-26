@@ -1,10 +1,6 @@
-<template>
-  <div ref="chart" class="chart-container"></div>
-</template>
-
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from "vue";
 import * as echarts from "echarts";
+import { onMounted, onUnmounted, ref, watch } from "vue";
 
 const chart = ref(null);
 const chartInstance = ref(null);
@@ -12,29 +8,29 @@ const chartInstance = ref(null);
 // 示例数据 - 实际使用时可以通过props传入
 const chartData = ref({
   dates: ["1月", "2月", "3月", "4月", "5月", "6月", "7月"],
-  levels: [1, 2, 3, 1, 2, 3, 2], // 1:低风险, 2:中风险, 3:高风险
+  levels: [1, 2, 3, 1, 2, 3, 2] // 1:低风险, 2:中风险, 3:高风险
 });
 
-const initChart = () => {
+function initChart() {
   if (!chart.value) return;
 
   chartInstance.value = echarts.init(chart.value);
 
   const option = {
     tooltip: {
-     show: true,
+      show: true
     },
     xAxis: {
       type: "category",
       data: chartData.value.dates,
       axisLabel: {
-        color: "#ffffff",
+        color: "#ffffff"
       },
       axisLine: {
         lineStyle: {
-          color: "rgba(255, 255, 255, 0.3)",
-        },
-      },
+          color: "rgba(255, 255, 255, 0.3)"
+        }
+      }
     },
     yAxis: {
       type: "value",
@@ -47,18 +43,18 @@ const initChart = () => {
         formatter: (value) => {
           const levelMap = { 1: "低风险", 2: "中风险", 3: "高风险" };
           return levelMap[value] || "";
-        },
+        }
       },
       axisLine: {
         lineStyle: {
-          color: "rgba(255, 255, 255, 0.3)",
-        },
+          color: "rgba(255, 255, 255, 0.3)"
+        }
       },
       splitLine: {
         lineStyle: {
-          color: "rgba(255, 255, 255, 0.1)",
-        },
-      },
+          color: "rgba(255, 255, 255, 0.1)"
+        }
+      }
     },
     series: [
       {
@@ -67,47 +63,47 @@ const initChart = () => {
         smooth: false,
         lineStyle: {
           color: "#FFD941",
-          width: 2,
+          width: 2
         },
         itemStyle: {
-          color: "#FFD941",
+          color: "#FFD941"
         },
         areaStyle: {
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
             {
               offset: 0,
-              color: "rgb(255, 217, 65,.3)",
+              color: "rgb(255, 217, 65,.3)"
             },
             {
               offset: 1,
-              color: "rgba(0, 255, 255, 0)",
-            },
-          ]),
+              color: "rgba(0, 255, 255, 0)"
+            }
+          ])
         },
         symbolSize: 8,
-        symbol: "circle",
-      },
+        symbol: "circle"
+      }
     ],
     grid: {
       left: "10%",
       right: "0%",
       top: "10%",
-      bottom: "10%",
+      bottom: "10%"
       // containLabel: true,
-    },
+    }
   };
 
   chartInstance.value.setOption(option);
 
   // 监听窗口大小变化
   window.addEventListener("resize", handleResize);
-};
+}
 
-const handleResize = () => {
+function handleResize() {
   if (chartInstance.value) {
     chartInstance.value.resize();
   }
-};
+}
 
 // 销毁图表实例
 onUnmounted(() => {
@@ -119,7 +115,6 @@ onUnmounted(() => {
 
 // 初始化图表
 onMounted(() => {
-  
   // 添加下一个tick的resize确保图表占满容器
   setTimeout(() => {
     initChart();
@@ -140,9 +135,13 @@ watch(chartData, () => {
 defineExpose({
   updateChartData: (data) => {
     chartData.value = data;
-  },
+  }
 });
 </script>
+
+<template>
+  <div ref="chart" class="chart-container" />
+</template>
 
 <style scoped>
 .chart-container {

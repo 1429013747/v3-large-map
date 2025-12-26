@@ -1,3 +1,249 @@
+<script setup>
+import { useDefaultConfigStore } from "@/stores/defaultConfig.js";
+import { CloseOutlined } from "@ant-design/icons-vue";
+import { message } from "ant-design-vue";
+import { ref, watch } from "vue";
+
+// Props
+const props = defineProps({
+  open: {
+    type: Boolean,
+    default: false
+  },
+  coastline: {}
+});
+// Emits
+const emit = defineEmits(["update:open"]);
+const defaultConfigStore = useDefaultConfigStore();
+const router = useRouter();
+
+// 响应式数据
+const activeTab = ref("device");
+
+// 设备列表数据
+const deviceList = ref([
+  {
+    id: 1,
+    name: "0838_白岩码头_雷达",
+    type: "雷达",
+    location: "白岩码头",
+    status: "online",
+    actionText: "远程控制"
+  },
+  {
+    id: 2,
+    name: "0838_白岩码头_雷达",
+    type: "雷达",
+    location: "白岩码头",
+    status: "offline",
+    actionText: "实时视频预览"
+  },
+  {
+    id: 3,
+    name: "0838_白岩码头(热成像)",
+    type: "热成像",
+    location: "白岩码头",
+    status: "warning",
+    actionText: "远程控制"
+  }
+]);
+
+// 要素分析表格列配置
+const elementsTableColumns = [
+  {
+    title: "要素",
+    dataIndex: "element",
+    key: "element",
+    width: 100
+  },
+  {
+    title: "名称",
+    dataIndex: "name",
+    key: "name",
+    ellipsis: true
+  },
+  {
+    title: "操作",
+    key: "action",
+    width: 100,
+    align: "center"
+  }
+];
+
+// 要素分析表格数据
+const elementsTableData = ref([
+  {
+    key: "1",
+    element: "船舶",
+    name: "浙J89900"
+  },
+  {
+    key: "2",
+    element: "船舶",
+    name: "浙J33900"
+  },
+  {
+    key: "3",
+    element: "人员",
+    name: "王某某"
+  },
+  {
+    key: "4",
+    element: "人员",
+    name: "王某某"
+  },
+  {
+    key: "5",
+    element: "船舶",
+    name: "浙J89966"
+  },
+  {
+    key: "6",
+    element: "船舶",
+    name: "华盛778"
+  },
+  {
+    key: "7",
+    element: "船舶",
+    name: "华盛009"
+  }
+]);
+
+// 树形组织图数据
+const treeData = ref({
+  id: 1,
+  label: "浙J89900",
+  type: "vessel",
+  children: [
+    {
+      id: 2,
+      pid: 1,
+      label: "浙J89900",
+      type: "vessel",
+      children: []
+    },
+    {
+      id: 2,
+      pid: 1,
+      label: "白岩码头走私冻品案件",
+      type: "case",
+      children: []
+    },
+    {
+      id: 2,
+      pid: 1,
+      label: "马某某",
+      type: "person",
+      children: [
+        {
+          id: 2,
+          pid: 1,
+          label: "浙J83900",
+          type: "vessel",
+          children: []
+        }
+      ]
+    },
+    {
+      id: 2,
+      pid: 1,
+      label: "王某某",
+      type: "person",
+      children: [
+        {
+          id: 2,
+          pid: 1,
+          label: "浙J82900",
+          type: "vessel",
+          children: []
+        }
+      ]
+    }
+  ]
+});
+
+// 获取节点图标
+function getNodeIcon(node) {
+  switch (node.$$data.type) {
+    case "vessel":
+      return "🛥️";
+    case "person":
+      return "👤";
+    case "case":
+      return "📄";
+    default:
+      return "📄";
+  }
+}
+function getRiskStatus(type) {
+  return type == 1
+    ? {
+        class: "key-badge1",
+        text: "低风险"
+      }
+    : type == 2
+      ? {
+          class: "key-badge2",
+          text: "中风险"
+        }
+      : {
+          class: "key-badge3",
+          text: "高风险"
+        };
+}
+// 获取节点样式类
+function getNodeClass(node) {
+  const classes = [`${node.type}-node`];
+  if (node.isRed) {
+    classes.push("red");
+  }
+  return classes.join(" ");
+}
+
+// 监听 visible 变化
+watch(
+  () => props.open,
+  (newVal) => {
+    if (newVal) {
+      // 重置标签页状态
+      activeTab.value = "device";
+    }
+  }
+);
+// 查看更多详情
+function onMoreDetail(val) {
+  defaultConfigStore.setCoastlinePopupVisible({
+    coastlinePopupVisible: true,
+    activeBottomMenu: 0,
+    coastline: props.coastline,
+    open: props.open
+  });
+  router.push({
+    path: "/coastline-detail",
+    query: {
+      gangId: val.id
+    }
+  });
+  console.log("查看更多详情");
+}
+// 关闭弹窗
+function handleCancel() {
+  emit("update:open", false);
+}
+
+// 查看要素详情
+function handleViewElementDetail(record) {
+  console.log("查看要素详情:", record);
+  message.info(`查看${record.element} ${record.name} 的详情`);
+}
+
+// 处理设备操作
+function handleDeviceAction(device) {
+  console.log("设备操作:", device);
+  message.info(`执行${device.actionText}操作`);
+}
+</script>
+
 <template>
   <div class="vehicle-detail-modal-container">
     <a-modal
@@ -6,17 +252,19 @@
       :width="1200"
       :centered="true"
       :mask-closable="false"
-      getContainer=".ui-container"
+      get-container=".ui-container"
       class="modal-container"
-      @cancel="handleCancel"
       :footer="null"
+      @cancel="handleCancel"
     >
       <template #closeIcon>
         <CloseOutlined style="color: #ffffff; font-size: 16px" />
       </template>
 
       <div class="vehicle-detail-content">
-        <div class="basic-info-title">基本信息</div>
+        <div class="basic-info-title">
+          基本信息
+        </div>
         <!-- 基本信息区域 -->
         <div class="basic-info-section">
           <div class="vehicle-header">
@@ -33,7 +281,7 @@
 
           <div class="vehicle-info-row">
             <div class="vehicle-image">
-              <img :src="coastline.image" :alt="coastline.title" />
+              <img :src="coastline.image" :alt="coastline.title">
             </div>
 
             <div class="vehicle-details">
@@ -54,9 +302,7 @@
                 <span class="value">{{ coastline.coordinates }}</span>
               </div>
               <div class="detail-item">
-                <span class="label more-d" @click="onMoreDetail(coastline)"
-                  >更多详情</span
-                >
+                <span class="label more-d" @click="onMoreDetail(coastline)">更多详情</span>
               </div>
             </div>
             <div class="status-info">
@@ -88,7 +334,7 @@
 
         <!-- 标签页区域 -->
         <div class="tabs-section">
-          <a-tabs v-model:activeKey="activeTab" class="detail-tabs">
+          <a-tabs v-model:active-key="activeTab" class="detail-tabs">
             <a-tab-pane key="device" tab="物联设备感知">
               <div class="device-perception-content">
                 <div class="device-list">
@@ -103,20 +349,19 @@
                           <span
                             v-if="device.status === 'online'"
                             class="wifi-icon"
-                            >📶</span
-                          >
+                          >📶</span>
                           <span
                             v-else-if="device.status === 'offline'"
                             class="wifi-off-icon"
-                            >📶</span
-                          >
+                          >📶</span>
                           <span
                             v-else-if="device.status === 'warning'"
                             class="warning-icon"
-                            >⚠️</span
-                          >
+                          >⚠️</span>
                         </div>
-                        <div class="device-title">{{ device.name }}</div>
+                        <div class="device-title">
+                          {{ device.name }}
+                        </div>
                       </div>
                       <div class="device-action">
                         <a-button
@@ -131,7 +376,9 @@
                       </div>
                     </div>
                     <div class="device-tip">
-                      <div class="device-type">{{ device.type }}</div>
+                      <div class="device-type">
+                        {{ device.type }}
+                      </div>
                       <div class="device-location">
                         位置:{{ device.location }}
                       </div>
@@ -178,7 +425,7 @@
                     <vue3-tree-org
                       :data="treeData"
                       center
-                      :toolBar="false"
+                      :tool-bar="false"
                       :draggable="false"
                       :horizontal="false"
                       :collapsable="false"
@@ -188,8 +435,12 @@
                     >
                       <template #default="{ node }">
                         <div class="custom-node" :class="getNodeClass(node)">
-                          <div class="node-icon">{{ getNodeIcon(node) }}</div>
-                          <div class="node-text">{{ node.label }}</div>
+                          <div class="node-icon">
+                            {{ getNodeIcon(node) }}
+                          </div>
+                          <div class="node-text">
+                            {{ node.label }}
+                          </div>
                         </div>
                       </template>
                     </vue3-tree-org>
@@ -203,254 +454,6 @@
     </a-modal>
   </div>
 </template>
-
-<script setup>
-import { ref, reactive, watch } from "vue";
-import { message } from "ant-design-vue";
-import { CloseOutlined } from "@ant-design/icons-vue";
-import { useDefaultConfigStore } from "@/stores/defaultConfig.js";
-
-const defaultConfigStore = useDefaultConfigStore();
-const router = useRouter();
-
-// Props
-const props = defineProps({
-  open: {
-    type: Boolean,
-    default: false,
-  },
-  coastline: {},
-});
-
-// Emits
-const emit = defineEmits(["update:open"]);
-
-// 响应式数据
-const activeTab = ref("device");
-
-// 设备列表数据
-const deviceList = ref([
-  {
-    id: 1,
-    name: "0838_白岩码头_雷达",
-    type: "雷达",
-    location: "白岩码头",
-    status: "online",
-    actionText: "远程控制",
-  },
-  {
-    id: 2,
-    name: "0838_白岩码头_雷达",
-    type: "雷达",
-    location: "白岩码头",
-    status: "offline",
-    actionText: "实时视频预览",
-  },
-  {
-    id: 3,
-    name: "0838_白岩码头(热成像)",
-    type: "热成像",
-    location: "白岩码头",
-    status: "warning",
-    actionText: "远程控制",
-  },
-]);
-
-// 要素分析表格列配置
-const elementsTableColumns = [
-  {
-    title: "要素",
-    dataIndex: "element",
-    key: "element",
-    width: 100,
-  },
-  {
-    title: "名称",
-    dataIndex: "name",
-    key: "name",
-    ellipsis: true,
-  },
-  {
-    title: "操作",
-    key: "action",
-    width: 100,
-    align: "center",
-  },
-];
-
-// 要素分析表格数据
-const elementsTableData = ref([
-  {
-    key: "1",
-    element: "船舶",
-    name: "浙J89900",
-  },
-  {
-    key: "2",
-    element: "船舶",
-    name: "浙J33900",
-  },
-  {
-    key: "3",
-    element: "人员",
-    name: "王某某",
-  },
-  {
-    key: "4",
-    element: "人员",
-    name: "王某某",
-  },
-  {
-    key: "5",
-    element: "船舶",
-    name: "浙J89966",
-  },
-  {
-    key: "6",
-    element: "船舶",
-    name: "华盛778",
-  },
-  {
-    key: "7",
-    element: "船舶",
-    name: "华盛009",
-  },
-]);
-
-// 树形组织图数据
-const treeData = ref({
-  id: 1,
-  label: "浙J89900",
-  type: "vessel",
-  children: [
-    {
-      id: 2,
-      pid: 1,
-      label: "浙J89900",
-      type: "vessel",
-      children: [],
-    },
-    {
-      id: 2,
-      pid: 1,
-      label: "白岩码头走私冻品案件",
-      type: "case",
-      children: [],
-    },
-    {
-      id: 2,
-      pid: 1,
-      label: "马某某",
-      type: "person",
-      children: [
-        {
-          id: 2,
-          pid: 1,
-          label: "浙J83900",
-          type: "vessel",
-          children: [],
-        },
-      ],
-    },
-    {
-      id: 2,
-      pid: 1,
-      label: "王某某",
-      type: "person",
-      children: [
-        {
-          id: 2,
-          pid: 1,
-          label: "浙J82900",
-          type: "vessel",
-          children: [],
-        },
-      ],
-    },
-  ],
-});
-
-// 获取节点图标
-const getNodeIcon = (node) => {
-  switch (node.$$data.type) {
-    case "vessel":
-      return "🛥️";
-    case "person":
-      return "👤";
-    case "case":
-      return "📄";
-    default:
-      return "📄";
-  }
-};
-const getRiskStatus = (type) => {
-  return type == 1
-    ? {
-        class: "key-badge1",
-        text: "低风险",
-      }
-    : type == 2
-    ? {
-        class: "key-badge2",
-        text: "中风险",
-      }
-    : {
-        class: "key-badge3",
-        text: "高风险",
-      };
-};
-// 获取节点样式类
-const getNodeClass = (node) => {
-  const classes = [`${node.type}-node`];
-  if (node.isRed) {
-    classes.push("red");
-  }
-  return classes.join(" ");
-};
-
-// 监听 visible 变化
-watch(
-  () => props.open,
-  (newVal) => {
-    if (newVal) {
-      // 重置标签页状态
-      activeTab.value = "device";
-    }
-  }
-);
-//查看更多详情
-const onMoreDetail = (val) => {
-  defaultConfigStore.setCoastlinePopupVisible({
-    coastlinePopupVisible: true,
-    activeBottomMenu: 0,
-    coastline: props.coastline,
-    open: props.open,
-  });
-  router.push({
-    path: "/coastline-detail",
-    query: {
-      gangId: val.id,
-    },
-  });
-  console.log("查看更多详情");
-};
-// 关闭弹窗
-const handleCancel = () => {
-  emit("update:open", false);
-};
-
-// 查看要素详情
-const handleViewElementDetail = (record) => {
-  console.log("查看要素详情:", record);
-  message.info(`查看${record.element} ${record.name} 的详情`);
-};
-
-// 处理设备操作
-const handleDeviceAction = (device) => {
-  console.log("设备操作:", device);
-  message.info(`执行${device.actionText}操作`);
-};
-</script>
 
 <style lang="scss" scoped>
 .vehicle-detail-modal-container {

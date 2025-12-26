@@ -1,3 +1,154 @@
+<script setup>
+import MapViewer from "@/components/map/MapViewer.vue";
+import { useMapMarkers } from "@/composables/useMapMarkers.js";
+import { CloseOutlined } from "@ant-design/icons-vue";
+import { computed, ref, watch } from "vue";
+
+// Props
+const props = defineProps({
+  visible: {
+    type: Boolean,
+    default: false
+  },
+  warningData: {
+    type: Object,
+    default: () => ({})
+  }
+});
+
+// Emits
+const emit = defineEmits(["close", "getwarning"]);
+
+// 响应式数据
+const detailMapViewer = ref(null);
+const mapCenter = reactive([122.0281, 29.1875]);
+const mapZoom = ref(10);
+const warnDetailVisibale = ref(false);
+
+// 方法
+function getStatusClass(status) {
+  const classMap = {
+    待处置: "status-pending",
+    已送达: "status-delivered",
+    已处理: "status-processed"
+  };
+  return classMap[status] || "status-delivered";
+}
+
+function getStatusText(status) {
+  return status || "已送达";
+}
+
+function getwarning() {
+  emit("getwarning", props.warningData);
+  warnDetailVisibale.value = true;
+}
+function handleClose() {
+  emit("close");
+}
+
+async function onMapReady(map) {
+  console.log("详情地图已加载完成", map);
+  const {
+    addMarker,
+    initMarkerLayer,
+    generateTrackRoute,
+    pauseTrackAnimation,
+    resumeTrackAnimation
+  } = useMapMarkers(map);
+  initMarkerLayer();
+  // 可以在这里添加预警点的标记
+  if (detailMapViewer.value) {
+    // 添加带文本的标记点
+    const pos = [
+      {
+        latLon: [122.3299, 29.1671]
+      },
+      {
+        latLon: [122.2392, 29.0883],
+        text: "2025.09.15 03:18"
+      },
+      {
+        latLon: [122.1514, 29.0895],
+        text: "2025.08.15 01:18"
+      },
+      {
+        latLon: [122.0913, 29.0504],
+        text: "2025.04.15 12:18",
+        tips: "船舶套牌"
+      },
+      {
+        latLon: [121.9881, 29.0338],
+        text: "2025.04.15 12:18"
+      },
+      {
+        latLon: [121.9352, 29.0376]
+      }
+    ];
+
+    // 生成轨迹路线
+    generateTrackRoute(pos, {
+      showStart: true,
+      showEnd: true,
+      showMidpoint: false,
+      showTips: true,
+      animation: true,
+      animationDuration: 1000,
+      style: {
+        stroke: "#d65e37",
+        strokeWidth: 3,
+        lineDash: [],
+        lineCap: "round",
+        lineJoin: "round"
+      }
+    });
+  }
+}
+
+// 监听warningData变化，更新地图中心
+watch(
+  () => props.warningData,
+  (newData) => {
+    if (newData && newData.coordinates) {
+      mapCenter.value = newData.coordinates;
+    }
+  },
+  { deep: true }
+);
+
+// ===== 预警明细弹框数据 =====
+const warningHeadline = computed(() => {
+  const name = props.warningData?.name || "华盛2220";
+  return `${name}船舶出现伪造信号预警`;
+});
+
+const tableData = computed(() => {
+  const items = props.warningData?.detailList;
+  if (Array.isArray(items) && items.length) {
+    return items.map(it => ({
+      type: it.type || "伪造信号",
+      start: it.start || it.startTime || "--",
+      end: it.end || it.endTime || "--",
+      duration: it.duration || it.durationText || "--"
+    }));
+  }
+  return [
+    {
+      type: "伪造信号",
+      start: "2025/06/15 01:18",
+      end: "2025/06/15 03:18",
+      duration: "2小时"
+    },
+    {
+      type: "伪造信号",
+      start: "2025/06/15 01:18",
+      end: "2025/06/15 03:18",
+      duration: "2小时"
+    }
+  ];
+});
+</script>
+
 <template>
   <!-- 遮罩层 -->
   <div v-if="visible" class="warn-detail-container">
@@ -6,7 +157,9 @@
       <!-- 头部 -->
       <div class="panel-header">
         <div class="header-left">
-          <h2 class="panel-title">预警详情</h2>
+          <h2 class="panel-title">
+            预警详情
+          </h2>
         </div>
         <div class="header-right">
           <CloseOutlined @click="handleClose" />
@@ -17,7 +170,9 @@
       <div class="panel-body">
         <!-- 预警原因区域 -->
         <div class="warning-cause-section">
-          <h3 class="section-title">预警原因</h3>
+          <h3 class="section-title">
+            预警原因
+          </h3>
           <div class="cause-info">
             <div class="info-grid">
               <div class="info-item">
@@ -76,7 +231,9 @@
                 @map-ready="onMapReady"
               />
               <div class="map-overlay">
-                <button class="trace-btn" @click="getwarning">预警追溯</button>
+                <button class="trace-btn" @click="getwarning">
+                  预警追溯
+                </button>
               </div>
             </div>
           </div>
@@ -84,7 +241,9 @@
 
         <!-- 预警提醒区域 -->
         <div class="warning-reminder-section">
-          <h3 class="section-title">预警提醒</h3>
+          <h3 class="section-title">
+            预警提醒
+          </h3>
 
           <div class="reminder-info">
             <div class="info-grid2">
@@ -126,7 +285,9 @@
 
         <!-- 预警送达区域 -->
         <div class="warning-delivery-section">
-          <h3 class="section-title">预警处置</h3>
+          <h3 class="section-title">
+            预警处置
+          </h3>
 
           <div class="delivery-info">
             <div class="info-grid2">
@@ -162,9 +323,9 @@
     :footer="null"
     :mask="false"
     width="520px"
-    getContainer=".ui-container"
-    @cancel="warnDetailVisibale = false"
+    get-container=".ui-container"
     class="modal-container warn-detail-t"
+    @cancel="warnDetailVisibale = false"
   >
     <template #closeIcon>
       <CloseOutlined style="color: #ffffff; font-size: 16px" />
@@ -181,173 +342,38 @@
     <!-- 明细表格 -->
     <div class="detail-table">
       <div class="table-header">
-        <div class="th">风险类型</div>
-        <div class="th">开始时间</div>
-        <div class="th">结束时间</div>
-        <div class="th">持续时间</div>
+        <div class="th">
+          风险类型
+        </div>
+        <div class="th">
+          开始时间
+        </div>
+        <div class="th">
+          结束时间
+        </div>
+        <div class="th">
+          持续时间
+        </div>
       </div>
       <div class="table-body">
-        <div class="tr" v-for="(row, idx) in tableData" :key="idx">
-          <div class="td">{{ row.type }}</div>
-          <div class="td">{{ row.start }}</div>
-          <div class="td">{{ row.end }}</div>
-          <div class="td">{{ row.duration }}</div>
+        <div v-for="(row, idx) in tableData" :key="idx" class="tr">
+          <div class="td">
+            {{ row.type }}
+          </div>
+          <div class="td">
+            {{ row.start }}
+          </div>
+          <div class="td">
+            {{ row.end }}
+          </div>
+          <div class="td">
+            {{ row.duration }}
+          </div>
         </div>
       </div>
     </div>
   </a-modal>
 </template>
-
-<script setup>
-import { ref, computed, watch } from "vue";
-import MapViewer from "@/components/map/MapViewer.vue";
-import { CloseOutlined } from "@ant-design/icons-vue";
-import { useMapMarkers } from "@/composables/useMapMarkers.js";
-
-// Props
-const props = defineProps({
-  visible: {
-    type: Boolean,
-    default: false,
-  },
-  warningData: {
-    type: Object,
-    default: () => ({}),
-  },
-});
-
-// Emits
-const emit = defineEmits(["close", "getwarning"]);
-
-// 响应式数据
-const detailMapViewer = ref(null);
-const mapCenter = reactive([122.0281, 29.1875]);
-const mapZoom = ref(10);
-const warnDetailVisibale = ref(false);
-
-// 方法
-const getStatusClass = (status) => {
-  const classMap = {
-    待处置: "status-pending",
-    已送达: "status-delivered",
-    已处理: "status-processed",
-  };
-  return classMap[status] || "status-delivered";
-};
-
-const getStatusText = (status) => {
-  return status || "已送达";
-};
-
-const getwarning = () => {
-  emit("getwarning", props.warningData);
-  warnDetailVisibale.value = true;
-};
-const handleClose = () => {
-  emit("close");
-};
-
-const onMapReady = async (map) => {
-  console.log("详情地图已加载完成", map);
-  const {
-    addMarker,
-    initMarkerLayer,
-    generateTrackRoute,
-    pauseTrackAnimation,
-    resumeTrackAnimation,
-  } = useMapMarkers(map);
-  initMarkerLayer();
-  // 可以在这里添加预警点的标记
-  if (detailMapViewer.value) {
-    // 添加带文本的标记点
-    const pos = [
-      {
-        latLon: [122.3299, 29.1671],
-      },
-      {
-        latLon: [122.2392, 29.0883],
-        text: "2025.09.15 03:18",
-      },
-      {
-        latLon: [122.1514, 29.0895],
-        text: "2025.08.15 01:18",
-      },
-      {
-        latLon: [122.0913, 29.0504],
-        text: "2025.04.15 12:18",
-        tips: "船舶套牌",
-      },
-      {
-        latLon: [121.9881, 29.0338],
-        text: "2025.04.15 12:18",
-      },
-      {
-        latLon: [121.9352, 29.0376],
-      },
-    ];
-
-    // 生成轨迹路线
-    generateTrackRoute(pos, {
-      showStart: true,
-      showEnd: true,
-      showMidpoint: false,
-      showTips: true,
-      animation: true,
-      animationDuration: 1000,
-      style: {
-        stroke: "#d65e37",
-        strokeWidth: 3,
-        lineDash: [],
-        lineCap: "round",
-        lineJoin: "round",
-      },
-    });
-  }
-};
-
-// 监听warningData变化，更新地图中心
-watch(
-  () => props.warningData,
-  (newData) => {
-    if (newData && newData.coordinates) {
-      mapCenter.value = newData.coordinates;
-    }
-  },
-  { deep: true }
-);
-
-// ===== 预警明细弹框数据 =====
-const warningHeadline = computed(() => {
-  const name = props.warningData?.name || "华盛2220";
-  return `${name}船舶出现伪造信号预警`;
-});
-
-const tableData = computed(() => {
-  const items = props.warningData?.detailList;
-  if (Array.isArray(items) && items.length) {
-    return items.map((it) => ({
-      type: it.type || "伪造信号",
-      start: it.start || it.startTime || "--",
-      end: it.end || it.endTime || "--",
-      duration: it.duration || it.durationText || "--",
-    }));
-  }
-  return [
-    {
-      type: "伪造信号",
-      start: "2025/06/15 01:18",
-      end: "2025/06/15 03:18",
-      duration: "2小时",
-    },
-    {
-      type: "伪造信号",
-      start: "2025/06/15 01:18",
-      end: "2025/06/15 03:18",
-      duration: "2小时",
-    },
-  ];
-});
-</script>
 
 <style lang="scss" scoped>
 .warn-detail-container {

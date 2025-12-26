@@ -1,16 +1,234 @@
+<script setup>
+import { useDefaultConfigStore } from "@/stores/defaultConfig.js";
+import { getIconPath } from "@/utils/utilstools";
+import {
+  CloseOutlined,
+  DownOutlined,
+  FileTextOutlined
+} from "@ant-design/icons-vue";
+import { computed, ref } from "vue";
+import CoastlineDetailModal from "./components/CoastlineModal.vue";
+
+// Props
+const props = defineProps({
+  open: {
+    type: Boolean,
+    default: false
+  },
+  coastlineData: {
+    type: Object,
+    default: () => ({})
+  }
+});
+// Emits
+const emit = defineEmits(["update:open"]);
+const defaultConfigStore = useDefaultConfigStore();
+// 响应式数据
+const searchKeyword = ref("");
+const riskStatusFilter = ref("");
+const areaFilter = ref("");
+const selectedCoastline = ref(null);
+const addCoastlineModalVisible = ref(false);
+const coastlineDetailModalVisible = ref(false);
+const selectedCoastlineData = ref(null);
+const riskList = ["低风险", "中风险", "高风险"];
+
+const visibleModal = computed({
+  get() {
+    return props.open;
+  },
+  set(value) {
+    emit("update:open", value);
+  }
+});
+// 岸线管控数据
+const coastlines = ref([
+  {
+    id: 1,
+    deptName: "白岩村",
+    content: "风险点xxxxx",
+    title: "白岩码头",
+    riskStatus: "1",
+    location: "台州市",
+    name: "张某某",
+    locate: "温岭市白岩码头",
+    coordinates: "114.2452345,38.53451234",
+    type: "渔业码头",
+    environment: "有居民社区或厂房，距离500米，夜间有灯光。",
+    bargeConditions: "具备泊船停靠条件，可停靠船舶吨数100t以下。",
+    trafficConditions: "上县道距离5KM以下，上高速距离KM以下。",
+    workingConditions:
+      "具备停放大型车辆的场地，10辆以上车辆；吊机作业空间、条件不满足。"
+  },
+  {
+    id: 2,
+    deptName: "白岩村",
+    content: "风险点xxxxx",
+    title: "白岩码头",
+    riskStatus: "2",
+    name: "张某某",
+    location: "台州市",
+    locate: "温岭市白岩码头",
+    coordinates: "114.2452345,38.53451234",
+    type: "渔业码头",
+    environment: "有居民社区或厂房，距离500米，夜间有灯光。",
+    bargeConditions: "具备泊船停靠条件，可停靠船舶吨数100t以下。",
+    trafficConditions: "上县道距离5KM以下，上高速距离KM以下。",
+    workingConditions:
+      "具备停放大型车辆的场地，10辆以上车辆；吊机作业空间、条件不满足。"
+  },
+  {
+    id: 3,
+    deptName: "白岩村",
+    content: "风险点xxxxx",
+    riskStatus: "3",
+    title: "白岩码头",
+    location: "台州市",
+    name: "张某某",
+    locate: "温岭市白岩码头",
+    coordinates: "114.2452345,38.53451234",
+    type: "渔业码头",
+    environment: "有居民社区或厂房，距离500米，夜间有灯光。",
+    bargeConditions: "具备泊船停靠条件，可停靠船舶吨数100t以下。",
+    trafficConditions: "上县道距离5KM以下，上高速距离KM以下。",
+    workingConditions:
+      "具备停放大型车辆的场地，10辆以上车辆；吊机作业空间、条件不满足。"
+  },
+  {
+    id: 4,
+    deptName: "白岩村",
+    content: "风险点xxxxx",
+    title: "白岩码头",
+    location: "台州市",
+    name: "张某某",
+    locate: "温岭市白岩码头",
+    coordinates: "114.2452345,38.53451234",
+    type: "渔业码头",
+    environment: "有居民社区或厂房，距离500米，夜间有灯光。",
+    bargeConditions: "具备泊船停靠条件，可停靠船舶吨数100t以下。",
+    trafficConditions: "上县道距离5KM以下，上高速距离KM以下。",
+    workingConditions:
+      "具备停放大型车辆的场地，10辆以上车辆；吊机作业空间、条件不满足。"
+  }
+]);
+
+// 计算属性
+const filteredCoastlines = computed(() => {
+  let filtered = coastlines.value;
+
+  // 按区域筛选
+  if (areaFilter.value) {
+    filtered = filtered.filter(coastlines =>
+      coastlines.location.includes(areaFilter.value)
+    );
+  }
+  if (riskStatusFilter.value) {
+    filtered = filtered.filter(coastlines =>
+      coastlines.riskStatus?.includes(riskStatusFilter.value)
+    );
+  }
+
+  // 按关键词筛选
+  if (searchKeyword.value) {
+    filtered = filtered.filter(
+      coastlines =>
+        coastlines?.riskStatus.includes(searchKeyword.value)
+        || coastlines.location.includes(searchKeyword.value)
+    );
+  }
+
+  return filtered;
+});
+
+function handleClose() {
+  emit("update:open", false);
+}
+
+function handleQuery() {
+  console.log("查询:", searchKeyword.value);
+}
+
+function handleReset() {
+  searchKeyword.value = "";
+  riskStatusFilter.value = "";
+  areaFilter.value = "";
+}
+
+function handleSearch() {
+  console.log("搜索:", searchKeyword.value);
+}
+
+function handleTypeChange(type) {
+  riskStatusFilter.value = type;
+}
+
+function handleAreaChange(area) {
+  areaFilter.value = area;
+}
+
+function getRiskStatus(type) {
+  return type == 1
+    ? {
+        class: "key-badge1",
+        text: "低风险"
+      }
+    : type == 2
+      ? {
+          class: "key-badge2",
+          text: "中风险"
+        }
+      : {
+          class: "key-badge3",
+          text: "高风险"
+        };
+}
+
+function handleDetail(coastline) {
+  selectedCoastline.value = coastline;
+  if (typeof coastline !== "object") {
+    selectedCoastline.value = coastlines.value.find(
+      el => el.markerId === coastline
+    );
+  }
+  selectedCoastlineData.value = {
+    ...selectedCoastline.value,
+    // 添加详情弹窗需要的额外数据
+    image: getIconPath("ttb")
+  };
+  coastlineDetailModalVisible.value = true;
+}
+
+// 获取缓存配置状态
+const coastlineStatus = computed(() => defaultConfigStore.coastlineStatus);
+function setCoastlineStatus() {
+  handleDetail(coastlineStatus.value.coastline);
+}
+onMounted(() => {
+  if (coastlineStatus.value) {
+    console.log("coastlineStatus", coastlineStatus);
+    // 获取区域列表
+    setCoastlineStatus();
+  }
+});
+
+defineExpose({
+  handleDetail
+});
+</script>
+
 <template>
   <a-drawer
     v-model:open="visibleModal"
     title="岸线管控"
     placement="left"
-    getContainer=".ui-container"
+    get-container=".ui-container"
     :width="475"
     :closable="true"
     :mask="false"
     class="suspicious-vehicle-drawer"
   >
     <template #closeIcon>
-      <img height="24px" src="@/assets/imgs/coast-icon.png" alt="" />
+      <img height="24px" src="@/assets/imgs/coast-icon.png" alt="">
     </template>
     <template #extra>
       <CloseOutlined @click="handleClose" />
@@ -74,16 +292,16 @@
             type="primary"
             style="flex: 0.1725"
             size="small"
-            @click="handleQuery"
             class="query-btn"
+            @click="handleQuery"
           >
             查询
           </a-button>
           <a-button
-            @click="handleReset"
             style="flex: 0.1725"
             class="reset-btn"
             size="small"
+            @click="handleReset"
           >
             重置
           </a-button>
@@ -94,16 +312,14 @@
     <!-- 岸线管控列表 -->
     <div class="vehicle-list">
       <div
-        v-for="(coastline, index) in filteredCoastlines"
+        v-for="coastline in filteredCoastlines"
         :key="coastline.id"
         class="vehicle-item"
       >
         <div class="vehicle-info">
           <div class="vehicle-basic">
             <span class="plate-number"> {{ coastline.content }}</span>
-            <span class="vehicle-color"
-              >类型: {{ getRiskStatus(coastline.riskStatus).text }}</span
-            >
+            <span class="vehicle-color">类型: {{ getRiskStatus(coastline.riskStatus).text }}</span>
           </div>
 
           <div class="vehicle-actions">
@@ -113,7 +329,7 @@
             >
               {{ getRiskStatus(coastline.riskStatus).text }}
             </div>
-            <div @click.stop="handleDetail(coastline)" class="action-btn">
+            <div class="action-btn" @click.stop="handleDetail(coastline)">
               <FileTextOutlined />
               <span>详情</span>
             </div>
@@ -129,226 +345,6 @@
     :coastline="selectedCoastlineData"
   />
 </template>
-
-<script setup>
-import { ref, computed, watch } from "vue";
-import CoastlineDetailModal from "./components/CoastlineModal.vue";
-import { getIconPath } from "@/utils/utilstools";
-import {
-  DownOutlined,
-  FileTextOutlined,
-  CloseOutlined,
-} from "@ant-design/icons-vue";
-import { useDefaultConfigStore } from "@/stores/defaultConfig.js";
-
-const defaultConfigStore = useDefaultConfigStore();
-// Props
-const props = defineProps({
-  open: {
-    type: Boolean,
-    default: false,
-  },
-  coastlineData: {
-    type: Object,
-    default: () => ({}),
-  },
-});
-
-// Emits
-const emit = defineEmits(["update:open"]);
-
-// 响应式数据
-const searchKeyword = ref("");
-const riskStatusFilter = ref("");
-const areaFilter = ref("");
-const selectedCoastline = ref(null);
-const addCoastlineModalVisible = ref(false);
-const coastlineDetailModalVisible = ref(false);
-const selectedCoastlineData = ref(null);
-const riskList = ["低风险", "中风险", "高风险"];
-
-const visibleModal = computed({
-  get() {
-    return props.open;
-  },
-  set(value) {
-    emit("update:open", value);
-  },
-});
-// 岸线管控数据
-const coastlines = ref([
-  {
-    id: 1,
-    deptName: "白岩村",
-    content: "风险点xxxxx",
-    title: "白岩码头",
-    riskStatus: "1",
-    location: "台州市",
-    name: "张某某",
-    locate: "温岭市白岩码头",
-    coordinates: "114.2452345,38.53451234",
-    type: "渔业码头",
-    environment: "有居民社区或厂房，距离500米，夜间有灯光。",
-    bargeConditions: "具备泊船停靠条件，可停靠船舶吨数100t以下。",
-    trafficConditions: "上县道距离5KM以下，上高速距离KM以下。",
-    workingConditions:
-      "具备停放大型车辆的场地，10辆以上车辆；吊机作业空间、条件不满足。",
-  },
-  {
-    id: 2,
-    deptName: "白岩村",
-    content: "风险点xxxxx",
-    title: "白岩码头",
-    riskStatus: "2",
-    name: "张某某",
-    location: "台州市",
-    locate: "温岭市白岩码头",
-    coordinates: "114.2452345,38.53451234",
-    type: "渔业码头",
-    environment: "有居民社区或厂房，距离500米，夜间有灯光。",
-    bargeConditions: "具备泊船停靠条件，可停靠船舶吨数100t以下。",
-    trafficConditions: "上县道距离5KM以下，上高速距离KM以下。",
-    workingConditions:
-      "具备停放大型车辆的场地，10辆以上车辆；吊机作业空间、条件不满足。",
-  },
-  {
-    id: 3,
-    deptName: "白岩村",
-    content: "风险点xxxxx",
-    riskStatus: "3",
-    title: "白岩码头",
-    location: "台州市",
-    name: "张某某",
-    locate: "温岭市白岩码头",
-    coordinates: "114.2452345,38.53451234",
-    type: "渔业码头",
-    environment: "有居民社区或厂房，距离500米，夜间有灯光。",
-    bargeConditions: "具备泊船停靠条件，可停靠船舶吨数100t以下。",
-    trafficConditions: "上县道距离5KM以下，上高速距离KM以下。",
-    workingConditions:
-      "具备停放大型车辆的场地，10辆以上车辆；吊机作业空间、条件不满足。",
-  },
-  {
-    id: 4,
-    deptName: "白岩村",
-    content: "风险点xxxxx",
-    title: "白岩码头",
-    location: "台州市",
-    name: "张某某",
-    locate: "温岭市白岩码头",
-    coordinates: "114.2452345,38.53451234",
-    type: "渔业码头",
-    environment: "有居民社区或厂房，距离500米，夜间有灯光。",
-    bargeConditions: "具备泊船停靠条件，可停靠船舶吨数100t以下。",
-    trafficConditions: "上县道距离5KM以下，上高速距离KM以下。",
-    workingConditions:
-      "具备停放大型车辆的场地，10辆以上车辆；吊机作业空间、条件不满足。",
-  },
-]);
-
-// 计算属性
-const filteredCoastlines = computed(() => {
-  let filtered = coastlines.value;
-
-  // 按区域筛选
-  if (areaFilter.value) {
-    filtered = filtered.filter((coastlines) =>
-      coastlines.location.includes(areaFilter.value)
-    );
-  }
-  if (riskStatusFilter.value) {
-    filtered = filtered.filter((coastlines) =>
-      coastlines.riskStatus?.includes(riskStatusFilter.value)
-    );
-  }
-
-  // 按关键词筛选
-  if (searchKeyword.value) {
-    filtered = filtered.filter(
-      (coastlines) =>
-        coastlines?.riskStatus.includes(searchKeyword.value) ||
-        coastlines.location.includes(searchKeyword.value)
-    );
-  }
-
-  return filtered;
-});
-
-const handleClose = () => {
-  emit("update:open", false);
-};
-
-const handleQuery = () => {
-  console.log("查询:", searchKeyword.value);
-};
-
-const handleReset = () => {
-  searchKeyword.value = "";
-  riskStatusFilter.value = "";
-  areaFilter.value = "";
-};
-
-const handleSearch = () => {
-  console.log("搜索:", searchKeyword.value);
-};
-
-const handleTypeChange = (type) => {
-  riskStatusFilter.value = type;
-};
-
-const handleAreaChange = (area) => {
-  areaFilter.value = area;
-};
-
-const getRiskStatus = (type) => {
-  return type == 1
-    ? {
-        class: "key-badge1",
-        text: "低风险",
-      }
-    : type == 2
-    ? {
-        class: "key-badge2",
-        text: "中风险",
-      }
-    : {
-        class: "key-badge3",
-        text: "高风险",
-      };
-};
-
-const handleDetail = (coastline) => {
-  selectedCoastline.value = coastline;
-  if (typeof coastline !== "object") {
-    selectedCoastline.value = coastlines.value.find(
-      (el) => el.markerId === coastline
-    );
-  }
-  selectedCoastlineData.value = {
-    ...selectedCoastline.value,
-    // 添加详情弹窗需要的额外数据
-    image: getIconPath("ttb"),
-  };
-  coastlineDetailModalVisible.value = true;
-};
-
-//获取缓存配置状态
-const coastlineStatus = computed(() => defaultConfigStore.coastlineStatus);
-const setCoastlineStatus = () => {
-  handleDetail(coastlineStatus.coastline);
-};
-onMounted(() => {
-  if (coastlineStatus.value) {
-    console.log("coastlineStatus", coastlineStatus);
-    // 获取区域列表
-    setCoastlineStatus();
-  }
-});
-
-defineExpose({
-  handleDetail,
-});
-</script>
 
 <style lang="scss" scoped>
 .suspicious-vehicle-drawer {

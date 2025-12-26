@@ -4,18 +4,18 @@ import Antd from 'ant-design-vue'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import { createApp } from 'vue'
+import Vue3TreeOrg from "vue3-tree-org";
 import App from './App.vue'
+// 导入自定义指令
+import { loading, vLoading } from './directives'
 import router from './router'
 // 导入所有样式，这样就不需要每个组件单独导入样式了
 import 'ant-design-vue/dist/reset.css'
 // 导入 OpenLayers 样式
 import 'ol/ol.css'
-// 导入自定义指令
-import { vLoading, loading } from './directives'
+
 // 导入 loading 样式
 import './directives/loading.css'
-
-import Vue3TreeOrg from "vue3-tree-org";
 import "vue3-tree-org/lib/vue3-tree-org.css";
 
 const app = createApp(App)

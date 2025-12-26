@@ -1,3 +1,289 @@
+<script setup>
+import {
+  CloseOutlined,
+  UploadOutlined
+} from "@ant-design/icons-vue";
+import { message } from "ant-design-vue";
+import { ref, watch } from "vue";
+
+// Props
+const props = defineProps({
+  open: {
+    type: Boolean,
+    default: false
+  },
+  vesselData: {}
+});
+
+// Emits
+const emit = defineEmits(["update:open", "setKeyVessel"]);
+
+// 响应式数据
+const activeTab = ref("boatFile");
+const alertCollapseActive = ref(["1"]);
+const caseCollapseActive = ref(["1"]);
+
+// 关键要素分析表格列配置
+const elementsTableColumns = [
+  {
+    title: "要素",
+    dataIndex: "element",
+    key: "element",
+    width: 100
+  },
+  {
+    title: "名称",
+    dataIndex: "name",
+    key: "name",
+    ellipsis: true
+  },
+  {
+    title: "操作",
+    key: "action",
+    width: 100,
+    align: "center"
+  }
+];
+
+// 关键要素分析表格数据
+const elementsTableData = ref([
+  {
+    key: "1",
+    element: "船舶",
+    name: "浙J89900"
+  },
+  {
+    key: "2",
+    element: "船舶",
+    name: "浙J33900"
+  },
+  {
+    key: "3",
+    element: "人员",
+    name: "王某某"
+  },
+  {
+    key: "4",
+    element: "人员",
+    name: "王某某"
+  },
+  {
+    key: "5",
+    element: "船舶",
+    name: "浙J89966"
+  },
+  {
+    key: "6",
+    element: "船舶",
+    name: "华盛778"
+  },
+  {
+    key: "7",
+    element: "船舶",
+    name: "华盛009"
+  }
+]);
+// 关键要素分析表格列配置
+const vesselsTableColumns = [
+  {
+    title: "序号",
+    dataIndex: "index",
+    key: "index",
+    width: 80,
+    align: "center",
+    customRender: ({ text, record, index }) => {
+      return index + 1;
+    }
+  },
+  {
+    title: "事件类型",
+    dataIndex: "eventType",
+    key: "eventType",
+    ellipsis: true,
+    align: "center"
+  },
+  {
+    title: "事件时间",
+    dataIndex: "eventTime",
+    key: "eventTime",
+    ellipsis: true,
+    align: "center"
+  },
+  {
+    title: "操作",
+    key: "action",
+    width: 600
+  }
+];
+
+// 关键要素分析表格数据
+const vesselsTableData = ref([
+  {
+    key: "1",
+    eventType: "搭靠",
+    eventTime: "2025/09/23 10:00"
+  },
+  {
+    key: "2",
+    eventType: "搭靠",
+    eventTime: "2025/09/23 10:00"
+  },
+  {
+    key: "3",
+    eventType: "搭靠",
+    eventTime: "2025/09/23 10:00"
+  }
+]);
+
+// 树形组织图数据
+const treeData = ref({
+  id: 1,
+  label: "浙J89900",
+  type: "vessel",
+  children: [
+    {
+      id: 2,
+      pid: 1,
+      label: "浙J89900",
+      type: "vessel",
+      children: []
+    },
+    {
+      id: 2,
+      pid: 1,
+      label: "白岩码头走私冻品案件",
+      type: "case",
+      children: []
+    },
+    {
+      id: 2,
+      pid: 1,
+      label: "马某某",
+      type: "person",
+      children: [
+        {
+          id: 2,
+          pid: 1,
+          label: "浙J83900",
+          type: "vessel",
+          children: []
+        }
+      ]
+    },
+    {
+      id: 2,
+      pid: 1,
+      label: "王某某",
+      type: "person",
+      children: [
+        {
+          id: 2,
+          pid: 1,
+          label: "浙J82900",
+          type: "vessel",
+          children: []
+        }
+      ]
+    }
+  ]
+});
+
+// 港口查询相关数据
+const timeRange = ref(null);
+
+// 航舶航次查询
+const portData = ref([
+  {
+    index: 1,
+    chineseName: "黄骅",
+    englishName: "Huanghua",
+    country: "中国",
+    arrivalTime: "2025/6/15 1:18",
+    berthingTime: "2025/6/16 8:42",
+    departureTime: "2025/6/16 8:42"
+  }
+]);
+
+// 获取节点图标
+function getNodeIcon(node) {
+  switch (node.$$data.type) {
+    case "vessel":
+      return "🛥️";
+    case "person":
+      return "👤";
+    case "case":
+      return "📄";
+    default:
+      return "📄";
+  }
+}
+
+// 获取节点样式类
+function getNodeClass(node) {
+  const classes = [`${node.type}-node`];
+  if (node.isRed) {
+    classes.push("red");
+  }
+  return classes.join(" ");
+}
+
+// 节点点击事件
+function handleNodeClick(node) {
+  console.log("点击节点:", node);
+  message.info(`点击了${node.label}`);
+}
+
+// 监听 visible 变化
+watch(
+  () => props.open,
+  (newVal) => {
+    if (newVal) {
+      // 重置标签页状态
+      activeTab.value = "boatFile";
+      alertCollapseActive.value = ["1"];
+      caseCollapseActive.value = ["1"];
+    }
+  }
+);
+
+// 关闭弹窗
+function handleCancel() {
+  emit("update:open", false);
+}
+
+// 设置与取消重点船舶
+function handleSetKeyVessel() {
+  emit("setKeyVessel", props.vesselData);
+}
+//  查看轨迹
+function handleViewTrack(record) {
+  console.log("查看轨迹:", record);
+}
+
+// 查看要素详情
+function handleViewElementDetail(record) {
+  console.log("查看要素详情:", record);
+  message.info(`查看${record.element} ${record.name} 的详情`);
+}
+
+// 港口查询相关方法
+function handlePortQuery() {
+  console.log("执行港口查询", timeRange.value);
+  // 这里可以添加查询逻辑
+  message.success("查询成功");
+}
+
+function handleReset() {
+  timeRange.value = null;
+  console.log("重置查询条件");
+}
+
+function handleExport() {
+  console.log("导出港口数据");
+  message.success("导出成功");
+}
+</script>
+
 <template>
   <div>
     <a-modal
@@ -6,17 +292,19 @@
       :width="1200"
       :centered="true"
       :mask-closable="false"
-      getContainer=".ui-container"
+      get-container=".ui-container"
       class="modal-container"
-      @cancel="handleCancel"
       :footer="null"
+      @cancel="handleCancel"
     >
       <template #closeIcon>
         <CloseOutlined style="color: #ffffff; font-size: 16px" />
       </template>
 
       <div class="vehicle-detail-content">
-        <div class="basic-info-title">基本信息</div>
+        <div class="basic-info-title">
+          基本信息
+        </div>
         <!-- 基本信息区域 -->
         <div class="basic-info-section">
           <div class="vehicle-header">
@@ -35,7 +323,7 @@
 
           <div class="vehicle-info-row">
             <div class="vehicle-image">
-              <img :src="vesselData.image" :alt="vesselData.vesselName" />
+              <img :src="vesselData.image" :alt="vesselData.vesselName">
             </div>
 
             <div class="vehicle-details">
@@ -148,12 +436,12 @@
 
         <!-- 标签页区域 -->
         <div class="tabs-section">
-          <a-tabs v-model:activeKey="activeTab" class="detail-tabs">
+          <a-tabs v-model:active-key="activeTab" class="detail-tabs">
             <a-tab-pane key="boatFile" tab="船只档案">
               <div class="tab-content">
                 <!-- 预警子区域 -->
                 <a-collapse
-                  v-model:activeKey="alertCollapseActive"
+                  v-model:active-key="alertCollapseActive"
                   class="alert-collapse"
                 >
                   <a-collapse-panel
@@ -293,7 +581,7 @@
               <div class="tab-content">
                 <!-- 预警子区域 -->
                 <a-collapse
-                  v-model:activeKey="alertCollapseActive"
+                  v-model:active-key="alertCollapseActive"
                   class="alert-collapse"
                 >
                   <a-collapse-panel key="1" header="预警" class="alert-panel">
@@ -302,13 +590,17 @@
                     </template>
                     <div class="alert-list">
                       <div
-                        class="alert-item"
                         v-for="(alert, index) in vesselData.historyAlerts"
                         :key="index"
+                        class="alert-item"
                       >
                         <div class="alert-item-content">
-                          <div class="alert-item-text">{{ alert.content }}</div>
-                          <div class="alert-item-date">{{ alert.date }}</div>
+                          <div class="alert-item-text">
+                            {{ alert.content }}
+                          </div>
+                          <div class="alert-item-date">
+                            {{ alert.date }}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -317,7 +609,7 @@
 
                 <!-- 历史案件关联子区域 -->
                 <a-collapse
-                  v-model:activeKey="caseCollapseActive"
+                  v-model:active-key="caseCollapseActive"
                   class="case-collapse"
                 >
                   <a-collapse-panel
@@ -330,15 +622,17 @@
                     </template>
                     <div class="case-list">
                       <div
-                        class="case-item"
                         v-for="(caseItem, index) in vesselData.historyCases"
                         :key="index"
+                        class="case-item"
                       >
                         <div class="case-item-content">
                           <div class="case-item-text">
                             {{ caseItem.content }}
                           </div>
-                          <div class="case-item-date">{{ caseItem.date }}</div>
+                          <div class="case-item-date">
+                            {{ caseItem.date }}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -355,15 +649,19 @@
                 <div class="voyage-content">
                   <div class="voyage-item">
                     <p>黄华</p>
-                    <p class="voyage-item-date">2025-03-02 12:00:00</p>
+                    <p class="voyage-item-date">
+                      2025-03-02 12:00:00
+                    </p>
                   </div>
                   <div class="voyage-line">
                     <span class="voyage-status">在途</span>
-                    <div class="voyage-line-item"></div>
+                    <div class="voyage-line-item" />
                   </div>
                   <div class="voyage-item">
                     <p>宁波</p>
-                    <p class="voyage-item-date">2025-03-02 18:00:00</p>
+                    <p class="voyage-item-date">
+                      2025-03-02 18:00:00
+                    </p>
                   </div>
                   <div class="voyage-info">
                     <p>当前所在位置：象山港至温州海域</p>
@@ -409,28 +707,56 @@
                     <!-- 港口信息表格 -->
                     <div class="port-table-container">
                       <div class="table-header">
-                        <div class="header-cell">序号</div>
-                        <div class="header-cell">港口中文</div>
-                        <div class="header-cell">港口英文</div>
-                        <div class="header-cell">国家或地区</div>
-                        <div class="header-cell">到港时间</div>
-                        <div class="header-cell">靠泊时间</div>
-                        <div class="header-cell">离港时间</div>
+                        <div class="header-cell">
+                          序号
+                        </div>
+                        <div class="header-cell">
+                          港口中文
+                        </div>
+                        <div class="header-cell">
+                          港口英文
+                        </div>
+                        <div class="header-cell">
+                          国家或地区
+                        </div>
+                        <div class="header-cell">
+                          到港时间
+                        </div>
+                        <div class="header-cell">
+                          靠泊时间
+                        </div>
+                        <div class="header-cell">
+                          离港时间
+                        </div>
                       </div>
 
                       <div class="table-body">
                         <div
-                          class="data-row"
                           v-for="(item, index) in portData"
                           :key="`port-${index}`"
+                          class="data-row"
                         >
-                          <div class="cell">{{ item.index }}</div>
-                          <div class="cell">{{ item.chineseName }}</div>
-                          <div class="cell">{{ item.englishName }}</div>
-                          <div class="cell">{{ item.country }}</div>
-                          <div class="cell">{{ item.arrivalTime }}</div>
-                          <div class="cell">{{ item.berthingTime }}</div>
-                          <div class="cell">{{ item.departureTime }}</div>
+                          <div class="cell">
+                            {{ item.index }}
+                          </div>
+                          <div class="cell">
+                            {{ item.chineseName }}
+                          </div>
+                          <div class="cell">
+                            {{ item.englishName }}
+                          </div>
+                          <div class="cell">
+                            {{ item.country }}
+                          </div>
+                          <div class="cell">
+                            {{ item.arrivalTime }}
+                          </div>
+                          <div class="cell">
+                            {{ item.berthingTime }}
+                          </div>
+                          <div class="cell">
+                            {{ item.departureTime }}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -506,7 +832,7 @@
                     <vue3-tree-org
                       :data="treeData"
                       center
-                      :toolBar="false"
+                      :tool-bar="false"
                       :draggable="false"
                       :horizontal="false"
                       :collapsable="false"
@@ -516,8 +842,12 @@
                     >
                       <template #default="{ node }">
                         <div class="custom-node" :class="getNodeClass(node)">
-                          <div class="node-icon">{{ getNodeIcon(node) }}</div>
-                          <div class="node-text">{{ node.label }}</div>
+                          <div class="node-icon">
+                            {{ getNodeIcon(node) }}
+                          </div>
+                          <div class="node-text">
+                            {{ node.label }}
+                          </div>
                         </div>
                       </template>
                     </vue3-tree-org>
@@ -531,295 +861,6 @@
     </a-modal>
   </div>
 </template>
-
-<script setup>
-import { ref, reactive, watch, watchEffect } from "vue";
-import { message } from "ant-design-vue";
-import {
-  CloseOutlined,
-  WarningOutlined,
-  ArrowLeftOutlined,
-  DownloadOutlined,
-  UploadOutlined,
-} from "@ant-design/icons-vue";
-
-// Props
-const props = defineProps({
-  open: {
-    type: Boolean,
-    default: false,
-  },
-  vesselData: {},
-});
-
-// Emits
-const emit = defineEmits(["update:open", "setKeyVessel"]);
-
-// 响应式数据
-const activeTab = ref("boatFile");
-const alertCollapseActive = ref(["1"]);
-const caseCollapseActive = ref(["1"]);
-
-// 关键要素分析表格列配置
-const elementsTableColumns = [
-  {
-    title: "要素",
-    dataIndex: "element",
-    key: "element",
-    width: 100,
-  },
-  {
-    title: "名称",
-    dataIndex: "name",
-    key: "name",
-    ellipsis: true,
-  },
-  {
-    title: "操作",
-    key: "action",
-    width: 100,
-    align: "center",
-  },
-];
-
-// 关键要素分析表格数据
-const elementsTableData = ref([
-  {
-    key: "1",
-    element: "船舶",
-    name: "浙J89900",
-  },
-  {
-    key: "2",
-    element: "船舶",
-    name: "浙J33900",
-  },
-  {
-    key: "3",
-    element: "人员",
-    name: "王某某",
-  },
-  {
-    key: "4",
-    element: "人员",
-    name: "王某某",
-  },
-  {
-    key: "5",
-    element: "船舶",
-    name: "浙J89966",
-  },
-  {
-    key: "6",
-    element: "船舶",
-    name: "华盛778",
-  },
-  {
-    key: "7",
-    element: "船舶",
-    name: "华盛009",
-  },
-]);
-// 关键要素分析表格列配置
-const vesselsTableColumns = [
-  {
-    title: "序号",
-    dataIndex: "index",
-    key: "index",
-    width: 80,
-    align: "center",
-    customRender: ({ text, record, index }) => {
-      return index + 1;
-    },
-  },
-  {
-    title: "事件类型",
-    dataIndex: "eventType",
-    key: "eventType",
-    ellipsis: true,
-    align: "center",
-  },
-  {
-    title: "事件时间",
-    dataIndex: "eventTime",
-    key: "eventTime",
-    ellipsis: true,
-    align: "center",
-  },
-  {
-    title: "操作",
-    key: "action",
-    width: 600,
-  },
-];
-
-// 关键要素分析表格数据
-const vesselsTableData = ref([
-  {
-    key: "1",
-    eventType: "搭靠",
-    eventTime: "2025/09/23 10:00",
-  },
-  {
-    key: "2",
-    eventType: "搭靠",
-    eventTime: "2025/09/23 10:00",
-  },
-  {
-    key: "3",
-    eventType: "搭靠",
-    eventTime: "2025/09/23 10:00",
-  },
-]);
-
-// 树形组织图数据
-const treeData = ref({
-  id: 1,
-  label: "浙J89900",
-  type: "vessel",
-  children: [
-    {
-      id: 2,
-      pid: 1,
-      label: "浙J89900",
-      type: "vessel",
-      children: [],
-    },
-    {
-      id: 2,
-      pid: 1,
-      label: "白岩码头走私冻品案件",
-      type: "case",
-      children: [],
-    },
-    {
-      id: 2,
-      pid: 1,
-      label: "马某某",
-      type: "person",
-      children: [
-        {
-          id: 2,
-          pid: 1,
-          label: "浙J83900",
-          type: "vessel",
-          children: [],
-        },
-      ],
-    },
-    {
-      id: 2,
-      pid: 1,
-      label: "王某某",
-      type: "person",
-      children: [
-        {
-          id: 2,
-          pid: 1,
-          label: "浙J82900",
-          type: "vessel",
-          children: [],
-        },
-      ],
-    },
-  ],
-});
-
-// 港口查询相关数据
-const timeRange = ref(null);
-
-// 航舶航次查询
-const portData = ref([
-  {
-    index: 1,
-    chineseName: "黄骅",
-    englishName: "Huanghua",
-    country: "中国",
-    arrivalTime: "2025/6/15 1:18",
-    berthingTime: "2025/6/16 8:42",
-    departureTime: "2025/6/16 8:42",
-  },
-]);
-
-// 获取节点图标
-const getNodeIcon = (node) => {
-  switch (node.$$data.type) {
-    case "vessel":
-      return "🛥️";
-    case "person":
-      return "👤";
-    case "case":
-      return "📄";
-    default:
-      return "📄";
-  }
-};
-
-// 获取节点样式类
-const getNodeClass = (node) => {
-  const classes = [`${node.type}-node`];
-  if (node.isRed) {
-    classes.push("red");
-  }
-  return classes.join(" ");
-};
-
-// 节点点击事件
-const handleNodeClick = (node) => {
-  console.log("点击节点:", node);
-  message.info(`点击了${node.label}`);
-};
-
-// 监听 visible 变化
-watch(
-  () => props.open,
-  (newVal) => {
-    if (newVal) {
-      // 重置标签页状态
-      activeTab.value = "boatFile";
-      alertCollapseActive.value = ["1"];
-      caseCollapseActive.value = ["1"];
-    }
-  }
-);
-
-// 关闭弹窗
-const handleCancel = () => {
-  emit("update:open", false);
-};
-
-// 设置与取消重点船舶
-const handleSetKeyVessel = () => {
-  emit("setKeyVessel", props.vesselData);
-};
-//  查看轨迹
-const handleViewTrack = (record) => {
-  console.log("查看轨迹:", record);
-};
-
-// 查看要素详情
-const handleViewElementDetail = (record) => {
-  console.log("查看要素详情:", record);
-  message.info(`查看${record.element} ${record.name} 的详情`);
-};
-
-// 港口查询相关方法
-const handlePortQuery = () => {
-  console.log("执行港口查询", timeRange.value);
-  // 这里可以添加查询逻辑
-  message.success("查询成功");
-};
-
-const handleReset = () => {
-  timeRange.value = null;
-  console.log("重置查询条件");
-};
-
-const handleExport = () => {
-  console.log("导出港口数据");
-  message.success("导出成功");
-};
-</script>
 
 <style lang="scss" scoped>
 .vehicle-detail-content {

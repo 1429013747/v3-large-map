@@ -1,3 +1,110 @@
+<script setup>
+import { PlusOutlined } from "@ant-design/icons-vue";
+import { Col, message, Row } from "ant-design-vue";
+import { reactive, ref, watch } from "vue";
+
+// Props
+const props = defineProps({
+  open: {
+    type: Boolean,
+    default: false
+  }
+});
+
+// Emits
+const emit = defineEmits(["update:open", "submit", "cancel"]);
+
+// 表单引用
+const formRef = ref(null);
+
+// 表单数据
+const formData = reactive({
+  name: "",
+  gender: null,
+  vehicleType: null,
+  phone: "",
+  idCard: "",
+  photos: [],
+  status: [false, true, false, false],
+  tagsData: ["前科人员", "非本地", "涉案人员", "失业人员"]
+});
+// const tagsData = reactive(["前科人员", "非本地", "涉案人员", "失业人员"]);
+// 表单验证规则
+const formRules = {
+  name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
+  gender: [{ required: true, message: "请选择性别", trigger: "change" }],
+  vehicleType: [
+    { required: true, message: "请选择证件类型", trigger: "change" }
+  ],
+  idCard: [{ required: true, message: "请输入证件号码", trigger: "blur" }]
+};
+
+// 监听 visible 变化，重置表单
+watch(
+  () => props.open,
+  (newVal) => {
+    if (newVal) {
+      resetForm();
+    }
+  }
+);
+
+// 重置表单
+function resetForm() {
+  formData.name = "";
+  formData.gender = null;
+  formData.vehicleType = null;
+  formData.idCard = "";
+  formData.phone = "";
+  formData.status = [false, true, false, false];
+  formRef.value?.resetFields();
+}
+function handleChange(tag, checked) {
+  console.log(tag, checked);
+}
+// 提交表单
+async function handleSubmit() {
+  try {
+    await formRef.value.validate();
+
+    // 触发提交事件
+    emit("submit", { ...formData });
+
+    // 关闭弹窗
+    emit("update:open", false);
+  }
+  catch (error) {
+    console.log("表单验证失败:", error);
+  }
+}
+
+// 取消表单
+function handleCancel() {
+  emit("update:open", false);
+}
+
+// 文件上传前的处理
+function beforeUpload(file) {
+  const isImage = file.type.startsWith("image/");
+  if (!isImage) {
+    message.error("只能上传图片文件!");
+    return false;
+  }
+  const isLt2M = file.size / 1024 / 1024 < 2;
+  if (!isLt2M) {
+    message.error("图片大小不能超过 2MB!");
+    return false;
+  }
+  return false; // 阻止自动上传
+}
+
+// 图片预览
+function handlePreview(file) {
+  console.log("预览图片:", file);
+  // 这里可以添加图片预览逻辑
+}
+</script>
+
 <template>
   <a-modal
     :open="open"
@@ -5,10 +112,10 @@
     :width="700"
     :centered="true"
     :mask-closable="false"
-    getContainer=".ui-container"
+    get-container=".ui-container"
+    class="modal-container"
     @ok="handleSubmit"
     @cancel="handleCancel"
-    class="modal-container"
   >
     <a-form
       ref="formRef"
@@ -26,8 +133,12 @@
         <Col :span="12">
           <a-form-item label="性别" name="gender" required>
             <a-select v-model:value="formData.gender" placeholder="请选择性别">
-              <a-select-option value="男">男</a-select-option>
-              <a-select-option value="女">女</a-select-option>
+              <a-select-option value="男">
+                男
+              </a-select-option>
+              <a-select-option value="女">
+                女
+              </a-select-option>
             </a-select>
           </a-form-item>
         </Col>
@@ -40,10 +151,18 @@
               v-model:value="formData.vehicleType"
               placeholder="请选择证件类型"
             >
-              <a-select-option value="身份证">身份证</a-select-option>
-              <a-select-option value="护照">护照</a-select-option>
-              <a-select-option value="驾驶证">驾驶证</a-select-option>
-              <a-select-option value="其他">其他</a-select-option>
+              <a-select-option value="身份证">
+                身份证
+              </a-select-option>
+              <a-select-option value="护照">
+                护照
+              </a-select-option>
+              <a-select-option value="驾驶证">
+                驾驶证
+              </a-select-option>
+              <a-select-option value="其他">
+                其他
+              </a-select-option>
             </a-select>
           </a-form-item>
         </Col>
@@ -68,7 +187,7 @@
       </Row>
       <Row :gutter="16">
         <Col :span="20">
-          <a-form-item label="人员标签" name="status" :labelCol="{ span: 4 }">
+          <a-form-item label="人员标签" name="status" :label-col="{ span: 4 }">
             <a-checkable-tag
               v-for="(tag, index) in formData.tagsData"
               :key="tag"
@@ -83,7 +202,7 @@
 
       <Row :gutter="16">
         <Col :span="20">
-          <a-form-item label="人员照片" :labelCol="{ span: 4 }">
+          <a-form-item label="人员照片" :label-col="{ span: 4 }">
             <a-upload
               v-model:file-list="formData.photos"
               list-type="picture-card"
@@ -91,10 +210,12 @@
               :before-upload="beforeUpload"
               @preview="handlePreview"
             >
-              <template #previewIcon> </template>
+              <template #previewIcon />
               <div v-if="formData.photos.length < 3">
                 <PlusOutlined />
-                <div style="margin-top: 8px">上传人员照片</div>
+                <div style="margin-top: 8px">
+                  上传人员照片
+                </div>
               </div>
             </a-upload>
           </a-form-item>
@@ -103,112 +224,6 @@
     </a-form>
   </a-modal>
 </template>
-
-<script setup>
-import { ref, reactive, watch } from "vue";
-import { message, Row, Col } from "ant-design-vue";
-import { PlusOutlined } from "@ant-design/icons-vue";
-
-// Props
-const props = defineProps({
-  open: {
-    type: Boolean,
-    default: false,
-  },
-});
-
-// Emits
-const emit = defineEmits(["update:open", "submit", "cancel"]);
-
-// 表单引用
-const formRef = ref(null);
-
-// 表单数据
-const formData = reactive({
-  name: "",
-  gender: null,
-  vehicleType: null,
-  phone: "",
-  idCard: "",
-  photos: [],
-  status: [false, true, false, false],
-  tagsData: ["前科人员", "非本地", "涉案人员", "失业人员"],
-});
-// const tagsData = reactive(["前科人员", "非本地", "涉案人员", "失业人员"]);
-// 表单验证规则
-const formRules = {
-  name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
-  gender: [{ required: true, message: "请选择性别", trigger: "change" }],
-  vehicleType: [
-    { required: true, message: "请选择证件类型", trigger: "change" },
-  ],
-  idCard: [{ required: true, message: "请输入证件号码", trigger: "blur" }],
-};
-
-// 监听 visible 变化，重置表单
-watch(
-  () => props.open,
-  (newVal) => {
-    if (newVal) {
-      resetForm();
-    }
-  }
-);
-
-// 重置表单
-const resetForm = () => {
-  formData.name = "";
-  formData.gender = null;
-  formData.vehicleType = null;
-  formData.idCard = "";
-  formData.phone = "";
-  formData.status = [false, true, false, false];
-  formRef.value?.resetFields();
-};
-const handleChange = (tag, checked) => {
-  console.log(tag, checked);
-};
-// 提交表单
-const handleSubmit = async () => {
-  try {
-    await formRef.value.validate();
-
-    // 触发提交事件
-    emit("submit", { ...formData });
-
-    // 关闭弹窗
-    emit("update:open", false);
-  } catch (error) {
-    console.log("表单验证失败:", error);
-  }
-};
-
-// 取消表单
-const handleCancel = () => {
-  emit("update:open", false);
-};
-
-// 文件上传前的处理
-const beforeUpload = (file) => {
-  const isImage = file.type.startsWith("image/");
-  if (!isImage) {
-    message.error("只能上传图片文件!");
-    return false;
-  }
-  const isLt2M = file.size / 1024 / 1024 < 2;
-  if (!isLt2M) {
-    message.error("图片大小不能超过 2MB!");
-    return false;
-  }
-  return false; // 阻止自动上传
-};
-
-// 图片预览
-const handlePreview = (file) => {
-  console.log("预览图片:", file);
-  // 这里可以添加图片预览逻辑
-};
-</script>
 
 <style lang="scss" scoped>
 .modal-container {

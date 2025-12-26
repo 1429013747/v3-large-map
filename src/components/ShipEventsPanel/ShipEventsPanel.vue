@@ -1,166 +1,7 @@
-<template>
-  <a-drawer
-    v-model:open="visibleModal"
-    title="船舶关注事件"
-    placement="right"
-    getContainer=".ui-container"
-    :width="580"
-    :closable="true"
-    :mask="false"
-    rootClassName="layer-box"
-    class="layer-control-drawer"
-  >
-    <template #closeIcon>
-      <CloseOutlined @click="handleClose" />
-    </template>
-    <div class="search-section">
-      <div class="filter-row">
-        <div class="filter-row-item">
-          <div class="filter-row-item-dropdown">
-            <a-dropdown>
-              <a class="ant-dropdown-link" @click.prevent>
-                {{ timeFilter || "时间" }}
-                <DownOutlined />
-              </a>
-              <template #overlay>
-                <a-menu>
-                  <a-menu-item @click="handleTimeChange('今天')">
-                    今天
-                  </a-menu-item>
-                  <a-menu-item @click="handleTimeChange('本周')">
-                    本周
-                  </a-menu-item>
-                  <a-menu-item @click="handleTimeChange('本月')">
-                    本月
-                  </a-menu-item>
-                </a-menu>
-              </template>
-            </a-dropdown>
-          </div>
-
-          <div class="filter-row-item-dropdown">
-            <a-dropdown>
-              <a class="ant-dropdown-link" @click.prevent>
-                {{ locationFilter || "位置" }}
-                <DownOutlined />
-              </a>
-              <template #overlay>
-                <a-menu>
-                  <a-menu-item @click="handleLocationChange('位置1')">
-                    位置1
-                  </a-menu-item>
-                  <a-menu-item @click="handleLocationChange('位置2')">
-                    位置2
-                  </a-menu-item>
-                  <a-menu-item @click="handleLocationChange('位置3')">
-                    位置3
-                  </a-menu-item>
-                </a-menu>
-              </template>
-            </a-dropdown>
-          </div>
-        </div>
-        <div class="filter-row-item2">
-          MMSI:
-          <a-input
-            v-model:value="mmsiFilter"
-            placeholder=""
-            style="width: 120px; flex: 0.65"
-          />
-
-          <a-button
-            type="primary"
-            style="flex: 0.1725"
-            size="small"
-            @click="handleQuery"
-            class="query-btn"
-          >
-            查询
-          </a-button>
-          <a-button
-            @click="handleReset"
-            style="flex: 0.1725"
-            class="reset-btn"
-            size="small"
-          >
-            重置
-          </a-button>
-          <a-dropdown>
-            <a-button class="export-btn" size="small">
-              导出全部
-              <DownOutlined />
-            </a-button>
-            <template #overlay>
-              <a-menu>
-                <a-menu-item key="excel">导出Excel</a-menu-item>
-                <a-menu-item key="pdf">导出PDF</a-menu-item>
-                <a-menu-item key="csv">导出CSV</a-menu-item>
-              </a-menu>
-            </template>
-          </a-dropdown>
-        </div>
-      </div>
-    </div>
-    <!-- 船舶关注事件列表 -->
-    <div class="ship-events-table">
-      <a-table
-        :columns="shipEventColumns"
-        :data-source="shipEventData"
-        :pagination="false"
-        size="small"
-        class="ship-events-table-content"
-      >
-        <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'operation'">
-            <a-button
-              type="link"
-              @click="onViewDetail"
-              size="small"
-              class="detail-btn"
-            >
-              详情
-            </a-button>
-          </template>
-        </template>
-      </a-table>
-    </div>
-  </a-drawer>
-  <a-modal
-    v-model:open="detailVisible"
-    title="船舶分析"
-    class="modal-container _track-list-modal"
-    :footer="false"
-    :mask="false"
-    getContainer=".ui-container"
-    :width="800"
-  >
-    <a-table
-      :columns="shipTableColumns"
-      :data-source="shipTableData"
-      :pagination="false"
-      :scroll="{ y: 340 }"
-      class="elements-table"
-      size="small"
-    >
-      <template #bodyCell="{ column, record }">
-        <template v-if="column.key === 'element'">
-          <div class="element-type">
-            {{ record.element }}
-          </div>
-        </template>
-        <template v-if="column.key === 'action'">
-          <a-button type="link" size="small" class="action-btn">
-            详情
-          </a-button>
-        </template>
-      </template>
-    </a-table>
-  </a-modal>
-</template>
-
 <script setup>
-import { ref, computed } from "vue";
 import { CloseOutlined } from "@ant-design/icons-vue";
+import { computed, ref } from "vue";
+
 const props = defineProps({
   open: {
     type: Boolean,
@@ -270,7 +111,7 @@ const shipTableColumns = [
     key: "index",
     width: 80,
     align: "center",
-    customRender: ({ text, record, index }) => {
+    customRender: ({ index }) => {
       return index + 1;
     },
   },
@@ -334,32 +175,198 @@ const shipTableData = ref([
   },
 ]);
 
-const handleClose = () => {
+function handleClose() {
   emit("update:open", false);
-};
-const handleTimeChange = (time) => {
+}
+function handleTimeChange(time) {
   console.log("时间", time);
   timeFilter.value = time;
-};
-const handleLocationChange = (location) => {
+}
+function handleLocationChange(location) {
   console.log("位置", location);
   locationFilter.value = location;
-};
+}
 
-const handleQuery = () => {
+function handleQuery() {
   console.log("查询");
-};
-const onViewDetail = () => {
+}
+function onViewDetail() {
   detailVisible.value = true;
   visibleModal.value = false;
-};
+}
 
-const handleReset = () => {
+function handleReset() {
   timeFilter.value = "";
   locationFilter.value = "";
   mmsiFilter.value = "";
-};
+}
 </script>
+
+<template>
+  <a-drawer
+    v-model:open="visibleModal"
+    title="船舶关注事件"
+    placement="right"
+    get-container=".ui-container"
+    :width="580"
+    :closable="true"
+    :mask="false"
+    root-class-name="layer-box"
+    class="layer-control-drawer"
+  >
+    <template #closeIcon>
+      <CloseOutlined @click="handleClose" />
+    </template>
+    <div class="search-section">
+      <div class="filter-row">
+        <div class="filter-row-item">
+          <div class="filter-row-item-dropdown">
+            <a-dropdown>
+              <a class="ant-dropdown-link" @click.prevent>
+                {{ timeFilter || "时间" }}
+                <DownOutlined />
+              </a>
+              <template #overlay>
+                <a-menu>
+                  <a-menu-item @click="handleTimeChange('今天')">
+                    今天
+                  </a-menu-item>
+                  <a-menu-item @click="handleTimeChange('本周')">
+                    本周
+                  </a-menu-item>
+                  <a-menu-item @click="handleTimeChange('本月')">
+                    本月
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
+          </div>
+
+          <div class="filter-row-item-dropdown">
+            <a-dropdown>
+              <a class="ant-dropdown-link" @click.prevent>
+                {{ locationFilter || "位置" }}
+                <DownOutlined />
+              </a>
+              <template #overlay>
+                <a-menu>
+                  <a-menu-item @click="handleLocationChange('位置1')">
+                    位置1
+                  </a-menu-item>
+                  <a-menu-item @click="handleLocationChange('位置2')">
+                    位置2
+                  </a-menu-item>
+                  <a-menu-item @click="handleLocationChange('位置3')">
+                    位置3
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
+          </div>
+        </div>
+        <div class="filter-row-item2">
+          MMSI:
+          <a-input
+            v-model:value="mmsiFilter"
+            placeholder=""
+            style="width: 120px; flex: 0.65"
+          />
+
+          <a-button
+            type="primary"
+            style="flex: 0.1725"
+            size="small"
+            class="query-btn"
+            @click="handleQuery"
+          >
+            查询
+          </a-button>
+          <a-button
+            style="flex: 0.1725"
+            class="reset-btn"
+            size="small"
+            @click="handleReset"
+          >
+            重置
+          </a-button>
+          <a-dropdown>
+            <a-button class="export-btn" size="small">
+              导出全部
+              <DownOutlined />
+            </a-button>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item key="excel">
+                  导出Excel
+                </a-menu-item>
+                <a-menu-item key="pdf">
+                  导出PDF
+                </a-menu-item>
+                <a-menu-item key="csv">
+                  导出CSV
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+        </div>
+      </div>
+    </div>
+    <!-- 船舶关注事件列表 -->
+    <div class="ship-events-table">
+      <a-table
+        :columns="shipEventColumns"
+        :data-source="shipEventData"
+        :pagination="false"
+        size="small"
+        class="ship-events-table-content"
+      >
+        <template #bodyCell="{ column }">
+          <template v-if="column.key === 'operation'">
+            <a-button
+              type="link"
+              size="small"
+              class="detail-btn"
+              @click="onViewDetail"
+            >
+              详情
+            </a-button>
+          </template>
+        </template>
+      </a-table>
+    </div>
+  </a-drawer>
+  <a-modal
+    v-model:open="detailVisible"
+    title="船舶分析"
+    class="modal-container _track-list-modal"
+    :footer="false"
+    :mask="false"
+    get-container=".ui-container"
+    :width="800"
+  >
+    <a-table
+      :columns="shipTableColumns"
+      :data-source="shipTableData"
+      :pagination="false"
+      :scroll="{ y: 340 }"
+      class="elements-table"
+      size="small"
+    >
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'element'">
+          <div class="element-type">
+            {{ record.element }}
+          </div>
+        </template>
+        <template v-if="column.key === 'action'">
+          <a-button type="link" size="small" class="action-btn">
+            详情
+          </a-button>
+        </template>
+      </template>
+    </a-table>
+  </a-modal>
+</template>
 
 <style lang="scss" scoped>
 .search-section {

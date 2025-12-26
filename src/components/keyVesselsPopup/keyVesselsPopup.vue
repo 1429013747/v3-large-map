@@ -1,233 +1,16 @@
-<template>
-  <a-drawer
-    v-model:open="visibleModal"
-    title="重点船舶"
-    placement="left"
-    getContainer=".ui-container"
-    :width="475"
-    :closable="true"
-    :mask="false"
-    class="suspicious-vehicle-drawer"
-  >
-    <template #closeIcon>
-      <img height="24px" src="@/assets/imgs/ship-icon.png" alt="" />
-    </template>
-    <template #extra>
-      <CloseOutlined @click="handleClose" />
-    </template>
-
-    <!-- 搜索和筛选区域 -->
-    <div class="search-section">
-      <div class="filter-row">
-        <div class="filter-row-item">
-          <div class="filter-row-item-dropdown">
-            <a-dropdown>
-              <a class="ant-dropdown-link" @click.prevent>
-                {{ areaFilter || "所属区域" }}
-                <DownOutlined />
-              </a>
-              <template #overlay>
-                <a-menu>
-                  <a-menu-item @click="handleAreaChange('台州市')">
-                    台州市
-                  </a-menu-item>
-                  <a-menu-item @click="handleAreaChange('温岭市')">
-                    温岭市
-                  </a-menu-item>
-                  <a-menu-item @click="handleAreaChange('黄岩区')">
-                    黄岩区
-                  </a-menu-item>
-                </a-menu>
-              </template>
-            </a-dropdown>
-          </div>
-
-          <div class="filter-row-item-dropdown">
-            <a-dropdown>
-              <a class="ant-dropdown-link" @click.prevent>
-                {{ typeFilter || "船舶类型" }}
-                <DownOutlined />
-              </a>
-              <template #overlay>
-                <a-menu>
-                  <a-menu-item @click="handleTypeChange('危险品船')">
-                    危险品船
-                  </a-menu-item>
-                  <a-menu-item @click="handleTypeChange('集装箱船')">
-                    集装箱船
-                  </a-menu-item>
-                  <a-menu-item @click="handleTypeChange('客船')">
-                    客船
-                  </a-menu-item>
-                </a-menu>
-              </template>
-            </a-dropdown>
-          </div>
-        </div>
-        <div class="filter-row-item2">
-          <span class="search-label">船舶名称:</span>
-          <a-input
-            v-model:value="plateFilter"
-            placeholder=""
-            style="width: 120px; flex: 0.65"
-          />
-
-          <a-button
-            type="primary"
-            style="flex: 0.1725"
-            size="small"
-            @click="handleQuery"
-            class="query-btn"
-          >
-            查询
-          </a-button>
-          <a-button
-            @click="handleReset"
-            style="flex: 0.1725"
-            class="reset-btn"
-            size="small"
-          >
-            重置
-          </a-button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 分类标签和操作 -->
-    <div class="category-section">
-      <div class="category-tabs">
-        <a-button
-          :type="activeCategory === 'all' ? 'primary' : 'default'"
-          size="small"
-          @click="handleCategoryChange('all')"
-          class="category-tab"
-        >
-          全部船舶
-        </a-button>
-        <a-button
-          :type="activeCategory === 'key' ? 'primary' : 'default'"
-          size="small"
-          @click="handleCategoryChange('key')"
-          class="category-tab"
-        >
-          重点船舶
-        </a-button>
-      </div>
-
-      <!-- <a-button class="add-btn" size="small" @click="handleAddVessels">
-        + 新增船舶
-      </a-button> -->
-    </div>
-
-    <!-- 船舶列表 -->
-    <div class="vehicle-list">
-      <div
-        v-for="(vessel, index) in filteredVessels"
-        :key="vessel.id"
-        class="vehicle-item"
-        @click.stop="handleVesselsClick(vessel)"
-      >
-        <div class="vehicle-info">
-          <div class="vehicle-basic">
-            <span class="plate-number">船舶名称: {{ vessel.vesselName }}</span>
-            <span class="vehicle-color">类型: {{ vessel.color }}</span>
-          </div>
-          <div v-if="vessel.isKey" class="key-badge">重点船舶</div>
-        </div>
-
-        <div class="vehicle-actions">
-          <a-button
-            v-if="vessel.isKey"
-            type="link"
-            @click.stop="handleCancelKeyVessels(vessel)"
-            class="action-btn"
-          >
-            <StarFilled />
-            取消重点
-          </a-button>
-          <a-button
-            v-else
-            type="link"
-            @click.stop="handleSetKeyVessels(vessel)"
-            class="action-btn"
-          >
-            <StarOutlined />
-            设置重点
-          </a-button>
-
-          <a-button
-            type="link"
-            @click.stop="handleTrack(vessel)"
-            class="action-btn"
-          >
-            <PlayCircleOutlined />
-            轨迹
-          </a-button>
-
-          <a-button
-            type="link"
-            @click.stop="handleDetail(vessel)"
-            class="action-btn"
-          >
-            <FileTextOutlined />
-            详情
-          </a-button>
-        </div>
-      </div>
-    </div>
-  </a-drawer>
-
-  <!-- 车辆详情面板 -->
-
-  <!-- 新增船舶弹窗 -->
-  <AddVesselsModal
-    v-model:open="addVesselsModalVisible"
-    @submit="handleAddVesselsSubmit"
-    @cancel="handleAddVesselsCancel"
-  />
-
-  <!-- 船舶详情弹窗 -->
-  <VesselsDetailModal
-    v-model:open="vesselsDetailModalVisible"
-    :vessel-data="selectedVesselData"
-    @set-key-vessel="setKeyVesselsFromDetail"
-  />
-  <a-modal
-    v-model:open="vesselsVisible"
-    centered
-    :mask="false"
-    width="340px"
-    title="确定设置为重点船舶？"
-    ok-text="确认"
-    cancel-text="取消"
-    getContainer=".ui-container"
-    class="vehicle-detail-modal"
-    :zIndex="99999"
-  >
-    <p class="info-text">
-      标记成功后对其进行为布控，实时分析相关船舶特征行为。
-    </p>
-    <template #footer>
-      <a-button type="primary" @click="onVesselsSubmit">确认</a-button>
-      <a-button @click="onVesselsCancel">取消</a-button>
-    </template>
-  </a-modal>
-</template>
-
 <script setup>
-import { ref, computed, watch } from "vue";
-import AddVesselsModal from "./components/AddVesselsModal.vue";
-import VesselsDetailModal from "./components/keyVesselsModal.vue";
 import { getIconPath } from "@/utils/utilstools";
 import {
-  SearchOutlined,
-  DownOutlined,
-  PlayCircleOutlined,
-  FileTextOutlined,
   CloseOutlined,
+  DownOutlined,
+  FileTextOutlined,
+  PlayCircleOutlined,
   StarFilled,
   StarOutlined,
 } from "@ant-design/icons-vue";
+import { computed, ref } from "vue";
+import AddVesselsModal from "./components/AddVesselsModal.vue";
+import VesselsDetailModal from "./components/keyVesselsModal.vue";
 
 // Props
 const props = defineProps({
@@ -531,47 +314,47 @@ const filteredVessels = computed(() => {
   return filtered;
 });
 
-const handleClose = () => {
+function handleClose() {
   emit("update:open", false);
-};
+}
 
-const handleQuery = () => {
+function handleQuery() {
   console.log("查询:", searchKeyword.value);
-};
+}
 
-const handleReset = () => {
+function handleReset() {
   searchKeyword.value = "";
   typeFilter.value = "";
   areaFilter.value = "";
   plateFilter.value = "";
   activeCategory.value = "all";
-};
+}
 
-const handleSearch = () => {
+function handleSearch() {
   console.log("搜索:", searchKeyword.value);
-};
+}
 
-const handleTypeChange = (type) => {
+function handleTypeChange(type) {
   typeFilter.value = type;
-};
+}
 
-const handleAreaChange = (area) => {
+function handleAreaChange(area) {
   areaFilter.value = area;
-};
+}
 
-const handleCategoryChange = (category) => {
+function handleCategoryChange(category) {
   activeCategory.value = category;
-};
+}
 
-const handleVesselsClick = (vessel) => {
+function handleVesselsClick(vessel) {
   emit("vessels-click", vessel);
-};
+}
 
-const handleTrack = (vessel) => {
+function handleTrack(vessel) {
   emit("track-back", vessel);
-};
+}
 
-const handleDetail = (vessel) => {
+function handleDetail(vessel) {
   selectedVessel.value = vessel;
   if (typeof vessel !== "object") {
     selectedVessel.value = vessels.value.find((el) => el.markerId === vessel);
@@ -618,41 +401,41 @@ const handleDetail = (vessel) => {
     ],
   };
   vesselsDetailModalVisible.value = true;
-};
+}
 
-const handleDetailClose = () => {
+function handleDetailClose() {
   vesselsDetailDrawerVisible.value = false;
-};
+}
 
-const handleAddVessels = () => {
+function handleAddVessels() {
   addVesselsModalVisible.value = true;
-};
+}
 
 // 新增船舶表单提交
-const handleAddVesselsSubmit = (formData) => {
+function handleAddVesselsSubmit(formData) {
   // 这里可以添加提交逻辑
   emit("add-vessels", formData);
   vessels.value.push(formData);
-};
+}
 
 // 新增车辆表单取消
-const handleAddVesselsCancel = () => {
+function handleAddVesselsCancel() {
   console.log("取消新增船舶");
-};
+}
 
-const handleSetKeyVessels = (vessel) => {
+function handleSetKeyVessels(vessel) {
   vesselsVisible.value = true;
   selectedVessel.value = vessel;
-};
+}
 
-const handleCancelKeyVessels = (vessel) => {
+function handleCancelKeyVessels(vessel) {
   vessel.isKey = false;
   emit("cancel-key", vessel);
   console.log("取消重点:", vessel);
-};
+}
 
 // 从详情弹窗设置重点船舶
-const setKeyVesselsFromDetail = (vesselsData) => {
+function setKeyVesselsFromDetail(vesselsData) {
   const vessel = vessels.value.find((v) => v.id === vesselsData.id);
   // 如果已经设置为重点船舶，则取消重点
   if (selectedVesselData.value.isKey) {
@@ -662,26 +445,248 @@ const setKeyVesselsFromDetail = (vesselsData) => {
   }
   vesselsVisible.value = true;
   selectedVessel.value = vessel;
-};
+}
 
-const onVesselsSubmit = () => {
+function onVesselsSubmit() {
   selectedVessel.value.isKey = true;
   vesselsVisible.value = false;
   // 设置为重点
   if (selectedVesselData.value) {
     selectedVesselData.value.isKey = true;
   }
-};
+}
 
-const onVesselsCancel = () => {
+function onVesselsCancel() {
   vesselsVisible.value = false;
-};
+}
 
 defineExpose({
   handleVesselsClick,
   handleDetail,
 });
 </script>
+
+<template>
+  <a-drawer
+    v-model:open="visibleModal"
+    title="重点船舶"
+    placement="left"
+    get-container=".ui-container"
+    :width="475"
+    :closable="true"
+    :mask="false"
+    class="suspicious-vehicle-drawer"
+  >
+    <template #closeIcon>
+      <img height="24px" src="@/assets/imgs/ship-icon.png" alt="">
+    </template>
+    <template #extra>
+      <CloseOutlined @click="handleClose" />
+    </template>
+
+    <!-- 搜索和筛选区域 -->
+    <div class="search-section">
+      <div class="filter-row">
+        <div class="filter-row-item">
+          <div class="filter-row-item-dropdown">
+            <a-dropdown>
+              <a class="ant-dropdown-link" @click.prevent>
+                {{ areaFilter || "所属区域" }}
+                <DownOutlined />
+              </a>
+              <template #overlay>
+                <a-menu>
+                  <a-menu-item @click="handleAreaChange('台州市')">
+                    台州市
+                  </a-menu-item>
+                  <a-menu-item @click="handleAreaChange('温岭市')">
+                    温岭市
+                  </a-menu-item>
+                  <a-menu-item @click="handleAreaChange('黄岩区')">
+                    黄岩区
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
+          </div>
+
+          <div class="filter-row-item-dropdown">
+            <a-dropdown>
+              <a class="ant-dropdown-link" @click.prevent>
+                {{ typeFilter || "船舶类型" }}
+                <DownOutlined />
+              </a>
+              <template #overlay>
+                <a-menu>
+                  <a-menu-item @click="handleTypeChange('危险品船')">
+                    危险品船
+                  </a-menu-item>
+                  <a-menu-item @click="handleTypeChange('集装箱船')">
+                    集装箱船
+                  </a-menu-item>
+                  <a-menu-item @click="handleTypeChange('客船')">
+                    客船
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
+          </div>
+        </div>
+        <div class="filter-row-item2">
+          <span class="search-label">船舶名称:</span>
+          <a-input
+            v-model:value="plateFilter"
+            placeholder=""
+            style="width: 120px; flex: 0.65"
+          />
+
+          <a-button
+            type="primary"
+            style="flex: 0.1725"
+            size="small"
+            class="query-btn"
+            @click="handleQuery"
+          >
+            查询
+          </a-button>
+          <a-button
+            style="flex: 0.1725"
+            class="reset-btn"
+            size="small"
+            @click="handleReset"
+          >
+            重置
+          </a-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 分类标签和操作 -->
+    <div class="category-section">
+      <div class="category-tabs">
+        <a-button
+          :type="activeCategory === 'all' ? 'primary' : 'default'"
+          size="small"
+          class="category-tab"
+          @click="handleCategoryChange('all')"
+        >
+          全部船舶
+        </a-button>
+        <a-button
+          :type="activeCategory === 'key' ? 'primary' : 'default'"
+          size="small"
+          class="category-tab"
+          @click="handleCategoryChange('key')"
+        >
+          重点船舶
+        </a-button>
+      </div>
+
+      <!-- <a-button class="add-btn" size="small" @click="handleAddVessels">
+        + 新增船舶
+      </a-button> -->
+    </div>
+
+    <!-- 船舶列表 -->
+    <div class="vehicle-list">
+      <div
+        v-for="vessel in filteredVessels"
+        :key="vessel.id"
+        class="vehicle-item"
+        @click.stop="handleVesselsClick(vessel)"
+      >
+        <div class="vehicle-info">
+          <div class="vehicle-basic">
+            <span class="plate-number">船舶名称: {{ vessel.vesselName }}</span>
+            <span class="vehicle-color">类型: {{ vessel.color }}</span>
+          </div>
+          <div v-if="vessel.isKey" class="key-badge">
+            重点船舶
+          </div>
+        </div>
+
+        <div class="vehicle-actions">
+          <a-button
+            v-if="vessel.isKey"
+            type="link"
+            class="action-btn"
+            @click.stop="handleCancelKeyVessels(vessel)"
+          >
+            <StarFilled />
+            取消重点
+          </a-button>
+          <a-button
+            v-else
+            type="link"
+            class="action-btn"
+            @click.stop="handleSetKeyVessels(vessel)"
+          >
+            <StarOutlined />
+            设置重点
+          </a-button>
+
+          <a-button
+            type="link"
+            class="action-btn"
+            @click.stop="handleTrack(vessel)"
+          >
+            <PlayCircleOutlined />
+            轨迹
+          </a-button>
+
+          <a-button
+            type="link"
+            class="action-btn"
+            @click.stop="handleDetail(vessel)"
+          >
+            <FileTextOutlined />
+            详情
+          </a-button>
+        </div>
+      </div>
+    </div>
+  </a-drawer>
+
+  <!-- 车辆详情面板 -->
+
+  <!-- 新增船舶弹窗 -->
+  <AddVesselsModal
+    v-model:open="addVesselsModalVisible"
+    @submit="handleAddVesselsSubmit"
+    @cancel="handleAddVesselsCancel"
+  />
+
+  <!-- 船舶详情弹窗 -->
+  <VesselsDetailModal
+    v-model:open="vesselsDetailModalVisible"
+    :vessel-data="selectedVesselData"
+    @set-key-vessel="setKeyVesselsFromDetail"
+  />
+  <a-modal
+    v-model:open="vesselsVisible"
+    centered
+    :mask="false"
+    width="340px"
+    title="确定设置为重点船舶？"
+    ok-text="确认"
+    cancel-text="取消"
+    get-container=".ui-container"
+    class="vehicle-detail-modal"
+    :z-index="99999"
+  >
+    <p class="info-text">
+      标记成功后对其进行为布控，实时分析相关船舶特征行为。
+    </p>
+    <template #footer>
+      <a-button type="primary" @click="onVesselsSubmit">
+        确认
+      </a-button>
+      <a-button @click="onVesselsCancel">
+        取消
+      </a-button>
+    </template>
+  </a-modal>
+</template>
 
 <style lang="scss" scoped>
 .suspicious-vehicle-drawer {

@@ -26,11 +26,10 @@ const loadingInstances = new Map();
 /**
  * 创建 loading 实例
  * @param {HTMLElement} el - 目标元素
- * @param {Object} options - 配置选项
- * @returns {Object} loading 实例
+ * @param {object} options - 配置选项
+ * @returns {object} loading 实例
  */
 function createLoadingInstance(el, options = {}) {
-
   const container = document.createElement('div');
   container.className = 'v-loading-container';
 
@@ -46,7 +45,7 @@ function createLoadingInstance(el, options = {}) {
   const loadingHTML = `
     <div class="loading-overlay" style="background: ${options.background || 'rgba(0, 0, 0, 0.7)'}">
       <div class="loading-container">
-        <div class="loading-spinner ${'spinner-' + (options.spinner || 'default')} ${options.size || 'medium'}">
+        <div class="loading-spinner ${`spinner-${options.spinner || 'default'}`} ${options.size || 'medium'}">
           ${getSpinnerHTML(options.spinner || 'default')}
         </div>
         ${options.text ? `<div class="loading-text" style="color: ${options.color || '#00ffff'}">${options.text}</div>` : ''}
@@ -55,7 +54,6 @@ function createLoadingInstance(el, options = {}) {
   `;
 
   container.innerHTML = loadingHTML;
-
 
   return {
     container,
@@ -104,13 +102,12 @@ function getSpinnerHTML(spinner) {
 /**
  * 获取或创建 loading 实例
  * @param {HTMLElement} el - 目标元素
- * @param {Object} options - 配置选项
- * @returns {Object} loading 实例
+ * @param {object} options - 配置选项
+ * @returns {object} loading 实例
  */
 function getLoadingInstance(el, options = {}) {
   const key = el.getAttribute('data-loading-key') || 'default';
   const instanceKey = `${el}_${key}`;
-
 
   if (!loadingInstances.has(instanceKey)) {
     const instance = createLoadingInstance(el, options);
@@ -151,7 +148,6 @@ export const vLoading = {
       color: typeof value === 'object' ? value.color : '#00ffff'
     };
 
-
     if (modifiers.body) {
       options.background = 'rgba(0, 0, 0, 0.8)';
       el = document.body;
@@ -174,7 +170,8 @@ export const vLoading = {
     if (value !== oldValue) {
       if (value === true || (typeof value === 'object' && value.show)) {
         showLoading(el);
-      } else {
+      }
+      else {
         hideLoading(el);
       }
     }
@@ -211,9 +208,9 @@ function hideLoading(el) {
 export const loading = {
   /**
    * 显示 loading
-   * @param {HTMLElement|String} target - 目标元素或选择器
-   * @param {Object} options - 配置选项
-   * @returns {Object} loading 实例
+   * @param {HTMLElement | string} target - 目标元素或选择器
+   * @param {object} options - 配置选项
+   * @returns {object} loading 实例
    */
   show(target, options = {}) {
     const el = typeof target === 'string' ? document.querySelector(target) : target;
@@ -228,7 +225,7 @@ export const loading = {
 
   /**
    * 隐藏 loading
-   * @param {HTMLElement|String} target - 目标元素或选择器
+   * @param {HTMLElement | string} target - 目标元素或选择器
    */
   hide(target) {
     const el = typeof target === 'string' ? document.querySelector(target) : target;
@@ -241,14 +238,15 @@ export const loading = {
 
   /**
    * 切换 loading 状态
-   * @param {HTMLElement|String} target - 目标元素或选择器
-   * @param {Boolean} show - 是否显示
-   * @param {Object} options - 配置选项
+   * @param {HTMLElement | string} target - 目标元素或选择器
+   * @param {boolean} show - 是否显示
+   * @param {object} options - 配置选项
    */
   toggle(target, show, options = {}) {
     if (show) {
       return this.show(target, options);
-    } else {
+    }
+    else {
       this.hide(target);
     }
   },
@@ -257,7 +255,7 @@ export const loading = {
    * 清理所有 loading 实例
    */
   clear() {
-    loadingInstances.forEach(instance => {
+    loadingInstances.forEach((instance) => {
       instance.destroy();
     });
     loadingInstances.clear();

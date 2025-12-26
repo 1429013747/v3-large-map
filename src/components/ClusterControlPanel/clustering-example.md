@@ -16,8 +16,8 @@
 通过右侧工具栏的聚合控制按钮可以打开聚合控制面板，面板提供以下功能：
 
 - **聚合开关**：全局启用/禁用聚合功能
-- **聚合距离控制**：调整标记点聚合的距离阈值（10-100像素）
-- **最小聚合距离**：设置最小聚合距离（5-50像素）
+- **聚合距离控制**：调整标记点聚合的距离阈值（10-100 像素）
+- **最小聚合距离**：设置最小聚合距离（5-50 像素）
 - **图层聚合控制**：分别控制不同类型图层的聚合状态
 - **聚合信息显示**：显示总标记点数、聚合数量、压缩比等统计信息
 - **聚合样式预览**：预览不同数量级别的聚合样式
@@ -26,9 +26,9 @@
 
 聚合标记点根据包含的标记点数量显示不同样式：
 
-- **1-5个标记点**：绿色圆圈
-- **6-10个标记点**：黄色圆圈
-- **11-20个标记点**：橙色圆圈
+- **1-5 个标记点**：绿色圆圈
+- **6-10 个标记点**：黄色圆圈
+- **11-20 个标记点**：橙色圆圈
 - **20+个标记点**：红色圆圈
 
 圆圈大小和颜色会根据标记点数量动态调整。
@@ -39,47 +39,47 @@
 
 ```javascript
 // 在组件中使用聚合功能
-import { useMapMarkers } from '@/composables/useMapMarkers.js';
+import { useMapMarkers } from "@/composables/useMapMarkers.js";
 
 const mapMarkersConfig = useMapMarkers(mapInstance);
 
 // 启用指定类型的聚合
-mapMarkersConfig.enableClustering('car', {
-  distance: 40,        // 聚合距离
-  minDistance: 20      // 最小聚合距离
+mapMarkersConfig.enableClustering("car", {
+  distance: 40, // 聚合距离
+  minDistance: 20, // 最小聚合距离
 });
 
 // 禁用聚合
-mapMarkersConfig.disableClustering('car');
+mapMarkersConfig.disableClustering("car");
 
 // 切换聚合状态
-mapMarkersConfig.toggleClustering('car', true);
+mapMarkersConfig.toggleClustering("car", true);
 ```
 
 ### 2. 聚合配置
 
 ```javascript
 // 设置聚合距离
-mapMarkersConfig.setClusterDistanceForType('car', 50);
+mapMarkersConfig.setClusterDistanceForType("car", 50);
 
 // 获取聚合信息
-const clusterInfo = mapMarkersConfig.getClusterInfoForType('car');
-console.log('聚合信息:', clusterInfo);
+const clusterInfo = mapMarkersConfig.getClusterInfoForType("car");
+console.log("聚合信息:", clusterInfo);
 // 输出: { totalFeatures: 100, clusters: 15, clusterFeatures: 15 }
 
 // 刷新聚合图层
-mapMarkersConfig.refreshClusterLayer('car');
+mapMarkersConfig.refreshClusterLayer("car");
 ```
 
 ### 3. 批量操作
 
 ```javascript
 // 为多个图层启用聚合
-const layerTypes = ['car', 'ship', 'risk-point'];
-layerTypes.forEach(type => {
+const layerTypes = ["car", "ship", "risk-point"];
+layerTypes.forEach((type) => {
   mapMarkersConfig.enableClustering(type, {
     distance: 40,
-    minDistance: 20
+    minDistance: 20,
   });
 });
 ```
@@ -92,24 +92,24 @@ layerTypes.forEach(type => {
 const clusterConfig = {
   // 聚合样式配置
   clusterStyle: {
-    radius: 20,           // 基础半径
-    fill: '#1890ff',      // 填充颜色
-    stroke: '#ffffff',    // 边框颜色
-    strokeWidth: 2,       // 边框宽度
-    textColor: '#ffffff', // 文字颜色
-    textSize: 12,         // 文字大小
-    textWeight: 'bold'    // 文字粗细
+    radius: 20, // 基础半径
+    fill: "#1890ff", // 填充颜色
+    stroke: "#ffffff", // 边框颜色
+    strokeWidth: 2, // 边框宽度
+    textColor: "#ffffff", // 文字颜色
+    textSize: 12, // 文字大小
+    textWeight: "bold", // 文字粗细
   },
   // 单个标记样式配置
   markerStyle: {
     radius: 8,
-    fill: '#ff4444',
-    stroke: '#ffffff',
-    strokeWidth: 2
+    fill: "#ff4444",
+    stroke: "#ffffff",
+    strokeWidth: 2,
   },
   // 聚合距离配置
-  distance: 40,           // 聚合距离（像素）
-  minDistance: 20         // 最小聚合距离（像素）
+  distance: 40, // 聚合距离（像素）
+  minDistance: 20, // 最小聚合距离（像素）
 };
 ```
 
@@ -126,7 +126,7 @@ const clusterConfig = {
 2. 聚合后原始标记点图层会被隐藏
 3. 聚合图层支持点击事件，可以获取聚合包含的原始标记点
 4. 聚合样式会根据标记点数量自动调整
-5. 建议在标记点数量超过100个时启用聚合功能
+5. 建议在标记点数量超过 100 个时启用聚合功能
 
 ## 示例代码
 
@@ -136,50 +136,50 @@ export default {
   setup() {
     const map = ref(null);
     const mapMarkersConfig = ref(null);
-    
+
     const onMapReady = (mapInstance) => {
       map.value = mapInstance;
       mapMarkersConfig.value = useMapMarkers(mapInstance);
-      
+
       // 添加一些标记点
       addSampleMarkers();
-      
+
       // 启用聚合
       setTimeout(() => {
-        mapMarkersConfig.value.enableClustering('car', {
+        mapMarkersConfig.value.enableClustering("car", {
           distance: 40,
-          minDistance: 20
+          minDistance: 20,
         });
       }, 1000);
     };
-    
-    const addSampleMarkers = () => {
+
+    function addSampleMarkers() {
       // 添加示例标记点
       for (let i = 0; i < 50; i++) {
-        mapMarkersConfig.value.addMarker([
-          120 + Math.random() * 0.1,
-          30 + Math.random() * 0.1
-        ], {
-          type: 'car',
-          useTypeLayer: true,
-          style: {
-            icon: {
-              src: '/path/to/icon.png',
-              size: [32, 32]
-            }
-          },
-          data: {
-            title: `车辆 ${i + 1}`,
-            popupType: 'car'
+        mapMarkersConfig.value.addMarker(
+          [120 + Math.random() * 0.1, 30 + Math.random() * 0.1],
+          {
+            type: "car",
+            useTypeLayer: true,
+            style: {
+              icon: {
+                src: "/path/to/icon.png",
+                size: [32, 32],
+              },
+            },
+            data: {
+              title: `车辆 ${i + 1}`,
+              popupType: "car",
+            },
           }
-        });
+        );
       }
-    };
-    
+    }
+
     return {
-      onMapReady
+      onMapReady,
     };
-  }
+  },
 };
 ```
 

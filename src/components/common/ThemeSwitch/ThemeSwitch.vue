@@ -1,62 +1,6 @@
-<template>
-  <div class="theme-switch">
-    <!-- 主题切换按钮 -->
-    <div class="theme-toggle-btn" @click="toggleSelector" :title="themeStore.isDark ? '切换到浅色主题' : '切换到深色主题'">
-      <div class="theme-icon">
-        <!-- 太阳图标 - 浅色主题 -->
-        <svg v-if="!themeStore.isDark" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
-          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        <!-- 月亮图标 - 深色主题 -->
-        <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <span class="theme-text">{{ themeStore.isDark ? '深色' : '浅色' }}</span>
-    </div>
-
-    <!-- 主题选择下拉菜单 -->
-    <div class="theme-selector" v-show="showSelector" @click.stop>
-      <div class="theme-options">
-        <div 
-          class="theme-option" 
-          :class="{ active: !themeStore.isDark }"
-          @click="setTheme('light')"
-        >
-          <div class="theme-preview light">
-            <div class="preview-sun">☀️</div>
-          </div>
-          <span>浅色主题</span>
-        </div>
-        <div 
-          class="theme-option" 
-          :class="{ active: themeStore.isDark }"
-          @click="setTheme('dark')"
-        >
-          <div class="theme-preview dark">
-            <div class="preview-moon">🌙</div>
-          </div>
-          <span>深色主题</span>
-        </div>
-        <div 
-          class="theme-option" 
-          :class="{ active: isSystemTheme }"
-          @click="setSystemTheme"
-        >
-          <div class="theme-preview system">
-            <div class="preview-system">🖥️</div>
-          </div>
-          <span>跟随系统</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useThemeStore } from '@/stores/theme'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 
 const themeStore = useThemeStore()
 const showSelector = ref(false)
@@ -67,18 +11,18 @@ const isSystemTheme = computed(() => {
 })
 
 // 切换主题
-const toggleTheme = () => {
+function toggleTheme() {
   themeStore.toggleTheme()
 }
 
 // 设置指定主题
-const setTheme = (theme) => {
+function setTheme(theme) {
   themeStore.setTheme(theme)
   showSelector.value = false
 }
 
 // 设置为跟随系统主题
-const setSystemTheme = () => {
+function setSystemTheme() {
   localStorage.removeItem('theme')
   const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
   themeStore.setTheme(systemPrefersDark ? 'dark' : 'light')
@@ -86,14 +30,14 @@ const setSystemTheme = () => {
 }
 
 // 点击外部关闭选择器
-const handleClickOutside = (event) => {
+function handleClickOutside(event) {
   if (!event.target.closest('.theme-switch')) {
     showSelector.value = false
   }
 }
 
 // 点击切换按钮显示/隐藏选择器
-const toggleSelector = () => {
+function toggleSelector() {
   showSelector.value = !showSelector.value
 }
 
@@ -105,6 +49,68 @@ onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
 })
 </script>
+
+<template>
+  <div class="theme-switch">
+    <!-- 主题切换按钮 -->
+    <div class="theme-toggle-btn" :title="themeStore.isDark ? '切换到浅色主题' : '切换到深色主题'" @click="toggleSelector">
+      <div class="theme-icon">
+        <!-- 太阳图标 - 浅色主题 -->
+        <svg v-if="!themeStore.isDark" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2" />
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+        <!-- 月亮图标 - 深色主题 -->
+        <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+      <span class="theme-text">{{ themeStore.isDark ? '深色' : '浅色' }}</span>
+    </div>
+
+    <!-- 主题选择下拉菜单 -->
+    <div v-show="showSelector" class="theme-selector" @click.stop>
+      <div class="theme-options">
+        <div
+          class="theme-option"
+          :class="{ active: !themeStore.isDark }"
+          @click="setTheme('light')"
+        >
+          <div class="theme-preview light">
+            <div class="preview-sun">
+              ☀️
+            </div>
+          </div>
+          <span>浅色主题</span>
+        </div>
+        <div
+          class="theme-option"
+          :class="{ active: themeStore.isDark }"
+          @click="setTheme('dark')"
+        >
+          <div class="theme-preview dark">
+            <div class="preview-moon">
+              🌙
+            </div>
+          </div>
+          <span>深色主题</span>
+        </div>
+        <div
+          class="theme-option"
+          :class="{ active: isSystemTheme }"
+          @click="setSystemTheme"
+        >
+          <div class="theme-preview system">
+            <div class="preview-system">
+              🖥️
+            </div>
+          </div>
+          <span>跟随系统</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style lang="scss" scoped>
 .theme-switch {

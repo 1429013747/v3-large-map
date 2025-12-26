@@ -1,8 +1,7 @@
-
 /**
  * 创建可疑车辆弹窗内容
- * @param {Object} markerData - 标记点数据
- * @returns {String} HTML内容
+ * @param {object} markerData - 标记点数据
+ * @returns {string} HTML内容
  */
 export function createPopupContentCar(markerData, trackBack, viewMore, cancelTrack) {
   console.log("🚀 ~ createPopupContentCar ~ markerData:", markerData)
@@ -62,8 +61,8 @@ export function createPopupContentCar(markerData, trackBack, viewMore, cancelTra
 };
 /**
  * 创建风险点弹窗内容
- * @param {Object} markerData - 标记点数据
- * @returns {String} HTML内容
+ * @param {object} markerData - 标记点数据
+ * @returns {string} HTML内容
  */
 export function createPopupContentRisk(markerData, trackCorrect, viewMoreCorrect, cancelCorrect) {
   // 将函数绑定到全局对象，以便在HTML中调用
@@ -122,8 +121,8 @@ export function createPopupContentRisk(markerData, trackCorrect, viewMoreCorrect
 };
 /**
  * 创建船舶弹窗内容
- * @param {Object} markerData - 标记点数据
- * @returns {String} HTML内容
+ * @param {object} markerData - 标记点数据
+ * @returns {string} HTML内容
  */
 export function createPopupContentShip(markerData, setKeyShip, viewMore, shipQuery, cancelShip) {
   // 将函数绑定到全局对象，以便在HTML中调用
@@ -262,8 +261,8 @@ export function createPopupContentShip(markerData, setKeyShip, viewMore, shipQue
 };
 /**
  * 创建船舶弹窗内容
- * @param {Object} markerData - 标记点数据
- * @returns {String} HTML内容
+ * @param {object} markerData - 标记点数据
+ * @returns {string} HTML内容
  */
 export function createPopupMenuShip(markerData, setKeyShip, viewMore, shipQuery) {
   // 将函数绑定到全局对象，以便在HTML中调用
@@ -304,12 +303,12 @@ export function createPopupMenuShip(markerData, setKeyShip, viewMore, shipQuery)
       if (checkbox.textContent === '☐') {
         checkbox.textContent = '☑';
         checkbox.style.color = '#00ffff';
-      } else {
+      }
+      else {
         checkbox.textContent = '☐';
         checkbox.style.color = 'rgba(255, 255, 255, 0.7)';
       }
     }
-
   };
 
   window.cancelAllTrackingFunction = (markerId) => {

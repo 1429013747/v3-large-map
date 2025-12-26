@@ -1,106 +1,13 @@
-<template>
-  <a-drawer
-    v-model:open="visibleModal"
-    title="潮汐查询"
-    placement="right"
-    getContainer=".ui-container"
-    :width="600"
-    :closable="true"
-    :mask="false"
-    rootClassName="layer-box"
-    class="layer-control-drawer"
-  >
-    <template #closeIcon>
-      <CloseOutlined @click="handleClose" />
-    </template>
-
-    <!-- 搜索和筛选区域 -->
-    <div class="search-filter-section">
-      <div class="filter-row">
-        <a-select
-          v-model:value="selectedLocation"
-          placeholder="位置选择"
-          class="location-select"
-          allowClear
-          @change="handleLocationChange"
-        >
-          <a-select-option value="宁波港">宁波港</a-select-option>
-          <a-select-option value="台州港">台州港</a-select-option>
-          <a-select-option value="温州港">温州港</a-select-option>
-          <a-select-option value="舟山港">舟山港</a-select-option>
-        </a-select>
-
-        <a-select
-          v-model:value="selectedTimeRange"
-          placeholder="时间范围"
-          class="time-range-select"
-          allowClear
-          @change="handleTimeRangeChange"
-        >
-          <a-select-option value="今天">今天</a-select-option>
-          <a-select-option value="明天">明天</a-select-option>
-          <a-select-option value="本周">本周</a-select-option>
-          <a-select-option value="本月">本月</a-select-option>
-        </a-select>
-      </div>
-
-      <div class="action-buttons">
-        <a-button type="primary" class="query-btn" @click="handleQuery">
-          查询
-        </a-button>
-        <a-button class="reset-btn" @click="handleReset"> 重置 </a-button>
-        <a-button class="export-btn" @click="handleExport">
-          导出
-          <template #icon>
-            <ExportOutlined />
-          </template>
-        </a-button>
-      </div>
-    </div>
-
-    <!-- 潮汐图表区域 -->
-    <div class="tide-chart-section">
-      <div class="chart-container">
-        <div
-          ref="tideChartRef"
-          class="tide-chart"
-          style="width: 520px; height: 300px"
-        ></div>
-      </div>
-
-      <!-- 潮汐信息 -->
-      <div class="tide-info">
-        <div class="tide-datum">潮高基准面: 在平均海面下309cm</div>
-        <div class="tide-note">【注】潮汐表基准面采用的是理论深度基准面</div>
-      </div>
-    </div>
-
-    <!-- 潮汐时间信息 -->
-    <div class="tide-times-section">
-      <div class="tide-times-panel">
-        <div class="tide-time-item">
-          <span class="time-label">退潮时间</span>
-          <span class="time-value">02:07-08:21</span>
-        </div>
-        <div class="tide-time-item">
-          <span class="time-label">涨潮时间</span>
-          <span class="time-value">08:21-14:28</span>
-        </div>
-      </div>
-    </div>
-  </a-drawer>
-</template>
-
 <script setup>
-import { ref, computed, onMounted, nextTick, watch } from "vue";
 import { CloseOutlined, ExportOutlined } from "@ant-design/icons-vue";
 import * as echarts from "echarts";
+import { computed, nextTick, ref, watch } from "vue";
 
 const props = defineProps({
   open: {
     type: Boolean,
-    default: false,
-  },
+    default: false
+  }
 });
 
 const emit = defineEmits(["update:open"]);
@@ -111,7 +18,7 @@ const visibleModal = computed({
   },
   set(value) {
     emit("update:open", value);
-  },
+  }
 });
 
 // 搜索和筛选数据
@@ -136,43 +43,43 @@ const tideData = ref([
   { time: "16:00", height: 280 },
   { time: "18:00", height: 200 },
   { time: "20:00", height: 150 },
-  { time: "22:00", height: 100 },
+  { time: "22:00", height: 100 }
 ]);
 
-const handleClose = () => {
+function handleClose() {
   emit("update:open", false);
-};
+}
 
-const handleQuery = () => {
+function handleQuery() {
   console.log("查询潮汐数据", {
     location: selectedLocation.value,
-    timeRange: selectedTimeRange.value,
+    timeRange: selectedTimeRange.value
   });
   initTideChart();
-};
+}
 
-const handleReset = () => {
+function handleReset() {
   selectedLocation.value = null;
   selectedTimeRange.value = null;
   initTideChart();
-};
+}
 
-const handleExport = () => {
+function handleExport() {
   console.log("导出潮汐数据");
-};
+}
 
-const handleLocationChange = (value) => {
+function handleLocationChange(value) {
   selectedLocation.value = value;
   console.log("选择位置:", value);
-};
+}
 
-const handleTimeRangeChange = (value) => {
+function handleTimeRangeChange(value) {
   selectedTimeRange.value = value;
   console.log("选择时间范围:", value);
-};
+}
 
 // 初始化潮汐图表
-const initTideChart = async () => {
+async function initTideChart() {
   await nextTick();
   if (!tideChartRef.value) return;
 
@@ -191,98 +98,98 @@ const initTideChart = async () => {
       right: "1%",
       top: "5%",
       bottom: "2%",
-      containLabel: true,
+      containLabel: true
     },
     xAxis: {
       type: "category",
-      data: tideData.value.map((item) => item.time),
+      data: tideData.value.map(item => item.time),
       axisLine: {
         lineStyle: {
           color: "rgba(255, 255, 255, 0.3)",
-          width: 3,
-        },
+          width: 3
+        }
       },
       axisTick: {
         lineStyle: {
           color: "rgba(255, 255, 255, 0.5)",
-          width: 3,
-        },
+          width: 3
+        }
       },
       axisLabel: {
         color: "rgba(255, 255, 255, 0.8)",
-        fontSize: 12,
+        fontSize: 12
       },
       splitLine: {
         show: false,
         lineStyle: {
           color: "rgba(255, 255, 255, 0.1)",
-          type: "dashed",
-        },
-      },
+          type: "dashed"
+        }
+      }
     },
     yAxis: {
       type: "value",
       name: "潮高",
       nameTextStyle: {
         color: "rgba(255, 255, 255, 0.8)",
-        fontSize: 14,
+        fontSize: 14
       },
       axisLine: {
         lineStyle: {
-          color: "rgba(255, 255, 255, 0.3)",
-        },
+          color: "rgba(255, 255, 255, 0.3)"
+        }
       },
       axisTick: {
         lineStyle: {
-          color: "rgba(255, 255, 255, 0.3)",
-        },
+          color: "rgba(255, 255, 255, 0.3)"
+        }
       },
       axisLabel: {
         color: "rgba(255, 255, 255, 0.8)",
-        fontSize: 12,
+        fontSize: 12
       },
       splitLine: {
         show: true,
         lineStyle: {
           color: "rgba(255, 255, 255, 0.1)",
-          type: "dashed",
-        },
+          type: "dashed"
+        }
       },
       min: 0,
       max: 400,
-      interval: 100,
+      interval: 100
     },
     series: [
       {
         name: "潮高",
         type: "line",
-        data: tideData.value.map((item) => item.height),
+        data: tideData.value.map(item => item.height),
         smooth: true,
         lineStyle: {
           color: "#00ffff",
-          width: 2,
+          width: 2
         },
         itemStyle: {
-          color: "#00ffff",
+          color: "#00ffff"
         },
         areaStyle: {
           color: {
             type: "linear",
-            x: 0, //左
-            y: 0, //上
-            x2: 0, //右
-            y2: 1, //下
+            x: 0, // 左
+            y: 0, // 上
+            x2: 0, // 右
+            y2: 1, // 下
             colorStops: [
               {
                 offset: 0,
-                color: "rgba(0, 255, 255, 0.3)",
+                color: "rgba(0, 255, 255, 0.3)"
               },
               {
                 offset: 1,
-                color: "rgba(0, 255, 255, 0.05)",
-              },
-            ],
-          },
+                color: "rgba(0, 255, 255, 0.05)"
+              }
+            ]
+          }
         },
         markPoint: {
           // data: [
@@ -318,8 +225,8 @@ const initTideChart = async () => {
           //     },
           //   },
           // ],
-        },
-      },
+        }
+      }
     ],
     tooltip: {
       trigger: "axis",
@@ -327,13 +234,13 @@ const initTideChart = async () => {
       borderColor: "#00ffff",
       borderWidth: 1,
       textStyle: {
-        color: "#ffffff",
+        color: "#ffffff"
       },
-      formatter: function (params) {
+      formatter(params) {
         const data = params[0];
         return `时间: ${data.name}<br/>潮高: ${data.value}cm`;
-      },
-    },
+      }
+    }
   };
 
   tideChart.setOption(option);
@@ -344,7 +251,7 @@ const initTideChart = async () => {
       tideChart.resize();
     }
   });
-};
+}
 
 watch(
   () => props.open,
@@ -355,6 +262,121 @@ watch(
   }
 );
 </script>
+
+<template>
+  <a-drawer
+    v-model:open="visibleModal"
+    title="潮汐查询"
+    placement="right"
+    get-container=".ui-container"
+    :width="600"
+    :closable="true"
+    :mask="false"
+    root-class-name="layer-box"
+    class="layer-control-drawer"
+  >
+    <template #closeIcon>
+      <CloseOutlined @click="handleClose" />
+    </template>
+
+    <!-- 搜索和筛选区域 -->
+    <div class="search-filter-section">
+      <div class="filter-row">
+        <a-select
+          v-model:value="selectedLocation"
+          placeholder="位置选择"
+          class="location-select"
+          allow-clear
+          @change="handleLocationChange"
+        >
+          <a-select-option value="宁波港">
+            宁波港
+          </a-select-option>
+          <a-select-option value="台州港">
+            台州港
+          </a-select-option>
+          <a-select-option value="温州港">
+            温州港
+          </a-select-option>
+          <a-select-option value="舟山港">
+            舟山港
+          </a-select-option>
+        </a-select>
+
+        <a-select
+          v-model:value="selectedTimeRange"
+          placeholder="时间范围"
+          class="time-range-select"
+          allow-clear
+          @change="handleTimeRangeChange"
+        >
+          <a-select-option value="今天">
+            今天
+          </a-select-option>
+          <a-select-option value="明天">
+            明天
+          </a-select-option>
+          <a-select-option value="本周">
+            本周
+          </a-select-option>
+          <a-select-option value="本月">
+            本月
+          </a-select-option>
+        </a-select>
+      </div>
+
+      <div class="action-buttons">
+        <a-button type="primary" class="query-btn" @click="handleQuery">
+          查询
+        </a-button>
+        <a-button class="reset-btn" @click="handleReset">
+          重置
+        </a-button>
+        <a-button class="export-btn" @click="handleExport">
+          导出
+          <template #icon>
+            <ExportOutlined />
+          </template>
+        </a-button>
+      </div>
+    </div>
+
+    <!-- 潮汐图表区域 -->
+    <div class="tide-chart-section">
+      <div class="chart-container">
+        <div
+          ref="tideChartRef"
+          class="tide-chart"
+          style="width: 520px; height: 300px"
+        />
+      </div>
+
+      <!-- 潮汐信息 -->
+      <div class="tide-info">
+        <div class="tide-datum">
+          潮高基准面: 在平均海面下309cm
+        </div>
+        <div class="tide-note">
+          【注】潮汐表基准面采用的是理论深度基准面
+        </div>
+      </div>
+    </div>
+
+    <!-- 潮汐时间信息 -->
+    <div class="tide-times-section">
+      <div class="tide-times-panel">
+        <div class="tide-time-item">
+          <span class="time-label">退潮时间</span>
+          <span class="time-value">02:07-08:21</span>
+        </div>
+        <div class="tide-time-item">
+          <span class="time-label">涨潮时间</span>
+          <span class="time-value">08:21-14:28</span>
+        </div>
+      </div>
+    </div>
+  </a-drawer>
+</template>
 
 <style lang="scss" scoped>
 // 搜索和筛选区域样式

@@ -1,253 +1,253 @@
 !(function (e, t) {
-  "object" == typeof exports && "undefined" != typeof module
+  typeof exports == "object" && typeof module != "undefined"
     ? (module.exports = t())
-    : "function" == typeof define && define.amd
-    ? define(t)
-    : ((e =
-        "undefined" != typeof globalThis ? globalThis : e || self).jessibuca =
-        t());
-})(this, function () {
+    : typeof define == "function" && define.amd
+      ? define(t)
+      : ((e
+        = typeof globalThis != "undefined" ? globalThis : e || self).jessibuca
+        = t());
+})(this, () => {
   "use strict";
-  var e =
-    "undefined" != typeof globalThis
+  const e
+    = typeof globalThis != "undefined"
       ? globalThis
-      : "undefined" != typeof window
-      ? window
-      : "undefined" != typeof global
-      ? global
-      : "undefined" != typeof self
-      ? self
-      : {};
+      : typeof window != "undefined"
+        ? window
+        : typeof global != "undefined"
+          ? global
+          : typeof self != "undefined"
+            ? self
+            : {};
   function t(e, t) {
     return e((t = { exports: {} }), t.exports), t.exports;
   }
-  var i,
-    o = t(function (e) {
-      (e.exports = function (e, t, i) {
-        return (
-          t in e
-            ? Object.defineProperty(e, t, {
-                value: i,
-                enumerable: !0,
-                configurable: !0,
-                writable: !0,
-              })
-            : (e[t] = i),
-          e
-        );
-      }),
-        (e.exports.__esModule = !0),
-        (e.exports.default = e.exports);
+  let i;
+  const o = t((e) => {
+    (e.exports = function (e, t, i) {
+      return (
+        t in e
+          ? Object.defineProperty(e, t, {
+              value: i,
+              enumerable: !0,
+              configurable: !0,
+              writable: !0
+            })
+          : (e[t] = i),
+        e
+      );
     }),
-    r =
-      (i = o) &&
-      i.__esModule &&
-      Object.prototype.hasOwnProperty.call(i, "default")
+    (e.exports.__esModule = !0),
+    (e.exports.default = e.exports);
+  });
+  const r
+      = (i = o)
+        && i.__esModule
+        && Object.prototype.hasOwnProperty.call(i, "default")
         ? i.default
         : i;
-  const s = 0,
-    a = 1,
-    n = "flv",
-    A = "m7s",
-    d = "mp4",
-    c = "webm",
-    l = {
-      videoBuffer: 1e3,
-      videoBufferDelay: 1e3,
-      isResize: !0,
-      isFullResize: !1,
-      isFlv: !1,
-      debug: !1,
-      hotKey: !1,
-      loadingTimeout: 10,
-      heartTimeout: 5,
-      timeout: 10,
-      loadingTimeoutReplay: !0,
-      heartTimeoutReplay: !0,
-      loadingTimeoutReplayTimes: 3,
-      heartTimeoutReplayTimes: 3,
-      supportDblclickFullscreen: !1,
-      showBandwidth: !1,
-      keepScreenOn: !1,
-      isNotMute: !1,
-      hasAudio: !0,
-      hasVideo: !0,
-      operateBtns: {
-        fullscreen: !1,
-        screenshot: !1,
-        play: !1,
-        audio: !1,
-        record: !1,
-      },
-      controlAutoHide: !1,
-      hasControl: !1,
-      loadingText: "",
-      background: "",
-      decoder: "decoder.js",
-      url: "",
-      rotate: 0,
-      forceNoOffscreen: !0,
-      hiddenAutoPause: !1,
-      protocol: a,
-      demuxType: n,
-      useWCS: !1,
-      wcsUseVideoRender: !0,
-      useMSE: !1,
-      useOffscreen: !1,
-      autoWasm: !0,
-      wasmDecodeErrorReplay: !0,
-      openWebglAlignment: !1,
-      wasmDecodeAudioSyncVideo: !1,
-      recordType: c,
-      useWebFullScreen: !1,
+  const s = 0;
+  const a = 1;
+  const n = "flv";
+  const A = "m7s";
+  const d = "mp4";
+  const c = "webm";
+  const l = {
+    videoBuffer: 1e3,
+    videoBufferDelay: 1e3,
+    isResize: !0,
+    isFullResize: !1,
+    isFlv: !1,
+    debug: !1,
+    hotKey: !1,
+    loadingTimeout: 10,
+    heartTimeout: 5,
+    timeout: 10,
+    loadingTimeoutReplay: !0,
+    heartTimeoutReplay: !0,
+    loadingTimeoutReplayTimes: 3,
+    heartTimeoutReplayTimes: 3,
+    supportDblclickFullscreen: !1,
+    showBandwidth: !1,
+    keepScreenOn: !1,
+    isNotMute: !1,
+    hasAudio: !0,
+    hasVideo: !0,
+    operateBtns: {
+      fullscreen: !1,
+      screenshot: !1,
+      play: !1,
+      audio: !1,
+      record: !1
     },
-    u = "init",
-    h = "initVideo",
-    p = "render",
-    m = "playAudio",
-    g = "initAudio",
-    f = "audioCode",
-    b = "videoCode",
-    y = "wasmError",
-    v = "Invalid NAL unit size",
-    w = 1,
-    S = 2,
-    E = 8,
-    B = 9,
-    C = "init",
-    R = "decode",
-    k = "audioDecode",
-    T = "close",
-    I = "updateConfig",
-    x = {
-      fullscreen: "fullscreen$2",
-      webFullscreen: "webFullscreen",
-      decoderWorkerInit: "decoderWorkerInit",
-      play: "play",
-      playing: "playing",
-      pause: "pause",
-      mute: "mute",
-      load: "load",
-      loading: "loading",
-      videoInfo: "videoInfo",
-      timeUpdate: "timeUpdate",
-      audioInfo: "audioInfo",
-      log: "log",
-      error: "error",
-      kBps: "kBps",
-      timeout: "timeout",
-      delayTimeout: "delayTimeout",
-      loadingTimeout: "loadingTimeout",
-      stats: "stats",
-      performance: "performance",
-      record: "record",
-      recording: "recording",
-      recordingTimestamp: "recordingTimestamp",
-      recordStart: "recordStart",
-      recordEnd: "recordEnd",
-      recordCreateError: "recordCreateError",
-      buffer: "buffer",
-      videoFrame: "videoFrame",
-      start: "start",
-      metadata: "metadata",
-      resize: "resize",
-      streamEnd: "streamEnd",
-      streamSuccess: "streamSuccess",
-      streamMessage: "streamMessage",
-      streamError: "streamError",
-      volumechange: "volumechange",
-      destroy: "destroy",
-      mseSourceOpen: "mseSourceOpen",
-      mseSourceClose: "mseSourceClose",
-      mseSourceBufferError: "mseSourceBufferError",
-      mseSourceBufferBusy: "mseSourceBufferBusy",
-      mseSourceBufferFull: "mseSourceBufferFull",
-      videoWaiting: "videoWaiting",
-      videoTimeUpdate: "videoTimeUpdate",
-      videoSyncAudio: "videoSyncAudio",
-      playToRenderTimes: "playToRenderTimes",
-    },
-    D = {
-      load: x.load,
-      timeUpdate: x.timeUpdate,
-      videoInfo: x.videoInfo,
-      audioInfo: x.audioInfo,
-      error: x.error,
-      kBps: x.kBps,
-      log: x.log,
-      start: x.start,
-      timeout: x.timeout,
-      loadingTimeout: x.loadingTimeout,
-      delayTimeout: x.delayTimeout,
-      fullscreen: "fullscreen",
-      webFullscreen: x.webFullscreen,
-      play: x.play,
-      pause: x.pause,
-      mute: x.mute,
-      stats: x.stats,
-      volumechange: x.volumechange,
-      performance: x.performance,
-      recordingTimestamp: x.recordingTimestamp,
-      recordStart: x.recordStart,
-      recordEnd: x.recordEnd,
-      playToRenderTimes: x.playToRenderTimes,
-    },
-    j = {
-      playError: "playIsNotPauseOrUrlIsNull",
-      fetchError: "fetchError",
-      websocketError: "websocketError",
-      webcodecsH265NotSupport: "webcodecsH265NotSupport",
-      webcodecsDecodeError: "webcodecsDecodeError",
-      webcodecsWidthOrHeightChange: "webcodecsWidthOrHeightChange",
-      mediaSourceH265NotSupport: "mediaSourceH265NotSupport",
-      mediaSourceFull: x.mseSourceBufferFull,
-      mseSourceBufferError: x.mseSourceBufferError,
-      mediaSourceAppendBufferError: "mediaSourceAppendBufferError",
-      mediaSourceBufferListLarge: "mediaSourceBufferListLarge",
-      mediaSourceAppendBufferEndTimeout: "mediaSourceAppendBufferEndTimeout",
-      wasmDecodeError: "wasmDecodeError",
-      webglAlignmentError: "webglAlignmentError",
-    },
-    L = "notConnect",
-    F = "open",
-    O = "close",
-    V = "error",
-    M = { download: "download", base64: "base64", blob: "blob" },
-    U = { 7: "H264(AVC)", 12: "H265(HEVC)" },
-    Q = 12,
-    W = { 10: "AAC", 7: "ALAW", 8: "MULAW" },
-    J = 38,
-    P = 0,
-    G = 1,
-    N = 2,
-    H = "webcodecs",
-    z = "webgl",
-    Y = "offscreen",
-    X = "key",
-    q = "delta",
-    Z = 'video/mp4; codecs="avc1.64002A"',
-    K = "ended",
-    _ = "open",
-    $ = "closed",
-    ee = 1e3,
-    te = 27,
-    ie = 38,
-    oe = 40,
-    re = "A key frame is required after configure() or flush()",
-    se = "Cannot call 'decode' on a closed codec",
-    ae = "The user aborted a request",
-    ne = "AbortError",
-    Ae = "AbortError",
-    de = 0,
-    ce = 1,
-    le = 3,
-    ue = 16;
+    controlAutoHide: !1,
+    hasControl: !1,
+    loadingText: "",
+    background: "",
+    decoder: "decoder.js",
+    url: "",
+    rotate: 0,
+    forceNoOffscreen: !0,
+    hiddenAutoPause: !1,
+    protocol: a,
+    demuxType: n,
+    useWCS: !1,
+    wcsUseVideoRender: !0,
+    useMSE: !1,
+    useOffscreen: !1,
+    autoWasm: !0,
+    wasmDecodeErrorReplay: !0,
+    openWebglAlignment: !1,
+    wasmDecodeAudioSyncVideo: !1,
+    recordType: c,
+    useWebFullScreen: !1
+  };
+  const u = "init";
+  const h = "initVideo";
+  const p = "render";
+  const m = "playAudio";
+  const g = "initAudio";
+  const f = "audioCode";
+  const b = "videoCode";
+  const y = "wasmError";
+  const v = "Invalid NAL unit size";
+  const w = 1;
+  const S = 2;
+  const E = 8;
+  const B = 9;
+  const C = "init";
+  const R = "decode";
+  const k = "audioDecode";
+  const T = "close";
+  const I = "updateConfig";
+  const x = {
+    fullscreen: "fullscreen$2",
+    webFullscreen: "webFullscreen",
+    decoderWorkerInit: "decoderWorkerInit",
+    play: "play",
+    playing: "playing",
+    pause: "pause",
+    mute: "mute",
+    load: "load",
+    loading: "loading",
+    videoInfo: "videoInfo",
+    timeUpdate: "timeUpdate",
+    audioInfo: "audioInfo",
+    log: "log",
+    error: "error",
+    kBps: "kBps",
+    timeout: "timeout",
+    delayTimeout: "delayTimeout",
+    loadingTimeout: "loadingTimeout",
+    stats: "stats",
+    performance: "performance",
+    record: "record",
+    recording: "recording",
+    recordingTimestamp: "recordingTimestamp",
+    recordStart: "recordStart",
+    recordEnd: "recordEnd",
+    recordCreateError: "recordCreateError",
+    buffer: "buffer",
+    videoFrame: "videoFrame",
+    start: "start",
+    metadata: "metadata",
+    resize: "resize",
+    streamEnd: "streamEnd",
+    streamSuccess: "streamSuccess",
+    streamMessage: "streamMessage",
+    streamError: "streamError",
+    volumechange: "volumechange",
+    destroy: "destroy",
+    mseSourceOpen: "mseSourceOpen",
+    mseSourceClose: "mseSourceClose",
+    mseSourceBufferError: "mseSourceBufferError",
+    mseSourceBufferBusy: "mseSourceBufferBusy",
+    mseSourceBufferFull: "mseSourceBufferFull",
+    videoWaiting: "videoWaiting",
+    videoTimeUpdate: "videoTimeUpdate",
+    videoSyncAudio: "videoSyncAudio",
+    playToRenderTimes: "playToRenderTimes"
+  };
+  const D = {
+    load: x.load,
+    timeUpdate: x.timeUpdate,
+    videoInfo: x.videoInfo,
+    audioInfo: x.audioInfo,
+    error: x.error,
+    kBps: x.kBps,
+    log: x.log,
+    start: x.start,
+    timeout: x.timeout,
+    loadingTimeout: x.loadingTimeout,
+    delayTimeout: x.delayTimeout,
+    fullscreen: "fullscreen",
+    webFullscreen: x.webFullscreen,
+    play: x.play,
+    pause: x.pause,
+    mute: x.mute,
+    stats: x.stats,
+    volumechange: x.volumechange,
+    performance: x.performance,
+    recordingTimestamp: x.recordingTimestamp,
+    recordStart: x.recordStart,
+    recordEnd: x.recordEnd,
+    playToRenderTimes: x.playToRenderTimes
+  };
+  const j = {
+    playError: "playIsNotPauseOrUrlIsNull",
+    fetchError: "fetchError",
+    websocketError: "websocketError",
+    webcodecsH265NotSupport: "webcodecsH265NotSupport",
+    webcodecsDecodeError: "webcodecsDecodeError",
+    webcodecsWidthOrHeightChange: "webcodecsWidthOrHeightChange",
+    mediaSourceH265NotSupport: "mediaSourceH265NotSupport",
+    mediaSourceFull: x.mseSourceBufferFull,
+    mseSourceBufferError: x.mseSourceBufferError,
+    mediaSourceAppendBufferError: "mediaSourceAppendBufferError",
+    mediaSourceBufferListLarge: "mediaSourceBufferListLarge",
+    mediaSourceAppendBufferEndTimeout: "mediaSourceAppendBufferEndTimeout",
+    wasmDecodeError: "wasmDecodeError",
+    webglAlignmentError: "webglAlignmentError"
+  };
+  const L = "notConnect";
+  const F = "open";
+  const O = "close";
+  const V = "error";
+  const M = { download: "download", base64: "base64", blob: "blob" };
+  const U = { 7: "H264(AVC)", 12: "H265(HEVC)" };
+  const Q = 12;
+  const W = { 10: "AAC", 7: "ALAW", 8: "MULAW" };
+  const J = 38;
+  const P = 0;
+  const G = 1;
+  const N = 2;
+  const H = "webcodecs";
+  const z = "webgl";
+  const Y = "offscreen";
+  const X = "key";
+  const q = "delta";
+  const Z = 'video/mp4; codecs="avc1.64002A"';
+  const K = "ended";
+  const _ = "open";
+  const $ = "closed";
+  const ee = 1e3;
+  const te = 27;
+  const ie = 38;
+  const oe = 40;
+  const re = "A key frame is required after configure() or flush()";
+  const se = "Cannot call 'decode' on a closed codec";
+  const ae = "The user aborted a request";
+  const ne = "AbortError";
+  const Ae = "AbortError";
+  const de = 0;
+  const ce = 1;
+  const le = 3;
+  const ue = 16;
   class he {
     constructor(e) {
       (this.log = function (t) {
         if (e._opt.debug) {
           for (
-            var i = arguments.length, o = new Array(i > 1 ? i - 1 : 0), r = 1;
+            var i = arguments.length, o = Array.from({ length: i > 1 ? i - 1 : 0 }), r = 1;
             r < i;
             r++
           )
@@ -255,194 +255,200 @@
           console.log(`Jessibuca: [${t}]`, ...o);
         }
       }),
-        (this.warn = function (t) {
-          if (e._opt.debug) {
-            for (
-              var i = arguments.length, o = new Array(i > 1 ? i - 1 : 0), r = 1;
-              r < i;
-              r++
-            )
-              o[r - 1] = arguments[r];
-            console.warn(`Jessibuca: [${t}]`, ...o);
-          }
-        }),
-        (this.error = function (e) {
+      (this.warn = function (t) {
+        if (e._opt.debug) {
           for (
-            var t = arguments.length, i = new Array(t > 1 ? t - 1 : 0), o = 1;
-            o < t;
-            o++
+            var i = arguments.length, o = Array.from({ length: i > 1 ? i - 1 : 0 }), r = 1;
+            r < i;
+            r++
           )
-            i[o - 1] = arguments[o];
-          console.error(`Jessibuca: [${e}]`, ...i);
-        });
+            o[r - 1] = arguments[r];
+          console.warn(`Jessibuca: [${t}]`, ...o);
+        }
+      }),
+      (this.error = function (e) {
+        for (
+          var t = arguments.length, i = Array.from({ length: t > 1 ? t - 1 : 0 }), o = 1;
+          o < t;
+          o++
+        )
+          i[o - 1] = arguments[o];
+        console.error(`Jessibuca: [${e}]`, ...i);
+      });
     }
   }
   class pe {
     constructor(e) {
       (this.destroys = []),
-        (this.proxy = this.proxy.bind(this)),
-        (this.master = e);
+      (this.proxy = this.proxy.bind(this)),
+      (this.master = e);
     }
+
     proxy(e, t, i) {
-      let o =
-        arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : {};
+      const o
+        = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : {};
       if (!e) return;
-      if (Array.isArray(t)) return t.map((t) => this.proxy(e, t, i, o));
+      if (Array.isArray(t)) return t.map(t => this.proxy(e, t, i, o));
       e.addEventListener(t, i, o);
       const r = () => e.removeEventListener(t, i, o);
       return this.destroys.push(r), r;
     }
+
     destroy() {
       this.master.debug && this.master.debug.log("Events", "destroy"),
-        this.destroys.forEach((e) => e());
+      this.destroys.forEach(e => e());
     }
   }
-  var me = t(function (e) {
+  const me = t((e) => {
     !(function () {
-      var t =
-          "undefined" != typeof window && void 0 !== window.document
+      const t
+          = typeof window != "undefined" && void 0 !== window.document
             ? window.document
-            : {},
-        i = e.exports,
-        o = (function () {
-          for (
-            var e,
-              i = [
-                [
-                  "requestFullscreen",
-                  "exitFullscreen",
-                  "fullscreenElement",
-                  "fullscreenEnabled",
-                  "fullscreenchange",
-                  "fullscreenerror",
-                ],
-                [
-                  "webkitRequestFullscreen",
-                  "webkitExitFullscreen",
-                  "webkitFullscreenElement",
-                  "webkitFullscreenEnabled",
-                  "webkitfullscreenchange",
-                  "webkitfullscreenerror",
-                ],
-                [
-                  "webkitRequestFullScreen",
-                  "webkitCancelFullScreen",
-                  "webkitCurrentFullScreenElement",
-                  "webkitCancelFullScreen",
-                  "webkitfullscreenchange",
-                  "webkitfullscreenerror",
-                ],
-                [
-                  "mozRequestFullScreen",
-                  "mozCancelFullScreen",
-                  "mozFullScreenElement",
-                  "mozFullScreenEnabled",
-                  "mozfullscreenchange",
-                  "mozfullscreenerror",
-                ],
-                [
-                  "msRequestFullscreen",
-                  "msExitFullscreen",
-                  "msFullscreenElement",
-                  "msFullscreenEnabled",
-                  "MSFullscreenChange",
-                  "MSFullscreenError",
-                ],
+            : {};
+      const i = e.exports;
+      const o = (function () {
+        for (
+          var e,
+            i = [
+              [
+                "requestFullscreen",
+                "exitFullscreen",
+                "fullscreenElement",
+                "fullscreenEnabled",
+                "fullscreenchange",
+                "fullscreenerror"
               ],
-              o = 0,
-              r = i.length,
-              s = {};
-            o < r;
-            o++
-          )
-            if ((e = i[o]) && e[1] in t) {
-              for (o = 0; o < e.length; o++) s[i[0][o]] = e[o];
-              return s;
+              [
+                "webkitRequestFullscreen",
+                "webkitExitFullscreen",
+                "webkitFullscreenElement",
+                "webkitFullscreenEnabled",
+                "webkitfullscreenchange",
+                "webkitfullscreenerror"
+              ],
+              [
+                "webkitRequestFullScreen",
+                "webkitCancelFullScreen",
+                "webkitCurrentFullScreenElement",
+                "webkitCancelFullScreen",
+                "webkitfullscreenchange",
+                "webkitfullscreenerror"
+              ],
+              [
+                "mozRequestFullScreen",
+                "mozCancelFullScreen",
+                "mozFullScreenElement",
+                "mozFullScreenEnabled",
+                "mozfullscreenchange",
+                "mozfullscreenerror"
+              ],
+              [
+                "msRequestFullscreen",
+                "msExitFullscreen",
+                "msFullscreenElement",
+                "msFullscreenEnabled",
+                "MSFullscreenChange",
+                "MSFullscreenError"
+              ]
+            ],
+            o = 0,
+            r = i.length,
+            s = {};
+          o < r;
+          o++
+        ) {
+          if ((e = i[o]) && e[1] in t) {
+            for (o = 0; o < e.length; o++) s[i[0][o]] = e[o];
+            return s;
+          }
+        }
+        return !1;
+      })();
+      const r = { change: o.fullscreenchange, error: o.fullscreenerror };
+      const s = {
+        request(e, i) {
+          return new Promise(
+            (r, s) => {
+              var a = function () {
+                this.off("change", a), r();
+              }.bind(this);
+              this.on("change", a);
+              const n = (e = e || t.documentElement)[o.requestFullscreen](i);
+              n instanceof Promise && n.then(a).catch(s);
             }
-          return !1;
-        })(),
-        r = { change: o.fullscreenchange, error: o.fullscreenerror },
-        s = {
-          request: function (e, i) {
-            return new Promise(
-              function (r, s) {
-                var a = function () {
-                  this.off("change", a), r();
+          );
+        },
+        exit() {
+          return new Promise(
+            (e, i) => {
+              if (this.isFullscreen) {
+                var r = function () {
+                  this.off("change", r), e();
                 }.bind(this);
-                this.on("change", a);
-                var n = (e = e || t.documentElement)[o.requestFullscreen](i);
-                n instanceof Promise && n.then(a).catch(s);
-              }.bind(this)
-            );
-          },
-          exit: function () {
-            return new Promise(
-              function (e, i) {
-                if (this.isFullscreen) {
-                  var r = function () {
-                    this.off("change", r), e();
-                  }.bind(this);
-                  this.on("change", r);
-                  var s = t[o.exitFullscreen]();
-                  s instanceof Promise && s.then(r).catch(i);
-                } else e();
-              }.bind(this)
-            );
-          },
-          toggle: function (e, t) {
-            return this.isFullscreen ? this.exit() : this.request(e, t);
-          },
-          onchange: function (e) {
-            this.on("change", e);
-          },
-          onerror: function (e) {
-            this.on("error", e);
-          },
-          on: function (e, i) {
-            var o = r[e];
-            o && t.addEventListener(o, i, !1);
-          },
-          off: function (e, i) {
-            var o = r[e];
-            o && t.removeEventListener(o, i, !1);
-          },
-          raw: o,
-        };
+                this.on("change", r);
+                const s = t[o.exitFullscreen]();
+                s instanceof Promise && s.then(r).catch(i);
+              }
+              else {
+                e();
+              }
+            }
+          );
+        },
+        toggle(e, t) {
+          return this.isFullscreen ? this.exit() : this.request(e, t);
+        },
+        onchange(e) {
+          this.on("change", e);
+        },
+        onerror(e) {
+          this.on("error", e);
+        },
+        on(e, i) {
+          const o = r[e];
+          o && t.addEventListener(o, i, !1);
+        },
+        off(e, i) {
+          const o = r[e];
+          o && t.removeEventListener(o, i, !1);
+        },
+        raw: o
+      };
       o
         ? (Object.defineProperties(s, {
             isFullscreen: {
-              get: function () {
+              get() {
                 return Boolean(t[o.fullscreenElement]);
-              },
+              }
             },
             element: {
               enumerable: !0,
-              get: function () {
+              get() {
                 return t[o.fullscreenElement];
-              },
+              }
             },
             isEnabled: {
               enumerable: !0,
-              get: function () {
+              get() {
                 return Boolean(t[o.fullscreenEnabled]);
-              },
-            },
+              }
+            }
           }),
           i ? (e.exports = s) : (window.screenfull = s))
         : i
-        ? (e.exports = { isEnabled: !1 })
-        : (window.screenfull = { isEnabled: !1 });
+          ? (e.exports = { isEnabled: !1 })
+          : (window.screenfull = { isEnabled: !1 });
     })();
   });
   function ge() {}
   function fe() {
-    let e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "";
-    const t = e.split(","),
-      i = atob(t[1]),
-      o = t[0].replace("data:", "").replace(";base64", "");
-    let r = i.length,
-      s = new Uint8Array(r);
-    for (; r--; ) s[r] = i.charCodeAt(r);
+    const e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "";
+    const t = e.split(",");
+    const i = atob(t[1]);
+    const o = t[0].replace("data:", "").replace(";base64", "");
+    let r = i.length;
+    const s = new Uint8Array(r);
+    for (; r--;) s[r] = i.charCodeAt(r);
     return new File([s], "file", { type: o });
   }
   function be() {
@@ -452,34 +458,35 @@
     return Math.max(Math.min(e, Math.max(t, i)), Math.min(t, i));
   }
   function ve(e, t, i) {
-    if (e)
+    if (e) {
       return (
-        "object" == typeof t &&
-          Object.keys(t).forEach((i) => {
-            ve(e, i, t[i]);
-          }),
+        typeof t == "object"
+        && Object.keys(t).forEach((i) => {
+          ve(e, i, t[i]);
+        }),
         (e.style[t] = i),
         e
       );
+    }
   }
   function we(e, t) {
-    let i = !(arguments.length > 2 && void 0 !== arguments[2]) || arguments[2];
+    const i = !(arguments.length > 2 && void 0 !== arguments[2]) || arguments[2];
     if (!e) return 0;
     const o = getComputedStyle(e, null).getPropertyValue(t);
-    return i ? parseFloat(o) : o;
+    return i ? Number.parseFloat(o) : o;
   }
   function Se() {
-    return performance && "function" == typeof performance.now
+    return performance && typeof performance.now == "function"
       ? performance.now()
       : Date.now();
   }
   function Ee(e) {
-    let t = 0,
-      i = Se();
+    let t = 0;
+    let i = Se();
     return (o) => {
       t += o;
-      const r = Se(),
-        s = r - i;
+      const r = Se();
+      const s = r - i;
       s >= 1e3 && (e((t / s) * 1e3), (i = r), (t = 0));
     };
   }
@@ -489,13 +496,13 @@
     );
   }
   function Ce(e) {
-    if (null == e || "" === e || 0 === parseInt(e) || isNaN(parseInt(e)))
+    if (e == null || e === "" || Number.parseInt(e) === 0 || isNaN(Number.parseInt(e)))
       return "0KB/s";
-    let t = parseFloat(e);
-    return (t = t.toFixed(2)), t + "KB/s";
+    let t = Number.parseFloat(e);
+    return (t = t.toFixed(2)), `${t}KB/s`;
   }
   function Re(e) {
-    return null == e;
+    return e == null;
   }
   function ke(e) {
     return !Re(e);
@@ -509,31 +516,33 @@
     return e && e.parentNode && (e.parentNode.removeChild(e), (t = !0)), t;
   }
   function xe(e, t) {
-    let i = [];
+    const i = [];
     (i[0] = t ? 28 : 44), (i[1] = 1), (i[2] = 0), (i[3] = 0), (i[4] = 0);
     const o = new Uint8Array(i.length + e.byteLength);
     return o.set(i, 0), o.set(e, i.length), o;
   }
   me.isEnabled,
-    (() => {
-      try {
-        if (
-          "object" == typeof WebAssembly &&
-          "function" == typeof WebAssembly.instantiate
-        ) {
-          const e = new WebAssembly.Module(
-            Uint8Array.of(0, 97, 115, 109, 1, 0, 0, 0)
-          );
-          if (e instanceof WebAssembly.Module)
-            return new WebAssembly.Instance(e) instanceof WebAssembly.Instance;
-        }
-      } catch (e) {}
-    })();
+  (() => {
+    try {
+      if (
+        typeof WebAssembly == "object"
+        && typeof WebAssembly.instantiate == "function"
+      ) {
+        const e = new WebAssembly.Module(
+          Uint8Array.of(0, 97, 115, 109, 1, 0, 0, 0)
+        );
+        if (e instanceof WebAssembly.Module)
+          return new WebAssembly.Instance(e) instanceof WebAssembly.Instance;
+      }
+    }
+    catch (e) {}
+  })();
   class De {
     on(e, t, i) {
       const o = this.e || (this.e = {});
       return (o[e] || (o[e] = [])).push({ fn: t, ctx: i }), this;
     }
+
     once(e, t, i) {
       const o = this;
       function r() {
@@ -544,10 +553,11 @@
       }
       return (r._ = t), this.on(e, r, i);
     }
+
     emit(e) {
       const t = ((this.e || (this.e = {}))[e] || []).slice();
       for (
-        var i = arguments.length, o = new Array(i > 1 ? i - 1 : 0), r = 1;
+        var i = arguments.length, o = Array.from({ length: i > 1 ? i - 1 : 0 }), r = 1;
         r < i;
         r++
       )
@@ -555,20 +565,23 @@
       for (let e = 0; e < t.length; e += 1) t[e].fn.apply(t[e].ctx, o);
       return this;
     }
+
     off(e, t) {
       const i = this.e || (this.e = {});
-      if (!e)
+      if (!e) {
         return (
           Object.keys(i).forEach((e) => {
             delete i[e];
           }),
           void delete this.e
         );
-      const o = i[e],
-        r = [];
-      if (o && t)
+      }
+      const o = i[e];
+      const r = [];
+      if (o && t) {
         for (let e = 0, i = o.length; e < i; e += 1)
           o[e].fn !== t && o[e].fn._ !== t && r.push(o[e]);
+      }
       return r.length ? (i[e] = r) : delete i[e], this;
     }
   }
@@ -576,69 +589,75 @@
     constructor() {
       super(), (this.init = !1);
     }
+
     resetInit() {
       (this.init = !1),
-        (this.videoInfo = {
-          width: "",
-          height: "",
-          encType: "",
-          encTypeCode: "",
-        });
+      (this.videoInfo = {
+        width: "",
+        height: "",
+        encType: "",
+        encTypeCode: ""
+      });
     }
+
     destroy() {
       this.resetInit(),
-        this.player.$container.removeChild(this.$videoElement),
-        this.off();
+      this.player.$container.removeChild(this.$videoElement),
+      this.off();
     }
+
     updateVideoInfo(e) {
-      e.encTypeCode &&
-        ((this.videoInfo.encType = U[e.encTypeCode]),
-        (this.videoInfo.encTypeCode = e.encTypeCode)),
-        e.width && (this.videoInfo.width = e.width),
-        e.height && (this.videoInfo.height = e.height),
-        this.videoInfo.encType &&
-          this.videoInfo.height &&
-          this.videoInfo.width &&
-          !this.init &&
-          (this.player.emit(x.videoInfo, this.videoInfo), (this.init = !0));
+      e.encTypeCode
+      && ((this.videoInfo.encType = U[e.encTypeCode]),
+      (this.videoInfo.encTypeCode = e.encTypeCode)),
+      e.width && (this.videoInfo.width = e.width),
+      e.height && (this.videoInfo.height = e.height),
+      this.videoInfo.encType
+      && this.videoInfo.height
+      && this.videoInfo.width
+      && !this.init
+      && (this.player.emit(x.videoInfo, this.videoInfo), (this.init = !0));
     }
+
     play() {}
     pause() {}
     clearView() {}
   }
-  var Le =
-    "object" == typeof window && window.window === window
+  const Le
+    = typeof window == "object" && window.window === window
       ? window
-      : "object" == typeof self && self.self === self
-      ? self
-      : "object" == typeof global && global.global === global
-      ? global
-      : void 0;
+      : typeof self == "object" && self.self === self
+        ? self
+        : typeof global == "object" && global.global === global
+          ? global
+          : void 0;
   function Fe(e, t, i) {
-    var o = new XMLHttpRequest();
+    const o = new XMLHttpRequest();
     o.open("GET", e),
-      (o.responseType = "blob"),
-      (o.onload = function () {
-        Ue(o.response, t, i);
-      }),
-      (o.onerror = function () {
-        console.error("could not download file");
-      }),
-      o.send();
+    (o.responseType = "blob"),
+    (o.onload = function () {
+      Ue(o.response, t, i);
+    }),
+    (o.onerror = function () {
+      console.error("could not download file");
+    }),
+    o.send();
   }
   function Oe(e) {
-    var t = new XMLHttpRequest();
+    const t = new XMLHttpRequest();
     t.open("HEAD", e, !1);
     try {
       t.send();
-    } catch (e) {}
+    }
+    catch (e) {}
     return t.status >= 200 && t.status <= 299;
   }
   function Ve(e) {
     try {
       e.dispatchEvent(new MouseEvent("click"));
-    } catch (i) {
-      var t = document.createEvent("MouseEvents");
+    }
+    catch (i) {
+      const t = document.createEvent("MouseEvents");
       t.initMouseEvent(
         "click",
         !0,
@@ -656,233 +675,242 @@
         0,
         null
       ),
-        e.dispatchEvent(t);
+      e.dispatchEvent(t);
     }
   }
-  var Me =
-      Le.navigator &&
-      /Macintosh/.test(navigator.userAgent) &&
-      /AppleWebKit/.test(navigator.userAgent) &&
-      !/Safari/.test(navigator.userAgent),
-    Ue =
-      "object" != typeof window || window !== Le
+  const Me
+      = Le.navigator
+        && /Macintosh/.test(navigator.userAgent)
+        && /AppleWebKit/.test(navigator.userAgent)
+        && !/Safari/.test(navigator.userAgent);
+  var Ue
+      = typeof window != "object" || window !== Le
         ? function () {}
         : "download" in HTMLAnchorElement.prototype && !Me
-        ? function (e, t, i) {
-            var o = Le.URL || Le.webkitURL,
-              r = document.createElementNS("http://www.w3.org/1999/xhtml", "a");
+          ? function (e, t, i) {
+            const o = Le.URL || Le.webkitURL;
+            const r = document.createElementNS("http://www.w3.org/1999/xhtml", "a");
             (t = t || e.name || "download"),
-              (r.download = t),
-              (r.rel = "noopener"),
-              "string" == typeof e
-                ? ((r.href = e),
-                  r.origin !== location.origin
-                    ? Oe(r.href)
-                      ? Fe(e, t, i)
-                      : Ve(r, (r.target = "_blank"))
-                    : Ve(r))
-                : ((r.href = o.createObjectURL(e)),
-                  setTimeout(function () {
-                    o.revokeObjectURL(r.href);
-                  }, 4e4),
-                  setTimeout(function () {
-                    Ve(r);
-                  }, 0));
+            (r.download = t),
+            (r.rel = "noopener"),
+            typeof e == "string"
+              ? ((r.href = e),
+                r.origin !== location.origin
+                  ? Oe(r.href)
+                    ? Fe(e, t, i)
+                    : Ve(r, (r.target = "_blank"))
+                  : Ve(r))
+              : ((r.href = o.createObjectURL(e)),
+                setTimeout(() => {
+                  o.revokeObjectURL(r.href);
+                }, 4e4),
+                setTimeout(() => {
+                  Ve(r);
+                }, 0));
           }
-        : "msSaveOrOpenBlob" in navigator
-        ? function (e, t, i) {
-            if (((t = t || e.name || "download"), "string" == typeof e))
-              if (Oe(e)) Fe(e, t, i);
-              else {
-                var o = document.createElement("a");
-                (o.href = e),
+          : "msSaveOrOpenBlob" in navigator
+            ? function (e, t, i) {
+              if (((t = t || e.name || "download"), typeof e == "string")) {
+                if (Oe(e)) {
+                  Fe(e, t, i);
+                }
+                else {
+                  const o = document.createElement("a");
+                  (o.href = e),
                   (o.target = "_blank"),
-                  setTimeout(function () {
+                  setTimeout(() => {
                     Ve(o);
                   });
+                }
               }
-            else
-              navigator.msSaveOrOpenBlob(
-                (function (e, t) {
-                  return (
-                    void 0 === t
-                      ? (t = { autoBom: !1 })
-                      : "object" != typeof t &&
-                        (console.warn(
-                          "Deprecated: Expected third argument to be a object"
-                        ),
-                        (t = { autoBom: !t })),
-                    t.autoBom &&
-                    /^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(
-                      e.type
-                    )
-                      ? new Blob([String.fromCharCode(65279), e], {
-                          type: e.type,
+              else {
+                navigator.msSaveOrOpenBlob(
+                  (function (e, t) {
+                    return (
+                      void 0 === t
+                        ? (t = { autoBom: !1 })
+                        : typeof t != "object"
+                          && (console.warn(
+                            "Deprecated: Expected third argument to be a object"
+                          ),
+                          (t = { autoBom: !t })),
+                      t.autoBom
+                      && /^\s*(?:text\/\S*|application\/xml|[^\s/]*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(
+                        e.type
+                      )
+                        ? new Blob([String.fromCharCode(65279), e], {
+                          type: e.type
                         })
-                      : e
-                  );
-                })(e, i),
-                t
-              );
-          }
-        : function (e, t, i, o) {
-            if (
-              ((o = o || open("", "_blank")) &&
-                (o.document.title = o.document.body.innerText =
-                  "downloading..."),
-              "string" == typeof e)
-            )
-              return Fe(e, t, i);
-            var r = "application/octet-stream" === e.type,
-              s = /constructor/i.test(Le.HTMLElement) || Le.safari,
-              a = /CriOS\/[\d]+/.test(navigator.userAgent);
-            if ((a || (r && s) || Me) && "undefined" != typeof FileReader) {
-              var n = new FileReader();
-              (n.onloadend = function () {
-                var e = n.result;
-                (e = a
-                  ? e
-                  : e.replace(/^data:[^;]*;/, "data:attachment/file;")),
+                        : e
+                    );
+                  })(e, i),
+                  t
+                );
+              }
+            }
+            : function (e, t, i, o) {
+              if (
+                ((o = o || open("", "_blank"))
+                  && (o.document.title = o.document.body.innerText
+                  = "downloading..."),
+                typeof e == "string")
+              ) {
+                return Fe(e, t, i);
+              }
+              const r = e.type === "application/octet-stream";
+              const s = /constructor/i.test(Le.HTMLElement) || Le.safari;
+              const a = /CriOS\/\d+/.test(navigator.userAgent);
+              if ((a || (r && s) || Me) && typeof FileReader != "undefined") {
+                const n = new FileReader();
+                (n.onloadend = function () {
+                  let e = n.result;
+                  (e = a
+                    ? e
+                    : e.replace(/^data:[^;]*;/, "data:attachment/file;")),
                   o ? (o.location.href = e) : (location = e),
                   (o = null);
-              }),
+                }),
                 n.readAsDataURL(e);
-            } else {
-              var A = Le.URL || Le.webkitURL,
-                d = A.createObjectURL(e);
-              o ? (o.location = d) : (location.href = d),
+              }
+              else {
+                const A = Le.URL || Le.webkitURL;
+                const d = A.createObjectURL(e);
+                o ? (o.location = d) : (location.href = d),
                 (o = null),
-                setTimeout(function () {
+                setTimeout(() => {
                   A.revokeObjectURL(d);
                 }, 4e4);
-            }
-          };
+              }
+            };
   class Qe extends je {
     constructor(e) {
       super(), (this.player = e);
       const t = document.createElement("canvas");
       (t.style.position = "absolute"),
-        (t.style.top = 0),
-        (t.style.left = 0),
-        (this.$videoElement = t),
-        e.$container.appendChild(this.$videoElement),
-        (this.context2D = null),
-        (this.contextGl = null),
-        (this.contextGlRender = null),
-        (this.contextGlDestroy = null),
-        (this.bitmaprenderer = null),
-        (this.renderType = null),
-        (this.videoInfo = { width: "", height: "", encType: "" }),
-        this._initCanvasRender(),
-        this.player.debug.log("CanvasVideo", "init");
+      (t.style.top = 0),
+      (t.style.left = 0),
+      (this.$videoElement = t),
+      e.$container.appendChild(this.$videoElement),
+      (this.context2D = null),
+      (this.contextGl = null),
+      (this.contextGlRender = null),
+      (this.contextGlDestroy = null),
+      (this.bitmaprenderer = null),
+      (this.renderType = null),
+      (this.videoInfo = { width: "", height: "", encType: "" }),
+      this._initCanvasRender(),
+      this.player.debug.log("CanvasVideo", "init");
     }
+
     destroy() {
       super.destroy(),
-        this.contextGl && (this.contextGl = null),
-        this.context2D && (this.context2D = null),
-        this.contextGlRender &&
-          (this.contextGlDestroy && this.contextGlDestroy(),
-          (this.contextGlDestroy = null),
-          (this.contextGlRender = null)),
-        this.bitmaprenderer && (this.bitmaprenderer = null),
-        (this.renderType = null),
-        this.player.debug.log("CanvasVideoLoader", "destroy");
+      this.contextGl && (this.contextGl = null),
+      this.context2D && (this.context2D = null),
+      this.contextGlRender
+      && (this.contextGlDestroy && this.contextGlDestroy(),
+      (this.contextGlDestroy = null),
+      (this.contextGlRender = null)),
+      this.bitmaprenderer && (this.bitmaprenderer = null),
+      (this.renderType = null),
+      this.player.debug.log("CanvasVideoLoader", "destroy");
     }
+
     _initContextGl() {
       if (
         ((this.contextGl = (function (e) {
           let t = null;
           const i = ["webgl", "experimental-webgl", "moz-webgl", "webkit-3d"];
           let o = 0;
-          for (; !t && o < i.length; ) {
+          for (; !t && o < i.length;) {
             const r = i[o];
             try {
-              let i = { preserveDrawingBuffer: !0 };
+              const i = { preserveDrawingBuffer: !0 };
               t = e.getContext(r, i);
-            } catch (e) {
+            }
+            catch (e) {
               t = null;
             }
-            (t && "function" == typeof t.getParameter) || (t = null), ++o;
+            (t && typeof t.getParameter == "function") || (t = null), ++o;
           }
           return t;
         })(this.$videoElement)),
         this.contextGl)
       ) {
         const e = ((e, t) => {
-          var i = [
-              "attribute vec4 vertexPos;",
-              "attribute vec4 texturePos;",
-              "varying vec2 textureCoord;",
-              "void main()",
-              "{",
-              "gl_Position = vertexPos;",
-              "textureCoord = texturePos.xy;",
-              "}",
-            ].join("\n"),
-            o = [
-              "precision highp float;",
-              "varying highp vec2 textureCoord;",
-              "uniform sampler2D ySampler;",
-              "uniform sampler2D uSampler;",
-              "uniform sampler2D vSampler;",
-              "const mat4 YUV2RGB = mat4",
-              "(",
-              "1.1643828125, 0, 1.59602734375, -.87078515625,",
-              "1.1643828125, -.39176171875, -.81296875, .52959375,",
-              "1.1643828125, 2.017234375, 0, -1.081390625,",
-              "0, 0, 0, 1",
-              ");",
-              "void main(void) {",
-              "highp float y = texture2D(ySampler,  textureCoord).r;",
-              "highp float u = texture2D(uSampler,  textureCoord).r;",
-              "highp float v = texture2D(vSampler,  textureCoord).r;",
-              "gl_FragColor = vec4(y, u, v, 1) * YUV2RGB;",
-              "}",
-            ].join("\n");
+          const i = [
+            "attribute vec4 vertexPos;",
+            "attribute vec4 texturePos;",
+            "varying vec2 textureCoord;",
+            "void main()",
+            "{",
+            "gl_Position = vertexPos;",
+            "textureCoord = texturePos.xy;",
+            "}"
+          ].join("\n");
+          const o = [
+            "precision highp float;",
+            "varying highp vec2 textureCoord;",
+            "uniform sampler2D ySampler;",
+            "uniform sampler2D uSampler;",
+            "uniform sampler2D vSampler;",
+            "const mat4 YUV2RGB = mat4",
+            "(",
+            "1.1643828125, 0, 1.59602734375, -.87078515625,",
+            "1.1643828125, -.39176171875, -.81296875, .52959375,",
+            "1.1643828125, 2.017234375, 0, -1.081390625,",
+            "0, 0, 0, 1",
+            ");",
+            "void main(void) {",
+            "highp float y = texture2D(ySampler,  textureCoord).r;",
+            "highp float u = texture2D(uSampler,  textureCoord).r;",
+            "highp float v = texture2D(vSampler,  textureCoord).r;",
+            "gl_FragColor = vec4(y, u, v, 1) * YUV2RGB;",
+            "}"
+          ].join("\n");
           t && e.pixelStorei(e.UNPACK_ALIGNMENT, 1);
-          var r = e.createShader(e.VERTEX_SHADER);
+          const r = e.createShader(e.VERTEX_SHADER);
           e.shaderSource(r, i),
-            e.compileShader(r),
-            e.getShaderParameter(r, e.COMPILE_STATUS) ||
-              console.log(
-                "Vertex shader failed to compile: " + e.getShaderInfoLog(r)
-              );
-          var s = e.createShader(e.FRAGMENT_SHADER);
+          e.compileShader(r),
+          e.getShaderParameter(r, e.COMPILE_STATUS)
+          || console.log(
+            `Vertex shader failed to compile: ${e.getShaderInfoLog(r)}`
+          );
+          const s = e.createShader(e.FRAGMENT_SHADER);
           e.shaderSource(s, o),
-            e.compileShader(s),
-            e.getShaderParameter(s, e.COMPILE_STATUS) ||
-              console.log(
-                "Fragment shader failed to compile: " + e.getShaderInfoLog(s)
-              );
-          var a = e.createProgram();
+          e.compileShader(s),
+          e.getShaderParameter(s, e.COMPILE_STATUS)
+          || console.log(
+            `Fragment shader failed to compile: ${e.getShaderInfoLog(s)}`
+          );
+          const a = e.createProgram();
           e.attachShader(a, r),
-            e.attachShader(a, s),
-            e.linkProgram(a),
-            e.getProgramParameter(a, e.LINK_STATUS) ||
-              console.log(
-                "Program failed to compile: " + e.getProgramInfoLog(a)
-              ),
-            e.useProgram(a);
-          var n = e.createBuffer();
+          e.attachShader(a, s),
+          e.linkProgram(a),
+          e.getProgramParameter(a, e.LINK_STATUS)
+          || console.log(
+            `Program failed to compile: ${e.getProgramInfoLog(a)}`
+          ),
+          e.useProgram(a);
+          const n = e.createBuffer();
           e.bindBuffer(e.ARRAY_BUFFER, n),
-            e.bufferData(
-              e.ARRAY_BUFFER,
-              new Float32Array([1, 1, -1, 1, 1, -1, -1, -1]),
-              e.STATIC_DRAW
-            );
-          var A = e.getAttribLocation(a, "vertexPos");
+          e.bufferData(
+            e.ARRAY_BUFFER,
+            new Float32Array([1, 1, -1, 1, 1, -1, -1, -1]),
+            e.STATIC_DRAW
+          );
+          const A = e.getAttribLocation(a, "vertexPos");
           e.enableVertexAttribArray(A),
-            e.vertexAttribPointer(A, 2, e.FLOAT, !1, 0, 0);
-          var d = e.createBuffer();
+          e.vertexAttribPointer(A, 2, e.FLOAT, !1, 0, 0);
+          const d = e.createBuffer();
           e.bindBuffer(e.ARRAY_BUFFER, d),
-            e.bufferData(
-              e.ARRAY_BUFFER,
-              new Float32Array([1, 0, 0, 0, 1, 1, 0, 1]),
-              e.STATIC_DRAW
-            );
-          var c = e.getAttribLocation(a, "texturePos");
+          e.bufferData(
+            e.ARRAY_BUFFER,
+            new Float32Array([1, 0, 0, 0, 1, 1, 0, 1]),
+            e.STATIC_DRAW
+          );
+          const c = e.getAttribLocation(a, "texturePos");
           function l(t, i) {
-            var o = e.createTexture();
+            const o = e.createTexture();
             return (
               e.bindTexture(e.TEXTURE_2D, o),
               e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MAG_FILTER, e.LINEAR),
@@ -895,93 +923,103 @@
             );
           }
           e.enableVertexAttribArray(c),
-            e.vertexAttribPointer(c, 2, e.FLOAT, !1, 0, 0);
-          var u = l("ySampler", 0),
-            h = l("uSampler", 1),
-            p = l("vSampler", 2);
+          e.vertexAttribPointer(c, 2, e.FLOAT, !1, 0, 0);
+          const u = l("ySampler", 0);
+          const h = l("uSampler", 1);
+          const p = l("vSampler", 2);
           return {
-            render: function (t, i, o, r, s) {
+            render(t, i, o, r, s) {
               e.viewport(0, 0, t, i),
-                e.activeTexture(e.TEXTURE0),
-                e.bindTexture(e.TEXTURE_2D, u),
-                e.texImage2D(
-                  e.TEXTURE_2D,
-                  0,
-                  e.LUMINANCE,
-                  t,
-                  i,
-                  0,
-                  e.LUMINANCE,
-                  e.UNSIGNED_BYTE,
-                  o
-                ),
-                e.activeTexture(e.TEXTURE1),
-                e.bindTexture(e.TEXTURE_2D, h),
-                e.texImage2D(
-                  e.TEXTURE_2D,
-                  0,
-                  e.LUMINANCE,
-                  t / 2,
-                  i / 2,
-                  0,
-                  e.LUMINANCE,
-                  e.UNSIGNED_BYTE,
-                  r
-                ),
-                e.activeTexture(e.TEXTURE2),
-                e.bindTexture(e.TEXTURE_2D, p),
-                e.texImage2D(
-                  e.TEXTURE_2D,
-                  0,
-                  e.LUMINANCE,
-                  t / 2,
-                  i / 2,
-                  0,
-                  e.LUMINANCE,
-                  e.UNSIGNED_BYTE,
-                  s
-                ),
-                e.drawArrays(e.TRIANGLE_STRIP, 0, 4);
+              e.activeTexture(e.TEXTURE0),
+              e.bindTexture(e.TEXTURE_2D, u),
+              e.texImage2D(
+                e.TEXTURE_2D,
+                0,
+                e.LUMINANCE,
+                t,
+                i,
+                0,
+                e.LUMINANCE,
+                e.UNSIGNED_BYTE,
+                o
+              ),
+              e.activeTexture(e.TEXTURE1),
+              e.bindTexture(e.TEXTURE_2D, h),
+              e.texImage2D(
+                e.TEXTURE_2D,
+                0,
+                e.LUMINANCE,
+                t / 2,
+                i / 2,
+                0,
+                e.LUMINANCE,
+                e.UNSIGNED_BYTE,
+                r
+              ),
+              e.activeTexture(e.TEXTURE2),
+              e.bindTexture(e.TEXTURE_2D, p),
+              e.texImage2D(
+                e.TEXTURE_2D,
+                0,
+                e.LUMINANCE,
+                t / 2,
+                i / 2,
+                0,
+                e.LUMINANCE,
+                e.UNSIGNED_BYTE,
+                s
+              ),
+              e.drawArrays(e.TRIANGLE_STRIP, 0, 4);
             },
-            destroy: function () {
+            destroy() {
               try {
                 e.deleteProgram(a),
-                  e.deleteBuffer(n),
-                  e.deleteBuffer(d),
-                  e.deleteTexture(u),
-                  e.deleteTexture(h),
-                  e.deleteTexture(p);
-              } catch (e) {}
-            },
+                e.deleteBuffer(n),
+                e.deleteBuffer(d),
+                e.deleteTexture(u),
+                e.deleteTexture(h),
+                e.deleteTexture(p);
+              }
+              catch (e) {}
+            }
           };
         })(this.contextGl, this.player._opt.openWebglAlignment);
         (this.contextGlRender = e.render), (this.contextGlDestroy = e.destroy);
-      } else this.player.debug.error("CanvasVideoLoader", "init webgl fail");
+      }
+      else {
+        this.player.debug.error("CanvasVideoLoader", "init webgl fail");
+      }
     }
+
     _initContext2D() {
       this.context2D = this.$videoElement.getContext("2d");
     }
+
     _initCanvasRender() {
       this.player._opt.useWCS && !this._supportOffscreen()
         ? ((this.renderType = H), this._initContext2D())
         : this._supportOffscreen()
-        ? ((this.renderType = Y), this._bindOffscreen())
-        : ((this.renderType = z), this._initContextGl());
+          ? ((this.renderType = Y), this._bindOffscreen())
+          : ((this.renderType = z), this._initContextGl());
     }
+
     _supportOffscreen() {
       return (
-        "function" == typeof this.$videoElement.transferControlToOffscreen &&
-        this.player._opt.useOffscreen
+        typeof this.$videoElement.transferControlToOffscreen == "function"
+        && this.player._opt.useOffscreen
       );
     }
+
     _bindOffscreen() {
       this.bitmaprenderer = this.$videoElement.getContext("bitmaprenderer");
     }
+
     initCanvasViewSize() {
       (this.$videoElement.width = this.videoInfo.width),
-        (this.$videoElement.height = this.videoInfo.height),
-        this.resize();
+      (this.$videoElement.height = this.videoInfo.height),
+      this.resize();
     }
+
     render(e) {
       switch (((this.player.videoTimestamp = e.ts), this.renderType)) {
         case Y:
@@ -1004,17 +1042,18 @@
             this.$videoElement.width,
             this.$videoElement.height
           ),
-            (t = e.videoFrame).close ? t.close() : t.destroy && t.destroy();
+          (t = e.videoFrame).close ? t.close() : t.destroy && t.destroy();
       }
-      var t;
+      let t;
     }
+
     screenshot(e, t, i, o) {
       (e = e || be()), (o = o || M.download);
       const r = { png: "image/png", jpeg: "image/jpeg", webp: "image/webp" };
       let s = 0.92;
       !r[t] && M[t] && ((o = t), (t = "png"), (i = void 0)),
-        "string" == typeof i && ((o = i), (i = void 0)),
-        void 0 !== i && (s = Number(i));
+      typeof i == "string" && ((o = i), (i = void 0)),
+      void 0 !== i && (s = Number(i));
       const a = this.$videoElement.toDataURL(r[t] || r.png, s);
       if (o === M.base64) return a;
       {
@@ -1023,6 +1062,7 @@
         o === M.download && Ue(t, e);
       }
     }
+
     clearView() {
       switch (this.renderType) {
         case Y:
@@ -1049,147 +1089,157 @@
           );
       }
     }
+
     resize() {
       this.player.debug.log("canvasVideo", "resize");
       const e = this.player._opt;
-      let t = this.player.width,
-        i = this.player.height;
-      e.hasControl &&
-        !e.controlAutoHide &&
-        (Be() && this.player.fullscreen && e.useWebFullScreen
-          ? (t -= J)
-          : (i -= J));
-      let o = this.$videoElement.width,
-        r = this.$videoElement.height;
+      let t = this.player.width;
+      let i = this.player.height;
+      e.hasControl
+      && !e.controlAutoHide
+      && (Be() && this.player.fullscreen && e.useWebFullScreen
+        ? (t -= J)
+        : (i -= J));
+      let o = this.$videoElement.width;
+      let r = this.$videoElement.height;
       const s = e.rotate;
-      let a = (t - o) / 2,
-        n = (i - r) / 2;
-      (270 !== s && 90 !== s) ||
-        ((o = this.$videoElement.height), (r = this.$videoElement.width));
-      const A = t / o,
-        d = i / r;
+      const a = (t - o) / 2;
+      const n = (i - r) / 2;
+      (s !== 270 && s !== 90)
+      || ((o = this.$videoElement.height), (r = this.$videoElement.width));
+      const A = t / o;
+      const d = i / r;
       let c = A > d ? d : A;
-      e.isResize || (A !== d && (c = A + "," + d)),
-        e.isFullResize && (c = A > d ? A : d);
-      let l = "scale(" + c + ")";
-      s && (l += " rotate(" + s + "deg)"),
-        (this.$videoElement.style.transform = l),
-        (this.$videoElement.style.left = a + "px"),
-        (this.$videoElement.style.top = n + "px");
+      e.isResize || (A !== d && (c = `${A},${d}`)),
+      e.isFullResize && (c = A > d ? A : d);
+      let l = `scale(${c})`;
+      s && (l += ` rotate(${s}deg)`),
+      (this.$videoElement.style.transform = l),
+      (this.$videoElement.style.left = `${a}px`),
+      (this.$videoElement.style.top = `${n}px`);
     }
   }
   class We extends je {
     constructor(e) {
       super(), (this.player = e);
-      const t = document.createElement("video"),
-        i = document.createElement("canvas");
+      const t = document.createElement("video");
+      const i = document.createElement("canvas");
       (t.muted = !0),
-        (t.style.position = "absolute"),
-        (t.style.top = 0),
-        (t.style.left = 0),
-        (this._delayPlay = !1),
-        e.$container.appendChild(t),
-        (this.videoInfo = { width: "", height: "", encType: "" });
+      (t.style.position = "absolute"),
+      (t.style.top = 0),
+      (t.style.left = 0),
+      (this._delayPlay = !1),
+      e.$container.appendChild(t),
+      (this.videoInfo = { width: "", height: "", encType: "" });
       const o = this.player._opt;
-      o.useWCS &&
-        o.wcsUseVideoRender &&
-        ((this.trackGenerator = new MediaStreamTrackGenerator({
-          kind: "video",
-        })),
-        (t.srcObject = new MediaStream([this.trackGenerator])),
-        (this.vwriter = this.trackGenerator.writable.getWriter())),
-        (this.$videoElement = t),
-        (this.$canvasElement = i),
-        (this.canvasContext = i.getContext("2d")),
-        this.fixChromeVideoFlashBug(),
-        this.resize();
+      o.useWCS
+      && o.wcsUseVideoRender
+      && ((this.trackGenerator = new MediaStreamTrackGenerator({
+        kind: "video"
+      })),
+      (t.srcObject = new MediaStream([this.trackGenerator])),
+      (this.vwriter = this.trackGenerator.writable.getWriter())),
+      (this.$videoElement = t),
+      (this.$canvasElement = i),
+      (this.canvasContext = i.getContext("2d")),
+      this.fixChromeVideoFlashBug(),
+      this.resize();
       const { proxy: r } = this.player.events;
       r(this.$videoElement, "canplay", () => {
         this.player.debug.log(
           "Video",
           `canplay and _delayPlay is ${this._delayPlay}`
         ),
-          this._delayPlay && this._play();
+        this._delayPlay && this._play();
       }),
-        r(this.$videoElement, "waiting", () => {
-          this.player.emit(x.videoWaiting);
-        }),
-        r(this.$videoElement, "timeupdate", (e) => {
-          const t = parseInt(e.timeStamp, 10);
-          this.player.emit(x.timeUpdate, t),
-            !this.isPlaying() &&
-              this.init &&
-              (this.player.debug.log(
-                "Video",
-                "timeupdate and this.isPlaying is false and retry play"
-              ),
-              this.$videoElement.play());
-        }),
-        this.player.debug.log("Video", "init");
+      r(this.$videoElement, "waiting", () => {
+        this.player.emit(x.videoWaiting);
+      }),
+      r(this.$videoElement, "timeupdate", (e) => {
+        const t = Number.parseInt(e.timeStamp, 10);
+        this.player.emit(x.timeUpdate, t),
+        !this.isPlaying()
+        && this.init
+        && (this.player.debug.log(
+          "Video",
+          "timeupdate and this.isPlaying is false and retry play"
+        ),
+        this.$videoElement.play());
+      }),
+      this.player.debug.log("Video", "init");
     }
+
     destroy() {
       super.destroy(),
-        (this.$canvasElement = null),
-        (this.canvasContext = null),
-        this.$videoElement &&
-          (this.$videoElement.pause(),
-          (this.$videoElement.currentTime = 0),
-          (this.$videoElement.src = ""),
-          this.$videoElement.removeAttribute("src"),
-          (this.$videoElement = null)),
-        this.trackGenerator &&
-          (this.trackGenerator.stop(), (this.trackGenerator = null)),
-        this.vwriter && (this.vwriter.close(), (this.vwriter = null)),
-        this.player.debug.log("Video", "destroy");
+      (this.$canvasElement = null),
+      (this.canvasContext = null),
+      this.$videoElement
+      && (this.$videoElement.pause(),
+      (this.$videoElement.currentTime = 0),
+      (this.$videoElement.src = ""),
+      this.$videoElement.removeAttribute("src"),
+      (this.$videoElement = null)),
+      this.trackGenerator
+      && (this.trackGenerator.stop(), (this.trackGenerator = null)),
+      this.vwriter && (this.vwriter.close(), (this.vwriter = null)),
+      this.player.debug.log("Video", "destroy");
     }
+
     fixChromeVideoFlashBug() {
       const e = (function () {
-        const e = navigator.userAgent.toLowerCase(),
-          t = {},
-          i = {
-            IE: window.ActiveXObject || "ActiveXObject" in window,
-            Chrome: e.indexOf("chrome") > -1 && e.indexOf("safari") > -1,
-            Firefox: e.indexOf("firefox") > -1,
-            Opera: e.indexOf("opera") > -1,
-            Safari: e.indexOf("safari") > -1 && -1 == e.indexOf("chrome"),
-            Edge: e.indexOf("edge") > -1,
-            QQBrowser: /qqbrowser/.test(e),
-            WeixinBrowser: /MicroMessenger/i.test(e),
-          };
-        for (let o in i)
+        const e = navigator.userAgent.toLowerCase();
+        const t = {};
+        const i = {
+          IE: window.ActiveXObject || "ActiveXObject" in window,
+          Chrome: e.includes("chrome") && e.includes("safari"),
+          Firefox: e.includes("firefox"),
+          Opera: e.includes("opera"),
+          Safari: e.includes("safari") && !e.includes("chrome"),
+          Edge: e.includes("edge"),
+          QQBrowser: /qqbrowser/.test(e),
+          WeixinBrowser: /MicroMessenger/i.test(e)
+        };
+        for (let o in i) {
           if (i[o]) {
             let i = "";
-            if ("IE" === o) i = e.match(/(msie\s|trident.*rv:)([\w.]+)/)[2];
-            else if ("Chrome" === o) {
-              for (let e in navigator.mimeTypes)
-                "application/360softmgrplugin" ===
-                  navigator.mimeTypes[e].type && (o = "360");
+            if (o === "IE") {
+              i = e.match(/(msie\s|trident.*rv:)([\w.]+)/)[2];
+            }
+            else if (o === "Chrome") {
+              for (const e in navigator.mimeTypes) {
+                navigator.mimeTypes[e].type
+                === "application/360softmgrplugin" && (o = "360");
+              }
               i = e.match(/chrome\/([\d.]+)/)[1];
-            } else
-              "Firefox" === o
+            }
+            else {
+              o === "Firefox"
                 ? (i = e.match(/firefox\/([\d.]+)/)[1])
-                : "Opera" === o
-                ? (i = e.match(/opera\/([\d.]+)/)[1])
-                : "Safari" === o
-                ? (i = e.match(/version\/([\d.]+)/)[1])
-                : "Edge" === o
-                ? (i = e.match(/edge\/([\d.]+)/)[1])
-                : "QQBrowser" === o && (i = e.match(/qqbrowser\/([\d.]+)/)[1]);
-            (t.type = o), (t.version = parseInt(i));
+                : o === "Opera"
+                  ? (i = e.match(/opera\/([\d.]+)/)[1])
+                  : o === "Safari"
+                    ? (i = e.match(/version\/([\d.]+)/)[1])
+                    : o === "Edge"
+                      ? (i = e.match(/edge\/([\d.]+)/)[1])
+                      : o === "QQBrowser" && (i = e.match(/qqbrowser\/([\d.]+)/)[1]);
+            }
+            (t.type = o), (t.version = Number.parseInt(i));
           }
+        }
         return t;
       })().type.toLowerCase();
-      if ("chrome" === e || "edge" === e) {
+      if (e === "chrome" || e === "edge") {
         const e = this.player.$container;
         (e.style.backdropFilter = "blur(0px)"), (e.style.translateZ = "0");
       }
     }
+
     play() {
       if (this.$videoElement) {
         const e = this._getVideoReadyState();
         if (
-          (this.player.debug.log("Video", `play and readyState: ${e}`), 0 === e)
-        )
+          (this.player.debug.log("Video", `play and readyState: ${e}`), e === 0)
+        ) {
           return (
             this.player.debug.warn(
               "Video",
@@ -1197,33 +1247,37 @@
             ),
             void (this._delayPlay = !0)
           );
+        }
         this._play();
       }
     }
+
     _getVideoReadyState() {
       let e = 0;
       return this.$videoElement && (e = this.$videoElement.readyState), e;
     }
+
     _play() {
-      this.$videoElement &&
-        this.$videoElement
-          .play()
-          .then(() => {
-            (this._delayPlay = !1),
-              this.player.debug.log("Video", "_play success"),
-              setTimeout(() => {
-                this.isPlaying() ||
-                  (this.player.debug.warn(
-                    "Video",
-                    "play failed and retry play"
-                  ),
-                  this._play());
-              }, 100);
-          })
-          .catch((e) => {
-            this.player.debug.error("Video", "_play error", e);
-          });
+      this.$videoElement
+      && this.$videoElement
+        .play()
+        .then(() => {
+          (this._delayPlay = !1),
+          this.player.debug.log("Video", "_play success"),
+          setTimeout(() => {
+            this.isPlaying()
+            || (this.player.debug.warn(
+              "Video",
+              "play failed and retry play"
+            ),
+            this._play());
+          }, 100);
+        })
+        .catch((e) => {
+          this.player.debug.error("Video", "_play error", e);
+        });
     }
+
     pause(e) {
       e
         ? this.$videoElement && this.$videoElement.pause()
@@ -1231,63 +1285,69 @@
             this.$videoElement && this.$videoElement.pause();
           }, 100);
     }
+
     clearView() {}
     screenshot(e, t, i, o) {
       (e = e || be()), (o = o || M.download);
       const r = { png: "image/png", jpeg: "image/jpeg", webp: "image/webp" };
       let s = 0.92;
       !r[t] && M[t] && ((o = t), (t = "png"), (i = void 0)),
-        "string" == typeof i && ((o = i), (i = void 0)),
-        void 0 !== i && (s = Number(i));
+      typeof i == "string" && ((o = i), (i = void 0)),
+      void 0 !== i && (s = Number(i));
       const a = this.$videoElement;
-      let n = this.$canvasElement;
+      const n = this.$canvasElement;
       (n.width = a.videoWidth),
-        (n.height = a.videoHeight),
-        this.canvasContext.drawImage(a, 0, 0, n.width, n.height);
+      (n.height = a.videoHeight),
+      this.canvasContext.drawImage(a, 0, 0, n.width, n.height);
       const A = n.toDataURL(r[t] || r.png, s);
       if (
         (this.canvasContext.clearRect(0, 0, n.width, n.height),
         (n.width = 0),
         (n.height = 0),
         o === M.base64)
-      )
+      ) {
         return A;
+      }
       {
         const t = fe(A);
         if (o === M.blob) return t;
         o === M.download && Ue(t, e);
       }
     }
+
     initCanvasViewSize() {
       this.resize();
     }
+
     render(e) {
       this.vwriter && this.vwriter.write(e.videoFrame);
     }
+
     resize() {
-      let e = this.player.width,
-        t = this.player.height;
-      const i = this.player._opt,
-        o = i.rotate;
-      i.hasControl &&
-        !i.controlAutoHide &&
-        (Be() && this.player.fullscreen && i.useWebFullScreen
-          ? (e -= J)
-          : (t -= J)),
-        (this.$videoElement.width = e),
-        (this.$videoElement.height = t),
-        (270 !== o && 90 !== o) ||
-          ((this.$videoElement.width = t), (this.$videoElement.height = e));
-      let r = (e - this.$videoElement.width) / 2,
-        s = (t - this.$videoElement.height) / 2,
-        a = "contain";
+      let e = this.player.width;
+      let t = this.player.height;
+      const i = this.player._opt;
+      const o = i.rotate;
+      i.hasControl
+      && !i.controlAutoHide
+      && (Be() && this.player.fullscreen && i.useWebFullScreen
+        ? (e -= J)
+        : (t -= J)),
+      (this.$videoElement.width = e),
+      (this.$videoElement.height = t),
+      (o !== 270 && o !== 90)
+      || ((this.$videoElement.width = t), (this.$videoElement.height = e));
+      const r = (e - this.$videoElement.width) / 2;
+      const s = (t - this.$videoElement.height) / 2;
+      let a = "contain";
       i.isResize || (a = "fill"),
-        i.isFullResize && (a = "none"),
-        (this.$videoElement.style.objectFit = a),
-        (this.$videoElement.style.transform = "rotate(" + o + "deg)"),
-        (this.$videoElement.style.left = r + "px"),
-        (this.$videoElement.style.top = s + "px");
+      i.isFullResize && (a = "none"),
+      (this.$videoElement.style.objectFit = a),
+      (this.$videoElement.style.transform = `rotate(${o}deg)`),
+      (this.$videoElement.style.left = `${r}px`),
+      (this.$videoElement.style.top = `${s}px`);
     }
+
     isPlaying() {
       return this.$videoElement && !this.$videoElement.paused;
     }
@@ -1296,6 +1356,7 @@
     constructor(e) {
       return new (Je.getLoaderFactory(e._opt))(e);
     }
+
     static getLoaderFactory(e) {
       return e.useMSE || (e.useWCS && !e.useOffscreen && e.wcsUseVideoRender)
         ? We
@@ -1305,95 +1366,104 @@
   class Pe extends De {
     constructor(e) {
       super(),
-        (this.bufferList = []),
-        (this.player = e),
-        (this.scriptNode = null),
-        (this.hasInitScriptNode = !1),
-        (this.audioContextChannel = null),
-        (this.audioContext = new (window.AudioContext ||
-          window.webkitAudioContext)()),
-        (this.gainNode = this.audioContext.createGain());
+      (this.bufferList = []),
+      (this.player = e),
+      (this.scriptNode = null),
+      (this.hasInitScriptNode = !1),
+      (this.audioContextChannel = null),
+      (this.audioContext = new (window.AudioContext
+        || window.webkitAudioContext)()),
+      (this.gainNode = this.audioContext.createGain());
       const t = this.audioContext.createBufferSource();
       (t.buffer = this.audioContext.createBuffer(1, 1, 22050)),
-        t.connect(this.audioContext.destination),
-        t.noteOn ? t.noteOn(0) : t.start(0),
-        (this.audioBufferSourceNode = t),
-        (this.mediaStreamAudioDestinationNode =
-          this.audioContext.createMediaStreamDestination()),
-        this.audioEnabled(!0),
-        (this.gainNode.gain.value = 0),
-        (this.playing = !1),
-        (this.audioSyncVideoOption = { diff: null }),
-        (this.audioInfo = { encType: "", channels: "", sampleRate: "" }),
-        (this.init = !1),
-        (this.hasAudio = !1),
-        this.on(x.videoSyncAudio, (e) => {
-          this.audioSyncVideoOption = e;
-        }),
-        this.player.debug.log("AudioContext", "init");
+      t.connect(this.audioContext.destination),
+      t.noteOn ? t.noteOn(0) : t.start(0),
+      (this.audioBufferSourceNode = t),
+      (this.mediaStreamAudioDestinationNode
+          = this.audioContext.createMediaStreamDestination()),
+      this.audioEnabled(!0),
+      (this.gainNode.gain.value = 0),
+      (this.playing = !1),
+      (this.audioSyncVideoOption = { diff: null }),
+      (this.audioInfo = { encType: "", channels: "", sampleRate: "" }),
+      (this.init = !1),
+      (this.hasAudio = !1),
+      this.on(x.videoSyncAudio, (e) => {
+        this.audioSyncVideoOption = e;
+      }),
+      this.player.debug.log("AudioContext", "init");
     }
+
     resetInit() {
       (this.init = !1),
-        (this.audioInfo = { encType: "", channels: "", sampleRate: "" });
+      (this.audioInfo = { encType: "", channels: "", sampleRate: "" });
     }
+
     destroy() {
       this.closeAudio(),
-        this.resetInit(),
-        this.audioContext.close(),
-        (this.audioContext = null),
-        (this.gainNode = null),
-        (this.hasAudio = !1),
-        (this.playing = !1),
-        this.scriptNode &&
-          ((this.scriptNode.onaudioprocess = ge), (this.scriptNode = null)),
-        (this.audioBufferSourceNode = null),
-        (this.mediaStreamAudioDestinationNode = null),
-        (this.hasInitScriptNode = !1),
-        (this.audioSyncVideoOption = { diff: null }),
-        this.off(),
-        this.player.debug.log("AudioContext", "destroy");
+      this.resetInit(),
+      this.audioContext.close(),
+      (this.audioContext = null),
+      (this.gainNode = null),
+      (this.hasAudio = !1),
+      (this.playing = !1),
+      this.scriptNode
+      && ((this.scriptNode.onaudioprocess = ge), (this.scriptNode = null)),
+      (this.audioBufferSourceNode = null),
+      (this.mediaStreamAudioDestinationNode = null),
+      (this.hasInitScriptNode = !1),
+      (this.audioSyncVideoOption = { diff: null }),
+      this.off(),
+      this.player.debug.log("AudioContext", "destroy");
     }
+
     updateAudioInfo(e) {
-      e.encTypeCode &&
-        ((this.audioInfo.encType = W[e.encTypeCode]),
-        (this.audioInfo.encTypeCode = e.encTypeCode)),
-        e.channels && (this.audioInfo.channels = e.channels),
-        e.sampleRate && (this.audioInfo.sampleRate = e.sampleRate),
-        this.audioInfo.sampleRate &&
-          this.audioInfo.channels &&
-          this.audioInfo.encType &&
-          !this.init &&
-          (this.player.emit(x.audioInfo, this.audioInfo), (this.init = !0));
+      e.encTypeCode
+      && ((this.audioInfo.encType = W[e.encTypeCode]),
+      (this.audioInfo.encTypeCode = e.encTypeCode)),
+      e.channels && (this.audioInfo.channels = e.channels),
+      e.sampleRate && (this.audioInfo.sampleRate = e.sampleRate),
+      this.audioInfo.sampleRate
+      && this.audioInfo.channels
+      && this.audioInfo.encType
+      && !this.init
+      && (this.player.emit(x.audioInfo, this.audioInfo), (this.init = !0));
     }
+
     get isPlaying() {
       return this.playing;
     }
+
     get isMute() {
-      return 0 === this.gainNode.gain.value;
+      return this.gainNode.gain.value === 0;
     }
+
     get volume() {
       return this.gainNode.gain.value;
     }
+
     get bufferSize() {
       return this.bufferList.length;
     }
+
     initScriptNode() {
       if (((this.playing = !0), this.hasInitScriptNode)) return;
-      const e = this.audioInfo.channels,
-        t = this.audioContext.createScriptProcessor(1024, 0, e);
+      const e = this.audioInfo.channels;
+      const t = this.audioContext.createScriptProcessor(1024, 0, e);
       (t.onaudioprocess = (t) => {
         const i = t.outputBuffer;
         if (this.bufferList.length && this.playing) {
           if (
-            !this.player._opt.useWCS &&
-            !this.player._opt.useMSE &&
-            this.player._opt.wasmDecodeAudioSyncVideo
+            !this.player._opt.useWCS
+            && !this.player._opt.useMSE
+            && this.player._opt.wasmDecodeAudioSyncVideo
           ) {
-            if (this.audioSyncVideoOption.diff > ee)
+            if (this.audioSyncVideoOption.diff > ee) {
               return void this.player.debug.warn(
                 "AudioContext",
                 `audioSyncVideoOption more than diff :${this.audioSyncVideoOption.diff}, waiting`
               );
+            }
             if (this.audioSyncVideoOption.diff < -1e3) {
               this.player.debug.warn(
                 "AudioContext",
@@ -1402,30 +1472,31 @@
               let e = this.bufferList.shift();
               for (
                 ;
-                e.ts - this.player.videoTimestamp < -1e3 &&
-                this.bufferList.length > 0;
+                e.ts - this.player.videoTimestamp < -1e3
+                && this.bufferList.length > 0;
 
               )
                 e = this.bufferList.shift();
-              if (0 === this.bufferList.length) return;
+              if (this.bufferList.length === 0) return;
             }
           }
-          if (0 === this.bufferList.length) return;
+          if (this.bufferList.length === 0) return;
           const t = this.bufferList.shift();
           t && t.ts && (this.player.audioTimestamp = t.ts);
           for (let o = 0; o < e; o++) {
-            const e = t.buffer[o],
-              r = i.getChannelData(o);
+            const e = t.buffer[o];
+            const r = i.getChannelData(o);
             for (let t = 0; t < 1024; t++) r[t] = e[t] || 0;
           }
         }
       }),
-        t.connect(this.gainNode),
-        (this.scriptNode = t),
-        this.gainNode.connect(this.audioContext.destination),
-        this.gainNode.connect(this.mediaStreamAudioDestinationNode),
-        (this.hasInitScriptNode = !0);
+      t.connect(this.gainNode),
+      (this.scriptNode = t),
+      this.gainNode.connect(this.audioContext.destination),
+      this.gainNode.connect(this.mediaStreamAudioDestinationNode),
+      (this.hasInitScriptNode = !0);
     }
+
     mute(e) {
       e
         ? (this.isMute || this.player.emit(x.mute, e),
@@ -1433,54 +1504,63 @@
           this.clear())
         : (this.isMute && this.player.emit(x.mute, e), this.setVolume(0.5));
     }
+
     setVolume(e) {
-      (e = parseFloat(e).toFixed(2)),
-        isNaN(e) ||
-          (this.audioEnabled(!0),
-          (e = ye(e, 0, 1)),
-          (this.gainNode.gain.value = e),
-          this.gainNode.gain.setValueAtTime(e, this.audioContext.currentTime),
-          this.player.emit(x.volumechange, this.player.volume));
+      (e = Number.parseFloat(e).toFixed(2)),
+      isNaN(e)
+      || (this.audioEnabled(!0),
+      (e = ye(e, 0, 1)),
+      (this.gainNode.gain.value = e),
+      this.gainNode.gain.setValueAtTime(e, this.audioContext.currentTime),
+      this.player.emit(x.volumechange, this.player.volume));
     }
+
     closeAudio() {
-      this.hasInitScriptNode &&
-        (this.scriptNode && this.scriptNode.disconnect(this.gainNode),
-        this.gainNode &&
-          this.gainNode.disconnect(this.audioContext.destination),
-        this.gainNode &&
-          this.gainNode.disconnect(this.mediaStreamAudioDestinationNode)),
-        this.clear();
+      this.hasInitScriptNode
+      && (this.scriptNode && this.scriptNode.disconnect(this.gainNode),
+      this.gainNode
+      && this.gainNode.disconnect(this.audioContext.destination),
+      this.gainNode
+      && this.gainNode.disconnect(this.mediaStreamAudioDestinationNode)),
+      this.clear();
     }
+
     audioEnabled(e) {
       e
-        ? "suspended" === this.audioContext.state && this.audioContext.resume()
-        : "running" === this.audioContext.state && this.audioContext.suspend();
+        ? this.audioContext.state === "suspended" && this.audioContext.resume()
+        : this.audioContext.state === "running" && this.audioContext.suspend();
     }
+
     isStateRunning() {
-      return "running" === this.audioContext.state;
+      return this.audioContext.state === "running";
     }
+
     isStateSuspended() {
-      return "suspended" === this.audioContext.state;
+      return this.audioContext.state === "suspended";
     }
+
     clear() {
       this.bufferList = [];
     }
+
     play(e, t) {
-      this.isMute ||
-        ((this.hasAudio = !0),
-        this.bufferList.push({ buffer: e, ts: t }),
-        this.bufferList.length > 20 &&
-          (this.player.debug.warn(
-            "AudioContext",
-            `bufferList is large: ${this.bufferList.length}`
-          ),
-          this.bufferList.length > 50 && this.bufferList.shift()));
+      this.isMute
+      || ((this.hasAudio = !0),
+      this.bufferList.push({ buffer: e, ts: t }),
+      this.bufferList.length > 20
+      && (this.player.debug.warn(
+        "AudioContext",
+        `bufferList is large: ${this.bufferList.length}`
+      ),
+      this.bufferList.length > 50 && this.bufferList.shift()));
     }
+
     pause() {
       (this.audioSyncVideoOption = { diff: null }),
-        (this.playing = !1),
-        this.clear();
+      (this.playing = !1),
+      this.clear();
     }
+
     resume() {
       this.playing = !0;
     }
@@ -1489,6 +1569,7 @@
     constructor(e) {
       return new (Ge.getLoaderFactory())(e);
     }
+
     static getLoaderFactory() {
       return Pe;
     }
@@ -1496,26 +1577,28 @@
   class Ne extends De {
     constructor(e) {
       super(),
-        (this.player = e),
-        (this.playing = !1),
-        (this.abortController = new AbortController()),
-        (this.streamRate = Ee((t) => {
-          e.emit(x.kBps, (t / 1024).toFixed(2));
-        })),
-        e.debug.log("FetchStream", "init");
+      (this.player = e),
+      (this.playing = !1),
+      (this.abortController = new AbortController()),
+      (this.streamRate = Ee((t) => {
+        e.emit(x.kBps, (t / 1024).toFixed(2));
+      })),
+      e.debug.log("FetchStream", "init");
     }
+
     destroy() {
       this.abort(),
-        this.off(),
-        (this.streamRate = null),
-        this.player.debug.log("FetchStream", "destroy");
+      this.off(),
+      (this.streamRate = null),
+      this.player.debug.log("FetchStream", "destroy");
     }
+
     fetchStream(e) {
-      let t =
-        arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
+      const t
+        = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
       const { demux: i } = this.player;
       this.player.debug.log("FetchStream", "fetchStream", e, JSON.stringify(t)),
-        (this.player._times.streamStart = be());
+      (this.player._times.streamStart = be());
       const o = Object.assign(
         { signal: this.abortController.signal },
         { headers: t.headers || {} }
@@ -1527,7 +1610,7 @@
           const o = () => {
             t.read()
               .then((e) => {
-                let { done: t, value: r } = e;
+                const { done: t, value: r } = e;
                 t
                   ? i.close()
                   : (this.streamRate && this.streamRate(r.byteLength),
@@ -1537,82 +1620,86 @@
               .catch((e) => {
                 i.close();
                 const t = e.toString();
-                -1 === t.indexOf(ae) &&
-                  -1 === t.indexOf(ne) &&
-                  e.name !== Ae &&
-                  (this.abort(),
-                  this.emit(j.fetchError, e),
-                  this.player.emit(x.error, j.fetchError));
+                !t.includes(ae)
+                && !t.includes(ne)
+                && e.name !== Ae
+                && (this.abort(),
+                this.emit(j.fetchError, e),
+                this.player.emit(x.error, j.fetchError));
               });
           };
           o();
         })
         .catch((e) => {
-          "AbortError" !== e.name &&
-            (i.close(),
-            this.abort(),
-            this.emit(j.fetchError, e),
-            this.player.emit(x.error, j.fetchError));
+          e.name !== "AbortError"
+          && (i.close(),
+          this.abort(),
+          this.emit(j.fetchError, e),
+          this.player.emit(x.error, j.fetchError));
         });
     }
+
     abort() {
-      this.abortController &&
-        (this.abortController.abort(), (this.abortController = null));
+      this.abortController
+      && (this.abortController.abort(), (this.abortController = null));
     }
   }
   class He extends De {
     constructor(e) {
       super(),
-        (this.player = e),
-        (this.socket = null),
-        (this.socketStatus = L),
-        (this.wsUrl = null),
-        (this.streamRate = Ee((t) => {
-          e.emit(x.kBps, (t / 1024).toFixed(2));
-        })),
-        e.debug.log("WebsocketLoader", "init");
+      (this.player = e),
+      (this.socket = null),
+      (this.socketStatus = L),
+      (this.wsUrl = null),
+      (this.streamRate = Ee((t) => {
+        e.emit(x.kBps, (t / 1024).toFixed(2));
+      })),
+      e.debug.log("WebsocketLoader", "init");
     }
+
     destroy() {
-      this.socket &&
-        (this.socket.close(1e3, "Client disconnecting"), (this.socket = null)),
-        (this.socketStatus = L),
-        (this.streamRate = null),
-        (this.wsUrl = null),
-        this.off(),
-        this.player.debug.log("websocketLoader", "destroy");
+      this.socket
+      && (this.socket.close(1e3, "Client disconnecting"), (this.socket = null)),
+      (this.socketStatus = L),
+      (this.streamRate = null),
+      (this.wsUrl = null),
+      this.off(),
+      this.player.debug.log("websocketLoader", "destroy");
     }
+
     _createWebSocket() {
-      const e = this.player,
-        {
-          debug: t,
-          events: { proxy: i },
-          demux: o,
-        } = e;
+      const e = this.player;
+      const {
+        debug: t,
+        events: { proxy: i },
+        demux: o
+      } = e;
       (this.socket = new WebSocket(this.wsUrl)),
-        (this.socket.binaryType = "arraybuffer"),
-        i(this.socket, "open", () => {
-          this.emit(x.streamSuccess),
-            t.log("websocketLoader", "socket open"),
-            (this.socketStatus = F);
-        }),
-        i(this.socket, "message", (e) => {
-          this.streamRate && this.streamRate(e.data.byteLength),
-            this._handleMessage(e.data);
-        }),
-        i(this.socket, "close", () => {
-          t.log("websocketLoader", "socket close"),
-            this.emit(x.streamEnd),
-            (this.socketStatus = O);
-        }),
-        i(this.socket, "error", (e) => {
-          t.log("websocketLoader", "socket error"),
-            this.emit(j.websocketError, e),
-            this.player.emit(x.error, j.websocketError),
-            (this.socketStatus = V),
-            o.close(),
-            t.log("websocketLoader", "socket error:", e);
-        });
+      (this.socket.binaryType = "arraybuffer"),
+      i(this.socket, "open", () => {
+        this.emit(x.streamSuccess),
+        t.log("websocketLoader", "socket open"),
+        (this.socketStatus = F);
+      }),
+      i(this.socket, "message", (e) => {
+        this.streamRate && this.streamRate(e.data.byteLength),
+        this._handleMessage(e.data);
+      }),
+      i(this.socket, "close", () => {
+        t.log("websocketLoader", "socket close"),
+        this.emit(x.streamEnd),
+        (this.socketStatus = O);
+      }),
+      i(this.socket, "error", (e) => {
+        t.log("websocketLoader", "socket error"),
+        this.emit(j.websocketError, e),
+        this.player.emit(x.error, j.websocketError),
+        (this.socketStatus = V),
+        o.close(),
+        t.log("websocketLoader", "socket error:", e);
+      });
     }
+
     _handleMessage(e) {
       const { demux: t } = this.player;
       t
@@ -1622,67 +1709,73 @@
             "websocket handle message demux is null"
           );
     }
+
     fetchStream(e, t) {
       (this.player._times.streamStart = be()),
-        (this.wsUrl = e),
-        this._createWebSocket();
+      (this.wsUrl = e),
+      this._createWebSocket();
     }
   }
   class ze {
     constructor(e) {
       return new (ze.getLoaderFactory(e._opt.protocol))(e);
     }
+
     static getLoaderFactory(e) {
       return e === a ? Ne : e === s ? He : void 0;
     }
   }
-  var Ye = t(function (t) {
+  const Ye = t((t) => {
     function i(e, t) {
       if (!e) throw "First parameter is required.";
       t = new o(e, (t = t || { type: "video" }));
-      var s = this;
+      let s = this;
       function a(i) {
-        i &&
-          (t.initCallback = function () {
-            i(), (i = t.initCallback = null);
-          });
-        var o = new r(e, t);
+        i
+        && (t.initCallback = function () {
+          i(), (i = t.initCallback = null);
+        });
+        const o = new r(e, t);
         (h = new o(e, t)).record(),
-          u("recording"),
-          t.disableLogs ||
-            console.log(
-              "Initialized recorderType:",
-              h.constructor.name,
-              "for output-type:",
-              t.type
-            );
+        u("recording"),
+        t.disableLogs
+        || console.log(
+          "Initialized recorderType:",
+          h.constructor.name,
+          "for output-type:",
+          t.type
+        );
       }
       function n(e) {
         if (((e = e || function () {}), h)) {
-          if ("paused" === s.state)
+          if (s.state === "paused") {
             return (
               s.resumeRecording(),
-              void setTimeout(function () {
+              void setTimeout(() => {
                 n(e);
               }, 1)
             );
-          "recording" === s.state ||
-            t.disableLogs ||
-            console.warn(
-              'Recording state should be: "recording", however current state is: ',
-              s.state
-            ),
-            t.disableLogs ||
-              console.log("Stopped recording " + t.type + " stream."),
-            "gif" !== t.type ? h.stop(i) : (h.stop(), i()),
-            u("stopped");
-        } else m();
+          }
+          s.state === "recording"
+          || t.disableLogs
+          || console.warn(
+            'Recording state should be: "recording", however current state is: ',
+            s.state
+          ),
+          t.disableLogs
+          || console.log(`Stopped recording ${t.type} stream.`),
+          t.type !== "gif" ? h.stop(i) : (h.stop(), i()),
+          u("stopped");
+        }
+        else {
+          m();
+        }
         function i(i) {
           if (h) {
-            Object.keys(h).forEach(function (e) {
-              "function" != typeof h[e] && (s[e] = h[e]);
+            Object.keys(h).forEach((e) => {
+              typeof h[e] != "function" && (s[e] = h[e]);
             });
-            var o = h.blob;
+            let o = h.blob;
             if (!o) {
               if (!i) throw "Recording failed.";
               h.blob = o = i;
@@ -1690,18 +1783,22 @@
             if (
               (o && !t.disableLogs && console.log(o.type, "->", b(o.size)), e)
             ) {
-              var r;
+              let r;
               try {
                 r = l.createObjectURL(o);
-              } catch (e) {}
-              "function" == typeof e.call ? e.call(s, r) : e(r);
+              }
+              catch (e) {}
+              typeof e.call == "function" ? e.call(s, r) : e(r);
             }
-            t.autoWriteToDisk &&
-              d(function (e) {
-                var i = {};
-                (i[t.type + "Blob"] = e), x.Store(i);
-              });
-          } else "function" == typeof e.call ? e.call(s, "") : e("");
+            t.autoWriteToDisk
+            && d((e) => {
+              const i = {};
+              (i[`${t.type}Blob`] = e), x.Store(i);
+            });
+          }
+          else {
+            typeof e.call == "function" ? e.call(s, "") : e("");
+          }
         }
       }
       function A(e) {
@@ -1709,268 +1806,271 @@
       }
       function d(e, i) {
         if (!e) throw "Pass a callback function over getDataURL.";
-        var o = i ? i.blob : (h || {}).blob;
-        if (!o)
+        const o = i ? i.blob : (h || {}).blob;
+        if (!o) {
           return (
-            t.disableLogs ||
-              console.warn("Blob encoder did not finish its job yet."),
-            void setTimeout(function () {
+            t.disableLogs
+            || console.warn("Blob encoder did not finish its job yet."),
+            void setTimeout(() => {
               d(e, i);
             }, 1e3)
           );
-        if ("undefined" == typeof Worker || navigator.mozGetUserMedia) {
-          var r = new FileReader();
+        }
+        if (typeof Worker == "undefined" || navigator.mozGetUserMedia) {
+          const r = new FileReader();
           r.readAsDataURL(o),
-            (r.onload = function (t) {
-              e(t.target.result);
-            });
-        } else {
-          var s = (function (e) {
+          (r.onload = function (t) {
+            e(t.target.result);
+          });
+        }
+        else {
+          const s = (function (e) {
             try {
-              var t = l.createObjectURL(
-                  new Blob(
-                    [
-                      e.toString(),
-                      "this.onmessage =  function (eee) {" +
-                        e.name +
-                        "(eee.data);}",
-                    ],
-                    { type: "application/javascript" }
-                  )
-                ),
-                i = new Worker(t);
+              const t = l.createObjectURL(
+                new Blob(
+                  [
+                    e.toString(),
+                    `this.onmessage =  function (eee) {${
+                      e.name
+                    }(eee.data);}`
+                  ],
+                  { type: "application/javascript" }
+                )
+              );
+              const i = new Worker(t);
               return l.revokeObjectURL(t), i;
-            } catch (e) {}
+            }
+            catch (e) {}
           })(A);
           (s.onmessage = function (t) {
             e(t.data);
           }),
-            s.postMessage(o);
+          s.postMessage(o);
         }
       }
       function c(e) {
         (e = e || 0),
-          "paused" !== s.state
-            ? "stopped" !== s.state &&
-              (e >= s.recordingDuration
-                ? n(s.onRecordingStopped)
-                : ((e += 1e3),
-                  setTimeout(function () {
-                    c(e);
-                  }, 1e3)))
-            : setTimeout(function () {
+        s.state !== "paused"
+          ? s.state !== "stopped"
+          && (e >= s.recordingDuration
+            ? n(s.onRecordingStopped)
+            : ((e += 1e3),
+              setTimeout(() => {
                 c(e);
-              }, 1e3);
+              }, 1e3)))
+          : setTimeout(() => {
+              c(e);
+            }, 1e3);
       }
       function u(e) {
-        s &&
-          ((s.state = e),
-          "function" == typeof s.onStateChanged.call
-            ? s.onStateChanged.call(s, e)
-            : s.onStateChanged(e));
+        s
+        && ((s.state = e),
+        typeof s.onStateChanged.call == "function"
+          ? s.onStateChanged.call(s, e)
+          : s.onStateChanged(e));
       }
-      var h,
-        p =
-          'It seems that recorder is destroyed or "startRecording" is not invoked for ' +
-          t.type +
-          " recorder.";
+      let h;
+      const p
+          = `It seems that recorder is destroyed or "startRecording" is not invoked for ${
+            t.type
+          } recorder.`;
       function m() {
         !0 !== t.disableLogs && console.warn(p);
       }
       var g = {
-        startRecording: function (i) {
+        startRecording(i) {
           return (
             t.disableLogs || console.log("RecordRTC version: ", s.version),
             i && (t = new o(e, i)),
-            t.disableLogs ||
-              console.log("started recording " + t.type + " stream."),
+            t.disableLogs
+            || console.log(`started recording ${t.type} stream.`),
             h
               ? (h.clearRecordedData(),
                 h.record(),
                 u("recording"),
                 s.recordingDuration && c(),
                 s)
-              : (a(function () {
+              : (a(() => {
                   s.recordingDuration && c();
                 }),
                 s)
           );
         },
         stopRecording: n,
-        pauseRecording: function () {
+        pauseRecording() {
           h
-            ? "recording" === s.state
+            ? s.state === "recording"
               ? (u("paused"),
                 h.pause(),
                 t.disableLogs || console.log("Paused recording."))
-              : t.disableLogs ||
-                console.warn(
+              : t.disableLogs
+                || console.warn(
                   "Unable to pause the recording. Recording state: ",
                   s.state
                 )
             : m();
         },
-        resumeRecording: function () {
+        resumeRecording() {
           h
-            ? "paused" === s.state
+            ? s.state === "paused"
               ? (u("recording"),
                 h.resume(),
                 t.disableLogs || console.log("Resumed recording."))
-              : t.disableLogs ||
-                console.warn(
+              : t.disableLogs
+                || console.warn(
                   "Unable to resume the recording. Recording state: ",
                   s.state
                 )
             : m();
         },
         initRecorder: a,
-        setRecordingDuration: function (e, t) {
+        setRecordingDuration(e, t) {
           if (void 0 === e) throw "recordingDuration is required.";
-          if ("number" != typeof e) throw "recordingDuration must be a number.";
+          if (typeof e != "number") throw "recordingDuration must be a number.";
           return (
             (s.recordingDuration = e),
             (s.onRecordingStopped = t || function () {}),
             {
-              onRecordingStopped: function (e) {
+              onRecordingStopped(e) {
                 s.onRecordingStopped = e;
-              },
+              }
             }
           );
         },
-        clearRecordedData: function () {
+        clearRecordedData() {
           h
             ? (h.clearRecordedData(),
               t.disableLogs || console.log("Cleared old recorded data."))
             : m();
         },
-        getBlob: function () {
+        getBlob() {
           if (h) return h.blob;
           m();
         },
         getDataURL: d,
-        toURL: function () {
+        toURL() {
           if (h) return l.createObjectURL(h.blob);
           m();
         },
-        getInternalRecorder: function () {
+        getInternalRecorder() {
           return h;
         },
-        save: function (e) {
+        save(e) {
           h ? y(h.blob, e) : m();
         },
-        getFromDisk: function (e) {
+        getFromDisk(e) {
           h ? i.getFromDisk(t.type, e) : m();
         },
-        setAdvertisementArray: function (e) {
+        setAdvertisementArray(e) {
           t.advertisement = [];
-          for (var i = e.length, o = 0; o < i; o++)
+          for (let i = e.length, o = 0; o < i; o++)
             t.advertisement.push({ duration: o, image: e[o] });
         },
         blob: null,
         bufferSize: 0,
         sampleRate: 0,
         buffer: null,
-        reset: function () {
-          "recording" !== s.state ||
-            t.disableLogs ||
-            console.warn("Stop an active recorder."),
-            h &&
-              "function" == typeof h.clearRecordedData &&
-              h.clearRecordedData(),
-            (h = null),
-            u("inactive"),
-            (s.blob = null);
+        reset() {
+          s.state !== "recording"
+          || t.disableLogs
+          || console.warn("Stop an active recorder."),
+          h
+          && typeof h.clearRecordedData == "function"
+          && h.clearRecordedData(),
+          (h = null),
+          u("inactive"),
+          (s.blob = null);
         },
-        onStateChanged: function (e) {
+        onStateChanged(e) {
           t.disableLogs || console.log("Recorder state changed:", e);
         },
         state: "inactive",
-        getState: function () {
+        getState() {
           return s.state;
         },
-        destroy: function () {
-          var e = t.disableLogs;
+        destroy() {
+          const e = t.disableLogs;
           (t = { disableLogs: !0 }),
-            s.reset(),
-            u("destroyed"),
-            (g = s = null),
-            E.AudioContextConstructor &&
-              (E.AudioContextConstructor.close(),
-              (E.AudioContextConstructor = null)),
-            (t.disableLogs = e),
-            t.disableLogs || console.log("RecordRTC is destroyed.");
+          s.reset(),
+          u("destroyed"),
+          (g = s = null),
+          E.AudioContextConstructor
+          && (E.AudioContextConstructor.close(),
+          (E.AudioContextConstructor = null)),
+          (t.disableLogs = e),
+          t.disableLogs || console.log("RecordRTC is destroyed.");
         },
-        version: "5.6.2",
+        version: "5.6.2"
       };
       if (!this) return (s = g), g;
-      for (var f in g) this[f] = g[f];
+      for (const f in g) this[f] = g[f];
       return (s = this), g;
     }
     function o(e, t) {
       return (
-        t.recorderType ||
-          t.type ||
-          (t.audio && t.video
-            ? (t.type = "video")
-            : t.audio && !t.video && (t.type = "audio")),
-        t.recorderType &&
-          !t.type &&
-          (t.recorderType === T || t.recorderType === k || t.recorderType === F
-            ? (t.type = "video")
-            : t.recorderType === D
+        t.recorderType
+        || t.type
+        || (t.audio && t.video
+          ? (t.type = "video")
+          : t.audio && !t.video && (t.type = "audio")),
+        t.recorderType
+        && !t.type
+        && (t.recorderType === T || t.recorderType === k || t.recorderType === F
+          ? (t.type = "video")
+          : t.recorderType === D
             ? (t.type = "gif")
             : t.recorderType === R
-            ? (t.type = "audio")
-            : t.recorderType === C &&
-              ((w(e, "audio").length && w(e, "video").length) ||
-              (!w(e, "audio").length && w(e, "video").length)
-                ? (t.type = "video")
-                : w(e, "audio").length &&
-                  !w(e, "video").length &&
-                  (t.type = "audio"))),
-        "undefined" != typeof MediaRecorder &&
-          "requestData" in MediaRecorder.prototype &&
-          (t.mimeType || (t.mimeType = "video/webm"),
-          t.type || (t.type = t.mimeType.split("/")[0]),
-          t.bitsPerSecond),
-        t.type ||
-          (t.mimeType && (t.type = t.mimeType.split("/")[0]),
-          t.type || (t.type = "audio")),
+              ? (t.type = "audio")
+              : t.recorderType === C
+                && ((w(e, "audio").length && w(e, "video").length)
+                  || (!w(e, "audio").length && w(e, "video").length)
+                  ? (t.type = "video")
+                  : w(e, "audio").length
+                    && !w(e, "video").length
+                    && (t.type = "audio"))),
+        typeof MediaRecorder != "undefined"
+        && "requestData" in MediaRecorder.prototype
+        && (t.mimeType || (t.mimeType = "video/webm"),
+        t.type || (t.type = t.mimeType.split("/")[0]),
+        t.bitsPerSecond),
+        t.type
+        || (t.mimeType && (t.type = t.mimeType.split("/")[0]),
+        t.type || (t.type = "audio")),
         t
       );
     }
     function r(e, t) {
-      var i;
+      let i;
       return (
         (m || u || h) && (i = R),
-        "undefined" != typeof MediaRecorder &&
-          "requestData" in MediaRecorder.prototype &&
-          !m &&
-          (i = C),
-        "video" === t.type &&
-          (m || h) &&
-          ((i = T), "undefined" != typeof ReadableStream && (i = F)),
-        "gif" === t.type && (i = D),
-        "canvas" === t.type && (i = k),
-        B() &&
-          i !== k &&
-          i !== D &&
-          "undefined" != typeof MediaRecorder &&
-          "requestData" in MediaRecorder.prototype &&
-          (w(e, "video").length || w(e, "audio").length) &&
-          ("audio" === t.type
-            ? "function" == typeof MediaRecorder.isTypeSupported &&
-              MediaRecorder.isTypeSupported("audio/webm") &&
-              (i = C)
-            : "function" == typeof MediaRecorder.isTypeSupported &&
-              MediaRecorder.isTypeSupported("video/webm") &&
-              (i = C)),
-        e instanceof Array && e.length && (i = L),
+        typeof MediaRecorder != "undefined"
+        && "requestData" in MediaRecorder.prototype
+        && !m
+        && (i = C),
+        t.type === "video"
+        && (m || h)
+        && ((i = T), typeof ReadableStream != "undefined" && (i = F)),
+        t.type === "gif" && (i = D),
+        t.type === "canvas" && (i = k),
+        B()
+        && i !== k
+        && i !== D
+        && typeof MediaRecorder != "undefined"
+        && "requestData" in MediaRecorder.prototype
+        && (w(e, "video").length || w(e, "audio").length)
+        && (t.type === "audio"
+          ? typeof MediaRecorder.isTypeSupported == "function"
+          && MediaRecorder.isTypeSupported("audio/webm")
+          && (i = C)
+          : typeof MediaRecorder.isTypeSupported == "function"
+            && MediaRecorder.isTypeSupported("video/webm")
+            && (i = C)),
+        Array.isArray(e) && e.length && (i = L),
         t.recorderType && (i = t.recorderType),
-        !t.disableLogs &&
-          i &&
-          i.name &&
-          console.log("Using recorderType:", i.name || i.constructor.name),
+        !t.disableLogs
+        && i
+        && i.name
+        && console.log("Using recorderType:", i.name || i.constructor.name),
         !i && g && (i = C),
         i
       );
@@ -1979,457 +2079,467 @@
       (this.addStream = function (t) {
         t && (e = t);
       }),
-        (this.mediaType = { audio: !0, video: !0 }),
-        (this.startRecording = function () {
-          var t,
-            o = this.mediaType,
-            r = this.mimeType || { audio: null, video: null, gif: null };
-          if (
-            ("function" != typeof o.audio &&
-              B() &&
-              !w(e, "audio").length &&
-              (o.audio = !1),
-            "function" != typeof o.video &&
-              B() &&
-              !w(e, "video").length &&
-              (o.video = !1),
-            "function" != typeof o.gif &&
-              B() &&
-              !w(e, "video").length &&
-              (o.gif = !1),
-            !o.audio && !o.video && !o.gif)
-          )
-            throw "MediaStream must have either audio or video tracks.";
-          if (
-            (o.audio &&
-              ((t = null),
-              "function" == typeof o.audio && (t = o.audio),
-              (this.audioRecorder = new i(e, {
-                type: "audio",
-                bufferSize: this.bufferSize,
-                sampleRate: this.sampleRate,
-                numberOfAudioChannels: this.numberOfAudioChannels || 2,
-                disableLogs: this.disableLogs,
-                recorderType: t,
-                mimeType: r.audio,
-                timeSlice: this.timeSlice,
-                onTimeStamp: this.onTimeStamp,
-              })),
-              o.video || this.audioRecorder.startRecording()),
-            o.video)
-          ) {
-            (t = null), "function" == typeof o.video && (t = o.video);
-            var s = e;
-            if (B() && o.audio && "function" == typeof o.audio) {
-              var a = w(e, "video")[0];
-              p
-                ? ((s = new f()).addTrack(a), t && t === T && (t = C))
-                : (s = new f()).addTrack(a);
-            }
-            (this.videoRecorder = new i(s, {
-              type: "video",
-              video: this.video,
-              canvas: this.canvas,
-              frameInterval: this.frameInterval || 10,
+      (this.mediaType = { audio: !0, video: !0 }),
+      (this.startRecording = function () {
+        let t;
+        const o = this.mediaType;
+        const r = this.mimeType || { audio: null, video: null, gif: null };
+        if (
+          (typeof o.audio != "function"
+            && B()
+            && !w(e, "audio").length
+            && (o.audio = !1),
+          typeof o.video != "function"
+          && B()
+          && !w(e, "video").length
+          && (o.video = !1),
+          typeof o.gif != "function"
+          && B()
+          && !w(e, "video").length
+          && (o.gif = !1),
+          !o.audio && !o.video && !o.gif)
+        ) {
+          throw "MediaStream must have either audio or video tracks.";
+        }
+        if (
+          (o.audio
+            && ((t = null),
+            typeof o.audio == "function" && (t = o.audio),
+            (this.audioRecorder = new i(e, {
+              type: "audio",
+              bufferSize: this.bufferSize,
+              sampleRate: this.sampleRate,
+              numberOfAudioChannels: this.numberOfAudioChannels || 2,
               disableLogs: this.disableLogs,
               recorderType: t,
-              mimeType: r.video,
+              mimeType: r.audio,
               timeSlice: this.timeSlice,
-              onTimeStamp: this.onTimeStamp,
-              workerPath: this.workerPath,
-              webAssemblyPath: this.webAssemblyPath,
-              frameRate: this.frameRate,
-              bitrate: this.bitrate,
+              onTimeStamp: this.onTimeStamp
             })),
-              o.audio || this.videoRecorder.startRecording();
+            o.video || this.audioRecorder.startRecording()),
+          o.video)
+        ) {
+          (t = null), typeof o.video == "function" && (t = o.video);
+          let s = e;
+          if (B() && o.audio && typeof o.audio == "function") {
+            const a = w(e, "video")[0];
+            p
+              ? ((s = new f()).addTrack(a), t && t === T && (t = C))
+              : (s = new f()).addTrack(a);
           }
-          if (o.audio && o.video) {
-            var n = this,
-              A = !0 === B();
-            ((o.audio instanceof R && o.video) ||
-              (!0 !== o.audio && !0 !== o.video && o.audio !== o.video)) &&
-              (A = !1),
-              !0 === A
-                ? ((n.audioRecorder = null), n.videoRecorder.startRecording())
-                : n.videoRecorder.initRecorder(function () {
-                    n.audioRecorder.initRecorder(function () {
-                      n.videoRecorder.startRecording(),
-                        n.audioRecorder.startRecording();
-                    });
-                  });
-          }
-          o.gif &&
-            ((t = null),
-            "function" == typeof o.gif && (t = o.gif),
-            (this.gifRecorder = new i(e, {
-              type: "gif",
-              frameRate: this.frameRate || 200,
-              quality: this.quality || 10,
-              disableLogs: this.disableLogs,
-              recorderType: t,
-              mimeType: r.gif,
-            })),
-            this.gifRecorder.startRecording());
-        }),
-        (this.stopRecording = function (e) {
-          (e = e || function () {}),
-            this.audioRecorder &&
-              this.audioRecorder.stopRecording(function (t) {
-                e(t, "audio");
-              }),
-            this.videoRecorder &&
-              this.videoRecorder.stopRecording(function (t) {
-                e(t, "video");
-              }),
-            this.gifRecorder &&
-              this.gifRecorder.stopRecording(function (t) {
-                e(t, "gif");
-              });
-        }),
-        (this.pauseRecording = function () {
-          this.audioRecorder && this.audioRecorder.pauseRecording(),
-            this.videoRecorder && this.videoRecorder.pauseRecording(),
-            this.gifRecorder && this.gifRecorder.pauseRecording();
-        }),
-        (this.resumeRecording = function () {
-          this.audioRecorder && this.audioRecorder.resumeRecording(),
-            this.videoRecorder && this.videoRecorder.resumeRecording(),
-            this.gifRecorder && this.gifRecorder.resumeRecording();
-        }),
-        (this.getBlob = function (e) {
-          var t = {};
-          return (
-            this.audioRecorder && (t.audio = this.audioRecorder.getBlob()),
-            this.videoRecorder && (t.video = this.videoRecorder.getBlob()),
-            this.gifRecorder && (t.gif = this.gifRecorder.getBlob()),
-            e && e(t),
-            t
-          );
-        }),
-        (this.destroy = function () {
-          this.audioRecorder &&
-            (this.audioRecorder.destroy(), (this.audioRecorder = null)),
-            this.videoRecorder &&
-              (this.videoRecorder.destroy(), (this.videoRecorder = null)),
-            this.gifRecorder &&
-              (this.gifRecorder.destroy(), (this.gifRecorder = null));
-        }),
-        (this.getDataURL = function (e) {
-          function t(e, t) {
-            if ("undefined" != typeof Worker) {
-              var i = (function (e) {
-                var t,
-                  i = l.createObjectURL(
-                    new Blob(
-                      [
-                        e.toString(),
-                        "this.onmessage =  function (eee) {" +
-                          e.name +
-                          "(eee.data);}",
-                      ],
-                      { type: "application/javascript" }
-                    )
-                  ),
-                  o = new Worker(i);
-                if (void 0 !== l) t = l;
-                else {
-                  if ("undefined" == typeof webkitURL)
-                    throw "Neither URL nor webkitURL detected.";
-                  t = webkitURL;
-                }
-                return t.revokeObjectURL(i), o;
-              })(function (e) {
-                postMessage(new FileReaderSync().readAsDataURL(e));
-              });
-              (i.onmessage = function (e) {
-                t(e.data);
-              }),
-                i.postMessage(e);
-            } else {
-              var o = new FileReader();
-              o.readAsDataURL(e),
-                (o.onload = function (e) {
-                  t(e.target.result);
+          (this.videoRecorder = new i(s, {
+            type: "video",
+            video: this.video,
+            canvas: this.canvas,
+            frameInterval: this.frameInterval || 10,
+            disableLogs: this.disableLogs,
+            recorderType: t,
+            mimeType: r.video,
+            timeSlice: this.timeSlice,
+            onTimeStamp: this.onTimeStamp,
+            workerPath: this.workerPath,
+            webAssemblyPath: this.webAssemblyPath,
+            frameRate: this.frameRate,
+            bitrate: this.bitrate
+          })),
+          o.audio || this.videoRecorder.startRecording();
+        }
+        if (o.audio && o.video) {
+          const n = this;
+          let A = !0 === B();
+          ((o.audio instanceof R && o.video)
+            || (!0 !== o.audio && !0 !== o.video && o.audio !== o.video))
+          && (A = !1),
+          !0 === A
+            ? ((n.audioRecorder = null), n.videoRecorder.startRecording())
+            : n.videoRecorder.initRecorder(() => {
+                n.audioRecorder.initRecorder(() => {
+                  n.videoRecorder.startRecording(),
+                  n.audioRecorder.startRecording();
                 });
-            }
+              });
+        }
+        o.gif
+        && ((t = null),
+        typeof o.gif == "function" && (t = o.gif),
+        (this.gifRecorder = new i(e, {
+          type: "gif",
+          frameRate: this.frameRate || 200,
+          quality: this.quality || 10,
+          disableLogs: this.disableLogs,
+          recorderType: t,
+          mimeType: r.gif
+        })),
+        this.gifRecorder.startRecording());
+      }),
+      (this.stopRecording = function (e) {
+        (e = e || function () {}),
+        this.audioRecorder
+        && this.audioRecorder.stopRecording((t) => {
+          e(t, "audio");
+        }),
+        this.videoRecorder
+        && this.videoRecorder.stopRecording((t) => {
+          e(t, "video");
+        }),
+        this.gifRecorder
+        && this.gifRecorder.stopRecording((t) => {
+          e(t, "gif");
+        });
+      }),
+      (this.pauseRecording = function () {
+        this.audioRecorder && this.audioRecorder.pauseRecording(),
+        this.videoRecorder && this.videoRecorder.pauseRecording(),
+        this.gifRecorder && this.gifRecorder.pauseRecording();
+      }),
+      (this.resumeRecording = function () {
+        this.audioRecorder && this.audioRecorder.resumeRecording(),
+        this.videoRecorder && this.videoRecorder.resumeRecording(),
+        this.gifRecorder && this.gifRecorder.resumeRecording();
+      }),
+      (this.getBlob = function (e) {
+        const t = {};
+        return (
+          this.audioRecorder && (t.audio = this.audioRecorder.getBlob()),
+          this.videoRecorder && (t.video = this.videoRecorder.getBlob()),
+          this.gifRecorder && (t.gif = this.gifRecorder.getBlob()),
+          e && e(t),
+          t
+        );
+      }),
+      (this.destroy = function () {
+        this.audioRecorder
+        && (this.audioRecorder.destroy(), (this.audioRecorder = null)),
+        this.videoRecorder
+        && (this.videoRecorder.destroy(), (this.videoRecorder = null)),
+        this.gifRecorder
+        && (this.gifRecorder.destroy(), (this.gifRecorder = null));
+      }),
+      (this.getDataURL = function (e) {
+        function t(e, t) {
+          if (typeof Worker != "undefined") {
+            const i = (function (e) {
+              let t;
+              const i = l.createObjectURL(
+                new Blob(
+                  [
+                    e.toString(),
+                    `this.onmessage =  function (eee) {${
+                      e.name
+                    }(eee.data);}`
+                  ],
+                  { type: "application/javascript" }
+                )
+              );
+              const o = new Worker(i);
+              if (void 0 !== l) {
+                t = l;
+              }
+              else {
+                if (typeof webkitURL == "undefined")
+                  throw "Neither URL nor webkitURL detected.";
+                t = webkitURL;
+              }
+              return t.revokeObjectURL(i), o;
+            })((e) => {
+              postMessage(new FileReaderSync().readAsDataURL(e));
+            });
+            (i.onmessage = function (e) {
+              t(e.data);
+            }),
+            i.postMessage(e);
           }
-          this.getBlob(function (i) {
-            i.audio && i.video
-              ? t(i.audio, function (o) {
-                  t(i.video, function (t) {
-                    e({ audio: o, video: t });
-                  });
-                })
-              : i.audio
-              ? t(i.audio, function (t) {
+          else {
+            const o = new FileReader();
+            o.readAsDataURL(e),
+            (o.onload = function (e) {
+              t(e.target.result);
+            });
+          }
+        }
+        this.getBlob((i) => {
+          i.audio && i.video
+            ? t(i.audio, (o) => {
+                t(i.video, (t) => {
+                  e({ audio: o, video: t });
+                });
+              })
+            : i.audio
+              ? t(i.audio, (t) => {
                   e({ audio: t });
                 })
-              : i.video &&
-                t(i.video, function (t) {
+              : i.video
+                && t(i.video, (t) => {
                   e({ video: t });
                 });
-          });
-        }),
-        (this.writeToDisk = function () {
-          i.writeToDisk({
-            audio: this.audioRecorder,
-            video: this.videoRecorder,
-            gif: this.gifRecorder,
-          });
-        }),
-        (this.save = function (e) {
-          (e = e || { audio: !0, video: !0, gif: !0 }).audio &&
-            this.audioRecorder &&
-            this.audioRecorder.save("string" == typeof e.audio ? e.audio : ""),
-            e.video &&
-              this.videoRecorder &&
-              this.videoRecorder.save(
-                "string" == typeof e.video ? e.video : ""
-              ),
-            e.gif &&
-              this.gifRecorder &&
-              this.gifRecorder.save("string" == typeof e.gif ? e.gif : "");
         });
+      }),
+      (this.writeToDisk = function () {
+        i.writeToDisk({
+          audio: this.audioRecorder,
+          video: this.videoRecorder,
+          gif: this.gifRecorder
+        });
+      }),
+      (this.save = function (e) {
+        (e = e || { audio: !0, video: !0, gif: !0 }).audio
+        && this.audioRecorder
+        && this.audioRecorder.save(typeof e.audio == "string" ? e.audio : ""),
+        e.video
+        && this.videoRecorder
+        && this.videoRecorder.save(
+          typeof e.video == "string" ? e.video : ""
+        ),
+        e.gif
+        && this.gifRecorder
+        && this.gifRecorder.save(typeof e.gif == "string" ? e.gif : "");
+      });
     }
     (i.version = "5.6.2"),
-      (t.exports = i),
-      (i.getFromDisk = function (e, t) {
-        if (!t) throw "callback is mandatory.";
-        console.log(
-          "Getting recorded " +
-            ("all" === e ? "blobs" : e + " blob ") +
-            " from disk!"
-        ),
-          x.Fetch(function (i, o) {
-            "all" !== e && o === e + "Blob" && t && t(i),
-              "all" === e && t && t(i, o.replace("Blob", ""));
-          });
-      }),
-      (i.writeToDisk = function (e) {
-        console.log("Writing recorded blob(s) to disk!"),
-          (e = e || {}).audio && e.video && e.gif
-            ? e.audio.getDataURL(function (t) {
-                e.video.getDataURL(function (i) {
-                  e.gif.getDataURL(function (e) {
-                    x.Store({ audioBlob: t, videoBlob: i, gifBlob: e });
-                  });
-                });
-              })
-            : e.audio && e.video
-            ? e.audio.getDataURL(function (t) {
-                e.video.getDataURL(function (e) {
-                  x.Store({ audioBlob: t, videoBlob: e });
-                });
-              })
-            : e.audio && e.gif
-            ? e.audio.getDataURL(function (t) {
-                e.gif.getDataURL(function (e) {
+    (t.exports = i),
+    (i.getFromDisk = function (e, t) {
+      if (!t) throw "callback is mandatory.";
+      console.log(
+        `Getting recorded ${
+          e === "all" ? "blobs" : `${e} blob `
+        } from disk!`
+      ),
+      x.Fetch((i, o) => {
+        e !== "all" && o === `${e}Blob` && t && t(i),
+        e === "all" && t && t(i, o.replace("Blob", ""));
+      });
+    }),
+    (i.writeToDisk = function (e) {
+      console.log("Writing recorded blob(s) to disk!"),
+      (e = e || {}).audio && e.video && e.gif
+        ? e.audio.getDataURL((t) => {
+            e.video.getDataURL((i) => {
+              e.gif.getDataURL((e) => {
+                x.Store({ audioBlob: t, videoBlob: i, gifBlob: e });
+              });
+            });
+          })
+        : e.audio && e.video
+          ? e.audio.getDataURL((t) => {
+              e.video.getDataURL((e) => {
+                x.Store({ audioBlob: t, videoBlob: e });
+              });
+            })
+          : e.audio && e.gif
+            ? e.audio.getDataURL((t) => {
+                e.gif.getDataURL((e) => {
                   x.Store({ audioBlob: t, gifBlob: e });
                 });
               })
             : e.video && e.gif
-            ? e.video.getDataURL(function (t) {
-                e.gif.getDataURL(function (e) {
-                  x.Store({ videoBlob: t, gifBlob: e });
-                });
-              })
-            : e.audio
-            ? e.audio.getDataURL(function (e) {
-                x.Store({ audioBlob: e });
-              })
-            : e.video
-            ? e.video.getDataURL(function (e) {
-                x.Store({ videoBlob: e });
-              })
-            : e.gif &&
-              e.gif.getDataURL(function (e) {
-                x.Store({ gifBlob: e });
-              });
-      }),
-      (s.getFromDisk = i.getFromDisk),
-      (s.writeToDisk = i.writeToDisk),
-      (i.MRecordRTC = s);
-    var a;
-    (a = void 0 !== e ? e : null) &&
-      "undefined" == typeof window &&
-      void 0 !== e &&
-      ((e.navigator = {
-        userAgent:
+              ? e.video.getDataURL((t) => {
+                  e.gif.getDataURL((e) => {
+                    x.Store({ videoBlob: t, gifBlob: e });
+                  });
+                })
+              : e.audio
+                ? e.audio.getDataURL((e) => {
+                    x.Store({ audioBlob: e });
+                  })
+                : e.video
+                  ? e.video.getDataURL((e) => {
+                      x.Store({ videoBlob: e });
+                    })
+                  : e.gif
+                    && e.gif.getDataURL((e) => {
+                      x.Store({ gifBlob: e });
+                    });
+    }),
+    (s.getFromDisk = i.getFromDisk),
+    (s.writeToDisk = i.writeToDisk),
+    (i.MRecordRTC = s);
+    let a;
+    (a = void 0 !== e ? e : null)
+    && typeof window == "undefined"
+    && void 0 !== e
+    && ((e.navigator = {
+      userAgent:
           "Fake/5.0 (FakeOS) AppleWebKit/123 (KHTML, like Gecko) Fake/12.3.4567.89 Fake/123.45",
-        getUserMedia: function () {},
-      }),
-      e.console || (e.console = {}),
-      (void 0 !== e.console.log && void 0 !== e.console.error) ||
-        (e.console.error = e.console.log =
-          e.console.log ||
-          function () {
-            console.log(arguments);
-          }),
-      "undefined" == typeof document &&
-        ((a.document = {
-          documentElement: {
-            appendChild: function () {
-              return "";
-            },
-          },
-        }),
-        (document.createElement =
-          document.captureStream =
-          document.mozCaptureStream =
-            function () {
-              var e = {
-                getContext: function () {
-                  return e;
-                },
-                play: function () {},
-                pause: function () {},
-                drawImage: function () {},
-                toDataURL: function () {
-                  return "";
-                },
-                style: {},
-              };
-              return e;
+      getUserMedia() {}
+    }),
+    e.console || (e.console = {}),
+    (void 0 !== e.console.log && void 0 !== e.console.error)
+    || (e.console.error = e.console.log
+          = e.console.log
+            || function () {
+              console.log(arguments);
             }),
-        (a.HTMLVideoElement = function () {})),
-      "undefined" == typeof location &&
-        (a.location = { protocol: "file:", href: "", hash: "" }),
-      "undefined" == typeof screen && (a.screen = { width: 0, height: 0 }),
-      void 0 === l &&
-        (a.URL = {
-          createObjectURL: function () {
-            return "";
-          },
-          revokeObjectURL: function () {
-            return "";
-          },
-        }),
-      (a.window = e));
-    var n = window.requestAnimationFrame;
-    if (void 0 === n)
-      if ("undefined" != typeof webkitRequestAnimationFrame)
+    typeof document == "undefined"
+    && ((a.document = {
+      documentElement: {
+        appendChild() {
+          return "";
+        }
+      }
+    }),
+    (document.createElement
+          = document.captureStream
+          = document.mozCaptureStream
+            = function () {
+            var e = {
+              getContext() {
+                return e;
+              },
+              play() {},
+              pause() {},
+              drawImage() {},
+              toDataURL() {
+                return "";
+              },
+              style: {}
+            };
+            return e;
+          }),
+    (a.HTMLVideoElement = function () {})),
+    typeof location == "undefined"
+    && (a.location = { protocol: "file:", href: "", hash: "" }),
+    typeof screen == "undefined" && (a.screen = { width: 0, height: 0 }),
+    void 0 === l
+      && (a.URL = {
+        createObjectURL() {
+          return "";
+        },
+        revokeObjectURL() {
+          return "";
+        }
+      }),
+    (a.window = e));
+    let n = window.requestAnimationFrame;
+    if (void 0 === n) {
+      if (typeof webkitRequestAnimationFrame != "undefined") {
         n = webkitRequestAnimationFrame;
-      else if ("undefined" != typeof mozRequestAnimationFrame)
+      }
+      else if (typeof mozRequestAnimationFrame != "undefined") {
         n = mozRequestAnimationFrame;
-      else if ("undefined" != typeof msRequestAnimationFrame)
+      }
+      else if (typeof msRequestAnimationFrame != "undefined") {
         n = msRequestAnimationFrame;
+      }
       else if (void 0 === n) {
-        var A = 0;
+        let A = 0;
         n = function (e, t) {
-          var i = new Date().getTime(),
-            o = Math.max(0, 16 - (i - A)),
-            r = setTimeout(function () {
-              e(i + o);
-            }, o);
+          const i = new Date().getTime();
+          const o = Math.max(0, 16 - (i - A));
+          const r = setTimeout(() => {
+            e(i + o);
+          }, o);
           return (A = i + o), r;
         };
       }
-    var d = window.cancelAnimationFrame;
-    void 0 === d &&
-      ("undefined" != typeof webkitCancelAnimationFrame
+    }
+    let d = window.cancelAnimationFrame;
+    void 0 === d
+      && (typeof webkitCancelAnimationFrame != "undefined"
         ? (d = webkitCancelAnimationFrame)
-        : "undefined" != typeof mozCancelAnimationFrame
-        ? (d = mozCancelAnimationFrame)
-        : "undefined" != typeof msCancelAnimationFrame
-        ? (d = msCancelAnimationFrame)
-        : void 0 === d &&
-          (d = function (e) {
-            clearTimeout(e);
-          }));
-    var c = window.AudioContext;
-    void 0 === c &&
-      ("undefined" != typeof webkitAudioContext && (c = webkitAudioContext),
-      "undefined" != typeof mozAudioContext && (c = mozAudioContext));
+        : typeof mozCancelAnimationFrame != "undefined"
+          ? (d = mozCancelAnimationFrame)
+          : typeof msCancelAnimationFrame != "undefined"
+            ? (d = msCancelAnimationFrame)
+            : void 0 === d
+              && (d = function (e) {
+                clearTimeout(e);
+              }));
+    let c = window.AudioContext;
+    void 0 === c
+      && (typeof webkitAudioContext != "undefined" && (c = webkitAudioContext),
+      typeof mozAudioContext != "undefined" && (c = mozAudioContext));
     var l = window.URL;
-    void 0 === l && "undefined" != typeof webkitURL && (l = webkitURL),
-      "undefined" != typeof navigator &&
-        void 0 === navigator.getUserMedia &&
-        (void 0 !== navigator.webkitGetUserMedia &&
-          (navigator.getUserMedia = navigator.webkitGetUserMedia),
-        void 0 !== navigator.mozGetUserMedia &&
-          (navigator.getUserMedia = navigator.mozGetUserMedia));
+    void 0 === l && typeof webkitURL != "undefined" && (l = webkitURL),
+    typeof navigator != "undefined"
+    && void 0 === navigator.getUserMedia
+    && (void 0 !== navigator.webkitGetUserMedia
+      && (navigator.getUserMedia = navigator.webkitGetUserMedia),
+    void 0 !== navigator.mozGetUserMedia
+      && (navigator.getUserMedia = navigator.mozGetUserMedia));
     var u = !(
-        -1 === navigator.userAgent.indexOf("Edge") ||
-        (!navigator.msSaveBlob && !navigator.msSaveOrOpenBlob)
-      ),
-      h = !!window.opera || -1 !== navigator.userAgent.indexOf("OPR/"),
-      p =
-        navigator.userAgent.toLowerCase().indexOf("firefox") > -1 &&
-        "netscape" in window &&
-        / rv:/.test(navigator.userAgent),
-      m =
-        (!h && !u && !!navigator.webkitGetUserMedia) ||
-        v() ||
-        -1 !== navigator.userAgent.toLowerCase().indexOf("chrome/"),
-      g = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    g &&
-      !m &&
-      -1 !== navigator.userAgent.indexOf("CriOS") &&
-      ((g = !1), (m = !0));
+      !navigator.userAgent.includes("Edge")
+      || (!navigator.msSaveBlob && !navigator.msSaveOrOpenBlob)
+    );
+    var h = !!window.opera || navigator.userAgent.includes("OPR/");
+    var p
+        = navigator.userAgent.toLowerCase().includes("firefox")
+          && "netscape" in window
+          && / rv:/.test(navigator.userAgent);
+    var m
+        = (!h && !u && !!navigator.webkitGetUserMedia)
+          || v()
+          || navigator.userAgent.toLowerCase().includes("chrome/");
+    var g = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    g
+    && !m
+    && navigator.userAgent.includes("CriOS")
+    && ((g = !1), (m = !0));
     var f = window.MediaStream;
     function b(e) {
-      if (0 === e) return "0 Bytes";
-      var t = parseInt(Math.floor(Math.log(e) / Math.log(1e3)), 10);
+      if (e === 0) return "0 Bytes";
+      const t = Number.parseInt(Math.floor(Math.log(e) / Math.log(1e3)), 10);
       return (
-        (e / Math.pow(1e3, t)).toPrecision(3) +
-        " " +
-        ["Bytes", "KB", "MB", "GB", "TB"][t]
+        `${(e / 1e3 ** t).toPrecision(3)
+        } ${
+          ["Bytes", "KB", "MB", "GB", "TB"][t]}`
       );
     }
     function y(e, t) {
       if (!e) throw "Blob object is required.";
-      if (!e.type)
+      if (!e.type) {
         try {
           e.type = "video/webm";
-        } catch (e) {}
-      var i = (e.type || "video/webm").split("/")[1];
+        }
+        catch (e) {}
+      }
+      let i = (e.type || "video/webm").split("/")[1];
       if (
-        (-1 !== i.indexOf(";") && (i = i.split(";")[0]),
-        t && -1 !== t.indexOf("."))
+        (i.includes(";") && (i = i.split(";")[0]),
+        t && t.includes("."))
       ) {
-        var o = t.split(".");
+        const o = t.split(".");
         (t = o[0]), (i = o[1]);
       }
-      var r =
-        (t || Math.round(9999999999 * Math.random()) + 888888888) + "." + i;
+      const r
+        = `${t || Math.round(9999999999 * Math.random()) + 888888888}.${i}`;
       if (void 0 !== navigator.msSaveOrOpenBlob)
         return navigator.msSaveOrOpenBlob(e, r);
       if (void 0 !== navigator.msSaveBlob) return navigator.msSaveBlob(e, r);
-      var s = document.createElement("a");
+      const s = document.createElement("a");
       (s.href = l.createObjectURL(e)),
-        (s.download = r),
-        (s.style = "display:none;opacity:0;color:transparent;"),
-        (document.body || document.documentElement).appendChild(s),
-        "function" == typeof s.click
-          ? s.click()
-          : ((s.target = "_blank"),
-            s.dispatchEvent(
-              new MouseEvent("click", {
-                view: window,
-                bubbles: !0,
-                cancelable: !0,
-              })
-            )),
-        l.revokeObjectURL(s.href);
+      (s.download = r),
+      (s.style = "display:none;opacity:0;color:transparent;"),
+      (document.body || document.documentElement).appendChild(s),
+      typeof s.click == "function"
+        ? s.click()
+        : ((s.target = "_blank"),
+          s.dispatchEvent(
+            new MouseEvent("click", {
+              view: window,
+              bubbles: !0,
+              cancelable: !0
+            })
+          )),
+      l.revokeObjectURL(s.href);
     }
     function v() {
       return (
-        ("undefined" != typeof window &&
-          "object" == typeof window.process &&
-          "renderer" === window.process.type) ||
-        !(
-          "undefined" == typeof process ||
-          "object" != typeof process.versions ||
-          !process.versions.electron
-        ) ||
-        ("object" == typeof navigator &&
-          "string" == typeof navigator.userAgent &&
-          navigator.userAgent.indexOf("Electron") >= 0)
+        (typeof window != "undefined"
+          && typeof window.process == "object"
+          && window.process.type === "renderer")
+        || !(
+          typeof process == "undefined"
+          || typeof process.versions != "object"
+          || !process.versions.electron
+        )
+        || (typeof navigator == "object"
+          && typeof navigator.userAgent == "string"
+          && navigator.userAgent.includes("Electron"))
       );
     }
     function w(e, t) {
       return e && e.getTracks
-        ? e.getTracks().filter(function (e) {
+        ? e.getTracks().filter((e) => {
             return e.kind === (t || "audio");
           })
         : [];
@@ -2438,89 +2548,91 @@
       "srcObject" in t
         ? (t.srcObject = e)
         : "mozSrcObject" in t
-        ? (t.mozSrcObject = e)
-        : (t.srcObject = e);
+          ? (t.mozSrcObject = e)
+          : (t.srcObject = e);
     }
-    void 0 === f &&
-      "undefined" != typeof webkitMediaStream &&
-      (f = webkitMediaStream),
-      void 0 !== f &&
-        void 0 === f.prototype.stop &&
-        (f.prototype.stop = function () {
-          this.getTracks().forEach(function (e) {
-            e.stop();
-          });
-        }),
-      (i.invokeSaveAsDialog = y),
-      (i.getTracks = w),
-      (i.getSeekableBlob = function (e, t) {
-        if ("undefined" == typeof EBML)
-          throw new Error(
-            "Please link: https://www.webrtc-experiment.com/EBML.js"
-          );
-        var i = new EBML.Reader(),
-          o = new EBML.Decoder(),
-          r = EBML.tools,
-          s = new FileReader();
-        (s.onload = function (e) {
-          o.decode(this.result).forEach(function (e) {
-            i.read(e);
-          }),
-            i.stop();
-          var s = r.makeMetadataSeekable(i.metadatas, i.duration, i.cues),
-            a = this.result.slice(i.metadataSize),
-            n = new Blob([s, a], { type: "video/webm" });
-          t(n);
-        }),
-          s.readAsArrayBuffer(e);
+    void 0 === f
+      && typeof webkitMediaStream != "undefined"
+      && (f = webkitMediaStream),
+    void 0 !== f
+      && void 0 === f.prototype.stop
+      && (f.prototype.stop = function () {
+        this.getTracks().forEach((e) => {
+          e.stop();
+        });
       }),
-      (i.bytesToSize = b),
-      (i.isElectron = v);
+    (i.invokeSaveAsDialog = y),
+    (i.getTracks = w),
+    (i.getSeekableBlob = function (e, t) {
+      if (typeof EBML == "undefined") {
+        throw new TypeError(
+          "Please link: https://www.webrtc-experiment.com/EBML.js"
+        );
+      }
+      const i = new EBML.Reader();
+      const o = new EBML.Decoder();
+      const r = EBML.tools;
+      const s = new FileReader();
+      (s.onload = function (e) {
+        o.decode(this.result).forEach((e) => {
+          i.read(e);
+        }),
+        i.stop();
+        const s = r.makeMetadataSeekable(i.metadatas, i.duration, i.cues);
+        const a = this.result.slice(i.metadataSize);
+        const n = new Blob([s, a], { type: "video/webm" });
+        t(n);
+      }),
+      s.readAsArrayBuffer(e);
+    }),
+    (i.bytesToSize = b),
+    (i.isElectron = v);
     var E = {};
     function B() {
       if (p || g || u) return !0;
-      var e,
-        t,
-        i = navigator.userAgent,
-        o = "" + parseFloat(navigator.appVersion),
-        r = parseInt(navigator.appVersion, 10);
+      let e;
+      let t;
+      const i = navigator.userAgent;
+      let o = `${Number.parseFloat(navigator.appVersion)}`;
+      let r = Number.parseInt(navigator.appVersion, 10);
       return (
         (m || h) && ((e = i.indexOf("Chrome")), (o = i.substring(e + 7))),
-        -1 !== (t = o.indexOf(";")) && (o = o.substring(0, t)),
-        -1 !== (t = o.indexOf(" ")) && (o = o.substring(0, t)),
-        (r = parseInt("" + o, 10)),
-        isNaN(r) &&
-          ((o = "" + parseFloat(navigator.appVersion)),
-          (r = parseInt(navigator.appVersion, 10))),
+        (t = o.indexOf(";")) !== -1 && (o = o.substring(0, t)),
+        (t = o.indexOf(" ")) !== -1 && (o = o.substring(0, t)),
+        (r = Number.parseInt(`${o}`, 10)),
+        isNaN(r)
+        && ((o = `${Number.parseFloat(navigator.appVersion)}`),
+        (r = Number.parseInt(navigator.appVersion, 10))),
         r >= 49
       );
     }
     function C(e, t) {
-      var i = this;
+      let i = this;
       if (void 0 === e) throw 'First argument "MediaStream" is required.';
-      if ("undefined" == typeof MediaRecorder)
+      if (typeof MediaRecorder == "undefined")
         throw "Your browser does not support the Media Recorder API. Please try other modules e.g. WhammyRecorder or StereoAudioRecorder.";
-      if ("audio" === (t = t || { mimeType: "video/webm" }).type) {
-        var o;
-        if (w(e, "video").length && w(e, "audio").length)
+      if ((t = t || { mimeType: "video/webm" }).type === "audio") {
+        let o;
+        if (w(e, "video").length && w(e, "audio").length) {
           navigator.mozGetUserMedia
             ? (o = new f()).addTrack(w(e, "audio")[0])
             : (o = new f(w(e, "audio"))),
-            (e = o);
-        (t.mimeType &&
-          -1 !== t.mimeType.toString().toLowerCase().indexOf("audio")) ||
-          (t.mimeType = m ? "audio/webm" : "audio/ogg"),
-          t.mimeType &&
-            "audio/ogg" !== t.mimeType.toString().toLowerCase() &&
-            navigator.mozGetUserMedia &&
-            (t.mimeType = "audio/ogg");
+          (e = o);
+        }
+        (t.mimeType
+          && t.mimeType.toString().toLowerCase().includes("audio"))
+        || (t.mimeType = m ? "audio/webm" : "audio/ogg"),
+        t.mimeType
+        && t.mimeType.toString().toLowerCase() !== "audio/ogg"
+        && navigator.mozGetUserMedia
+        && (t.mimeType = "audio/ogg");
       }
-      var r,
-        s = [];
+      let r;
+      let s = [];
       function a() {
         i.timestamps.push(new Date().getTime()),
-          "function" == typeof t.onTimeStamp &&
-            t.onTimeStamp(i.timestamps[i.timestamps.length - 1], i.timestamps);
+        typeof t.onTimeStamp == "function"
+        && t.onTimeStamp(i.timestamps[i.timestamps.length - 1], i.timestamps);
       }
       function n(e) {
         return r && r.mimeType ? r.mimeType : e.mimeType || "video/webm";
@@ -2531,222 +2643,229 @@
       (this.getArrayOfBlobs = function () {
         return s;
       }),
-        (this.record = function () {
-          (i.blob = null),
-            i.clearRecordedData(),
-            (i.timestamps = []),
-            (d = []),
-            (s = []);
-          var o = t;
-          t.disableLogs ||
-            console.log("Passing following config over MediaRecorder API.", o),
-            r && (r = null),
-            m && !B() && (o = "video/vp8"),
-            "function" == typeof MediaRecorder.isTypeSupported &&
-              o.mimeType &&
-              (MediaRecorder.isTypeSupported(o.mimeType) ||
-                (t.disableLogs ||
-                  console.warn(
-                    "MediaRecorder API seems unable to record mimeType:",
-                    o.mimeType
-                  ),
-                (o.mimeType =
-                  "audio" === t.type ? "audio/webm" : "video/webm")));
-          try {
-            (r = new MediaRecorder(e, o)), (t.mimeType = o.mimeType);
-          } catch (t) {
-            r = new MediaRecorder(e);
-          }
-          o.mimeType &&
-            !MediaRecorder.isTypeSupported &&
-            "canRecordMimeType" in r &&
-            !1 === r.canRecordMimeType(o.mimeType) &&
-            (t.disableLogs ||
-              console.warn(
-                "MediaRecorder API seems unable to record mimeType:",
-                o.mimeType
-              )),
-            (r.ondataavailable = function (e) {
-              if (
-                (e.data && d.push("ondataavailable: " + b(e.data.size)),
-                "number" != typeof t.timeSlice)
-              )
-                !e.data || !e.data.size || e.data.size < 100 || i.blob
-                  ? i.recordingCallback &&
-                    (i.recordingCallback(new Blob([], { type: n(o) })),
-                    (i.recordingCallback = null))
-                  : ((i.blob = t.getNativeBlob
-                      ? e.data
-                      : new Blob([e.data], { type: n(o) })),
-                    i.recordingCallback &&
-                      (i.recordingCallback(i.blob),
-                      (i.recordingCallback = null)));
-              else if (
-                e.data &&
-                e.data.size &&
-                (s.push(e.data), a(), "function" == typeof t.ondataavailable)
-              ) {
-                var r = t.getNativeBlob
+      (this.record = function () {
+        (i.blob = null),
+        i.clearRecordedData(),
+        (i.timestamps = []),
+        (d = []),
+        (s = []);
+        let o = t;
+        t.disableLogs
+        || console.log("Passing following config over MediaRecorder API.", o),
+        r && (r = null),
+        m && !B() && (o = "video/vp8"),
+        typeof MediaRecorder.isTypeSupported == "function"
+        && o.mimeType
+        && (MediaRecorder.isTypeSupported(o.mimeType)
+          || (t.disableLogs
+            || console.warn(
+              "MediaRecorder API seems unable to record mimeType:",
+              o.mimeType
+            ),
+          (o.mimeType
+                  = t.type === "audio" ? "audio/webm" : "video/webm")));
+        try {
+          (r = new MediaRecorder(e, o)), (t.mimeType = o.mimeType);
+        }
+        catch (t) {
+          r = new MediaRecorder(e);
+        }
+        o.mimeType
+        && !MediaRecorder.isTypeSupported
+        && "canRecordMimeType" in r
+        && !1 === r.canRecordMimeType(o.mimeType)
+        && (t.disableLogs
+          || console.warn(
+            "MediaRecorder API seems unable to record mimeType:",
+            o.mimeType
+          )),
+        (r.ondataavailable = function (e) {
+          if (
+            (e.data && d.push(`ondataavailable: ${b(e.data.size)}`),
+            typeof t.timeSlice != "number")
+          ) {
+            !e.data || !e.data.size || e.data.size < 100 || i.blob
+              ? i.recordingCallback
+              && (i.recordingCallback(new Blob([], { type: n(o) })),
+              (i.recordingCallback = null))
+              : ((i.blob = t.getNativeBlob
                   ? e.data
-                  : new Blob([e.data], { type: n(o) });
-                t.ondataavailable(r);
-              }
-            }),
-            (r.onstart = function () {
-              d.push("started");
-            }),
-            (r.onpause = function () {
-              d.push("paused");
-            }),
-            (r.onresume = function () {
-              d.push("resumed");
-            }),
-            (r.onstop = function () {
-              d.push("stopped");
-            }),
-            (r.onerror = function (e) {
-              e &&
-                (e.name || (e.name = "UnknownError"),
-                d.push("error: " + e),
-                t.disableLogs ||
-                  (-1 !==
-                  e.name.toString().toLowerCase().indexOf("invalidstate")
-                    ? console.error(
-                        "The MediaRecorder is not in a state in which the proposed operation is allowed to be executed.",
-                        e
-                      )
-                    : -1 !==
-                      e.name.toString().toLowerCase().indexOf("notsupported")
-                    ? console.error(
-                        "MIME type (",
-                        o.mimeType,
-                        ") is not supported.",
-                        e
-                      )
-                    : -1 !== e.name.toString().toLowerCase().indexOf("security")
-                    ? console.error("MediaRecorder security error", e)
-                    : "OutOfMemory" === e.name
-                    ? console.error(
-                        "The UA has exhaused the available memory. User agents SHOULD provide as much additional information as possible in the message attribute.",
-                        e
-                      )
-                    : "IllegalStreamModification" === e.name
+                  : new Blob([e.data], { type: n(o) })),
+                i.recordingCallback
+                && (i.recordingCallback(i.blob),
+                (i.recordingCallback = null)));
+          }
+          else if (
+            e.data
+            && e.data.size
+            && (s.push(e.data), a(), typeof t.ondataavailable == "function")
+          ) {
+            const r = t.getNativeBlob
+              ? e.data
+              : new Blob([e.data], { type: n(o) });
+            t.ondataavailable(r);
+          }
+        }),
+        (r.onstart = function () {
+          d.push("started");
+        }),
+        (r.onpause = function () {
+          d.push("paused");
+        }),
+        (r.onresume = function () {
+          d.push("resumed");
+        }),
+        (r.onstop = function () {
+          d.push("stopped");
+        }),
+        (r.onerror = function (e) {
+          e
+          && (e.name || (e.name = "UnknownError"),
+          d.push(`error: ${e}`),
+          t.disableLogs
+          || (e.name.toString().toLowerCase().includes("invalidstate")
+            ? console.error(
+                "The MediaRecorder is not in a state in which the proposed operation is allowed to be executed.",
+                e
+              )
+            : e.name.toString().toLowerCase().includes("notsupported")
+              ? console.error(
+                  "MIME type (",
+                  o.mimeType,
+                  ") is not supported.",
+                  e
+                )
+              : e.name.toString().toLowerCase().includes("security")
+                ? console.error("MediaRecorder security error", e)
+                : e.name === "OutOfMemory"
+                  ? console.error(
+                      "The UA has exhaused the available memory. User agents SHOULD provide as much additional information as possible in the message attribute.",
+                      e
+                    )
+                  : e.name === "IllegalStreamModification"
                     ? console.error(
                         "A modification to the stream has occurred that makes it impossible to continue recording. An example would be the addition of a Track while recording is occurring. User agents SHOULD provide as much additional information as possible in the message attribute.",
                         e
                       )
-                    : "OtherRecordingError" === e.name
-                    ? console.error(
-                        "Used for an fatal error other than those listed above. User agents SHOULD provide as much additional information as possible in the message attribute.",
-                        e
-                      )
-                    : "GenericError" === e.name
-                    ? console.error(
-                        "The UA cannot provide the codec or recording option that has been requested.",
-                        e
-                      )
-                    : console.error("MediaRecorder Error", e)),
-                (function (e) {
-                  if (!i.manuallyStopped && r && "inactive" === r.state)
-                    return delete t.timeslice, void r.start(6e5);
-                  setTimeout(void 0, 1e3);
-                })(),
-                "inactive" !== r.state && "stopped" !== r.state && r.stop());
-            }),
-            "number" == typeof t.timeSlice
-              ? (a(), r.start(t.timeSlice))
-              : r.start(36e5),
-            t.initCallback && t.initCallback();
+                    : e.name === "OtherRecordingError"
+                      ? console.error(
+                          "Used for an fatal error other than those listed above. User agents SHOULD provide as much additional information as possible in the message attribute.",
+                          e
+                        )
+                      : e.name === "GenericError"
+                        ? console.error(
+                            "The UA cannot provide the codec or recording option that has been requested.",
+                            e
+                          )
+                        : console.error("MediaRecorder Error", e)),
+          (function (e) {
+            if (!i.manuallyStopped && r && r.state === "inactive")
+              return delete t.timeslice, void r.start(6e5);
+            setTimeout(void 0, 1e3);
+          })(),
+          r.state !== "inactive" && r.state !== "stopped" && r.stop());
         }),
-        (this.timestamps = []),
-        (this.stop = function (e) {
-          (e = e || function () {}),
-            (i.manuallyStopped = !0),
-            r &&
-              ((this.recordingCallback = e),
-              "recording" === r.state && r.stop(),
-              "number" == typeof t.timeSlice &&
-                setTimeout(function () {
-                  (i.blob = new Blob(s, { type: n(t) })),
-                    i.recordingCallback(i.blob);
-                }, 100));
-        }),
-        (this.pause = function () {
-          r && "recording" === r.state && r.pause();
-        }),
-        (this.resume = function () {
-          r && "paused" === r.state && r.resume();
-        }),
-        (this.clearRecordedData = function () {
-          r && "recording" === r.state && i.stop(A), A();
-        }),
-        (this.getInternalRecorder = function () {
-          return r;
-        }),
-        (this.blob = null),
-        (this.getState = function () {
-          return (r && r.state) || "inactive";
-        });
+        typeof t.timeSlice == "number"
+          ? (a(), r.start(t.timeSlice))
+          : r.start(36e5),
+        t.initCallback && t.initCallback();
+      }),
+      (this.timestamps = []),
+      (this.stop = function (e) {
+        (e = e || function () {}),
+        (i.manuallyStopped = !0),
+        r
+        && ((this.recordingCallback = e),
+        r.state === "recording" && r.stop(),
+        typeof t.timeSlice == "number"
+        && setTimeout(() => {
+          (i.blob = new Blob(s, { type: n(t) })),
+          i.recordingCallback(i.blob);
+        }, 100));
+      }),
+      (this.pause = function () {
+        r && r.state === "recording" && r.pause();
+      }),
+      (this.resume = function () {
+        r && r.state === "paused" && r.resume();
+      }),
+      (this.clearRecordedData = function () {
+        r && r.state === "recording" && i.stop(A), A();
+      }),
+      (this.getInternalRecorder = function () {
+        return r;
+      }),
+      (this.blob = null),
+      (this.getState = function () {
+        return (r && r.state) || "inactive";
+      });
       var d = [];
       (this.getAllStates = function () {
         return d;
       }),
-        void 0 === t.checkForInactiveTracks && (t.checkForInactiveTracks = !1);
+      void 0 === t.checkForInactiveTracks && (t.checkForInactiveTracks = !1);
       i = this;
       !(function o() {
-        if (r && !1 !== t.checkForInactiveTracks)
-          return !1 ===
-            (function () {
+        if (r && !1 !== t.checkForInactiveTracks) {
+          return !1
+            === (function () {
               if ("active" in e) {
                 if (!e.active) return !1;
-              } else if ("ended" in e && e.ended) return !1;
+              }
+              else if ("ended" in e && e.ended) {
+                return !1;
+              }
               return !0;
             })()
             ? (t.disableLogs || console.log("MediaStream seems stopped."),
               void i.stop())
             : void setTimeout(o, 1e3);
+        }
       })(),
-        (this.name = "MediaStreamRecorder"),
-        (this.toString = function () {
-          return this.name;
-        });
+      (this.name = "MediaStreamRecorder"),
+      (this.toString = function () {
+        return this.name;
+      });
     }
     function R(e, t) {
       if (!w(e, "audio").length) throw "Your stream has no audio tracks.";
-      var o,
-        r = this,
-        s = [],
-        a = [],
-        n = !1,
-        A = 0,
-        d = 2,
-        c = (t = t || {}).desiredSampRate;
+      let o;
+      const r = this;
+      let s = [];
+      let a = [];
+      let n = !1;
+      let A = 0;
+      let d = 2;
+      const c = (t = t || {}).desiredSampRate;
       function u() {
         if (!1 === t.checkForInactiveTracks) return !0;
         if ("active" in e) {
           if (!e.active) return !1;
-        } else if ("ended" in e && e.ended) return !1;
+        }
+        else if ("ended" in e && e.ended) {
+          return !1;
+        }
         return !0;
       }
       function h(e, t) {
         function i(e, t) {
-          var i,
-            o = e.numberOfAudioChannels,
-            r = e.leftBuffers.slice(0),
-            s = e.rightBuffers.slice(0),
-            a = e.sampleRate,
-            n = e.internalInterleavedLength,
-            A = e.desiredSampRate;
+          let i;
+          const o = e.numberOfAudioChannels;
+          let r = e.leftBuffers.slice(0);
+          let s = e.rightBuffers.slice(0);
+          let a = e.sampleRate;
+          const n = e.internalInterleavedLength;
+          const A = e.desiredSampRate;
           function d(e, t, i) {
-            var o = Math.round(e.length * (t / i)),
-              r = [],
-              s = Number((e.length - 1) / (o - 1));
+            const o = Math.round(e.length * (t / i));
+            const r = [];
+            const s = Number((e.length - 1) / (o - 1));
             r[0] = e[0];
-            for (var a = 1; a < o - 1; a++) {
-              var n = a * s,
-                A = Number(Math.floor(n)).toFixed(),
-                d = Number(Math.ceil(n)).toFixed(),
-                l = n - A;
+            for (let a = 1; a < o - 1; a++) {
+              const n = a * s;
+              const A = Number(Math.floor(n)).toFixed();
+              const d = Number(Math.ceil(n)).toFixed();
+              const l = n - A;
               r[a] = c(e[A], e[d], l);
             }
             return (r[o - 1] = e[e.length - 1]), r;
@@ -2760,73 +2879,74 @@
               s < r;
               s++
             ) {
-              var a = e[s];
+              const a = e[s];
               i.set(a, o), (o += a.length);
             }
             return i;
           }
           function u(e, t, i) {
-            for (var o = i.length, r = 0; r < o; r++)
+            for (let o = i.length, r = 0; r < o; r++)
               e.setUint8(t + r, i.charCodeAt(r));
           }
-          2 === o &&
-            ((r = l(r, n)),
-            (s = l(s, n)),
-            A && ((r = d(r, A, a)), (s = d(s, A, a)))),
-            1 === o && ((r = l(r, n)), A && (r = d(r, A, a))),
-            A && (a = A),
-            2 === o &&
-              (i = (function (e, t) {
-                for (
-                  var i = e.length + t.length,
-                    o = new Float64Array(i),
-                    r = 0,
-                    s = 0;
-                  s < i;
+          o === 2
+          && ((r = l(r, n)),
+          (s = l(s, n)),
+          A && ((r = d(r, A, a)), (s = d(s, A, a)))),
+          o === 1 && ((r = l(r, n)), A && (r = d(r, A, a))),
+          A && (a = A),
+          o === 2
+          && (i = (function (e, t) {
+            for (
+              var i = e.length + t.length,
+                o = new Float64Array(i),
+                r = 0,
+                s = 0;
+              s < i;
 
-                )
-                  (o[s++] = e[r]), (o[s++] = t[r]), r++;
-                return o;
-              })(r, s)),
-            1 === o && (i = r);
-          var h = i.length,
-            p = new ArrayBuffer(44 + 2 * h),
-            m = new DataView(p);
+            )
+              (o[s++] = e[r]), (o[s++] = t[r]), r++;
+            return o;
+          })(r, s)),
+          o === 1 && (i = r);
+          const h = i.length;
+          const p = new ArrayBuffer(44 + 2 * h);
+          const m = new DataView(p);
           u(m, 0, "RIFF"),
-            m.setUint32(4, 36 + 2 * h, !0),
-            u(m, 8, "WAVE"),
-            u(m, 12, "fmt "),
-            m.setUint32(16, 16, !0),
-            m.setUint16(20, 1, !0),
-            m.setUint16(22, o, !0),
-            m.setUint32(24, a, !0),
-            m.setUint32(28, a * o * 2, !0),
-            m.setUint16(32, 2 * o, !0),
-            m.setUint16(34, 16, !0),
-            u(m, 36, "data"),
-            m.setUint32(40, 2 * h, !0);
-          for (var g = h, f = 44, b = 0; b < g; b++)
+          m.setUint32(4, 36 + 2 * h, !0),
+          u(m, 8, "WAVE"),
+          u(m, 12, "fmt "),
+          m.setUint32(16, 16, !0),
+          m.setUint16(20, 1, !0),
+          m.setUint16(22, o, !0),
+          m.setUint32(24, a, !0),
+          m.setUint32(28, a * o * 2, !0),
+          m.setUint16(32, 2 * o, !0),
+          m.setUint16(34, 16, !0),
+          u(m, 36, "data"),
+          m.setUint32(40, 2 * h, !0);
+          for (let g = h, f = 44, b = 0; b < g; b++)
             m.setInt16(f, 32767 * i[b], !0), (f += 2);
           if (t) return t({ buffer: p, view: m });
           postMessage({ buffer: p, view: m });
         }
-        if (e.noWorker)
-          i(e, function (e) {
+        if (e.noWorker) {
+          i(e, (e) => {
             t(e.buffer, e.view);
           });
+        }
         else {
-          var o,
-            r,
-            s,
-            a =
-              ((o = i),
+          let o;
+          let r;
+          let s;
+          const a
+              = ((o = i),
               (r = l.createObjectURL(
                 new Blob(
                   [
                     o.toString(),
-                    ";this.onmessage =  function (eee) {" +
-                      o.name +
-                      "(eee.data);}",
+                    `;this.onmessage =  function (eee) {${
+                      o.name
+                    }(eee.data);}`
                   ],
                   { type: "application/javascript" }
                 )
@@ -2835,71 +2955,72 @@
               s);
           (a.onmessage = function (e) {
             t(e.data.buffer, e.data.view),
-              l.revokeObjectURL(a.workerURL),
-              a.terminate();
+            l.revokeObjectURL(a.workerURL),
+            a.terminate();
           }),
-            a.postMessage(e);
+          a.postMessage(e);
         }
       }
       !0 === t.leftChannel && (d = 1),
-        1 === t.numberOfAudioChannels && (d = 1),
-        (!d || d < 1) && (d = 2),
-        t.disableLogs ||
-          console.log(
-            "StereoAudioRecorder is set to record number of channels: " + d
-          ),
-        void 0 === t.checkForInactiveTracks && (t.checkForInactiveTracks = !0),
-        (this.record = function () {
-          if (!1 === u()) throw "Please make sure MediaStream is active.";
-          v(), (E = y = !1), (n = !0), void 0 !== t.timeSlice && C();
+      t.numberOfAudioChannels === 1 && (d = 1),
+      (!d || d < 1) && (d = 2),
+      t.disableLogs
+      || console.log(
+        `StereoAudioRecorder is set to record number of channels: ${d}`
+      ),
+      void 0 === t.checkForInactiveTracks && (t.checkForInactiveTracks = !0),
+      (this.record = function () {
+        if (!1 === u()) throw "Please make sure MediaStream is active.";
+        v(), (E = y = !1), (n = !0), void 0 !== t.timeSlice && C();
+      }),
+      (this.stop = function (e) {
+        (e = e || function () {}),
+        (n = !1),
+        h(
+          {
+            desiredSampRate: c,
+            sampleRate: b,
+            numberOfAudioChannels: d,
+            internalInterleavedLength: A,
+            leftBuffers: s,
+            rightBuffers: d === 1 ? [] : a,
+            noWorker: t.noWorker
+          },
+          (t, i) => {
+            (r.blob = new Blob([i], { type: "audio/wav" })),
+            (r.buffer = new ArrayBuffer(i.buffer.byteLength)),
+            (r.view = i),
+            (r.sampleRate = c || b),
+            (r.bufferSize = f),
+            (r.length = A),
+            (E = !1),
+            e && e(r.blob);
+          }
+        );
+      }),
+      void 0 === i.Storage
+        && (i.Storage = {
+          AudioContextConstructor: null,
+          AudioContext: window.AudioContext || window.webkitAudioContext
         }),
-        (this.stop = function (e) {
-          (e = e || function () {}),
-            (n = !1),
-            h(
-              {
-                desiredSampRate: c,
-                sampleRate: b,
-                numberOfAudioChannels: d,
-                internalInterleavedLength: A,
-                leftBuffers: s,
-                rightBuffers: 1 === d ? [] : a,
-                noWorker: t.noWorker,
-              },
-              function (t, i) {
-                (r.blob = new Blob([i], { type: "audio/wav" })),
-                  (r.buffer = new ArrayBuffer(i.buffer.byteLength)),
-                  (r.view = i),
-                  (r.sampleRate = c || b),
-                  (r.bufferSize = f),
-                  (r.length = A),
-                  (E = !1),
-                  e && e(r.blob);
-              }
-            );
-        }),
-        void 0 === i.Storage &&
-          (i.Storage = {
-            AudioContextConstructor: null,
-            AudioContext: window.AudioContext || window.webkitAudioContext,
-          }),
-        (i.Storage.AudioContextConstructor &&
-          "closed" !== i.Storage.AudioContextConstructor.state) ||
-          (i.Storage.AudioContextConstructor = new i.Storage.AudioContext());
-      var p = i.Storage.AudioContextConstructor,
-        m = p.createMediaStreamSource(e),
-        g = [0, 256, 512, 1024, 2048, 4096, 8192, 16384],
-        f = void 0 === t.bufferSize ? 4096 : t.bufferSize;
+      (i.Storage.AudioContextConstructor
+        && i.Storage.AudioContextConstructor.state !== "closed")
+      || (i.Storage.AudioContextConstructor = new i.Storage.AudioContext());
+      let p = i.Storage.AudioContextConstructor;
+      let m = p.createMediaStreamSource(e);
+      const g = [0, 256, 512, 1024, 2048, 4096, 8192, 16384];
+      var f = void 0 === t.bufferSize ? 4096 : t.bufferSize;
       if (
-        (-1 === g.indexOf(f) &&
-          (t.disableLogs ||
-            console.log(
-              "Legal values for buffer-size are " +
-                JSON.stringify(g, null, "\t")
+        (!g.includes(f)
+          && (t.disableLogs
+            || console.log(
+              `Legal values for buffer-size are ${
+                JSON.stringify(g, null, "\t")}`
             )),
         p.createJavaScriptNode)
-      )
+      ) {
         o = p.createJavaScriptNode(f, d, d);
+      }
       else {
         if (!p.createScriptProcessor)
           throw "WebAudio API has no support on this browser.";
@@ -2907,213 +3028,228 @@
       }
       m.connect(o), t.bufferSize || (f = o.bufferSize);
       var b = void 0 !== t.sampleRate ? t.sampleRate : p.sampleRate || 44100;
-      (b < 22050 || b > 96e3) &&
-        (t.disableLogs ||
-          console.log("sample-rate must be under range 22050 and 96000.")),
-        t.disableLogs ||
-          (t.desiredSampRate &&
-            console.log("Desired sample-rate: " + t.desiredSampRate));
+      (b < 22050 || b > 96e3)
+      && (t.disableLogs
+        || console.log("sample-rate must be under range 22050 and 96000.")),
+      t.disableLogs
+      || (t.desiredSampRate
+        && console.log(`Desired sample-rate: ${t.desiredSampRate}`));
       var y = !1;
       function v() {
         (s = []),
-          (a = []),
-          (A = 0),
-          (E = !1),
-          (n = !1),
-          (y = !1),
-          (p = null),
-          (r.leftchannel = s),
-          (r.rightchannel = a),
-          (r.numberOfAudioChannels = d),
-          (r.desiredSampRate = c),
-          (r.sampleRate = b),
-          (r.recordingLength = A),
-          (B = { left: [], right: [], recordingLength: 0 });
+        (a = []),
+        (A = 0),
+        (E = !1),
+        (n = !1),
+        (y = !1),
+        (p = null),
+        (r.leftchannel = s),
+        (r.rightchannel = a),
+        (r.numberOfAudioChannels = d),
+        (r.desiredSampRate = c),
+        (r.sampleRate = b),
+        (r.recordingLength = A),
+        (B = { left: [], right: [], recordingLength: 0 });
       }
       function S() {
         o && ((o.onaudioprocess = null), o.disconnect(), (o = null)),
-          m && (m.disconnect(), (m = null)),
-          v();
+        m && (m.disconnect(), (m = null)),
+        v();
       }
       (this.pause = function () {
         y = !0;
       }),
-        (this.resume = function () {
-          if (!1 === u()) throw "Please make sure MediaStream is active.";
-          if (!n)
-            return (
-              t.disableLogs ||
-                console.log("Seems recording has been restarted."),
-              void this.record()
-            );
-          y = !1;
-        }),
-        (this.clearRecordedData = function () {
-          (t.checkForInactiveTracks = !1), n && this.stop(S), S();
-        }),
-        (this.name = "StereoAudioRecorder"),
-        (this.toString = function () {
-          return this.name;
-        });
+      (this.resume = function () {
+        if (!1 === u()) throw "Please make sure MediaStream is active.";
+        if (!n) {
+          return (
+            t.disableLogs
+            || console.log("Seems recording has been restarted."),
+            void this.record()
+          );
+        }
+        y = !1;
+      }),
+      (this.clearRecordedData = function () {
+        (t.checkForInactiveTracks = !1), n && this.stop(S), S();
+      }),
+      (this.name = "StereoAudioRecorder"),
+      (this.toString = function () {
+        return this.name;
+      });
       var E = !1;
       (o.onaudioprocess = function (e) {
-        if (!y)
+        if (!y) {
           if (
-            (!1 === u() &&
-              (t.disableLogs || console.log("MediaStream seems stopped."),
+            (!1 === u()
+              && (t.disableLogs || console.log("MediaStream seems stopped."),
               o.disconnect(),
               (n = !1)),
             n)
           ) {
-            E ||
-              ((E = !0),
-              t.onAudioProcessStarted && t.onAudioProcessStarted(),
-              t.initCallback && t.initCallback());
-            var i = e.inputBuffer.getChannelData(0),
-              c = new Float32Array(i);
-            if ((s.push(c), 2 === d)) {
-              var l = e.inputBuffer.getChannelData(1),
-                h = new Float32Array(l);
+            E
+            || ((E = !0),
+            t.onAudioProcessStarted && t.onAudioProcessStarted(),
+            t.initCallback && t.initCallback());
+            const i = e.inputBuffer.getChannelData(0);
+            const c = new Float32Array(i);
+            if ((s.push(c), d === 2)) {
+              const l = e.inputBuffer.getChannelData(1);
+              var h = new Float32Array(l);
               a.push(h);
             }
             (A += f),
-              (r.recordingLength = A),
-              void 0 !== t.timeSlice &&
-                ((B.recordingLength += f),
-                B.left.push(c),
-                2 === d && B.right.push(h));
-          } else m && (m.disconnect(), (m = null));
+            (r.recordingLength = A),
+            void 0 !== t.timeSlice
+              && ((B.recordingLength += f),
+              B.left.push(c),
+              d === 2 && B.right.push(h));
+          }
+          else {
+            m && (m.disconnect(), (m = null));
+          }
+        }
       }),
-        p.createMediaStreamDestination
-          ? o.connect(p.createMediaStreamDestination())
-          : o.connect(p.destination),
-        (this.leftchannel = s),
-        (this.rightchannel = a),
-        (this.numberOfAudioChannels = d),
-        (this.desiredSampRate = c),
-        (this.sampleRate = b),
-        (r.recordingLength = A);
+      p.createMediaStreamDestination
+        ? o.connect(p.createMediaStreamDestination())
+        : o.connect(p.destination),
+      (this.leftchannel = s),
+      (this.rightchannel = a),
+      (this.numberOfAudioChannels = d),
+      (this.desiredSampRate = c),
+      (this.sampleRate = b),
+      (r.recordingLength = A);
       var B = { left: [], right: [], recordingLength: 0 };
       function C() {
-        n &&
-          "function" == typeof t.ondataavailable &&
-          void 0 !== t.timeSlice &&
-          (B.left.length
-            ? (h(
-                {
-                  desiredSampRate: c,
-                  sampleRate: b,
-                  numberOfAudioChannels: d,
-                  internalInterleavedLength: B.recordingLength,
-                  leftBuffers: B.left,
-                  rightBuffers: 1 === d ? [] : B.right,
-                },
-                function (e, i) {
-                  var o = new Blob([i], { type: "audio/wav" });
-                  t.ondataavailable(o), setTimeout(C, t.timeSlice);
-                }
-              ),
-              (B = { left: [], right: [], recordingLength: 0 }))
-            : setTimeout(C, t.timeSlice));
+        n
+        && typeof t.ondataavailable == "function"
+        && void 0 !== t.timeSlice
+        && (B.left.length
+          ? (h(
+              {
+                desiredSampRate: c,
+                sampleRate: b,
+                numberOfAudioChannels: d,
+                internalInterleavedLength: B.recordingLength,
+                leftBuffers: B.left,
+                rightBuffers: d === 1 ? [] : B.right
+              },
+              (e, i) => {
+                const o = new Blob([i], { type: "audio/wav" });
+                t.ondataavailable(o), setTimeout(C, t.timeSlice);
+              }
+            ),
+            (B = { left: [], right: [], recordingLength: 0 }))
+          : setTimeout(C, t.timeSlice));
       }
     }
     function k(e, t) {
-      if ("undefined" == typeof html2canvas)
+      if (typeof html2canvas == "undefined")
         throw "Please link: https://www.webrtc-experiment.com/screenshot.js";
       (t = t || {}).frameInterval || (t.frameInterval = 10);
-      var i = !1;
+      let i = !1;
       ["captureStream", "mozCaptureStream", "webkitCaptureStream"].forEach(
-        function (e) {
+        (e) => {
           e in document.createElement("canvas") && (i = !0);
         }
       );
-      var o,
-        r,
-        s,
-        a = !(
-          (!window.webkitRTCPeerConnection && !window.webkitGetUserMedia) ||
-          !window.chrome
-        ),
-        n = 50,
-        A = navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);
+      let o;
+      let r;
+      let s;
+      const a = !(
+        (!window.webkitRTCPeerConnection && !window.webkitGetUserMedia)
+        || !window.chrome
+      );
+      let n = 50;
+      const A = navigator.userAgent.match(/Chrom(e|ium)\/(\d+)\./);
       if (
-        (a && A && A[2] && (n = parseInt(A[2], 10)),
+        (a && A && A[2] && (n = Number.parseInt(A[2], 10)),
         a && n < 52 && (i = !1),
         t.useWhammyRecorder && (i = !1),
         i)
-      )
+      ) {
         if (
-          (t.disableLogs ||
-            console.log(
+          (t.disableLogs
+            || console.log(
               "Your browser supports both MediRecorder API and canvas.captureStream!"
             ),
           e instanceof HTMLCanvasElement)
-        )
+        ) {
           o = e;
+        }
         else {
           if (!(e instanceof CanvasRenderingContext2D))
             throw "Please pass either HTMLCanvasElement or CanvasRenderingContext2D.";
           o = e.canvas;
         }
-      else
-        navigator.mozGetUserMedia &&
-          (t.disableLogs ||
-            console.error("Canvas recording is NOT supported in Firefox."));
+      }
+      else {
+        navigator.mozGetUserMedia
+        && (t.disableLogs
+          || console.error("Canvas recording is NOT supported in Firefox."));
+      }
       (this.record = function () {
         if (((s = !0), i && !t.useWhammyRecorder)) {
-          var e;
+          let e;
           "captureStream" in o
             ? (e = o.captureStream(25))
             : "mozCaptureStream" in o
-            ? (e = o.mozCaptureStream(25))
-            : "webkitCaptureStream" in o && (e = o.webkitCaptureStream(25));
+              ? (e = o.mozCaptureStream(25))
+              : "webkitCaptureStream" in o && (e = o.webkitCaptureStream(25));
           try {
-            var a = new f();
+            const a = new f();
             a.addTrack(w(e, "video")[0]), (e = a);
-          } catch (e) {}
+          }
+          catch (e) {}
           if (!e) throw "captureStream API are NOT available.";
           (r = new C(e, { mimeType: t.mimeType || "video/webm" })).record();
-        } else (h.frames = []), (u = new Date().getTime()), l();
+        }
+        else {
+          (h.frames = []), (u = new Date().getTime()), l();
+        }
         t.initCallback && t.initCallback();
       }),
-        (this.getWebPImages = function (i) {
-          if ("canvas" === e.nodeName.toLowerCase()) {
-            var o = h.frames.length;
-            h.frames.forEach(function (e, i) {
-              var r = o - i;
-              t.disableLogs || console.log(r + "/" + o + " frames remaining"),
-                t.onEncodingCallback && t.onEncodingCallback(r, o);
-              var s = e.image.toDataURL("image/webp", 1);
-              h.frames[i].image = s;
-            }),
-              t.disableLogs || console.log("Generating WebM"),
-              i();
-          } else i();
-        }),
-        (this.stop = function (e) {
-          s = !1;
-          var o = this;
-          i && r
-            ? r.stop(e)
-            : this.getWebPImages(function () {
-                h.compile(function (i) {
-                  t.disableLogs || console.log("Recording finished!"),
-                    (o.blob = i),
-                    o.blob.forEach &&
-                      (o.blob = new Blob([], { type: "video/webm" })),
-                    e && e(o.blob),
-                    (h.frames = []);
-                });
+      (this.getWebPImages = function (i) {
+        if (e.nodeName.toLowerCase() === "canvas") {
+          const o = h.frames.length;
+          h.frames.forEach((e, i) => {
+            const r = o - i;
+            t.disableLogs || console.log(`${r}/${o} frames remaining`),
+            t.onEncodingCallback && t.onEncodingCallback(r, o);
+            const s = e.image.toDataURL("image/webp", 1);
+            h.frames[i].image = s;
+          }),
+          t.disableLogs || console.log("Generating WebM"),
+          i();
+        }
+        else {
+          i();
+        }
+      }),
+      (this.stop = function (e) {
+        s = !1;
+        const o = this;
+        i && r
+          ? r.stop(e)
+          : this.getWebPImages(() => {
+              h.compile((i) => {
+                t.disableLogs || console.log("Recording finished!"),
+                (o.blob = i),
+                o.blob.forEach
+                && (o.blob = new Blob([], { type: "video/webm" })),
+                e && e(o.blob),
+                (h.frames = []);
               });
-        });
-      var d = !1;
+            });
+      });
+      let d = !1;
       function c() {
         (h.frames = []), (s = !1), (d = !1);
       }
       function l() {
         if (d) return (u = new Date().getTime()), setTimeout(l, 500);
-        if ("canvas" === e.nodeName.toLowerCase()) {
-          var i = new Date().getTime() - u;
+        if (e.nodeName.toLowerCase() === "canvas") {
+          const i = new Date().getTime() - u;
           return (
             (u = new Date().getTime()),
             h.frames.push({
@@ -3124,46 +3260,46 @@
                 (o.height = e.height),
                 r.drawImage(e, 0, 0),
                 o),
-              duration: i,
+              duration: i
             }),
             void (s && setTimeout(l, t.frameInterval))
           );
         }
-        var o, r;
+        let o, r;
         html2canvas(e, {
           grabMouse: void 0 === t.showMousePointer || t.showMousePointer,
-          onrendered: function (e) {
-            var i = new Date().getTime() - u;
+          onrendered(e) {
+            const i = new Date().getTime() - u;
             if (!i) return setTimeout(l, t.frameInterval);
             (u = new Date().getTime()),
-              h.frames.push({
-                image: e.toDataURL("image/webp", 1),
-                duration: i,
-              }),
-              s && setTimeout(l, t.frameInterval);
-          },
+            h.frames.push({
+              image: e.toDataURL("image/webp", 1),
+              duration: i
+            }),
+            s && setTimeout(l, t.frameInterval);
+          }
         });
       }
       (this.pause = function () {
         (d = !0), r instanceof C && r.pause();
       }),
-        (this.resume = function () {
-          (d = !1), r instanceof C ? r.resume() : s || this.record();
-        }),
-        (this.clearRecordedData = function () {
-          s && this.stop(c), c();
-        }),
-        (this.name = "CanvasRecorder"),
-        (this.toString = function () {
-          return this.name;
-        });
-      var u = new Date().getTime(),
-        h = new I.Video(100);
+      (this.resume = function () {
+        (d = !1), r instanceof C ? r.resume() : s || this.record();
+      }),
+      (this.clearRecordedData = function () {
+        s && this.stop(c), c();
+      }),
+      (this.name = "CanvasRecorder"),
+      (this.toString = function () {
+        return this.name;
+      });
+      var u = new Date().getTime();
+      var h = new I.Video(100);
     }
     function T(e, t) {
       function i(e) {
         e = void 0 !== e ? e : 10;
-        var t = new Date().getTime() - A;
+        const t = new Date().getTime() - A;
         return t
           ? s
             ? ((A = new Date().getTime()), setTimeout(i, 100))
@@ -3175,119 +3311,121 @@
           : setTimeout(i, e, e);
       }
       function o(e, t, i, o, r) {
-        var s = document.createElement("canvas");
+        const s = document.createElement("canvas");
         (s.width = c.width), (s.height = c.height);
-        var a,
-          n,
-          A,
-          d = s.getContext("2d"),
-          l = [],
-          u = -1 === t,
-          h = t && t > 0 && t <= e.length ? t : e.length,
-          p = 0,
-          m = 0,
-          g = 0,
-          f = Math.sqrt(Math.pow(255, 2) + Math.pow(255, 2) + Math.pow(255, 2)),
-          b = i && i >= 0 && i <= 1 ? i : 0,
-          y = o && o >= 0 && o <= 1 ? o : 0,
-          v = !1;
+        let a;
+        let n;
+        let A;
+        const d = s.getContext("2d");
+        let l = [];
+        const u = t === -1;
+        const h = t && t > 0 && t <= e.length ? t : e.length;
+        const p = 0;
+        const m = 0;
+        const g = 0;
+        const f = Math.sqrt(255 ** 2 + 255 ** 2 + 255 ** 2);
+        const b = i && i >= 0 && i <= 1 ? i : 0;
+        const y = o && o >= 0 && o <= 1 ? o : 0;
+        let v = !1;
         (n = -1),
-          (A = (a = {
-            length: h,
-            functionToLoop: function (t, i) {
-              var o,
-                r,
-                s,
-                a = function () {
-                  (!v && s - o <= s * y) || (u && (v = !0), l.push(e[i])), t();
-                };
-              if (v) a();
-              else {
-                var n = new Image();
-                (n.onload = function () {
-                  d.drawImage(n, 0, 0, c.width, c.height);
-                  var e = d.getImageData(0, 0, c.width, c.height);
-                  (o = 0), (r = e.data.length), (s = e.data.length / 4);
-                  for (var t = 0; t < r; t += 4) {
-                    var i = {
-                      r: e.data[t],
-                      g: e.data[t + 1],
-                      b: e.data[t + 2],
-                    };
-                    Math.sqrt(
-                      Math.pow(i.r - p, 2) +
-                        Math.pow(i.g - m, 2) +
-                        Math.pow(i.b - g, 2)
-                    ) <=
-                      f * b && o++;
-                  }
-                  a();
-                }),
-                  (n.src = e[i].image);
-              }
-            },
-            callback: function () {
-              (l = l.concat(e.slice(h))).length <= 0 && l.push(e[e.length - 1]),
-                r(l);
-            },
-          }).length),
-          (function e() {
-            ++n !== A
-              ? setTimeout(function () {
-                  a.functionToLoop(e, n);
-                }, 1)
-              : a.callback();
-          })();
+        (A = (a = {
+          length: h,
+          functionToLoop(t, i) {
+            let o;
+            let r;
+            let s;
+            const a = function () {
+              (!v && s - o <= s * y) || (u && (v = !0), l.push(e[i])), t();
+            };
+            if (v) {
+              a();
+            }
+            else {
+              const n = new Image();
+              (n.onload = function () {
+                d.drawImage(n, 0, 0, c.width, c.height);
+                const e = d.getImageData(0, 0, c.width, c.height);
+                (o = 0), (r = e.data.length), (s = e.data.length / 4);
+                for (let t = 0; t < r; t += 4) {
+                  const i = {
+                    r: e.data[t],
+                    g: e.data[t + 1],
+                    b: e.data[t + 2]
+                  };
+                  Math.sqrt(
+                    (i.r - p) ** 2
+                    + (i.g - m) ** 2
+                    + (i.b - g) ** 2
+                  )
+                  <= f * b && o++;
+                }
+                a();
+              }),
+              (n.src = e[i].image);
+            }
+          },
+          callback() {
+            (l = l.concat(e.slice(h))).length <= 0 && l.push(e[e.length - 1]),
+            r(l);
+          }
+        }).length),
+        (function e() {
+          ++n !== A
+            ? setTimeout(() => {
+                a.functionToLoop(e, n);
+              }, 1)
+            : a.callback();
+        })();
       }
       (t = t || {}).frameInterval || (t.frameInterval = 10),
-        t.disableLogs || console.log("Using frames-interval:", t.frameInterval),
-        (this.record = function () {
-          t.width || (t.width = 320),
-            t.height || (t.height = 240),
-            t.video || (t.video = { width: t.width, height: t.height }),
-            t.canvas || (t.canvas = { width: t.width, height: t.height }),
-            (c.width = t.canvas.width || 320),
-            (c.height = t.canvas.height || 240),
-            (l = c.getContext("2d")),
-            t.video && t.video instanceof HTMLVideoElement
-              ? ((n = t.video.cloneNode()), t.initCallback && t.initCallback())
-              : ((n = document.createElement("video")),
-                S(e, n),
-                (n.onloadedmetadata = function () {
-                  t.initCallback && t.initCallback();
-                }),
-                (n.width = t.video.width),
-                (n.height = t.video.height)),
-            (n.muted = !0),
-            n.play(),
-            (A = new Date().getTime()),
-            (d = new I.Video()),
-            t.disableLogs ||
-              (console.log("canvas resolutions", c.width, "*", c.height),
-              console.log(
-                "video width/height",
-                n.width || c.width,
-                "*",
-                n.height || c.height
-              )),
-            i(t.frameInterval);
-        });
+      t.disableLogs || console.log("Using frames-interval:", t.frameInterval),
+      (this.record = function () {
+        t.width || (t.width = 320),
+        t.height || (t.height = 240),
+        t.video || (t.video = { width: t.width, height: t.height }),
+        t.canvas || (t.canvas = { width: t.width, height: t.height }),
+        (c.width = t.canvas.width || 320),
+        (c.height = t.canvas.height || 240),
+        (l = c.getContext("2d")),
+        t.video && t.video instanceof HTMLVideoElement
+          ? ((n = t.video.cloneNode()), t.initCallback && t.initCallback())
+          : ((n = document.createElement("video")),
+            S(e, n),
+            (n.onloadedmetadata = function () {
+              t.initCallback && t.initCallback();
+            }),
+            (n.width = t.video.width),
+            (n.height = t.video.height)),
+        (n.muted = !0),
+        n.play(),
+        (A = new Date().getTime()),
+        (d = new I.Video()),
+        t.disableLogs
+        || (console.log("canvas resolutions", c.width, "*", c.height),
+        console.log(
+          "video width/height",
+          n.width || c.width,
+          "*",
+          n.height || c.height
+        )),
+        i(t.frameInterval);
+      });
       var r = !1;
       this.stop = function (e) {
         (e = e || function () {}), (r = !0);
-        var i = this;
-        setTimeout(function () {
-          o(d.frames, -1, null, null, function (o) {
+        const i = this;
+        setTimeout(() => {
+          o(d.frames, -1, null, null, (o) => {
             (d.frames = o),
-              t.advertisement &&
-                t.advertisement.length &&
-                (d.frames = t.advertisement.concat(d.frames)),
-              d.compile(function (t) {
-                (i.blob = t),
-                  i.blob.forEach &&
-                    (i.blob = new Blob([], { type: "video/webm" })),
-                  e && e(i.blob);
-              });
+            t.advertisement
+            && t.advertisement.length
+            && (d.frames = t.advertisement.concat(d.frames)),
+            d.compile((t) => {
+              (i.blob = t),
+              i.blob.forEach
+              && (i.blob = new Blob([], { type: "video/webm" })),
+              e && e(i.blob);
+            });
           });
         }, 10);
       };
@@ -3298,31 +3436,31 @@
       (this.pause = function () {
         s = !0;
       }),
-        (this.resume = function () {
-          (s = !1), r && this.record();
-        }),
-        (this.clearRecordedData = function () {
-          r || this.stop(a), a();
-        }),
-        (this.name = "WhammyRecorder"),
-        (this.toString = function () {
-          return this.name;
-        });
-      var n,
-        A,
-        d,
-        c = document.createElement("canvas"),
-        l = c.getContext("2d");
+      (this.resume = function () {
+        (s = !1), r && this.record();
+      }),
+      (this.clearRecordedData = function () {
+        r || this.stop(a), a();
+      }),
+      (this.name = "WhammyRecorder"),
+      (this.toString = function () {
+        return this.name;
+      });
+      let n;
+      let A;
+      let d;
+      var c = document.createElement("canvas");
+      var l = c.getContext("2d");
     }
     void 0 !== c
       ? (E.AudioContext = c)
-      : "undefined" != typeof webkitAudioContext &&
-        (E.AudioContext = webkitAudioContext),
-      (i.Storage = E),
-      (i.MediaStreamRecorder = C),
-      (i.StereoAudioRecorder = R),
-      (i.CanvasRecorder = k),
-      (i.WhammyRecorder = T);
+      : typeof webkitAudioContext != "undefined"
+        && (E.AudioContext = webkitAudioContext),
+    (i.Storage = E),
+    (i.MediaStreamRecorder = C),
+    (i.StereoAudioRecorder = R),
+    (i.CanvasRecorder = k),
+    (i.WhammyRecorder = T);
     var I = (function () {
       function e(e) {
         (this.frames = []), (this.duration = e || 1), (this.quality = 0.8);
@@ -3330,9 +3468,9 @@
       function t(e) {
         function t(e, t, i) {
           return [{ data: e, id: 231 }].concat(
-            i.map(function (e) {
-              var i = (function (e) {
-                var t = 0;
+            i.map((e) => {
+              const i = (function (e) {
+                let t = 0;
                 e.keyframe && (t |= 128);
                 e.invisible && (t |= 8);
                 e.lacing && (t |= e.lacing << 1);
@@ -3340,7 +3478,7 @@
                 if (e.trackNum > 127) throw "TrackNumber > 127 not supported";
                 return (
                   [128 | e.trackNum, e.timecode >> 8, 255 & e.timecode, t]
-                    .map(function (e) {
+                    .map((e) => {
                       return String.fromCharCode(e);
                     })
                     .join("") + e.frame
@@ -3352,74 +3490,75 @@
                 keyframe: 1,
                 lacing: 0,
                 trackNum: 1,
-                timecode: Math.round(t),
+                timecode: Math.round(t)
               });
               return (t += e.duration), { data: i, id: 163 };
             })
           );
         }
         function i(e) {
-          for (var t = []; e > 0; ) t.push(255 & e), (e >>= 8);
+          for (var t = []; e > 0;) t.push(255 & e), (e >>= 8);
           return new Uint8Array(t.reverse());
         }
         function o(e) {
-          var t = [];
-          e = (e.length % 8 ? new Array(9 - (e.length % 8)).join("0") : "") + e;
-          for (var i = 0; i < e.length; i += 8)
-            t.push(parseInt(e.substr(i, 8), 2));
+          const t = [];
+          e = (e.length % 8 ? Array.from({ length: 9 - (e.length % 8) }).join("0") : "") + e;
+          for (let i = 0; i < e.length; i += 8)
+            t.push(Number.parseInt(e.substr(i, 8), 2));
           return new Uint8Array(t);
         }
         function r(e) {
           for (var t = [], s = 0; s < e.length; s++) {
-            var a = e[s].data;
-            "object" == typeof a && (a = r(a)),
-              "number" == typeof a && (a = o(a.toString(2))),
-              "string" == typeof a &&
-                (a = new Uint8Array(
-                  a.split("").map(function (e) {
-                    return e.charCodeAt(0);
-                  })
-                ));
-            var n = a.size || a.byteLength || a.length,
-              A = Math.ceil(Math.ceil(Math.log(n) / Math.log(2)) / 8),
-              d = n.toString(2),
-              c = new Array(7 * A + 7 + 1 - d.length).join("0") + d,
-              l = new Array(A).join("0") + "1" + c;
+            let a = e[s].data;
+            typeof a == "object" && (a = r(a)),
+            typeof a == "number" && (a = o(a.toString(2))),
+            typeof a == "string"
+            && (a = new Uint8Array(
+              a.split("").map((e) => {
+                return e.charCodeAt(0);
+              })
+            ));
+            const n = a.size || a.byteLength || a.length;
+            const A = Math.ceil(Math.ceil(Math.log(n) / Math.log(2)) / 8);
+            const d = n.toString(2);
+            const c = Array.from({ length: 7 * A + 7 + 1 - d.length }).join("0") + d;
+            const l = `${new Array(A).join("0")}1${c}`;
             t.push(i(e[s].id)), t.push(o(l)), t.push(a);
           }
           return new Blob(t, { type: "video/webm" });
         }
         function s(e, t) {
-          return parseInt(
+          return Number.parseInt(
             e
               .substr(t + 4, 4)
               .split("")
-              .map(function (e) {
-                var t = e.charCodeAt(0).toString(2);
-                return new Array(8 - t.length + 1).join("0") + t;
+              .map((e) => {
+                const t = e.charCodeAt(0).toString(2);
+                return Array.from({ length: 8 - t.length + 1 }).join("0") + t;
               })
               .join(""),
             2
           );
         }
         function a(e) {
-          for (var t = 0, i = {}; t < e.length; ) {
-            var o = e.substr(t, 4),
-              r = s(e, t),
-              n = e.substr(t + 4 + 4, r);
+          for (var t = 0, i = {}; t < e.length;) {
+            const o = e.substr(t, 4);
+            const r = s(e, t);
+            const n = e.substr(t + 4 + 4, r);
             (t += 8 + r),
-              (i[o] = i[o] || []),
-              "RIFF" === o || "LIST" === o ? i[o].push(a(n)) : i[o].push(n);
+            (i[o] = i[o] || []),
+            o === "RIFF" || o === "LIST" ? i[o].push(a(n)) : i[o].push(n);
           }
           return i;
         }
-        var n = new (function (e) {
-          var i = (function (e) {
-            if (!e[0])
+        const n = new function (e) {
+          const i = (function (e) {
+            if (!e[0]) {
               return void postMessage({
                 error:
-                  "Something went wrong. Maybe WebP format is not supported in the current browser.",
+                  "Something went wrong. Maybe WebP format is not supported in the current browser."
               });
+            }
             for (
               var t = e[0].width, i = e[0].height, o = e[0].duration, r = 1;
               r < e.length;
@@ -3441,8 +3580,8 @@
                     { data: 8, id: 17139 },
                     { data: "webm", id: 17026 },
                     { data: 2, id: 17031 },
-                    { data: 2, id: 17029 },
-                  ],
+                    { data: 2, id: 17029 }
+                  ]
                 },
                 {
                   id: 408125543,
@@ -3456,19 +3595,15 @@
                         {
                           data:
                             ((o = i.duration),
-                            [].slice
-                              .call(
-                                new Uint8Array(new Float64Array([o]).buffer),
-                                0
-                              )
-                              .map(function (e) {
-                                return String.fromCharCode(e);
-                              })
-                              .reverse()
-                              .join("")),
-                          id: 17545,
-                        },
-                      ],
+                            [].slice.call(
+                              new Uint8Array(new Float64Array([o]).buffer),
+                              0
+                            ).map((e) => {
+                              return String.fromCharCode(e);
+                            }).reverse().join("")),
+                          id: 17545
+                        }
+                      ]
                     },
                     {
                       id: 374648427,
@@ -3487,33 +3622,33 @@
                               id: 224,
                               data: [
                                 { data: i.width, id: 176 },
-                                { data: i.height, id: 186 },
-                              ],
-                            },
-                          ],
-                        },
-                      ],
-                    },
-                  ],
-                },
+                                { data: i.height, id: 186 }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
               ],
               a = 0,
               n = 0;
             a < e.length;
 
           ) {
-            var A = [],
-              d = 0;
+            const A = [];
+            let d = 0;
             do {
               A.push(e[a]), (d += e[a].duration), a++;
             } while (a < e.length && d < 3e4);
-            var c = { id: 524531317, data: t(n, 0, A) };
+            const c = { id: 524531317, data: t(n, 0, A) };
             s[1].data.push(c), (n += d);
           }
           return r(s);
-        })(
-          e.map(function (e) {
-            var t = (function (e) {
+        }(
+          e.map((e) => {
+            const t = (function (e) {
               for (
                 var t = e.RIFF[0].WEBP[0], i = t.indexOf("*"), o = 0, r = [];
                 o < 4;
@@ -3524,7 +3659,7 @@
                 width: 16383 & ((r[1] << 8) | r[0]),
                 height: 16383 & ((r[3] << 8) | r[2]),
                 data: t,
-                riff: e,
+                riff: e
               };
             })(a(atob(e.image.slice(23))));
             return (t.duration = e.duration), t;
@@ -3537,24 +3672,25 @@
           if (
             ("canvas" in e && (e = e.canvas),
             "toDataURL" in e && (e = e.toDataURL("image/webp", this.quality)),
-            !/^data:image\/webp;base64,/gi.test(e))
-          )
+            !/^data:image\/webp;base64,/i.test(e))
+          ) {
             throw "Input must be formatted properly as a base64 encoded DataURI of type image/webp";
+          }
           this.frames.push({ image: e, duration: t || this.duration });
         }),
         (e.prototype.compile = function (e) {
-          var i,
-            o,
-            r,
-            s =
-              ((i = t),
+          let i;
+          let o;
+          let r;
+          const s
+              = ((i = t),
               (o = l.createObjectURL(
                 new Blob(
                   [
                     i.toString(),
-                    "this.onmessage =  function (eee) {" +
-                      i.name +
-                      "(eee.data);}",
+                    `this.onmessage =  function (eee) {${
+                      i.name
+                    }(eee.data);}`
                   ],
                   { type: "application/javascript" }
                 )
@@ -3565,59 +3701,61 @@
           (s.onmessage = function (t) {
             t.data.error ? console.error(t.data.error) : e(t.data);
           }),
-            s.postMessage(this.frames);
+          s.postMessage(this.frames);
         }),
         { Video: e }
       );
     })();
     i.Whammy = I;
     var x = {
-      init: function () {
-        var e = this;
-        if ("undefined" != typeof indexedDB && void 0 !== indexedDB.open) {
-          var t,
-            i = this.dbName || location.href.replace(/\/|:|#|%|\.|\[|\]/g, ""),
-            o = indexedDB.open(i, 1);
+      init() {
+        const e = this;
+        if (typeof indexedDB != "undefined" && void 0 !== indexedDB.open) {
+          var t;
+          const i = this.dbName || location.href.replace(/[/:#%.[\]]/g, "");
+          const o = indexedDB.open(i, 1);
           (o.onerror = e.onError),
-            (o.onsuccess = function () {
-              (((t = o.result).onerror = e.onError), t.setVersion)
-                ? 1 !== t.version
-                  ? (t.setVersion(1).onsuccess = function () {
-                      r(t), s();
-                    })
-                  : s()
-                : s();
-            }),
-            (o.onupgradeneeded = function (e) {
-              r(e.target.result);
-            });
-        } else
+          (o.onsuccess = function () {
+            (((t = o.result).onerror = e.onError), t.setVersion)
+              ? t.version !== 1
+                ? (t.setVersion(1).onsuccess = function () {
+                    r(t), s();
+                  })
+                : s()
+              : s();
+          }),
+          (o.onupgradeneeded = function (e) {
+            r(e.target.result);
+          });
+        }
+        else {
           console.error("IndexedDB API are not available in this browser.");
+        }
         function r(t) {
           t.createObjectStore(e.dataStoreName);
         }
         function s() {
-          var i = t.transaction([e.dataStoreName], "readwrite");
+          const i = t.transaction([e.dataStoreName], "readwrite");
           function o(t) {
             i.objectStore(e.dataStoreName).get(t).onsuccess = function (i) {
               e.callback && e.callback(i.target.result, t);
             };
           }
-          e.videoBlob &&
-            i.objectStore(e.dataStoreName).put(e.videoBlob, "videoBlob"),
-            e.gifBlob &&
-              i.objectStore(e.dataStoreName).put(e.gifBlob, "gifBlob"),
-            e.audioBlob &&
-              i.objectStore(e.dataStoreName).put(e.audioBlob, "audioBlob"),
-            o("audioBlob"),
-            o("videoBlob"),
-            o("gifBlob");
+          e.videoBlob
+          && i.objectStore(e.dataStoreName).put(e.videoBlob, "videoBlob"),
+          e.gifBlob
+          && i.objectStore(e.dataStoreName).put(e.gifBlob, "gifBlob"),
+          e.audioBlob
+          && i.objectStore(e.dataStoreName).put(e.audioBlob, "audioBlob"),
+          o("audioBlob"),
+          o("videoBlob"),
+          o("gifBlob");
         }
       },
-      Fetch: function (e) {
+      Fetch(e) {
         return (this.callback = e), this.init(), this;
       },
-      Store: function (e) {
+      Store(e) {
         return (
           (this.audioBlob = e.audioBlob),
           (this.videoBlob = e.videoBlob),
@@ -3626,208 +3764,213 @@
           this
         );
       },
-      onError: function (e) {
+      onError(e) {
         console.error(JSON.stringify(e, null, "\t"));
       },
       dataStoreName: "recordRTC",
-      dbName: null,
+      dbName: null
     };
     function D(e, t) {
-      if ("undefined" == typeof GIFEncoder) {
-        var i = document.createElement("script");
+      if (typeof GIFEncoder == "undefined") {
+        const i = document.createElement("script");
         (i.src = "https://www.webrtc-experiment.com/gif-recorder.js"),
-          (document.body || document.documentElement).appendChild(i);
+        (document.body || document.documentElement).appendChild(i);
       }
       t = t || {};
-      var o =
-        e instanceof CanvasRenderingContext2D || e instanceof HTMLCanvasElement;
+      const o
+        = e instanceof CanvasRenderingContext2D || e instanceof HTMLCanvasElement;
       (this.record = function () {
-        "undefined" != typeof GIFEncoder && A
-          ? (o ||
-              (t.width || (t.width = c.offsetWidth || 320),
-              t.height || (t.height = c.offsetHeight || 240),
-              t.video || (t.video = { width: t.width, height: t.height }),
-              t.canvas || (t.canvas = { width: t.width, height: t.height }),
-              (s.width = t.canvas.width || 320),
-              (s.height = t.canvas.height || 240),
-              (c.width = t.video.width || 320),
-              (c.height = t.video.height || 240)),
+        typeof GIFEncoder != "undefined" && A
+          ? (o
+            || (t.width || (t.width = c.offsetWidth || 320),
+            t.height || (t.height = c.offsetHeight || 240),
+            t.video || (t.video = { width: t.width, height: t.height }),
+            t.canvas || (t.canvas = { width: t.width, height: t.height }),
+            (s.width = t.canvas.width || 320),
+            (s.height = t.canvas.height || 240),
+            (c.width = t.video.width || 320),
+            (c.height = t.video.height || 240)),
             (u = new GIFEncoder()).setRepeat(0),
             u.setDelay(t.frameRate || 200),
             u.setQuality(t.quality || 10),
             u.start(),
-            "function" == typeof t.onGifRecordingStarted &&
-              t.onGifRecordingStarted(),
+            typeof t.onGifRecordingStarted == "function"
+            && t.onGifRecordingStarted(),
             (h = n(function e(i) {
               if (!0 !== p.clearedRecordedData) {
-                if (r)
-                  return setTimeout(function () {
+                if (r) {
+                  return setTimeout(() => {
                     e(i);
                   }, 100);
+                }
                 (h = n(e)),
-                  void 0 === typeof l && (l = i),
-                  i - l < 90 ||
-                    (!o && c.paused && c.play(),
-                    o || a.drawImage(c, 0, 0, s.width, s.height),
-                    t.onGifPreview && t.onGifPreview(s.toDataURL("image/png")),
-                    u.addFrame(a),
-                    (l = i));
+                void 0 === typeof l && (l = i),
+                i - l < 90
+                || (!o && c.paused && c.play(),
+                o || a.drawImage(c, 0, 0, s.width, s.height),
+                t.onGifPreview && t.onGifPreview(s.toDataURL("image/png")),
+                u.addFrame(a),
+                (l = i));
               }
             })),
             t.initCallback && t.initCallback())
           : setTimeout(p.record, 1e3);
       }),
-        (this.stop = function (e) {
-          (e = e || function () {}),
-            h && d(h),
-            (this.blob = new Blob([new Uint8Array(u.stream().bin)], {
-              type: "image/gif",
-            })),
-            e(this.blob),
-            (u.stream().bin = []);
-        });
+      (this.stop = function (e) {
+        (e = e || function () {}),
+        h && d(h),
+        (this.blob = new Blob([new Uint8Array(u.stream().bin)], {
+          type: "image/gif"
+        })),
+        e(this.blob),
+        (u.stream().bin = []);
+      });
       var r = !1;
       (this.pause = function () {
         r = !0;
       }),
-        (this.resume = function () {
-          r = !1;
-        }),
-        (this.clearRecordedData = function () {
-          (p.clearedRecordedData = !0), u && (u.stream().bin = []);
-        }),
-        (this.name = "GifRecorder"),
-        (this.toString = function () {
-          return this.name;
-        });
-      var s = document.createElement("canvas"),
-        a = s.getContext("2d");
-      o &&
-        (e instanceof CanvasRenderingContext2D
-          ? (s = (a = e).canvas)
-          : e instanceof HTMLCanvasElement &&
-            ((a = e.getContext("2d")), (s = e)));
+      (this.resume = function () {
+        r = !1;
+      }),
+      (this.clearRecordedData = function () {
+        (p.clearedRecordedData = !0), u && (u.stream().bin = []);
+      }),
+      (this.name = "GifRecorder"),
+      (this.toString = function () {
+        return this.name;
+      });
+      var s = document.createElement("canvas");
+      var a = s.getContext("2d");
+      o
+      && (e instanceof CanvasRenderingContext2D
+        ? (s = (a = e).canvas)
+        : e instanceof HTMLCanvasElement
+          && ((a = e.getContext("2d")), (s = e)));
       var A = !0;
       if (!o) {
         var c = document.createElement("video");
         (c.muted = !0),
-          (c.autoplay = !0),
-          (c.playsInline = !0),
-          (A = !1),
-          (c.onloadedmetadata = function () {
-            A = !0;
-          }),
-          S(e, c),
-          c.play();
+        (c.autoplay = !0),
+        (c.playsInline = !0),
+        (A = !1),
+        (c.onloadedmetadata = function () {
+          A = !0;
+        }),
+        S(e, c),
+        c.play();
       }
-      var l,
-        u,
-        h = null,
-        p = this;
+      let l;
+      let u;
+      var h = null;
+      var p = this;
     }
     function j(e, t) {
       t = t || "multi-streams-mixer";
-      var i = [],
-        o = !1,
-        r = document.createElement("canvas"),
-        s = r.getContext("2d");
+      let i = [];
+      let o = !1;
+      const r = document.createElement("canvas");
+      const s = r.getContext("2d");
       (r.style.opacity = 0),
-        (r.style.position = "absolute"),
-        (r.style.zIndex = -1),
-        (r.style.top = "-1000em"),
-        (r.style.left = "-1000em"),
-        (r.className = t),
-        (document.body || document.documentElement).appendChild(r),
-        (this.disableLogs = !1),
-        (this.frameInterval = 10),
-        (this.width = 360),
-        (this.height = 240),
-        (this.useGainNode = !0);
-      var a = this,
-        n = window.AudioContext;
-      void 0 === n &&
-        ("undefined" != typeof webkitAudioContext && (n = webkitAudioContext),
-        "undefined" != typeof mozAudioContext && (n = mozAudioContext));
-      var A = window.URL;
-      void 0 === A && "undefined" != typeof webkitURL && (A = webkitURL),
-        "undefined" != typeof navigator &&
-          void 0 === navigator.getUserMedia &&
-          (void 0 !== navigator.webkitGetUserMedia &&
-            (navigator.getUserMedia = navigator.webkitGetUserMedia),
-          void 0 !== navigator.mozGetUserMedia &&
-            (navigator.getUserMedia = navigator.mozGetUserMedia));
-      var d = window.MediaStream;
-      void 0 === d &&
-        "undefined" != typeof webkitMediaStream &&
-        (d = webkitMediaStream),
-        void 0 !== d &&
-          void 0 === d.prototype.stop &&
-          (d.prototype.stop = function () {
-            this.getTracks().forEach(function (e) {
-              e.stop();
-            });
+      (r.style.position = "absolute"),
+      (r.style.zIndex = -1),
+      (r.style.top = "-1000em"),
+      (r.style.left = "-1000em"),
+      (r.className = t),
+      (document.body || document.documentElement).appendChild(r),
+      (this.disableLogs = !1),
+      (this.frameInterval = 10),
+      (this.width = 360),
+      (this.height = 240),
+      (this.useGainNode = !0);
+      const a = this;
+      let n = window.AudioContext;
+      void 0 === n
+        && (typeof webkitAudioContext != "undefined" && (n = webkitAudioContext),
+        typeof mozAudioContext != "undefined" && (n = mozAudioContext));
+      let A = window.URL;
+      void 0 === A && typeof webkitURL != "undefined" && (A = webkitURL),
+      typeof navigator != "undefined"
+      && void 0 === navigator.getUserMedia
+      && (void 0 !== navigator.webkitGetUserMedia
+        && (navigator.getUserMedia = navigator.webkitGetUserMedia),
+      void 0 !== navigator.mozGetUserMedia
+        && (navigator.getUserMedia = navigator.mozGetUserMedia));
+      let d = window.MediaStream;
+      void 0 === d
+        && typeof webkitMediaStream != "undefined"
+        && (d = webkitMediaStream),
+      void 0 !== d
+        && void 0 === d.prototype.stop
+        && (d.prototype.stop = function () {
+          this.getTracks().forEach((e) => {
+            e.stop();
           });
-      var c = {};
+        });
+      const c = {};
       function l() {
         if (!o) {
-          var e = i.length,
-            t = !1,
-            s = [];
+          const e = i.length;
+          let t = !1;
+          const s = [];
           if (
-            (i.forEach(function (e) {
+            (i.forEach((e) => {
               e.stream || (e.stream = {}),
-                e.stream.fullcanvas ? (t = e) : s.push(e);
+              e.stream.fullcanvas ? (t = e) : s.push(e);
             }),
             t)
-          )
+          ) {
             (r.width = t.stream.width), (r.height = t.stream.height);
+          }
           else if (s.length) {
             r.width = e > 1 ? 2 * s[0].width : s[0].width;
-            var n = 1;
-            (3 !== e && 4 !== e) || (n = 2),
-              (5 !== e && 6 !== e) || (n = 3),
-              (7 !== e && 8 !== e) || (n = 4),
-              (9 !== e && 10 !== e) || (n = 5),
-              (r.height = s[0].height * n);
-          } else (r.width = a.width || 360), (r.height = a.height || 240);
+            let n = 1;
+            (e !== 3 && e !== 4) || (n = 2),
+            (e !== 5 && e !== 6) || (n = 3),
+            (e !== 7 && e !== 8) || (n = 4),
+            (e !== 9 && e !== 10) || (n = 5),
+            (r.height = s[0].height * n);
+          }
+          else {
+            (r.width = a.width || 360), (r.height = a.height || 240);
+          }
           t && t instanceof HTMLVideoElement && u(t),
-            s.forEach(function (e, t) {
-              u(e, t);
-            }),
-            setTimeout(l, a.frameInterval);
+          s.forEach((e, t) => {
+            u(e, t);
+          }),
+          setTimeout(l, a.frameInterval);
         }
       }
       function u(e, t) {
         if (!o) {
-          var i = 0,
-            r = 0,
-            a = e.width,
-            n = e.height;
-          1 === t && (i = e.width),
-            2 === t && (r = e.height),
-            3 === t && ((i = e.width), (r = e.height)),
-            4 === t && (r = 2 * e.height),
-            5 === t && ((i = e.width), (r = 2 * e.height)),
-            6 === t && (r = 3 * e.height),
-            7 === t && ((i = e.width), (r = 3 * e.height)),
-            void 0 !== e.stream.left && (i = e.stream.left),
-            void 0 !== e.stream.top && (r = e.stream.top),
-            void 0 !== e.stream.width && (a = e.stream.width),
-            void 0 !== e.stream.height && (n = e.stream.height),
-            s.drawImage(e, i, r, a, n),
-            "function" == typeof e.stream.onRender &&
-              e.stream.onRender(s, i, r, a, n, t);
+          let i = 0;
+          let r = 0;
+          let a = e.width;
+          let n = e.height;
+          t === 1 && (i = e.width),
+          t === 2 && (r = e.height),
+          t === 3 && ((i = e.width), (r = e.height)),
+          t === 4 && (r = 2 * e.height),
+          t === 5 && ((i = e.width), (r = 2 * e.height)),
+          t === 6 && (r = 3 * e.height),
+          t === 7 && ((i = e.width), (r = 3 * e.height)),
+          void 0 !== e.stream.left && (i = e.stream.left),
+          void 0 !== e.stream.top && (r = e.stream.top),
+          void 0 !== e.stream.width && (a = e.stream.width),
+          void 0 !== e.stream.height && (n = e.stream.height),
+          s.drawImage(e, i, r, a, n),
+          typeof e.stream.onRender == "function"
+          && e.stream.onRender(s, i, r, a, n, t);
         }
       }
       function h(e) {
-        var i = document.createElement("video");
+        const i = document.createElement("video");
         return (
           (function (e, t) {
             "srcObject" in t
               ? (t.srcObject = e)
               : "mozSrcObject" in t
-              ? (t.mozSrcObject = e)
-              : (t.srcObject = e);
+                ? (t.mozSrcObject = e)
+                : (t.srcObject = e);
           })(e, i),
           (i.className = t),
           (i.muted = !0),
@@ -3840,507 +3983,526 @@
       }
       function p(t) {
         (i = []),
-          (t = t || e).forEach(function (e) {
-            if (
-              e.getTracks().filter(function (e) {
-                return "video" === e.kind;
-              }).length
-            ) {
-              var t = h(e);
-              (t.stream = e), i.push(t);
-            }
-          });
+        (t = t || e).forEach((e) => {
+          if (
+            e.getTracks().filter((e) => {
+              return e.kind === "video";
+            }).length
+          ) {
+            const t = h(e);
+            (t.stream = e), i.push(t);
+          }
+        });
       }
       void 0 !== n
         ? (c.AudioContext = n)
-        : "undefined" != typeof webkitAudioContext &&
-          (c.AudioContext = webkitAudioContext),
-        (this.startDrawingFrames = function () {
-          l();
+        : typeof webkitAudioContext != "undefined"
+          && (c.AudioContext = webkitAudioContext),
+      (this.startDrawingFrames = function () {
+        l();
+      }),
+      (this.appendStreams = function (t) {
+        if (!t) throw "First parameter is required.";
+        Array.isArray(t) || (t = [t]),
+        t.forEach((t) => {
+          const o = new d();
+          if (
+            t.getTracks().filter((e) => {
+              return e.kind === "video";
+            }).length
+          ) {
+            const r = h(t);
+            (r.stream = t),
+            i.push(r),
+            o.addTrack(
+              t.getTracks().filter((e) => {
+                return e.kind === "video";
+              })[0]
+            );
+          }
+          if (
+            t.getTracks().filter((e) => {
+              return e.kind === "audio";
+            }).length
+          ) {
+            const s = a.audioContext.createMediaStreamSource(t);
+            (a.audioDestination
+                  = a.audioContext.createMediaStreamDestination()),
+            s.connect(a.audioDestination),
+            o.addTrack(
+              a.audioDestination.stream.getTracks().filter((e) => {
+                return e.kind === "audio";
+              })[0]
+            );
+          }
+          e.push(o);
+        });
+      }),
+      (this.releaseStreams = function () {
+        (i = []),
+        (o = !0),
+        a.gainNode && (a.gainNode.disconnect(), (a.gainNode = null)),
+        a.audioSources.length
+        && (a.audioSources.forEach((e) => {
+          e.disconnect();
         }),
-        (this.appendStreams = function (t) {
-          if (!t) throw "First parameter is required.";
-          t instanceof Array || (t = [t]),
-            t.forEach(function (t) {
-              var o = new d();
-              if (
-                t.getTracks().filter(function (e) {
-                  return "video" === e.kind;
-                }).length
-              ) {
-                var r = h(t);
-                (r.stream = t),
-                  i.push(r),
-                  o.addTrack(
-                    t.getTracks().filter(function (e) {
-                      return "video" === e.kind;
-                    })[0]
-                  );
-              }
-              if (
-                t.getTracks().filter(function (e) {
-                  return "audio" === e.kind;
-                }).length
-              ) {
-                var s = a.audioContext.createMediaStreamSource(t);
-                (a.audioDestination =
-                  a.audioContext.createMediaStreamDestination()),
-                  s.connect(a.audioDestination),
-                  o.addTrack(
-                    a.audioDestination.stream.getTracks().filter(function (e) {
-                      return "audio" === e.kind;
-                    })[0]
-                  );
-              }
-              e.push(o);
-            });
-        }),
-        (this.releaseStreams = function () {
-          (i = []),
-            (o = !0),
-            a.gainNode && (a.gainNode.disconnect(), (a.gainNode = null)),
-            a.audioSources.length &&
-              (a.audioSources.forEach(function (e) {
-                e.disconnect();
-              }),
-              (a.audioSources = [])),
-            a.audioDestination &&
-              (a.audioDestination.disconnect(), (a.audioDestination = null)),
-            a.audioContext && a.audioContext.close(),
-            (a.audioContext = null),
-            s.clearRect(0, 0, r.width, r.height),
-            r.stream && (r.stream.stop(), (r.stream = null));
-        }),
-        (this.resetVideoStreams = function (e) {
-          !e || e instanceof Array || (e = [e]), p(e);
-        }),
-        (this.name = "MultiStreamsMixer"),
-        (this.toString = function () {
-          return this.name;
-        }),
-        (this.getMixedStream = function () {
-          o = !1;
-          var t = (function () {
-              var e;
-              p(),
-                "captureStream" in r
-                  ? (e = r.captureStream())
-                  : "mozCaptureStream" in r
-                  ? (e = r.mozCaptureStream())
-                  : a.disableLogs ||
-                    console.error(
-                      "Upgrade to latest Chrome or otherwise enable this flag: chrome://flags/#enable-experimental-web-platform-features"
-                    );
-              var t = new d();
-              return (
-                e
-                  .getTracks()
-                  .filter(function (e) {
-                    return "video" === e.kind;
-                  })
-                  .forEach(function (e) {
-                    t.addTrack(e);
-                  }),
-                (r.stream = t),
-                t
-              );
-            })(),
-            i = (function () {
-              c.AudioContextConstructor ||
-                (c.AudioContextConstructor = new c.AudioContext());
-              (a.audioContext = c.AudioContextConstructor),
-                (a.audioSources = []),
-                !0 === a.useGainNode &&
-                  ((a.gainNode = a.audioContext.createGain()),
-                  a.gainNode.connect(a.audioContext.destination),
-                  (a.gainNode.gain.value = 0));
-              var t = 0;
-              if (
-                (e.forEach(function (e) {
-                  if (
-                    e.getTracks().filter(function (e) {
-                      return "audio" === e.kind;
-                    }).length
-                  ) {
-                    t++;
-                    var i = a.audioContext.createMediaStreamSource(e);
-                    !0 === a.useGainNode && i.connect(a.gainNode),
-                      a.audioSources.push(i);
-                  }
-                }),
-                !t)
-              )
-                return;
-              return (
-                (a.audioDestination =
-                  a.audioContext.createMediaStreamDestination()),
-                a.audioSources.forEach(function (e) {
-                  e.connect(a.audioDestination);
-                }),
-                a.audioDestination.stream
-              );
-            })();
+        (a.audioSources = [])),
+        a.audioDestination
+        && (a.audioDestination.disconnect(), (a.audioDestination = null)),
+        a.audioContext && a.audioContext.close(),
+        (a.audioContext = null),
+        s.clearRect(0, 0, r.width, r.height),
+        r.stream && (r.stream.stop(), (r.stream = null));
+      }),
+      (this.resetVideoStreams = function (e) {
+        !e || Array.isArray(e) || (e = [e]), p(e);
+      }),
+      (this.name = "MultiStreamsMixer"),
+      (this.toString = function () {
+        return this.name;
+      }),
+      (this.getMixedStream = function () {
+        o = !1;
+        const t = (function () {
+          let e;
+          p(),
+          "captureStream" in r
+            ? (e = r.captureStream())
+            : "mozCaptureStream" in r
+              ? (e = r.mozCaptureStream())
+              : a.disableLogs
+                || console.error(
+                  "Upgrade to latest Chrome or otherwise enable this flag: chrome://flags/#enable-experimental-web-platform-features"
+                );
+          const t = new d();
           return (
-            i &&
-              i
-                .getTracks()
-                .filter(function (e) {
-                  return "audio" === e.kind;
-                })
-                .forEach(function (e) {
-                  t.addTrack(e);
-                }),
-            e.forEach(function (e) {
-              e.fullcanvas;
-            }),
+            e
+              .getTracks()
+              .filter((e) => {
+                return e.kind === "video";
+              })
+              .forEach((e) => {
+                t.addTrack(e);
+              }),
+            (r.stream = t),
             t
           );
-        });
+        })();
+        const i = (function () {
+          c.AudioContextConstructor
+          || (c.AudioContextConstructor = new c.AudioContext());
+          (a.audioContext = c.AudioContextConstructor),
+          (a.audioSources = []),
+          !0 === a.useGainNode
+          && ((a.gainNode = a.audioContext.createGain()),
+          a.gainNode.connect(a.audioContext.destination),
+          (a.gainNode.gain.value = 0));
+          let t = 0;
+          if (
+            (e.forEach((e) => {
+              if (
+                e.getTracks().filter((e) => {
+                  return e.kind === "audio";
+                }).length
+              ) {
+                t++;
+                const i = a.audioContext.createMediaStreamSource(e);
+                !0 === a.useGainNode && i.connect(a.gainNode),
+                a.audioSources.push(i);
+              }
+            }),
+            !t)
+          ) {
+            return;
+          }
+          return (
+            (a.audioDestination
+                  = a.audioContext.createMediaStreamDestination()),
+            a.audioSources.forEach((e) => {
+              e.connect(a.audioDestination);
+            }),
+            a.audioDestination.stream
+          );
+        })();
+        return (
+          i
+          && i
+            .getTracks()
+            .filter((e) => {
+              return e.kind === "audio";
+            })
+            .forEach((e) => {
+              t.addTrack(e);
+            }),
+          e.forEach((e) => {
+            e.fullcanvas;
+          }),
+          t
+        );
+      });
     }
     function L(e, t) {
       e = e || [];
-      var i,
-        o,
-        r = this;
+      let i;
+      let o;
+      const r = this;
       (t = t || {
         elementClass: "multi-streams-mixer",
         mimeType: "video/webm",
-        video: { width: 360, height: 240 },
+        video: { width: 360, height: 240 }
       }).frameInterval || (t.frameInterval = 10),
-        t.video || (t.video = {}),
-        t.video.width || (t.video.width = 360),
-        t.video.height || (t.video.height = 240),
-        (this.record = function () {
-          var r;
-          (i = new j(e, t.elementClass || "multi-streams-mixer")),
-            ((r = []),
-            e.forEach(function (e) {
-              w(e, "video").forEach(function (e) {
-                r.push(e);
-              });
-            }),
-            r).length &&
-              ((i.frameInterval = t.frameInterval || 10),
-              (i.width = t.video.width || 360),
-              (i.height = t.video.height || 240),
-              i.startDrawingFrames()),
-            t.previewStream &&
-              "function" == typeof t.previewStream &&
-              t.previewStream(i.getMixedStream()),
-            (o = new C(i.getMixedStream(), t)).record();
+      t.video || (t.video = {}),
+      t.video.width || (t.video.width = 360),
+      t.video.height || (t.video.height = 240),
+      (this.record = function () {
+        let r;
+        (i = new j(e, t.elementClass || "multi-streams-mixer")),
+        ((r = []),
+        e.forEach((e) => {
+          w(e, "video").forEach((e) => {
+            r.push(e);
+          });
         }),
-        (this.stop = function (e) {
-          o &&
-            o.stop(function (t) {
-              (r.blob = t), e(t), r.clearRecordedData();
-            });
-        }),
-        (this.pause = function () {
-          o && o.pause();
-        }),
-        (this.resume = function () {
-          o && o.resume();
-        }),
-        (this.clearRecordedData = function () {
-          o && (o.clearRecordedData(), (o = null)),
-            i && (i.releaseStreams(), (i = null));
-        }),
-        (this.addStreams = function (r) {
-          if (!r) throw "First parameter is required.";
-          r instanceof Array || (r = [r]),
-            e.concat(r),
-            o &&
-              i &&
-              (i.appendStreams(r),
-              t.previewStream &&
-                "function" == typeof t.previewStream &&
-                t.previewStream(i.getMixedStream()));
-        }),
-        (this.resetVideoStreams = function (e) {
-          i && (!e || e instanceof Array || (e = [e]), i.resetVideoStreams(e));
-        }),
-        (this.getMixer = function () {
-          return i;
-        }),
-        (this.name = "MultiStreamRecorder"),
-        (this.toString = function () {
-          return this.name;
+        r).length
+        && ((i.frameInterval = t.frameInterval || 10),
+        (i.width = t.video.width || 360),
+        (i.height = t.video.height || 240),
+        i.startDrawingFrames()),
+        t.previewStream
+        && typeof t.previewStream == "function"
+        && t.previewStream(i.getMixedStream()),
+        (o = new C(i.getMixedStream(), t)).record();
+      }),
+      (this.stop = function (e) {
+        o
+        && o.stop((t) => {
+          (r.blob = t), e(t), r.clearRecordedData();
         });
+      }),
+      (this.pause = function () {
+        o && o.pause();
+      }),
+      (this.resume = function () {
+        o && o.resume();
+      }),
+      (this.clearRecordedData = function () {
+        o && (o.clearRecordedData(), (o = null)),
+        i && (i.releaseStreams(), (i = null));
+      }),
+      (this.addStreams = function (r) {
+        if (!r) throw "First parameter is required.";
+        Array.isArray(r) || (r = [r]),
+        e.concat(r),
+        o
+        && i
+        && (i.appendStreams(r),
+        t.previewStream
+        && typeof t.previewStream == "function"
+        && t.previewStream(i.getMixedStream()));
+      }),
+      (this.resetVideoStreams = function (e) {
+        i && (!e || Array.isArray(e) || (e = [e]), i.resetVideoStreams(e));
+      }),
+      (this.getMixer = function () {
+        return i;
+      }),
+      (this.name = "MultiStreamRecorder"),
+      (this.toString = function () {
+        return this.name;
+      });
     }
     function F(e, t) {
-      var i, o, r;
+      let i, o, r;
       function s() {
         return new ReadableStream({
-          start: function (o) {
-            var r = document.createElement("canvas"),
-              s = document.createElement("video"),
-              a = !0;
+          start(o) {
+            const r = document.createElement("canvas");
+            const s = document.createElement("video");
+            let a = !0;
             (s.srcObject = e),
-              (s.muted = !0),
-              (s.height = t.height),
-              (s.width = t.width),
-              (s.volume = 0),
-              (s.onplaying = function () {
-                (r.width = t.width), (r.height = t.height);
-                var e = r.getContext("2d"),
-                  n = 1e3 / t.frameRate,
-                  A = setInterval(function () {
-                    if (
-                      (i && (clearInterval(A), o.close()),
-                      a &&
-                        ((a = !1),
-                        t.onVideoProcessStarted && t.onVideoProcessStarted()),
-                      e.drawImage(s, 0, 0),
-                      "closed" !== o._controlledReadableStream.state)
-                    )
-                      try {
-                        o.enqueue(e.getImageData(0, 0, t.width, t.height));
-                      } catch (e) {}
-                  }, n);
-              }),
-              s.play();
-          },
+            (s.muted = !0),
+            (s.height = t.height),
+            (s.width = t.width),
+            (s.volume = 0),
+            (s.onplaying = function () {
+              (r.width = t.width), (r.height = t.height);
+              const e = r.getContext("2d");
+              const n = 1e3 / t.frameRate;
+              var A = setInterval(() => {
+                if (
+                  (i && (clearInterval(A), o.close()),
+                  a
+                  && ((a = !1),
+                  t.onVideoProcessStarted && t.onVideoProcessStarted()),
+                  e.drawImage(s, 0, 0),
+                  o._controlledReadableStream.state !== "closed")
+                ) {
+                  try {
+                    o.enqueue(e.getImageData(0, 0, t.width, t.height));
+                  }
+                  catch (e) {}
+                }
+              }, n);
+            }),
+            s.play();
+          }
         });
       }
       function a(e, A) {
-        if (!t.workerPath && !A)
+        if (!t.workerPath && !A) {
           return (
             (i = !1),
             void fetch(
               "https://unpkg.com/webm-wasm@latest/dist/webm-worker.js"
-            ).then(function (t) {
-              t.arrayBuffer().then(function (t) {
+            ).then((t) => {
+              t.arrayBuffer().then((t) => {
                 a(e, t);
               });
             })
           );
+        }
         if (!t.workerPath && A instanceof ArrayBuffer) {
-          var d = new Blob([A], { type: "text/javascript" });
+          const d = new Blob([A], { type: "text/javascript" });
           t.workerPath = l.createObjectURL(d);
         }
         t.workerPath || console.error("workerPath parameter is missing."),
-          (o = new Worker(t.workerPath)).postMessage(
-            t.webAssemblyPath ||
-              "https://unpkg.com/webm-wasm@latest/dist/webm-wasm.wasm"
-          ),
-          o.addEventListener("message", function (e) {
-            "READY" === e.data
-              ? (o.postMessage({
-                  width: t.width,
-                  height: t.height,
-                  bitrate: t.bitrate || 1200,
-                  timebaseDen: t.frameRate || 30,
-                  realtime: t.realtime,
-                }),
-                s().pipeTo(
-                  new WritableStream({
-                    write: function (e) {
-                      i
-                        ? console.error("Got image, but recorder is finished!")
-                        : o.postMessage(e.data.buffer, [e.data.buffer]);
-                    },
-                  })
-                ))
-              : e.data && (r || n.push(e.data));
-          });
-      }
-      ("undefined" != typeof ReadableStream &&
-        "undefined" != typeof WritableStream) ||
-        console.error(
-          "Following polyfill is strongly recommended: https://unpkg.com/@mattiasbuelens/web-streams-polyfill/dist/polyfill.min.js"
+        (o = new Worker(t.workerPath)).postMessage(
+          t.webAssemblyPath
+          || "https://unpkg.com/webm-wasm@latest/dist/webm-wasm.wasm"
         ),
-        ((t = t || {}).width = t.width || 640),
-        (t.height = t.height || 480),
-        (t.frameRate = t.frameRate || 30),
-        (t.bitrate = t.bitrate || 1200),
-        (t.realtime = t.realtime || !0),
-        (this.record = function () {
-          (n = []),
-            (r = !1),
-            (this.blob = null),
-            a(e),
-            "function" == typeof t.initCallback && t.initCallback();
-        }),
-        (this.pause = function () {
-          r = !0;
-        }),
-        (this.resume = function () {
-          r = !1;
+        o.addEventListener("message", (e) => {
+          e.data === "READY"
+            ? (o.postMessage({
+                width: t.width,
+                height: t.height,
+                bitrate: t.bitrate || 1200,
+                timebaseDen: t.frameRate || 30,
+                realtime: t.realtime
+              }),
+              s().pipeTo(
+                new WritableStream({
+                  write(e) {
+                    i
+                      ? console.error("Got image, but recorder is finished!")
+                      : o.postMessage(e.data.buffer, [e.data.buffer]);
+                  }
+                })
+              ))
+            : e.data && (r || n.push(e.data));
         });
+      }
+      (typeof ReadableStream != "undefined"
+        && typeof WritableStream != "undefined")
+      || console.error(
+        "Following polyfill is strongly recommended: https://unpkg.com/@mattiasbuelens/web-streams-polyfill/dist/polyfill.min.js"
+      ),
+      ((t = t || {}).width = t.width || 640),
+      (t.height = t.height || 480),
+      (t.frameRate = t.frameRate || 30),
+      (t.bitrate = t.bitrate || 1200),
+      (t.realtime = t.realtime || !0),
+      (this.record = function () {
+        (n = []),
+        (r = !1),
+        (this.blob = null),
+        a(e),
+        typeof t.initCallback == "function" && t.initCallback();
+      }),
+      (this.pause = function () {
+        r = !0;
+      }),
+      (this.resume = function () {
+        r = !1;
+      });
       var n = [];
       (this.stop = function (e) {
         i = !0;
-        var t = this;
+        const t = this;
         !(function (e) {
           o
-            ? (o.addEventListener("message", function (t) {
-                null === t.data && (o.terminate(), (o = null), e && e());
+            ? (o.addEventListener("message", (t) => {
+                t.data === null && (o.terminate(), (o = null), e && e());
               }),
               o.postMessage(null))
             : e && e();
-        })(function () {
+        })(() => {
           (t.blob = new Blob(n, { type: "video/webm" })), e(t.blob);
         });
       }),
-        (this.name = "WebAssemblyRecorder"),
-        (this.toString = function () {
-          return this.name;
-        }),
-        (this.clearRecordedData = function () {
-          (n = []), (r = !1), (this.blob = null);
-        }),
-        (this.blob = null);
+      (this.name = "WebAssemblyRecorder"),
+      (this.toString = function () {
+        return this.name;
+      }),
+      (this.clearRecordedData = function () {
+        (n = []), (r = !1), (this.blob = null);
+      }),
+      (this.blob = null);
     }
     (i.DiskStorage = x),
-      (i.GifRecorder = D),
-      (i.MultiStreamRecorder = L),
-      (i.RecordRTCPromisesHandler = function (e, t) {
-        if (!this) throw 'Use "new RecordRTCPromisesHandler()"';
-        if (void 0 === e) throw 'First argument "MediaStream" is required.';
-        var o = this;
-        (o.recordRTC = new i(e, t)),
-          (this.startRecording = function () {
-            return new Promise(function (e, t) {
-              try {
-                o.recordRTC.startRecording(), e();
-              } catch (e) {
-                t(e);
-              }
-            });
-          }),
-          (this.stopRecording = function () {
-            return new Promise(function (e, t) {
-              try {
-                o.recordRTC.stopRecording(function (i) {
-                  (o.blob = o.recordRTC.getBlob()),
-                    o.blob && o.blob.size ? e(i) : t("Empty blob.", o.blob);
-                });
-              } catch (e) {
-                t(e);
-              }
-            });
-          }),
-          (this.pauseRecording = function () {
-            return new Promise(function (e, t) {
-              try {
-                o.recordRTC.pauseRecording(), e();
-              } catch (e) {
-                t(e);
-              }
-            });
-          }),
-          (this.resumeRecording = function () {
-            return new Promise(function (e, t) {
-              try {
-                o.recordRTC.resumeRecording(), e();
-              } catch (e) {
-                t(e);
-              }
-            });
-          }),
-          (this.getDataURL = function (e) {
-            return new Promise(function (e, t) {
-              try {
-                o.recordRTC.getDataURL(function (t) {
-                  e(t);
-                });
-              } catch (e) {
-                t(e);
-              }
-            });
-          }),
-          (this.getBlob = function () {
-            return new Promise(function (e, t) {
-              try {
-                e(o.recordRTC.getBlob());
-              } catch (e) {
-                t(e);
-              }
-            });
-          }),
-          (this.getInternalRecorder = function () {
-            return new Promise(function (e, t) {
-              try {
-                e(o.recordRTC.getInternalRecorder());
-              } catch (e) {
-                t(e);
-              }
-            });
-          }),
-          (this.reset = function () {
-            return new Promise(function (e, t) {
-              try {
-                e(o.recordRTC.reset());
-              } catch (e) {
-                t(e);
-              }
-            });
-          }),
-          (this.destroy = function () {
-            return new Promise(function (e, t) {
-              try {
-                e(o.recordRTC.destroy());
-              } catch (e) {
-                t(e);
-              }
-            });
-          }),
-          (this.getState = function () {
-            return new Promise(function (e, t) {
-              try {
-                e(o.recordRTC.getState());
-              } catch (e) {
-                t(e);
-              }
-            });
-          }),
-          (this.blob = null),
-          (this.version = "5.6.2");
+    (i.GifRecorder = D),
+    (i.MultiStreamRecorder = L),
+    (i.RecordRTCPromisesHandler = function (e, t) {
+      if (!this) throw 'Use "new RecordRTCPromisesHandler()"';
+      if (void 0 === e) throw 'First argument "MediaStream" is required.';
+      const o = this;
+      (o.recordRTC = new i(e, t)),
+      (this.startRecording = function () {
+        return new Promise((e, t) => {
+          try {
+            o.recordRTC.startRecording(), e();
+          }
+          catch (e) {
+            t(e);
+          }
+        });
       }),
-      (i.WebAssemblyRecorder = F);
+      (this.stopRecording = function () {
+        return new Promise((e, t) => {
+          try {
+            o.recordRTC.stopRecording((i) => {
+              (o.blob = o.recordRTC.getBlob()),
+              o.blob && o.blob.size ? e(i) : t("Empty blob.", o.blob);
+            });
+          }
+          catch (e) {
+            t(e);
+          }
+        });
+      }),
+      (this.pauseRecording = function () {
+        return new Promise((e, t) => {
+          try {
+            o.recordRTC.pauseRecording(), e();
+          }
+          catch (e) {
+            t(e);
+          }
+        });
+      }),
+      (this.resumeRecording = function () {
+        return new Promise((e, t) => {
+          try {
+            o.recordRTC.resumeRecording(), e();
+          }
+          catch (e) {
+            t(e);
+          }
+        });
+      }),
+      (this.getDataURL = function (e) {
+        return new Promise((e, t) => {
+          try {
+            o.recordRTC.getDataURL((t) => {
+              e(t);
+            });
+          }
+          catch (e) {
+            t(e);
+          }
+        });
+      }),
+      (this.getBlob = function () {
+        return new Promise((e, t) => {
+          try {
+            e(o.recordRTC.getBlob());
+          }
+          catch (e) {
+            t(e);
+          }
+        });
+      }),
+      (this.getInternalRecorder = function () {
+        return new Promise((e, t) => {
+          try {
+            e(o.recordRTC.getInternalRecorder());
+          }
+          catch (e) {
+            t(e);
+          }
+        });
+      }),
+      (this.reset = function () {
+        return new Promise((e, t) => {
+          try {
+            e(o.recordRTC.reset());
+          }
+          catch (e) {
+            t(e);
+          }
+        });
+      }),
+      (this.destroy = function () {
+        return new Promise((e, t) => {
+          try {
+            e(o.recordRTC.destroy());
+          }
+          catch (e) {
+            t(e);
+          }
+        });
+      }),
+      (this.getState = function () {
+        return new Promise((e, t) => {
+          try {
+            e(o.recordRTC.getState());
+          }
+          catch (e) {
+            t(e);
+          }
+        });
+      }),
+      (this.blob = null),
+      (this.version = "5.6.2");
+    }),
+    (i.WebAssemblyRecorder = F);
   });
   class Xe extends De {
     constructor(e) {
       super(),
-        (this.player = e),
-        (this.fileName = ""),
-        (this.fileType = e._opt.recordType || c),
-        (this.isRecording = !1),
-        (this.recordingTimestamp = 0),
-        (this.recordingInterval = null),
-        e.debug.log("Recorder", "init");
+      (this.player = e),
+      (this.fileName = ""),
+      (this.fileType = e._opt.recordType || c),
+      (this.isRecording = !1),
+      (this.recordingTimestamp = 0),
+      (this.recordingInterval = null),
+      e.debug.log("Recorder", "init");
     }
+
     destroy() {
       this._reset(), this.player.debug.log("Recorder", "destroy");
     }
+
     setFileName(e, t) {
       (this.fileName = e), (d !== t && c !== t) || (this.fileType = t);
     }
+
     get recording() {
       return this.isRecording;
     }
+
     get recordTime() {
       return this.recordingTimestamp;
     }
+
     startRecord() {
-      const e = this.player.debug,
-        t = {
-          type: "video",
-          mimeType: "video/webm;codecs=h264",
-          onTimeStamp: (t) => {
-            e.log("Recorder", "record timestamp :" + t);
-          },
-          disableLogs: !this.player._opt.debug,
-        };
+      const e = this.player.debug;
+      const t = {
+        type: "video",
+        mimeType: "video/webm;codecs=h264",
+        onTimeStamp: (t) => {
+          e.log("Recorder", `record timestamp :${t}`);
+        },
+        disableLogs: !this.player._opt.debug
+      };
       try {
         const e = this.player.video.$videoElement.captureStream(25);
         if (
-          this.player.audio &&
-          this.player.audio.mediaStreamAudioDestinationNode &&
-          this.player.audio.mediaStreamAudioDestinationNode.stream &&
-          !this.player.audio.isStateSuspended() &&
-          this.player.audio.hasAudio &&
-          this.player._opt.hasAudio
+          this.player.audio
+          && this.player.audio.mediaStreamAudioDestinationNode
+          && this.player.audio.mediaStreamAudioDestinationNode.stream
+          && !this.player.audio.isStateSuspended()
+          && this.player.audio.hasAudio
+          && this.player._opt.hasAudio
         ) {
           const t = this.player.audio.mediaStreamAudioDestinationNode.stream;
           if (t.getAudioTracks().length > 0) {
@@ -4349,46 +4511,50 @@
           }
         }
         this.recorder = Ye(e, t);
-      } catch (t) {
-        e.error("Recorder", "startRecord error", t),
-          this.emit(x.recordCreateError);
       }
-      this.recorder &&
-        ((this.isRecording = !0),
-        this.player.emit(x.recording, !0),
-        this.recorder.startRecording(),
-        e.log("Recorder", "start recording"),
-        this.player.emit(x.recordStart),
-        (this.recordingInterval = window.setInterval(() => {
-          (this.recordingTimestamp += 1),
-            this.player.emit(x.recordingTimestamp, this.recordingTimestamp);
-        }, 1e3)));
+      catch (t) {
+        e.error("Recorder", "startRecord error", t),
+        this.emit(x.recordCreateError);
+      }
+      this.recorder
+      && ((this.isRecording = !0),
+      this.player.emit(x.recording, !0),
+      this.recorder.startRecording(),
+      e.log("Recorder", "start recording"),
+      this.player.emit(x.recordStart),
+      (this.recordingInterval = window.setInterval(() => {
+        (this.recordingTimestamp += 1),
+        this.player.emit(x.recordingTimestamp, this.recordingTimestamp);
+      }, 1e3)));
     }
+
     stopRecordAndSave() {
-      this.recorder &&
-        this.isRecording &&
-        this.recorder.stopRecording(() => {
-          this.player.debug.log("Recorder", "stop recording"),
-            this.player.emit(x.recordEnd);
-          const e = (this.fileName || be()) + "." + (this.fileType || c);
-          Ue(this.recorder.getBlob(), e),
-            this._reset(),
-            this.player.emit(x.recording, !1);
-        });
+      this.recorder
+      && this.isRecording
+      && this.recorder.stopRecording(() => {
+        this.player.debug.log("Recorder", "stop recording"),
+        this.player.emit(x.recordEnd);
+        const e = `${this.fileName || be()}.${this.fileType || c}`;
+        Ue(this.recorder.getBlob(), e),
+        this._reset(),
+        this.player.emit(x.recording, !1);
+      });
     }
+
     _reset() {
       (this.isRecording = !1),
-        (this.recordingTimestamp = 0),
-        this.recorder && (this.recorder.destroy(), (this.recorder = null)),
-        (this.fileName = null),
-        this.recordingInterval && clearInterval(this.recordingInterval),
-        (this.recordingInterval = null);
+      (this.recordingTimestamp = 0),
+      this.recorder && (this.recorder.destroy(), (this.recorder = null)),
+      (this.fileName = null),
+      this.recordingInterval && clearInterval(this.recordingInterval),
+      (this.recordingInterval = null);
     }
   }
   class qe {
     constructor(e) {
       return new (qe.getLoaderFactory())(e);
     }
+
     static getLoaderFactory() {
       return Xe;
     }
@@ -4396,40 +4562,42 @@
   class Ze {
     constructor(e) {
       (this.player = e),
-        (this.decoderWorker = new Worker(e._opt.decoder)),
-        this._initDecoderWorker(),
-        e.debug.log("decoderWorker", "init");
+      (this.decoderWorker = new Worker(e._opt.decoder)),
+      this._initDecoderWorker(),
+      e.debug.log("decoderWorker", "init");
     }
+
     destroy() {
       this.decoderWorker.postMessage({ cmd: T }),
-        this.decoderWorker.terminate(),
-        (this.decoderWorker = null),
-        this.player.debug.log("decoderWorker", "destroy");
+      this.decoderWorker.terminate(),
+      (this.decoderWorker = null),
+      this.player.debug.log("decoderWorker", "destroy");
     }
+
     _initDecoderWorker() {
       const {
         debug: e,
-        events: { proxy: t },
+        events: { proxy: t }
       } = this.player;
       this.decoderWorker.onmessage = (t) => {
         const i = t.data;
         switch (i.cmd) {
           case u:
             e.log("decoderWorker", "onmessage:", u),
-              this.player.loaded || this.player.emit(x.load),
-              this.player.emit(x.decoderWorkerInit),
-              this._initWork();
+            this.player.loaded || this.player.emit(x.load),
+            this.player.emit(x.decoderWorkerInit),
+            this._initWork();
             break;
           case b:
             e.log("decoderWorker", "onmessage:", b, i.code),
-              this.player._times.decodeStart ||
-                (this.player._times.decodeStart = be()),
-              this.player.video.updateVideoInfo({ encTypeCode: i.code });
+            this.player._times.decodeStart
+            || (this.player._times.decodeStart = be()),
+            this.player.video.updateVideoInfo({ encTypeCode: i.code });
             break;
           case f:
             e.log("decoderWorker", "onmessage:", f, i.code),
-              this.player.audio &&
-                this.player.audio.updateAudioInfo({ encTypeCode: i.code });
+            this.player.audio
+            && this.player.audio.updateAudioInfo({ encTypeCode: i.code });
             break;
           case h:
             if (
@@ -4441,8 +4609,9 @@
               ),
               this.player.video.updateVideoInfo({ width: i.w, height: i.h }),
               !this.player._opt.openWebglAlignment && (i.w / 2) % 4 != 0)
-            )
+            ) {
               return void this.player.emit(j.webglAlignmentError);
+            }
             this.player.video.initCanvasViewSize();
             break;
           case g:
@@ -4452,34 +4621,35 @@
               g,
               `channels:${i.channels},sampleRate:${i.sampleRate}`
             ),
-              this.player.audio &&
-                (this.player.audio.updateAudioInfo(i),
-                this.player.audio.initScriptNode(i));
+            this.player.audio
+            && (this.player.audio.updateAudioInfo(i),
+            this.player.audio.initScriptNode(i));
             break;
           case p:
             this.player.handleRender(),
-              this.player.video.render(i),
-              this.player.emit(x.timeUpdate, i.ts),
-              this.player.updateStats({ fps: !0, ts: i.ts, buf: i.delay }),
-              this.player._times.videoStart ||
-                ((this.player._times.videoStart = be()),
-                this.player.handlePlayToRenderTimes());
+            this.player.video.render(i),
+            this.player.emit(x.timeUpdate, i.ts),
+            this.player.updateStats({ fps: !0, ts: i.ts, buf: i.delay }),
+            this.player._times.videoStart
+            || ((this.player._times.videoStart = be()),
+            this.player.handlePlayToRenderTimes());
             break;
           case m:
-            this.player.playing &&
-              this.player.audio &&
-              this.player.audio.play(i.buffer, i.ts);
+            this.player.playing
+            && this.player.audio
+            && this.player.audio.play(i.buffer, i.ts);
             break;
           case y:
-            i.message &&
-              -1 !== i.message.indexOf(v) &&
-              this.player.emitError(j.wasmDecodeError);
+            i.message
+            && i.message.includes(v)
+            && this.player.emitError(j.wasmDecodeError);
             break;
           default:
             this.player[i.cmd] && this.player[i.cmd](i);
         }
       };
     }
+
     _initWork() {
       const e = {
         debug: this.player._opt.debug,
@@ -4487,38 +4657,43 @@
         useWCS: this.player._opt.useWCS,
         videoBuffer: this.player._opt.videoBuffer,
         videoBufferDelay: this.player._opt.videoBufferDelay,
-        openWebglAlignment: this.player._opt.openWebglAlignment,
+        openWebglAlignment: this.player._opt.openWebglAlignment
       };
       this.decoderWorker.postMessage({
         cmd: C,
         opt: JSON.stringify(e),
         sampleRate:
-          (this.player.audio && this.player.audio.audioContext.sampleRate) || 0,
+          (this.player.audio && this.player.audio.audioContext.sampleRate) || 0
       });
     }
+
     decodeVideo(e, t, i) {
       const o = { type: S, ts: Math.max(t, 0), isIFrame: i };
       this.decoderWorker.postMessage({ cmd: R, buffer: e, options: o }, [
-        e.buffer,
+        e.buffer
       ]);
     }
+
     decodeAudio(e, t) {
       this.player._opt.useWCS || this.player._opt.useMSE
         ? this._decodeAudioNoDelay(e, t)
         : this._decodeAudio(e, t);
     }
+
     _decodeAudio(e, t) {
       const i = { type: w, ts: Math.max(t, 0) };
       this.decoderWorker.postMessage({ cmd: R, buffer: e, options: i }, [
-        e.buffer,
+        e.buffer
       ]);
     }
+
     _decodeAudioNoDelay(e, t) {
       this.decoderWorker.postMessage(
         { cmd: k, buffer: e, ts: Math.max(t, 0) },
         [e.buffer]
       );
     }
+
     updateWorkConfig(e) {
       this.decoderWorker.postMessage({ cmd: I, key: e.key, value: e.value });
     }
@@ -4526,193 +4701,215 @@
   class Ke extends De {
     constructor(e) {
       super(),
-        (this.player = e),
-        (this.stopId = null),
-        (this.firstTimestamp = null),
-        (this.startTimestamp = null),
-        (this.delay = -1),
-        (this.bufferList = []),
-        (this.dropping = !1),
-        this.initInterval();
+      (this.player = e),
+      (this.stopId = null),
+      (this.firstTimestamp = null),
+      (this.startTimestamp = null),
+      (this.delay = -1),
+      (this.bufferList = []),
+      (this.dropping = !1),
+      this.initInterval();
     }
+
     destroy() {
       this.stopId && (clearInterval(this.stopId), (this.stopId = null)),
-        (this.firstTimestamp = null),
-        (this.startTimestamp = null),
-        (this.delay = -1),
-        (this.bufferList = []),
-        (this.dropping = !1),
-        this.off(),
-        this.player.debug.log("CommonDemux", "destroy");
+      (this.firstTimestamp = null),
+      (this.startTimestamp = null),
+      (this.delay = -1),
+      (this.bufferList = []),
+      (this.dropping = !1),
+      this.off(),
+      this.player.debug.log("CommonDemux", "destroy");
     }
+
     getDelay(e) {
       if (!e) return -1;
       if (this.firstTimestamp) {
         if (e) {
-          const t = Date.now() - this.startTimestamp,
-            i = e - this.firstTimestamp;
+          const t = Date.now() - this.startTimestamp;
+          const i = e - this.firstTimestamp;
           this.delay = t >= i ? t - i : i - t;
         }
-      } else (this.firstTimestamp = e), (this.startTimestamp = Date.now()), (this.delay = -1);
+      }
+      else {
+        (this.firstTimestamp = e), (this.startTimestamp = Date.now()), (this.delay = -1);
+      }
       return this.delay;
     }
+
     resetDelay() {
       (this.firstTimestamp = null),
-        (this.startTimestamp = null),
-        (this.delay = -1),
-        (this.dropping = !1);
+      (this.startTimestamp = null),
+      (this.delay = -1),
+      (this.dropping = !1);
     }
+
     initInterval() {
       this.player.debug.log("common dumex", "init Interval");
-      let e = () => {
+      const e = () => {
         let e;
-        const t = this.player._opt.videoBuffer,
-          i = this.player._opt.videoBufferDelay;
+        const t = this.player._opt.videoBuffer;
+        const i = this.player._opt.videoBufferDelay;
         if (
-          this.player._opt.useMSE &&
-          this.player.mseDecoder &&
-          this.player.mseDecoder.getSourceBufferUpdating()
-        )
+          this.player._opt.useMSE
+          && this.player.mseDecoder
+          && this.player.mseDecoder.getSourceBufferUpdating()
+        ) {
           this.player.debug.warn(
             "CommonDemux",
             `_loop getSourceBufferUpdating is true and bufferList length is ${this.bufferList.length}`
           );
-        else if (this.bufferList.length)
+        }
+        else if (this.bufferList.length) {
           if (this.dropping) {
             for (
               e = this.bufferList.shift(),
-                e.type === w && 0 === e.payload[1] && this._doDecoderDecode(e);
+              e.type === w && e.payload[1] === 0 && this._doDecoderDecode(e);
               !e.isIFrame && this.bufferList.length;
 
-            )
+            ) {
               (e = this.bufferList.shift()),
-                e.type === w && 0 === e.payload[1] && this._doDecoderDecode(e);
-            e.isIFrame &&
-              this.getDelay(e.ts) <= Math.min(t, 200) &&
-              ((this.dropping = !1), this._doDecoderDecode(e));
-          } else
+              e.type === w && e.payload[1] === 0 && this._doDecoderDecode(e);
+            }
+            e.isIFrame
+            && this.getDelay(e.ts) <= Math.min(t, 200)
+            && ((this.dropping = !1), this._doDecoderDecode(e));
+          }
+          else {
             (e = this.bufferList[0]),
-              -1 === this.getDelay(e.ts)
-                ? (this.bufferList.shift(), this._doDecoderDecode(e))
-                : this.delay > t + i
+            this.getDelay(e.ts) === -1
+              ? (this.bufferList.shift(), this._doDecoderDecode(e))
+              : this.delay > t + i
                 ? (this.resetDelay(), (this.dropping = !0))
                 : ((e = this.bufferList[0]),
-                  this.getDelay(e.ts) > t &&
-                    (this.bufferList.shift(), this._doDecoderDecode(e)));
+                  this.getDelay(e.ts) > t
+                  && (this.bufferList.shift(), this._doDecoderDecode(e)));
+          }
+        }
       };
       e(), (this.stopId = setInterval(e, 10));
     }
+
     _doDecode(e, t, i, o, r) {
       const s = this.player;
-      let a = { ts: i, cts: r, type: t, isIFrame: !1 };
+      const a = { ts: i, cts: r, type: t, isIFrame: !1 };
       (s._opt.useWCS && !s._opt.useOffscreen) || s._opt.useMSE
         ? (t === S && (a.isIFrame = o), this.pushBuffer(e, a))
         : t === S
-        ? s.decoderWorker && s.decoderWorker.decodeVideo(e, i, o)
-        : t === w &&
-          s._opt.hasAudio &&
-          s.decoderWorker &&
-          s.decoderWorker.decodeAudio(e, i);
+          ? s.decoderWorker && s.decoderWorker.decodeVideo(e, i, o)
+          : t === w
+            && s._opt.hasAudio
+            && s.decoderWorker
+            && s.decoderWorker.decodeAudio(e, i);
     }
+
     _doDecoderDecode(e) {
-      const t = this.player,
-        { webcodecsDecoder: i, mseDecoder: o } = t;
+      const t = this.player;
+      const { webcodecsDecoder: i, mseDecoder: o } = t;
       e.type === w
-        ? t._opt.hasAudio &&
-          t.decoderWorker &&
-          t.decoderWorker.decodeAudio(e.payload, e.ts)
-        : e.type === S &&
-          (t._opt.useWCS && !t._opt.useOffscreen
+        ? t._opt.hasAudio
+        && t.decoderWorker
+        && t.decoderWorker.decodeAudio(e.payload, e.ts)
+        : e.type === S
+          && (t._opt.useWCS && !t._opt.useOffscreen
             ? i.decodeVideo(e.payload, e.ts, e.isIFrame)
-            : t._opt.useMSE &&
-              o.decodeVideo(e.payload, e.ts, e.isIFrame, e.cts));
+            : t._opt.useMSE
+              && o.decodeVideo(e.payload, e.ts, e.isIFrame, e.cts));
     }
+
     pushBuffer(e, t) {
       t.type === w
         ? this.bufferList.push({ ts: t.ts, payload: e, type: w })
-        : t.type === S &&
-          this.bufferList.push({
+        : t.type === S
+          && this.bufferList.push({
             ts: t.ts,
             cts: t.cts,
             payload: e,
             type: S,
-            isIFrame: t.isIFrame,
+            isIFrame: t.isIFrame
           });
     }
+
     close() {}
     _decodeEnhancedH265Video(e, t) {
-      const i = e[0],
-        o = 48 & i,
-        r = 15 & i,
-        s = e.slice(1, 5),
-        a = new ArrayBuffer(4),
-        n = new Uint32Array(a),
-        A = "a" == String.fromCharCode(s[0]);
+      const i = e[0];
+      const o = 48 & i;
+      const r = 15 & i;
+      const s = e.slice(1, 5);
+      const a = new ArrayBuffer(4);
+      const n = new Uint32Array(a);
+      const A = String.fromCharCode(s[0]) == "a";
       if (r === de) {
         if (o === ue) {
           const t = e.slice(5);
           if (!A) {
             const e = new Uint8Array(5 + t.length);
             e.set([28, 0, 0, 0, 0], 0),
-              e.set(t, 5),
-              this._doDecode(e, S, 0, !0, 0);
+            e.set(t, 5),
+            this._doDecode(e, S, 0, !0, 0);
           }
         }
-      } else if (r === ce) {
-        let i = e,
-          r = 0;
+      }
+      else if (r === ce) {
+        let i = e;
+        let r = 0;
         const s = o === ue;
         if (!A) {
           (n[0] = e[4]), (n[1] = e[3]), (n[2] = e[2]), (n[3] = 0), (r = n[0]);
           (i = xe(e.slice(8), s)), this._doDecode(i, S, t, s, r);
         }
-      } else if (r === le) {
+      }
+      else if (r === le) {
         const i = o === ue;
-        let r = xe(e.slice(5), i);
+        const r = xe(e.slice(5), i);
         this._doDecode(r, S, t, i, 0);
       }
     }
+
     _isEnhancedH265Header(e) {
-      return 128 == (128 & e);
+      return (128 & e) == 128;
     }
   }
   class _e extends Ke {
     constructor(e) {
       super(e),
-        (this.input = this._inputFlv()),
-        (this.flvDemux = this.dispatchFlvData(this.input)),
-        e.debug.log("FlvDemux", "init");
+      (this.input = this._inputFlv()),
+      (this.flvDemux = this.dispatchFlvData(this.input)),
+      e.debug.log("FlvDemux", "init");
     }
+
     destroy() {
       super.destroy(),
-        (this.input = null),
-        (this.flvDemux = null),
-        this.player.debug.log("FlvDemux", "destroy");
+      (this.input = null),
+      (this.flvDemux = null),
+      this.player.debug.log("FlvDemux", "destroy");
     }
+
     dispatch(e) {
       this.flvDemux(e);
     }
+
     *_inputFlv() {
       yield 9;
-      const e = new ArrayBuffer(4),
-        t = new Uint8Array(e),
-        i = new Uint32Array(e),
-        o = this.player;
+      const e = new ArrayBuffer(4);
+      const t = new Uint8Array(e);
+      const i = new Uint32Array(e);
+      const o = this.player;
       for (;;) {
         t[3] = 0;
-        const e = yield 15,
-          r = e[4];
+        const e = yield 15;
+        const r = e[4];
         (t[0] = e[7]), (t[1] = e[6]), (t[2] = e[5]);
         const s = i[0];
         (t[0] = e[10]), (t[1] = e[9]), (t[2] = e[8]);
         let a = i[0];
-        16777215 === a && ((t[3] = e[11]), (a = i[0]));
+        a === 16777215 && ((t[3] = e[11]), (a = i[0]));
         const n = yield s;
         switch (r) {
           case E:
-            o._opt.hasAudio &&
-              (o.updateStats({ abps: n.byteLength }),
-              n.byteLength > 0 && this._doDecode(n, w, a));
+            o._opt.hasAudio
+            && (o.updateStats({ abps: n.byteLength }),
+            n.byteLength > 0 && this._doDecode(n, w, a));
             break;
           case B:
             if (
@@ -4721,13 +4918,14 @@
             ) {
               o.updateStats({ vbps: n.byteLength });
               const e = n[0];
-              if (this._isEnhancedH265Header(e))
+              if (this._isEnhancedH265Header(e)) {
                 this._decodeEnhancedH265Video(n, a);
+              }
               else {
                 const e = n[0] >> 4 == 1;
                 if (n.byteLength > 0) {
                   (i[0] = n[4]), (i[1] = n[3]), (i[2] = n[2]), (i[3] = 0);
-                  let t = i[0];
+                  const t = i[0];
                   this._doDecode(n, S, a, e, t);
                 }
               }
@@ -4735,22 +4933,24 @@
         }
       }
     }
+
     dispatchFlvData(e) {
-      let t = e.next(),
-        i = null;
+      let t = e.next();
+      let i = null;
       return (o) => {
         let r = new Uint8Array(o);
         if (i) {
-          let e = new Uint8Array(i.length + r.length);
+          const e = new Uint8Array(i.length + r.length);
           e.set(i), e.set(r, i.length), (r = e), (i = null);
         }
-        for (; r.length >= t.value; ) {
-          let i = r.slice(t.value);
+        for (; r.length >= t.value;) {
+          const i = r.slice(t.value);
           (t = e.next(r.slice(0, t.value))), (r = i);
         }
         r.length > 0 && (i = r);
       };
     }
+
     close() {
       this.input && this.input.return(null);
     }
@@ -4759,53 +4959,59 @@
     constructor(e) {
       super(e), e.debug.log("M7sDemux", "init");
     }
+
     destroy() {
       super.destroy(),
-        this.player.debug.log("M7sDemux", "destroy"),
-        (this.player = null);
+      this.player.debug.log("M7sDemux", "destroy"),
+      (this.player = null);
     }
+
     dispatch(e) {
-      const t = this.player,
-        i = new DataView(e),
-        o = i.getUint8(0),
-        r = i.getUint32(1, !1),
-        s = new ArrayBuffer(4),
-        a = new Uint32Array(s);
+      const t = this.player;
+      const i = new DataView(e);
+      const o = i.getUint8(0);
+      const r = i.getUint32(1, !1);
+      const s = new ArrayBuffer(4);
+      const a = new Uint32Array(s);
       switch (o) {
         case w:
           if (t._opt.hasAudio) {
             const i = new Uint8Array(e, 5);
             t.updateStats({ abps: i.byteLength }),
-              i.byteLength > 0 && this._doDecode(i, o, r);
+            i.byteLength > 0 && this._doDecode(i, o, r);
           }
           break;
         case S:
-          if (t._opt.hasVideo)
+          if (t._opt.hasVideo) {
             if (
               (t._times.demuxStart || (t._times.demuxStart = be()),
               i.byteLength > 5)
             ) {
-              const s = new Uint8Array(e, 5),
-                n = s[0];
-              if (this._isEnhancedH265Header(n))
+              const s = new Uint8Array(e, 5);
+              const n = s[0];
+              if (this._isEnhancedH265Header(n)) {
                 this._decodeEnhancedH265Video(s, r);
+              }
               else {
                 const e = i.getUint8(5) >> 4 == 1;
                 t.updateStats({ vbps: s.byteLength }),
-                  (a[0] = s[4]),
-                  (a[1] = s[3]),
-                  (a[2] = s[2]),
-                  (a[3] = 0);
-                let n = a[0];
+                (a[0] = s[4]),
+                (a[1] = s[3]),
+                (a[2] = s[2]),
+                (a[3] = 0);
+                const n = a[0];
                 this._doDecode(s, o, r, e, n);
               }
-            } else
+            }
+            else {
               this.player.debug.warn(
                 "M7sDemux",
                 "dispatch",
                 "dv byteLength is",
                 i.byteLength
               );
+            }
+          }
       }
     }
   }
@@ -4813,6 +5019,7 @@
     constructor(e) {
       return new (et.getLoaderFactory(e._opt.demuxType))(e);
     }
+
     static getLoaderFactory(e) {
       return e === A ? $e : e === n ? _e : void 0;
     }
@@ -4820,38 +5027,41 @@
   class tt {
     constructor(e) {
       (this.TAG = "ExpGolomb"),
-        (this._buffer = e),
-        (this._buffer_index = 0),
-        (this._total_bytes = e.byteLength),
-        (this._total_bits = 8 * e.byteLength),
-        (this._current_word = 0),
-        (this._current_word_bits_left = 0);
+      (this._buffer = e),
+      (this._buffer_index = 0),
+      (this._total_bytes = e.byteLength),
+      (this._total_bits = 8 * e.byteLength),
+      (this._current_word = 0),
+      (this._current_word_bits_left = 0);
     }
+
     destroy() {
       this._buffer = null;
     }
+
     _fillCurrentWord() {
-      let e = this._total_bytes - this._buffer_index,
-        t = Math.min(4, e),
-        i = new Uint8Array(4);
+      const e = this._total_bytes - this._buffer_index;
+      const t = Math.min(4, e);
+      const i = new Uint8Array(4);
       i.set(this._buffer.subarray(this._buffer_index, this._buffer_index + t)),
-        (this._current_word = new DataView(i.buffer).getUint32(0, !1)),
-        (this._buffer_index += t),
-        (this._current_word_bits_left = 8 * t);
+      (this._current_word = new DataView(i.buffer).getUint32(0, !1)),
+      (this._buffer_index += t),
+      (this._current_word_bits_left = 8 * t);
     }
+
     readBits(e) {
       if (e <= this._current_word_bits_left) {
-        let t = this._current_word >>> (32 - e);
+        const t = this._current_word >>> (32 - e);
         return (
           (this._current_word <<= e), (this._current_word_bits_left -= e), t
         );
       }
       let t = this._current_word_bits_left ? this._current_word : 0;
       t >>>= 32 - this._current_word_bits_left;
-      let i = e - this._current_word_bits_left;
+      const i = e - this._current_word_bits_left;
       this._fillCurrentWord();
-      let o = Math.min(i, this._current_word_bits_left),
-        r = this._current_word >>> (32 - o);
+      const o = Math.min(i, this._current_word_bits_left);
+      const r = this._current_word >>> (32 - o);
       return (
         (this._current_word <<= o),
         (this._current_word_bits_left -= o),
@@ -4859,118 +5069,130 @@
         t
       );
     }
+
     readBool() {
-      return 1 === this.readBits(1);
+      return this.readBits(1) === 1;
     }
+
     readByte() {
       return this.readBits(8);
     }
+
     _skipLeadingZero() {
       let e;
-      for (e = 0; e < this._current_word_bits_left; e++)
-        if (0 != (this._current_word & (2147483648 >>> e)))
+      for (e = 0; e < this._current_word_bits_left; e++) {
+        if ((this._current_word & (2147483648 >>> e)) != 0) {
           return (
             (this._current_word <<= e), (this._current_word_bits_left -= e), e
           );
+        }
+      }
       return this._fillCurrentWord(), e + this._skipLeadingZero();
     }
+
     readUEG() {
-      let e = this._skipLeadingZero();
+      const e = this._skipLeadingZero();
       return this.readBits(e + 1) - 1;
     }
+
     readSEG() {
-      let e = this.readUEG();
+      const e = this.readUEG();
       return 1 & e ? (e + 1) >>> 1 : -1 * (e >>> 1);
     }
   }
   class it {
     static _ebsp2rbsp(e) {
-      let t = e,
-        i = t.byteLength,
-        o = new Uint8Array(i),
-        r = 0;
-      for (let e = 0; e < i; e++)
-        (e >= 2 && 3 === t[e] && 0 === t[e - 1] && 0 === t[e - 2]) ||
-          ((o[r] = t[e]), r++);
+      const t = e;
+      const i = t.byteLength;
+      const o = new Uint8Array(i);
+      let r = 0;
+      for (let e = 0; e < i; e++) {
+        (e >= 2 && t[e] === 3 && t[e - 1] === 0 && t[e - 2] === 0)
+        || ((o[r] = t[e]), r++);
+      }
       return new Uint8Array(o.buffer, 0, r);
     }
+
     static parseSPS(e) {
-      let t = it._ebsp2rbsp(e),
-        i = new tt(t);
+      const t = it._ebsp2rbsp(e);
+      let i = new tt(t);
       i.readByte();
-      let o = i.readByte();
+      const o = i.readByte();
       i.readByte();
-      let r = i.readByte();
+      const r = i.readByte();
       i.readUEG();
-      let s = it.getProfileString(o),
-        a = it.getLevelString(r),
-        n = 1,
-        A = 420,
-        d = [0, 420, 422, 444],
-        c = 8;
+      const s = it.getProfileString(o);
+      const a = it.getLevelString(r);
+      let n = 1;
+      let A = 420;
+      const d = [0, 420, 422, 444];
+      let c = 8;
       if (
-        (100 === o ||
-          110 === o ||
-          122 === o ||
-          244 === o ||
-          44 === o ||
-          83 === o ||
-          86 === o ||
-          118 === o ||
-          128 === o ||
-          138 === o ||
-          144 === o) &&
-        ((n = i.readUEG()),
-        3 === n && i.readBits(1),
+        (o === 100
+          || o === 110
+          || o === 122
+          || o === 244
+          || o === 44
+          || o === 83
+          || o === 86
+          || o === 118
+          || o === 128
+          || o === 138
+          || o === 144)
+        && ((n = i.readUEG()),
+        n === 3 && i.readBits(1),
         n <= 3 && (A = d[n]),
         (c = i.readUEG() + 8),
         i.readUEG(),
         i.readBits(1),
         i.readBool())
       ) {
-        let e = 3 !== n ? 8 : 12;
-        for (let t = 0; t < e; t++)
-          i.readBool() &&
-            (t < 6 ? it._skipScalingList(i, 16) : it._skipScalingList(i, 64));
+        const e = n !== 3 ? 8 : 12;
+        for (let t = 0; t < e; t++) {
+          i.readBool()
+          && (t < 6 ? it._skipScalingList(i, 16) : it._skipScalingList(i, 64));
+        }
       }
       i.readUEG();
-      let l = i.readUEG();
-      if (0 === l) i.readUEG();
-      else if (1 === l) {
+      const l = i.readUEG();
+      if (l === 0) {
+        i.readUEG();
+      }
+      else if (l === 1) {
         i.readBits(1), i.readSEG(), i.readSEG();
-        let e = i.readUEG();
+        const e = i.readUEG();
         for (let t = 0; t < e; t++) i.readSEG();
       }
-      let u = i.readUEG();
+      const u = i.readUEG();
       i.readBits(1);
-      let h = i.readUEG(),
-        p = i.readUEG(),
-        m = i.readBits(1);
-      0 === m && i.readBits(1), i.readBits(1);
-      let g = 0,
-        f = 0,
-        b = 0,
-        y = 0;
-      i.readBool() &&
-        ((g = i.readUEG()),
-        (f = i.readUEG()),
-        (b = i.readUEG()),
-        (y = i.readUEG()));
-      let v = 1,
-        w = 1,
-        S = 0,
-        E = !0,
-        B = 0,
-        C = 0;
+      const h = i.readUEG();
+      const p = i.readUEG();
+      const m = i.readBits(1);
+      m === 0 && i.readBits(1), i.readBits(1);
+      let g = 0;
+      let f = 0;
+      let b = 0;
+      let y = 0;
+      i.readBool()
+      && ((g = i.readUEG()),
+      (f = i.readUEG()),
+      (b = i.readUEG()),
+      (y = i.readUEG()));
+      let v = 1;
+      let w = 1;
+      let S = 0;
+      let E = !0;
+      let B = 0;
+      let C = 0;
       if (i.readBool()) {
         if (i.readBool()) {
-          let e = i.readByte(),
-            t = [1, 12, 10, 16, 40, 24, 20, 32, 80, 18, 15, 64, 160, 4, 3, 2],
-            o = [1, 11, 11, 11, 33, 11, 11, 11, 33, 11, 11, 33, 99, 3, 2, 1];
+          const e = i.readByte();
+          const t = [1, 12, 10, 16, 40, 24, 20, 32, 80, 18, 15, 64, 160, 4, 3, 2];
+          const o = [1, 11, 11, 11, 33, 11, 11, 11, 33, 11, 11, 33, 99, 3, 2, 1];
           e > 0 && e < 16
             ? ((v = t[e - 1]), (w = o[e - 1]))
-            : 255 === e &&
-              ((v = (i.readByte() << 8) | i.readByte()),
+            : e === 255
+              && ((v = (i.readByte() << 8) | i.readByte()),
               (w = (i.readByte() << 8) | i.readByte()));
         }
         if (
@@ -4979,23 +5201,25 @@
           i.readBool() && (i.readUEG(), i.readUEG()),
           i.readBool())
         ) {
-          let e = i.readBits(32),
-            t = i.readBits(32);
+          const e = i.readBits(32);
+          const t = i.readBits(32);
           (E = i.readBool()), (B = t), (C = 2 * e), (S = B / C);
         }
       }
       let R = 1;
-      (1 === v && 1 === w) || (R = v / w);
-      let k = 0,
-        T = 0;
-      if (0 === n) (k = 1), (T = 2 - m);
-      else {
-        (k = 3 === n ? 1 : 2), (T = (1 === n ? 2 : 1) * (2 - m));
+      (v === 1 && w === 1) || (R = v / w);
+      let k = 0;
+      let T = 0;
+      if (n === 0) {
+        (k = 1), (T = 2 - m);
       }
-      let I = 16 * (h + 1),
-        x = 16 * (p + 1) * (2 - m);
+      else {
+        (k = n === 3 ? 1 : 2), (T = (n === 1 ? 2 : 1) * (2 - m));
+      }
+      let I = 16 * (h + 1);
+      let x = 16 * (p + 1) * (2 - m);
       (I -= (g + f) * k), (x -= (b + y) * T);
-      let D = Math.ceil(I * R);
+      const D = Math.ceil(I * R);
       return (
         i.destroy(),
         (i = null),
@@ -5009,18 +5233,21 @@
           frame_rate: { fixed: E, fps: S, fps_den: C, fps_num: B },
           sar_ratio: { width: v, height: w },
           codec_size: { width: I, height: x },
-          present_size: { width: D, height: x },
+          present_size: { width: D, height: x }
         }
       );
     }
+
     static _skipScalingList(e, t) {
-      let i = 8,
-        o = 8,
-        r = 0;
-      for (let s = 0; s < t; s++)
-        0 !== o && ((r = e.readSEG()), (o = (i + r + 256) % 256)),
-          (i = 0 === o ? i : o);
+      let i = 8;
+      let o = 8;
+      let r = 0;
+      for (let s = 0; s < t; s++) {
+        o !== 0 && ((r = e.readSEG()), (o = (i + r + 256) % 256)),
+        (i = o === 0 ? i : o);
+      }
     }
+
     static getProfileString(e) {
       switch (e) {
         case 66:
@@ -5041,9 +5268,11 @@
           return "Unknown";
       }
     }
+
     static getLevelString(e) {
       return (e / 10).toFixed(1);
     }
+
     static getChromaFormatString(e) {
       switch (e) {
         case 420:
@@ -5058,78 +5287,80 @@
     }
   }
   function ot(e) {
-    const t = {},
-      i = new DataView(e.buffer);
-    let o = i.getUint8(0),
-      r = i.getUint8(1);
-    if ((i.getUint8(2), i.getUint8(3), 1 !== o || 0 === r)) return t;
+    const t = {};
+    const i = new DataView(e.buffer);
+    const o = i.getUint8(0);
+    const r = i.getUint8(1);
+    if ((i.getUint8(2), i.getUint8(3), o !== 1 || r === 0)) return t;
     const s = 1 + (3 & i.getUint8(4));
-    if (3 !== s && 4 !== s) return t;
-    let a = 31 & i.getUint8(5);
-    if (0 === a) return;
+    if (s !== 3 && s !== 4) return t;
+    const a = 31 & i.getUint8(5);
+    if (a === 0) return;
     let n = 6;
     for (let o = 0; o < a; o++) {
-      let r = i.getUint16(n, !1);
-      if (((n += 2), 0 === r)) continue;
-      let s = new Uint8Array(e.buffer, n, r);
+      const r = i.getUint16(n, !1);
+      if (((n += 2), r === 0)) continue;
+      const s = new Uint8Array(e.buffer, n, r);
       n += r;
-      let a = it.parseSPS(s);
-      if (0 !== o) continue;
+      const a = it.parseSPS(s);
+      if (o !== 0) continue;
       (t.codecWidth = a.codec_size.width),
-        (t.codecHeight = a.codec_size.height),
-        (t.presentWidth = a.present_size.width),
-        (t.presentHeight = a.present_size.height),
-        (t.profile = a.profile_string),
-        (t.level = a.level_string),
-        (t.bitDepth = a.bit_depth),
-        (t.chromaFormat = a.chroma_format),
-        (t.sarRatio = a.sar_ratio),
-        (t.frameRate = a.frame_rate),
-        (!1 !== a.frame_rate.fixed &&
-          0 !== a.frame_rate.fps_num &&
-          0 !== a.frame_rate.fps_den) ||
-          (t.frameRate = {});
-      let A = t.frameRate.fps_den,
-        d = t.frameRate.fps_num;
+      (t.codecHeight = a.codec_size.height),
+      (t.presentWidth = a.present_size.width),
+      (t.presentHeight = a.present_size.height),
+      (t.profile = a.profile_string),
+      (t.level = a.level_string),
+      (t.bitDepth = a.bit_depth),
+      (t.chromaFormat = a.chroma_format),
+      (t.sarRatio = a.sar_ratio),
+      (t.frameRate = a.frame_rate),
+      (!1 !== a.frame_rate.fixed
+        && a.frame_rate.fps_num !== 0
+        && a.frame_rate.fps_den !== 0)
+      || (t.frameRate = {});
+      const A = t.frameRate.fps_den;
+      const d = t.frameRate.fps_num;
       t.refSampleDuration = t.timescale * (A / d);
-      let c = s.subarray(1, 4),
-        l = "avc1.";
+      const c = s.subarray(1, 4);
+      let l = "avc1.";
       for (let e = 0; e < 3; e++) {
         let t = c[e].toString(16);
-        t.length < 2 && (t = "0" + t), (l += t);
+        t.length < 2 && (t = `0${t}`), (l += t);
       }
       t.codec = l;
     }
-    let A = i.getUint8(n);
-    if (0 === A) return t;
+    const A = i.getUint8(n);
+    if (A === 0) return t;
     n++;
     for (let t = 0; t < A; t++) {
-      let t = i.getUint16(n, !1);
-      (n += 2), 0 !== t && (new Uint8Array(e.buffer, n, t), (n += t));
+      const t = i.getUint16(n, !1);
+      (n += 2), t !== 0 && (new Uint8Array(e.buffer, n, t), (n += t));
     }
     return (t.videoType = "avc"), t;
   }
   class rt extends De {
     constructor(e) {
       super(),
-        (this.player = e),
-        (this.hasInit = !1),
-        (this.isDecodeFirstIIframe = !1),
-        (this.isInitInfo = !1),
-        (this.decoder = null),
-        this.initDecoder(),
-        e.debug.log("Webcodecs", "init");
+      (this.player = e),
+      (this.hasInit = !1),
+      (this.isDecodeFirstIIframe = !1),
+      (this.isInitInfo = !1),
+      (this.decoder = null),
+      this.initDecoder(),
+      e.debug.log("Webcodecs", "init");
     }
+
     destroy() {
-      this.decoder &&
-        ("closed" !== this.decoder.state && this.decoder.close(),
-        (this.decoder = null)),
-        (this.hasInit = !1),
-        (this.isInitInfo = !1),
-        (this.isDecodeFirstIIframe = !1),
-        this.off(),
-        this.player.debug.log("Webcodecs", "destroy");
+      this.decoder
+      && (this.decoder.state !== "closed" && this.decoder.close(),
+      (this.decoder = null)),
+      (this.hasInit = !1),
+      (this.isInitInfo = !1),
+      (this.isDecodeFirstIIframe = !1),
+      this.off(),
+      this.player.debug.log("Webcodecs", "destroy");
     }
+
     initDecoder() {
       const e = this;
       this.decoder = new VideoDecoder({
@@ -5138,37 +5369,40 @@
         },
         error(t) {
           e.handleError(t);
-        },
+        }
       });
     }
+
     handleDecode(e) {
-      this.isInitInfo ||
-        (this.player.video.updateVideoInfo({
-          width: e.codedWidth,
-          height: e.codedHeight,
-        }),
-        this.player.video.initCanvasViewSize(),
-        (this.isInitInfo = !0)),
-        this.player._times.videoStart ||
-          ((this.player._times.videoStart = be()),
-          this.player.handlePlayToRenderTimes()),
-        this.player.handleRender(),
-        this.player.video.render({ videoFrame: e }),
-        this.player.updateStats({
-          fps: !0,
-          ts: 0,
-          buf: this.player.demux.delay,
-        });
+      this.isInitInfo
+      || (this.player.video.updateVideoInfo({
+        width: e.codedWidth,
+        height: e.codedHeight
+      }),
+      this.player.video.initCanvasViewSize(),
+      (this.isInitInfo = !0)),
+      this.player._times.videoStart
+      || ((this.player._times.videoStart = be()),
+      this.player.handlePlayToRenderTimes()),
+      this.player.handleRender(),
+      this.player.video.render({ videoFrame: e }),
+      this.player.updateStats({
+        fps: !0,
+        ts: 0,
+        buf: this.player.demux.delay
+      });
     }
+
     handleError(e) {
       this.player.debug.error("Webcodecs", "VideoDecoder handleError", e);
     }
+
     decodeVideo(e, t, i) {
       if (this.hasInit) {
-        if (i && 0 === e[1]) {
-          const t = ot(e.slice(5)),
-            i = this.player.video.videoInfo;
-          if (t.codecWidth !== i.width || t.codecHeight !== i.height)
+        if (i && e[1] === 0) {
+          const t = ot(e.slice(5));
+          const i = this.player.video.videoInfo;
+          if (t.codecWidth !== i.width || t.codecHeight !== i.height) {
             return (
               this.player.debug.log(
                 "Webcodecs",
@@ -5176,6 +5410,7 @@
               ),
               void this.player.emit(j.webcodecsWidthOrHeightChange)
             );
+          }
         }
         if (
           (!this.isDecodeFirstIIframe && i && (this.isDecodeFirstIIframe = !0),
@@ -5184,47 +5419,53 @@
           const o = new EncodedVideoChunk({
             data: e.slice(5),
             timestamp: t,
-            type: i ? X : q,
+            type: i ? X : q
           });
           this.player.emit(x.timeUpdate, t);
           try {
-            if (this.isDecodeStateClosed())
+            if (this.isDecodeStateClosed()) {
               return void this.player.debug.warn(
                 "Webcodecs",
                 "VideoDecoder isDecodeStateClosed true"
               );
+            }
             this.decoder.decode(o);
-          } catch (e) {
-            this.player.debug.error("Webcodecs", "VideoDecoder", e),
-              (-1 !== e.toString().indexOf(re) ||
-                -1 !== e.toString().indexOf(se)) &&
-                this.player.emitError(j.webcodecsDecodeError);
           }
-        } else
+          catch (e) {
+            this.player.debug.error("Webcodecs", "VideoDecoder", e),
+            (e.toString().includes(re)
+              || e.toString().includes(se))
+            && this.player.emitError(j.webcodecsDecodeError);
+          }
+        }
+        else {
           this.player.debug.warn(
             "Webcodecs",
             "VideoDecoder isDecodeFirstIIframe false"
           );
-      } else if (i && 0 === e[1]) {
+        }
+      }
+      else if (i && e[1] === 0) {
         const t = 15 & e[0];
         if ((this.player.video.updateVideoInfo({ encTypeCode: t }), t === Q))
           return void this.emit(j.webcodecsH265NotSupport);
-        this.player._times.decodeStart ||
-          (this.player._times.decodeStart = be());
+        this.player._times.decodeStart
+        || (this.player._times.decodeStart = be());
         const i = (function (e) {
-          let t = e.subarray(1, 4),
-            i = "avc1.";
+          const t = e.subarray(1, 4);
+          let i = "avc1.";
           for (let e = 0; e < 3; e++) {
             let o = t[e].toString(16);
-            o.length < 2 && (o = "0" + o), (i += o);
+            o.length < 2 && (o = `0${o}`), (i += o);
           }
           return { codec: i, description: e };
         })(e.slice(5));
         this.decoder.configure(i), (this.hasInit = !0);
       }
     }
+
     isDecodeStateClosed() {
-      return "closed" === this.decoder.state;
+      return this.decoder.state === "closed";
     }
   }
   const st = {
@@ -5237,156 +5478,160 @@
     fullscreen: "全屏",
     fullscreenExit: "退出全屏",
     record: "录制",
-    recordStop: "停止录制",
+    recordStop: "停止录制"
   };
-  var at = Object.keys(st).reduce(
-      (e, t) => (
-        (e[
-          t
-        ] = `\n    <i class="jessibuca-icon jessibuca-icon-${t}"></i>\n    ${
-          st[t]
-            ? `<span class="icon-title-tips"><span class="icon-title">${st[t]}</span></span>`
-            : ""
-        }\n`),
-        e
-      ),
-      {}
+  const at = Object.keys(st).reduce(
+    (e, t) => (
+      (e[
+        t
+      ] = `\n    <i class="jessibuca-icon jessibuca-icon-${t}"></i>\n    ${
+        st[t]
+          ? `<span class="icon-title-tips"><span class="icon-title">${st[t]}</span></span>`
+          : ""
+      }\n`),
+      e
     ),
-    nt = (e, t) => {
-      const {
-          events: { proxy: i },
-        } = e,
-        o = document.createElement("object");
-      o.setAttribute("aria-hidden", "true"),
-        o.setAttribute("tabindex", -1),
-        (o.type = "text/html"),
-        (o.data = "about:blank"),
-        ve(o, {
-          display: "block",
-          position: "absolute",
-          top: "0",
-          left: "0",
-          height: "100%",
-          width: "100%",
-          overflow: "hidden",
-          pointerEvents: "none",
-          zIndex: "-1",
-        });
-      let r = e.width,
-        s = e.height;
-      i(o, "load", () => {
-        i(o.contentDocument.defaultView, "resize", () => {
-          (e.width === r && e.height === s) ||
-            ((r = e.width), (s = e.height), e.emit(x.resize), n());
-        });
-      }),
-        e.$container.appendChild(o),
-        e.on(x.destroy, () => {
-          e.$container.removeChild(o);
-        }),
-        e.on(x.volumechange, () => {
-          !(function (e) {
-            if (0 === e)
-              ve(t.$volumeOn, "display", "none"),
-                ve(t.$volumeOff, "display", "flex"),
-                ve(t.$volumeHandle, "top", "48px");
-            else if (t.$volumeHandle && t.$volumePanel) {
-              const i = we(t.$volumePanel, "height") || 60,
-                o = we(t.$volumeHandle, "height"),
-                r = i - (i - o) * e - o;
-              ve(t.$volumeHandle, "top", `${r}px`),
-                ve(t.$volumeOn, "display", "flex"),
-                ve(t.$volumeOff, "display", "none");
-            }
-            t.$volumePanelText &&
-              (t.$volumePanelText.innerHTML = parseInt(100 * e));
-          })(e.volume);
-        }),
-        e.on(x.loading, (e) => {
-          ve(t.$loading, "display", e ? "flex" : "none"),
-            ve(t.$poster, "display", "none"),
-            e && ve(t.$playBig, "display", "none");
-        });
-      const a = (i) => {
-          let o = !0 === (r = i) || !1 === r ? i : e.fullscreen;
-          var r;
-          ve(t.$fullscreenExit, "display", o ? "flex" : "none"),
-            ve(t.$fullscreen, "display", o ? "none" : "flex");
-        },
-        n = () => {
-          Be() &&
-            t.$controls &&
-            e._opt.useWebFullScreen &&
-            setTimeout(() => {
-              if (e.fullscreen) {
-                let i = e.height / 2 - e.width + 19,
-                  o = e.height / 2 - 19;
-                t.$controls.style.transform = `translateX(${-i}px) translateY(-${o}px) rotate(-90deg)`;
-              } else
-                t.$controls.style.transform =
-                  "translateX(0) translateY(0) rotate(0)";
-            }, 10);
-        };
-      try {
-        me.on("change", a),
-          e.events.destroys.push(() => {
-            me.off("change", a);
-          });
-      } catch (e) {}
-      e.on(x.webFullscreen, (e) => {
-        a(e), n();
-      }),
-        e.on(x.recording, () => {
-          ve(t.$record, "display", e.recording ? "none" : "flex"),
-            ve(t.$recordStop, "display", e.recording ? "flex" : "none"),
-            ve(t.$recording, "display", e.recording ? "flex" : "none");
-        }),
-        e.on(x.recordingTimestamp, (e) => {
-          t.$recordingTime &&
-            (t.$recordingTime.innerHTML = (function (e) {
-              var t;
-              if (e > -1) {
-                var i = Math.floor(e / 3600),
-                  o = Math.floor(e / 60) % 60,
-                  r = e % 60;
-                (t = i < 10 ? "0" + i + ":" : i + ":"),
-                  o < 10 && (t += "0"),
-                  (t += o + ":"),
-                  (r = Math.round(r)) < 10 && (t += "0"),
-                  (t += r.toFixed(0));
-              }
-              return t;
-            })(e));
-        }),
-        e.on(x.playing, (e) => {
-          ve(t.$play, "display", e ? "none" : "flex"),
-            ve(t.$playBig, "display", e ? "none" : "block"),
-            ve(t.$pause, "display", e ? "flex" : "none"),
-            ve(t.$screenshot, "display", e ? "flex" : "none"),
-            ve(t.$record, "display", e ? "flex" : "none"),
-            ve(t.$qualityMenu, "display", e ? "flex" : "none"),
-            ve(t.$volume, "display", e ? "flex" : "none"),
-            a(),
-            e || (t.$speed && (t.$speed.innerHTML = Ce("")));
-        }),
-        e.on(x.kBps, (e) => {
-          const i = Ce(e);
-          t.$speed && (t.$speed.innerHTML = i);
-        });
+    {}
+  );
+  const nt = (e, t) => {
+    const {
+      events: { proxy: i }
+    } = e;
+    const o = document.createElement("object");
+    o.setAttribute("aria-hidden", "true"),
+    o.setAttribute("tabindex", -1),
+    (o.type = "text/html"),
+    (o.data = "about:blank"),
+    ve(o, {
+      display: "block",
+      position: "absolute",
+      top: "0",
+      left: "0",
+      height: "100%",
+      width: "100%",
+      overflow: "hidden",
+      pointerEvents: "none",
+      zIndex: "-1"
+    });
+    let r = e.width;
+    let s = e.height;
+    i(o, "load", () => {
+      i(o.contentDocument.defaultView, "resize", () => {
+        (e.width === r && e.height === s)
+        || ((r = e.width), (s = e.height), e.emit(x.resize), n());
+      });
+    }),
+    e.$container.appendChild(o),
+    e.on(x.destroy, () => {
+      e.$container.removeChild(o);
+    }),
+    e.on(x.volumechange, () => {
+      !(function (e) {
+        if (e === 0) {
+          ve(t.$volumeOn, "display", "none"),
+          ve(t.$volumeOff, "display", "flex"),
+          ve(t.$volumeHandle, "top", "48px");
+        }
+        else if (t.$volumeHandle && t.$volumePanel) {
+          const i = we(t.$volumePanel, "height") || 60;
+          const o = we(t.$volumeHandle, "height");
+          const r = i - (i - o) * e - o;
+          ve(t.$volumeHandle, "top", `${r}px`),
+          ve(t.$volumeOn, "display", "flex"),
+          ve(t.$volumeOff, "display", "none");
+        }
+        t.$volumePanelText
+        && (t.$volumePanelText.innerHTML = Number.parseInt(100 * e));
+      })(e.volume);
+    }),
+    e.on(x.loading, (e) => {
+      ve(t.$loading, "display", e ? "flex" : "none"),
+      ve(t.$poster, "display", "none"),
+      e && ve(t.$playBig, "display", "none");
+    });
+    const a = (i) => {
+      const o = !0 === (r = i) || !1 === r ? i : e.fullscreen;
+      let r;
+      ve(t.$fullscreenExit, "display", o ? "flex" : "none"),
+      ve(t.$fullscreen, "display", o ? "none" : "flex");
     };
+    const n = () => {
+      Be()
+      && t.$controls
+      && e._opt.useWebFullScreen
+      && setTimeout(() => {
+        if (e.fullscreen) {
+          const i = e.height / 2 - e.width + 19;
+          const o = e.height / 2 - 19;
+          t.$controls.style.transform = `translateX(${-i}px) translateY(-${o}px) rotate(-90deg)`;
+        }
+        else {
+          t.$controls.style.transform
+                  = "translateX(0) translateY(0) rotate(0)";
+        }
+      }, 10);
+    };
+    try {
+      me.on("change", a),
+      e.events.destroys.push(() => {
+        me.off("change", a);
+      });
+    }
+    catch (e) {}
+    e.on(x.webFullscreen, (e) => {
+      a(e), n();
+    }),
+    e.on(x.recording, () => {
+      ve(t.$record, "display", e.recording ? "none" : "flex"),
+      ve(t.$recordStop, "display", e.recording ? "flex" : "none"),
+      ve(t.$recording, "display", e.recording ? "flex" : "none");
+    }),
+    e.on(x.recordingTimestamp, (e) => {
+      t.$recordingTime
+      && (t.$recordingTime.innerHTML = (function (e) {
+        let t;
+        if (e > -1) {
+          const i = Math.floor(e / 3600);
+          const o = Math.floor(e / 60) % 60;
+          let r = e % 60;
+          (t = i < 10 ? `0${i}:` : `${i}:`),
+          o < 10 && (t += "0"),
+          (t += `${o}:`),
+          (r = Math.round(r)) < 10 && (t += "0"),
+          (t += r.toFixed(0));
+        }
+        return t;
+      })(e));
+    }),
+    e.on(x.playing, (e) => {
+      ve(t.$play, "display", e ? "none" : "flex"),
+      ve(t.$playBig, "display", e ? "none" : "block"),
+      ve(t.$pause, "display", e ? "flex" : "none"),
+      ve(t.$screenshot, "display", e ? "flex" : "none"),
+      ve(t.$record, "display", e ? "flex" : "none"),
+      ve(t.$qualityMenu, "display", e ? "flex" : "none"),
+      ve(t.$volume, "display", e ? "flex" : "none"),
+      a(),
+      e || (t.$speed && (t.$speed.innerHTML = Ce("")));
+    }),
+    e.on(x.kBps, (e) => {
+      const i = Ce(e);
+      t.$speed && (t.$speed.innerHTML = i);
+    });
+  };
   function At(e, t) {
     void 0 === t && (t = {});
-    var i = t.insertAt;
-    if (e && "undefined" != typeof document) {
-      var o = document.head || document.getElementsByTagName("head")[0],
-        r = document.createElement("style");
+    const i = t.insertAt;
+    if (e && typeof document != "undefined") {
+      const o = document.head || document.getElementsByTagName("head")[0];
+      const r = document.createElement("style");
       (r.type = "text/css"),
-        "top" === i && o.firstChild
-          ? o.insertBefore(r, o.firstChild)
-          : o.appendChild(r),
-        r.styleSheet
-          ? (r.styleSheet.cssText = e)
-          : r.appendChild(document.createTextNode(e));
+      i === "top" && o.firstChild
+        ? o.insertBefore(r, o.firstChild)
+        : o.appendChild(r),
+      r.styleSheet
+        ? (r.styleSheet.cssText = e)
+        : r.appendChild(document.createTextNode(e));
     }
   }
   At(
@@ -5394,294 +5639,295 @@
   );
   class dt {
     constructor(e) {
-      var t;
+      let t;
       (this.player = e),
-        ((e, t) => {
-          e._opt.hasControl && e._opt.controlAutoHide
-            ? e.$container.classList.add("jessibuca-controls-show-auto-hide")
-            : e.$container.classList.add("jessibuca-controls-show");
-          const i = e._opt,
-            o = i.operateBtns;
-          e.$container.insertAdjacentHTML(
-            "beforeend",
-            `\n            ${
-              i.background
-                ? `<div class="jessibuca-poster" style="background-image: url(${i.background})"></div>`
-                : ""
-            }\n            <div class="jessibuca-loading">\n                ${
-              at.loading
-            }\n                ${
-              i.loadingText
-                ? `<div class="jessibuca-loading-text">${i.loadingText}</div>`
-                : ""
-            }\n            </div>\n            ${
-              i.hasControl && o.play
-                ? '<div class="jessibuca-play-big"></div>'
-                : ""
-            }\n            ${
-              i.hasControl
-                ? `\n                <div class="jessibuca-recording">\n                    <div class="jessibuca-recording-red-point"></div>\n                    <div class="jessibuca-recording-time">00:00:01</div>\n                    <div class="jessibuca-icon-recordStop jessibuca-recording-stop">${at.recordStop}</div>\n                </div>\n            `
-                : ""
-            }\n            ${
-              i.hasControl
-                ? `\n                <div class="jessibuca-controls">\n                    <div class="jessibuca-controls-bottom">\n                        <div class="jessibuca-controls-left">\n                            ${
-                    i.showBandwidth
-                      ? '<div class="jessibuca-controls-item jessibuca-speed"></div>'
-                      : ""
-                  }\n                        </div>\n                        <div class="jessibuca-controls-right">\n                             ${
-                    o.audio
-                      ? `\n                                 <div class="jessibuca-controls-item jessibuca-volume">\n                                     ${at.audio}\n                                     ${at.mute}\n                                     <div class="jessibuca-volume-panel-wrap">\n                                          <div class="jessibuca-volume-panel">\n                                                 <div class="jessibuca-volume-panel-handle"></div>\n                                          </div>\n                                          <div class="jessibuca-volume-panel-text"></div>\n                                     </div>\n                                 </div>\n                             `
-                      : ""
-                  }\n                             ${
-                    o.play
-                      ? `<div class="jessibuca-controls-item jessibuca-play">${at.play}</div><div class="jessibuca-controls-item jessibuca-pause">${at.pause}</div>`
-                      : ""
-                  }\n                             ${
-                    o.screenshot
-                      ? `<div class="jessibuca-controls-item jessibuca-screenshot">${at.screenshot}</div>`
-                      : ""
-                  }\n                             ${
-                    o.record
-                      ? ` <div class="jessibuca-controls-item jessibuca-record">${at.record}</div><div class="jessibuca-controls-item jessibuca-record-stop">${at.recordStop}</div>`
-                      : ""
-                  }\n                             ${
-                    o.fullscreen
-                      ? `<div class="jessibuca-controls-item jessibuca-fullscreen">${at.fullscreen}</div><div class="jessibuca-controls-item jessibuca-fullscreen-exit">${at.fullscreenExit}</div>`
-                      : ""
-                  }\n                        </div>\n                    </div>\n                </div>\n            `
-                : ""
-            }\n\n        `
-          ),
-            Object.defineProperty(t, "$poster", {
-              value: e.$container.querySelector(".jessibuca-poster"),
-            }),
-            Object.defineProperty(t, "$loading", {
-              value: e.$container.querySelector(".jessibuca-loading"),
-            }),
-            Object.defineProperty(t, "$play", {
-              value: e.$container.querySelector(".jessibuca-play"),
-            }),
-            Object.defineProperty(t, "$playBig", {
-              value: e.$container.querySelector(".jessibuca-play-big"),
-            }),
-            Object.defineProperty(t, "$recording", {
-              value: e.$container.querySelector(".jessibuca-recording"),
-            }),
-            Object.defineProperty(t, "$recordingTime", {
-              value: e.$container.querySelector(".jessibuca-recording-time"),
-            }),
-            Object.defineProperty(t, "$recordingStop", {
-              value: e.$container.querySelector(".jessibuca-recording-stop"),
-            }),
-            Object.defineProperty(t, "$pause", {
-              value: e.$container.querySelector(".jessibuca-pause"),
-            }),
-            Object.defineProperty(t, "$controls", {
-              value: e.$container.querySelector(".jessibuca-controls"),
-            }),
-            Object.defineProperty(t, "$fullscreen", {
-              value: e.$container.querySelector(".jessibuca-fullscreen"),
-            }),
-            Object.defineProperty(t, "$fullscreen", {
-              value: e.$container.querySelector(".jessibuca-fullscreen"),
-            }),
-            Object.defineProperty(t, "$volume", {
-              value: e.$container.querySelector(".jessibuca-volume"),
-            }),
-            Object.defineProperty(t, "$volumePanelWrap", {
-              value: e.$container.querySelector(".jessibuca-volume-panel-wrap"),
-            }),
-            Object.defineProperty(t, "$volumePanelText", {
-              value: e.$container.querySelector(".jessibuca-volume-panel-text"),
-            }),
-            Object.defineProperty(t, "$volumePanel", {
-              value: e.$container.querySelector(".jessibuca-volume-panel"),
-            }),
-            Object.defineProperty(t, "$volumeHandle", {
-              value: e.$container.querySelector(
-                ".jessibuca-volume-panel-handle"
-              ),
-            }),
-            Object.defineProperty(t, "$volumeOn", {
-              value: e.$container.querySelector(".jessibuca-icon-audio"),
-            }),
-            Object.defineProperty(t, "$volumeOff", {
-              value: e.$container.querySelector(".jessibuca-icon-mute"),
-            }),
-            Object.defineProperty(t, "$fullscreen", {
-              value: e.$container.querySelector(".jessibuca-fullscreen"),
-            }),
-            Object.defineProperty(t, "$fullscreenExit", {
-              value: e.$container.querySelector(".jessibuca-fullscreen-exit"),
-            }),
-            Object.defineProperty(t, "$record", {
-              value: e.$container.querySelector(".jessibuca-record"),
-            }),
-            Object.defineProperty(t, "$recordStop", {
-              value: e.$container.querySelector(".jessibuca-record-stop"),
-            }),
-            Object.defineProperty(t, "$screenshot", {
-              value: e.$container.querySelector(".jessibuca-screenshot"),
-            }),
-            Object.defineProperty(t, "$speed", {
-              value: e.$container.querySelector(".jessibuca-speed"),
-            });
-        })(e, this),
-        (t = this),
-        Object.defineProperty(t, "controlsRect", {
-          get: () => t.$controls.getBoundingClientRect(),
+      ((e, t) => {
+        e._opt.hasControl && e._opt.controlAutoHide
+          ? e.$container.classList.add("jessibuca-controls-show-auto-hide")
+          : e.$container.classList.add("jessibuca-controls-show");
+        const i = e._opt;
+        const o = i.operateBtns;
+        e.$container.insertAdjacentHTML(
+          "beforeend",
+          `\n            ${
+            i.background
+              ? `<div class="jessibuca-poster" style="background-image: url(${i.background})"></div>`
+              : ""
+          }\n            <div class="jessibuca-loading">\n                ${
+            at.loading
+          }\n                ${
+            i.loadingText
+              ? `<div class="jessibuca-loading-text">${i.loadingText}</div>`
+              : ""
+          }\n            </div>\n            ${
+            i.hasControl && o.play
+              ? '<div class="jessibuca-play-big"></div>'
+              : ""
+          }\n            ${
+            i.hasControl
+              ? `\n                <div class="jessibuca-recording">\n                    <div class="jessibuca-recording-red-point"></div>\n                    <div class="jessibuca-recording-time">00:00:01</div>\n                    <div class="jessibuca-icon-recordStop jessibuca-recording-stop">${at.recordStop}</div>\n                </div>\n            `
+              : ""
+          }\n            ${
+            i.hasControl
+              ? `\n                <div class="jessibuca-controls">\n                    <div class="jessibuca-controls-bottom">\n                        <div class="jessibuca-controls-left">\n                            ${
+                i.showBandwidth
+                  ? '<div class="jessibuca-controls-item jessibuca-speed"></div>'
+                  : ""
+              }\n                        </div>\n                        <div class="jessibuca-controls-right">\n                             ${
+                o.audio
+                  ? `\n                                 <div class="jessibuca-controls-item jessibuca-volume">\n                                     ${at.audio}\n                                     ${at.mute}\n                                     <div class="jessibuca-volume-panel-wrap">\n                                          <div class="jessibuca-volume-panel">\n                                                 <div class="jessibuca-volume-panel-handle"></div>\n                                          </div>\n                                          <div class="jessibuca-volume-panel-text"></div>\n                                     </div>\n                                 </div>\n                             `
+                  : ""
+              }\n                             ${
+                o.play
+                  ? `<div class="jessibuca-controls-item jessibuca-play">${at.play}</div><div class="jessibuca-controls-item jessibuca-pause">${at.pause}</div>`
+                  : ""
+              }\n                             ${
+                o.screenshot
+                  ? `<div class="jessibuca-controls-item jessibuca-screenshot">${at.screenshot}</div>`
+                  : ""
+              }\n                             ${
+                o.record
+                  ? ` <div class="jessibuca-controls-item jessibuca-record">${at.record}</div><div class="jessibuca-controls-item jessibuca-record-stop">${at.recordStop}</div>`
+                  : ""
+              }\n                             ${
+                o.fullscreen
+                  ? `<div class="jessibuca-controls-item jessibuca-fullscreen">${at.fullscreen}</div><div class="jessibuca-controls-item jessibuca-fullscreen-exit">${at.fullscreenExit}</div>`
+                  : ""
+              }\n                        </div>\n                    </div>\n                </div>\n            `
+              : ""
+          }\n\n        `
+        ),
+        Object.defineProperty(t, "$poster", {
+          value: e.$container.querySelector(".jessibuca-poster")
         }),
-        nt(e, this),
-        ((e, t) => {
-          const {
-            events: { proxy: i },
-            debug: o,
-          } = e;
-          function r(e) {
-            const { bottom: i, height: o } =
-                t.$volumePanel.getBoundingClientRect(),
-              { height: r } = t.$volumeHandle.getBoundingClientRect();
-            return ye(i - e.y - r / 2, 0, o - r / 2) / (o - r);
-          }
-          if (
-            (i(window, ["click", "contextmenu"], (i) => {
-              i.composedPath().indexOf(e.$container) > -1
-                ? (t.isFocus = !0)
-                : (t.isFocus = !1);
-            }),
-            i(window, "orientationchange", () => {
-              setTimeout(() => {
-                e.resize();
-              }, 300);
-            }),
-            i(t.$controls, "click", (e) => {
-              e.stopPropagation();
-            }),
-            i(t.$pause, "click", (t) => {
-              e.pause();
-            }),
-            i(t.$play, "click", (t) => {
-              e.play(), e.resumeAudioAfterPause();
-            }),
-            i(t.$playBig, "click", (t) => {
-              e.play(), e.resumeAudioAfterPause();
-            }),
-            i(t.$volume, "mouseover", () => {
-              t.$volumePanelWrap.classList.add(
-                "jessibuca-volume-panel-wrap-show"
-              );
-            }),
-            i(t.$volume, "mouseout", () => {
-              t.$volumePanelWrap.classList.remove(
-                "jessibuca-volume-panel-wrap-show"
-              );
-            }),
-            i(t.$volumeOn, "click", (i) => {
-              i.stopPropagation(),
-                ve(t.$volumeOn, "display", "none"),
-                ve(t.$volumeOff, "display", "block");
-              const o = e.volume;
-              (e.volume = 0), (e._lastVolume = o);
-            }),
-            i(t.$volumeOff, "click", (i) => {
-              i.stopPropagation(),
-                ve(t.$volumeOn, "display", "block"),
-                ve(t.$volumeOff, "display", "none"),
-                (e.volume = e.lastVolume || 0.5);
-            }),
-            i(t.$screenshot, "click", (t) => {
-              t.stopPropagation(), e.video.screenshot();
-            }),
-            i(t.$volumePanel, "click", (t) => {
-              t.stopPropagation(), (e.volume = r(t));
-            }),
-            i(t.$volumeHandle, "mousedown", () => {
-              t.isVolumeDroging = !0;
-            }),
-            i(t.$volumeHandle, "mousemove", (i) => {
-              t.isVolumeDroging && (e.volume = r(i));
-            }),
-            i(document, "mouseup", () => {
-              t.isVolumeDroging && (t.isVolumeDroging = !1);
-            }),
-            i(t.$record, "click", (t) => {
-              t.stopPropagation(), (e.recording = !0);
-            }),
-            i(t.$recordStop, "click", (t) => {
-              t.stopPropagation(), (e.recording = !1);
-            }),
-            i(t.$recordingStop, "click", (t) => {
-              t.stopPropagation(), (e.recording = !1);
-            }),
-            i(t.$fullscreen, "click", (t) => {
-              t.stopPropagation(), (e.fullscreen = !0);
-            }),
-            i(t.$fullscreenExit, "click", (t) => {
-              t.stopPropagation(), (e.fullscreen = !1);
-            }),
-            e._opt.hasControl && e._opt.controlAutoHide)
-          ) {
-            i(e.$container, "mouseover", () => {
-              e.fullscreen || (ve(t.$controls, "display", "block"), r());
-            }),
-              i(e.$container, "mousemove", () => {
-                e.$container &&
-                  t.$controls &&
-                  (e.fullscreen,
-                  "none" === t.$controls.style.display &&
-                    (ve(t.$controls, "display", "block"), r()));
-              }),
-              i(e.$container, "mouseout", () => {
-                s(), ve(t.$controls, "display", "none");
-              });
-            let o = null;
-            const r = () => {
-                s(),
-                  (o = setTimeout(() => {
-                    ve(t.$controls, "display", "none");
-                  }, 5e3));
-              },
-              s = () => {
-                o && (clearTimeout(o), (o = null));
-              };
-          }
-        })(e, this),
-        e._opt.hotKey &&
-          ((e, t) => {
-            const {
-                events: { proxy: i },
-              } = e,
-              o = {};
-            function r(e, t) {
-              o[e] ? o[e].push(t) : (o[e] = [t]);
+        Object.defineProperty(t, "$loading", {
+          value: e.$container.querySelector(".jessibuca-loading")
+        }),
+        Object.defineProperty(t, "$play", {
+          value: e.$container.querySelector(".jessibuca-play")
+        }),
+        Object.defineProperty(t, "$playBig", {
+          value: e.$container.querySelector(".jessibuca-play-big")
+        }),
+        Object.defineProperty(t, "$recording", {
+          value: e.$container.querySelector(".jessibuca-recording")
+        }),
+        Object.defineProperty(t, "$recordingTime", {
+          value: e.$container.querySelector(".jessibuca-recording-time")
+        }),
+        Object.defineProperty(t, "$recordingStop", {
+          value: e.$container.querySelector(".jessibuca-recording-stop")
+        }),
+        Object.defineProperty(t, "$pause", {
+          value: e.$container.querySelector(".jessibuca-pause")
+        }),
+        Object.defineProperty(t, "$controls", {
+          value: e.$container.querySelector(".jessibuca-controls")
+        }),
+        Object.defineProperty(t, "$fullscreen", {
+          value: e.$container.querySelector(".jessibuca-fullscreen")
+        }),
+        Object.defineProperty(t, "$fullscreen", {
+          value: e.$container.querySelector(".jessibuca-fullscreen")
+        }),
+        Object.defineProperty(t, "$volume", {
+          value: e.$container.querySelector(".jessibuca-volume")
+        }),
+        Object.defineProperty(t, "$volumePanelWrap", {
+          value: e.$container.querySelector(".jessibuca-volume-panel-wrap")
+        }),
+        Object.defineProperty(t, "$volumePanelText", {
+          value: e.$container.querySelector(".jessibuca-volume-panel-text")
+        }),
+        Object.defineProperty(t, "$volumePanel", {
+          value: e.$container.querySelector(".jessibuca-volume-panel")
+        }),
+        Object.defineProperty(t, "$volumeHandle", {
+          value: e.$container.querySelector(
+            ".jessibuca-volume-panel-handle"
+          )
+        }),
+        Object.defineProperty(t, "$volumeOn", {
+          value: e.$container.querySelector(".jessibuca-icon-audio")
+        }),
+        Object.defineProperty(t, "$volumeOff", {
+          value: e.$container.querySelector(".jessibuca-icon-mute")
+        }),
+        Object.defineProperty(t, "$fullscreen", {
+          value: e.$container.querySelector(".jessibuca-fullscreen")
+        }),
+        Object.defineProperty(t, "$fullscreenExit", {
+          value: e.$container.querySelector(".jessibuca-fullscreen-exit")
+        }),
+        Object.defineProperty(t, "$record", {
+          value: e.$container.querySelector(".jessibuca-record")
+        }),
+        Object.defineProperty(t, "$recordStop", {
+          value: e.$container.querySelector(".jessibuca-record-stop")
+        }),
+        Object.defineProperty(t, "$screenshot", {
+          value: e.$container.querySelector(".jessibuca-screenshot")
+        }),
+        Object.defineProperty(t, "$speed", {
+          value: e.$container.querySelector(".jessibuca-speed")
+        });
+      })(e, this),
+      (t = this),
+      Object.defineProperty(t, "controlsRect", {
+        get: () => t.$controls.getBoundingClientRect()
+      }),
+      nt(e, this),
+      ((e, t) => {
+        const {
+          events: { proxy: i },
+          debug: o
+        } = e;
+        function r(e) {
+          const { bottom: i, height: o }
+                = t.$volumePanel.getBoundingClientRect();
+          const { height: r } = t.$volumeHandle.getBoundingClientRect();
+          return ye(i - e.y - r / 2, 0, o - r / 2) / (o - r);
+        }
+        if (
+          (i(window, ["click", "contextmenu"], (i) => {
+            i.composedPath().includes(e.$container)
+              ? (t.isFocus = !0)
+              : (t.isFocus = !1);
+          }),
+          i(window, "orientationchange", () => {
+            setTimeout(() => {
+              e.resize();
+            }, 300);
+          }),
+          i(t.$controls, "click", (e) => {
+            e.stopPropagation();
+          }),
+          i(t.$pause, "click", (t) => {
+            e.pause();
+          }),
+          i(t.$play, "click", (t) => {
+            e.play(), e.resumeAudioAfterPause();
+          }),
+          i(t.$playBig, "click", (t) => {
+            e.play(), e.resumeAudioAfterPause();
+          }),
+          i(t.$volume, "mouseover", () => {
+            t.$volumePanelWrap.classList.add(
+              "jessibuca-volume-panel-wrap-show"
+            );
+          }),
+          i(t.$volume, "mouseout", () => {
+            t.$volumePanelWrap.classList.remove(
+              "jessibuca-volume-panel-wrap-show"
+            );
+          }),
+          i(t.$volumeOn, "click", (i) => {
+            i.stopPropagation(),
+            ve(t.$volumeOn, "display", "none"),
+            ve(t.$volumeOff, "display", "block");
+            const o = e.volume;
+            (e.volume = 0), (e._lastVolume = o);
+          }),
+          i(t.$volumeOff, "click", (i) => {
+            i.stopPropagation(),
+            ve(t.$volumeOn, "display", "block"),
+            ve(t.$volumeOff, "display", "none"),
+            (e.volume = e.lastVolume || 0.5);
+          }),
+          i(t.$screenshot, "click", (t) => {
+            t.stopPropagation(), e.video.screenshot();
+          }),
+          i(t.$volumePanel, "click", (t) => {
+            t.stopPropagation(), (e.volume = r(t));
+          }),
+          i(t.$volumeHandle, "mousedown", () => {
+            t.isVolumeDroging = !0;
+          }),
+          i(t.$volumeHandle, "mousemove", (i) => {
+            t.isVolumeDroging && (e.volume = r(i));
+          }),
+          i(document, "mouseup", () => {
+            t.isVolumeDroging && (t.isVolumeDroging = !1);
+          }),
+          i(t.$record, "click", (t) => {
+            t.stopPropagation(), (e.recording = !0);
+          }),
+          i(t.$recordStop, "click", (t) => {
+            t.stopPropagation(), (e.recording = !1);
+          }),
+          i(t.$recordingStop, "click", (t) => {
+            t.stopPropagation(), (e.recording = !1);
+          }),
+          i(t.$fullscreen, "click", (t) => {
+            t.stopPropagation(), (e.fullscreen = !0);
+          }),
+          i(t.$fullscreenExit, "click", (t) => {
+            t.stopPropagation(), (e.fullscreen = !1);
+          }),
+          e._opt.hasControl && e._opt.controlAutoHide)
+        ) {
+          i(e.$container, "mouseover", () => {
+            e.fullscreen || (ve(t.$controls, "display", "block"), r());
+          }),
+          i(e.$container, "mousemove", () => {
+            e.$container
+            && t.$controls
+            && (e.fullscreen,
+            t.$controls.style.display === "none"
+            && (ve(t.$controls, "display", "block"), r()));
+          }),
+          i(e.$container, "mouseout", () => {
+            s(), ve(t.$controls, "display", "none");
+          });
+          let o = null;
+          const r = () => {
+            s(),
+            (o = setTimeout(() => {
+              ve(t.$controls, "display", "none");
+            }, 5e3));
+          };
+          const s = () => {
+            o && (clearTimeout(o), (o = null));
+          };
+        }
+      })(e, this),
+      e._opt.hotKey
+      && ((e, t) => {
+        const {
+          events: { proxy: i }
+        } = e;
+        const o = {};
+        function r(e, t) {
+          o[e] ? o[e].push(t) : (o[e] = [t]);
+        }
+        r(te, () => {
+          e.fullscreen && (e.fullscreen = !1);
+        }),
+        r(ie, () => {
+          e.volume += 0.05;
+        }),
+        r(oe, () => {
+          e.volume -= 0.05;
+        }),
+        i(window, "keydown", (e) => {
+          if (t.isFocus) {
+            const t = document.activeElement.tagName.toUpperCase();
+            const i = document.activeElement.getAttribute("contenteditable");
+            if (
+              t !== "INPUT"
+              && t !== "TEXTAREA"
+              && i !== ""
+              && i !== "true"
+            ) {
+              const t = o[e.keyCode];
+              t && (e.preventDefault(), t.forEach(e => e()));
             }
-            r(te, () => {
-              e.fullscreen && (e.fullscreen = !1);
-            }),
-              r(ie, () => {
-                e.volume += 0.05;
-              }),
-              r(oe, () => {
-                e.volume -= 0.05;
-              }),
-              i(window, "keydown", (e) => {
-                if (t.isFocus) {
-                  const t = document.activeElement.tagName.toUpperCase(),
-                    i = document.activeElement.getAttribute("contenteditable");
-                  if (
-                    "INPUT" !== t &&
-                    "TEXTAREA" !== t &&
-                    "" !== i &&
-                    "true" !== i
-                  ) {
-                    const t = o[e.keyCode];
-                    t && (e.preventDefault(), t.forEach((e) => e()));
-                  }
-                }
-              });
-          })(e, this),
-        this.player.debug.log("Control", "init");
+          }
+        });
+      })(e, this),
+      this.player.debug.log("Control", "init");
     }
+
     destroy() {
       if (this.$poster) {
         if (!Ie(this.$poster)) {
@@ -5717,17 +5963,19 @@
       }
       this.player.debug.log("control", "destroy");
     }
+
     autoSize() {
       const e = this.player;
       e.$container.style.padding = "0 0";
-      const t = e.width,
-        i = e.height,
-        o = t / i,
-        r = e.video.$videoElement.width / e.video.$videoElement.height;
+      const t = e.width;
+      const i = e.height;
+      const o = t / i;
+      const r = e.video.$videoElement.width / e.video.$videoElement.height;
       if (o > r) {
         const o = (t - i * r) / 2;
         e.$container.style.padding = `0 ${o}px`;
-      } else {
+      }
+      else {
         const o = (i - t / r) / 2;
         e.$container.style.padding = `${o}px 0`;
       }
@@ -5774,66 +6022,175 @@
         trex: [],
         tkhd: [],
         vmhd: [],
-        smhd: [],
+        smhd: []
       };
-      for (let e in ct.types)
-        ct.types.hasOwnProperty(e) &&
-          (ct.types[e] = [
-            e.charCodeAt(0),
-            e.charCodeAt(1),
-            e.charCodeAt(2),
-            e.charCodeAt(3),
-          ]);
-      let e = (ct.constants = {});
+      for (const e in ct.types) {
+        ct.types.hasOwnProperty(e)
+        && (ct.types[e] = [
+          e.charCodeAt(0),
+          e.charCodeAt(1),
+          e.charCodeAt(2),
+          e.charCodeAt(3)
+        ]);
+      }
+      const e = (ct.constants = {});
       (e.FTYP = new Uint8Array([
-        105, 115, 111, 109, 0, 0, 0, 1, 105, 115, 111, 109, 97, 118, 99, 49,
+        105,
+        115,
+        111,
+        109,
+        0,
+        0,
+        0,
+        1,
+        105,
+        115,
+        111,
+        109,
+        97,
+        118,
+        99,
+        49
       ])),
-        (e.STSD_PREFIX = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 1])),
-        (e.STTS = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0])),
-        (e.STSC = e.STCO = e.STTS),
-        (e.STSZ = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])),
-        (e.HDLR_VIDEO = new Uint8Array([
-          0, 0, 0, 0, 0, 0, 0, 0, 118, 105, 100, 101, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-          0, 0, 0, 86, 105, 100, 101, 111, 72, 97, 110, 100, 108, 101, 114, 0,
-        ])),
-        (e.HDLR_AUDIO = new Uint8Array([
-          0, 0, 0, 0, 0, 0, 0, 0, 115, 111, 117, 110, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-          0, 0, 0, 83, 111, 117, 110, 100, 72, 97, 110, 100, 108, 101, 114, 0,
-        ])),
-        (e.DREF = new Uint8Array([
-          0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 12, 117, 114, 108, 32, 0, 0, 0, 1,
-        ])),
-        (e.SMHD = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0])),
-        (e.VMHD = new Uint8Array([0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0]));
+      (e.STSD_PREFIX = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 1])),
+      (e.STTS = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0])),
+      (e.STSC = e.STCO = e.STTS),
+      (e.STSZ = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])),
+      (e.HDLR_VIDEO = new Uint8Array([
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        118,
+        105,
+        100,
+        101,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        86,
+        105,
+        100,
+        101,
+        111,
+        72,
+        97,
+        110,
+        100,
+        108,
+        101,
+        114,
+        0
+      ])),
+      (e.HDLR_AUDIO = new Uint8Array([
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        115,
+        111,
+        117,
+        110,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        83,
+        111,
+        117,
+        110,
+        100,
+        72,
+        97,
+        110,
+        100,
+        108,
+        101,
+        114,
+        0
+      ])),
+      (e.DREF = new Uint8Array([
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        12,
+        117,
+        114,
+        108,
+        32,
+        0,
+        0,
+        0,
+        1
+      ])),
+      (e.SMHD = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0])),
+      (e.VMHD = new Uint8Array([0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0]));
     }
+
     static box(e) {
-      let t = 8,
-        i = null,
-        o = Array.prototype.slice.call(arguments, 1),
-        r = o.length;
+      let t = 8;
+      let i = null;
+      const o = Array.prototype.slice.call(arguments, 1);
+      const r = o.length;
       for (let e = 0; e < r; e++) t += o[e].byteLength;
       (i = new Uint8Array(t)),
-        (i[0] = (t >>> 24) & 255),
-        (i[1] = (t >>> 16) & 255),
-        (i[2] = (t >>> 8) & 255),
-        (i[3] = 255 & t),
-        i.set(e, 4);
+      (i[0] = (t >>> 24) & 255),
+      (i[1] = (t >>> 16) & 255),
+      (i[2] = (t >>> 8) & 255),
+      (i[3] = 255 & t),
+      i.set(e, 4);
       let s = 8;
       for (let e = 0; e < r; e++) i.set(o[e], s), (s += o[e].byteLength);
       return i;
     }
+
     static generateInitSegment(e) {
-      let t = ct.box(ct.types.ftyp, ct.constants.FTYP),
-        i = ct.moov(e),
-        o = new Uint8Array(t.byteLength + i.byteLength);
+      const t = ct.box(ct.types.ftyp, ct.constants.FTYP);
+      const i = ct.moov(e);
+      const o = new Uint8Array(t.byteLength + i.byteLength);
       return o.set(t, 0), o.set(i, t.byteLength), o;
     }
+
     static moov(e) {
-      let t = ct.mvhd(e.timescale, e.duration),
-        i = ct.trak(e),
-        o = ct.mvex(e);
+      const t = ct.mvhd(e.timescale, e.duration);
+      const i = ct.trak(e);
+      const o = ct.mvex(e);
       return ct.box(ct.types.moov, t, i, o);
     }
+
     static mvhd(e, t) {
       return ct.box(
         ct.types.mvhd,
@@ -5937,18 +6294,20 @@
           255,
           255,
           255,
-          255,
+          255
         ])
       );
     }
+
     static trak(e) {
       return ct.box(ct.types.trak, ct.tkhd(e), ct.mdia(e));
     }
+
     static tkhd(e) {
-      let t = e.id,
-        i = e.duration,
-        o = e.presentWidth,
-        r = e.presentHeight;
+      const t = e.id;
+      const i = e.duration;
+      const o = e.presentWidth;
+      const r = e.presentHeight;
       return ct.box(
         ct.types.tkhd,
         new Uint8Array([
@@ -6035,16 +6394,18 @@
           (r >>> 8) & 255,
           255 & r,
           0,
-          0,
+          0
         ])
       );
     }
+
     static mdia(e) {
       return ct.box(ct.types.mdia, ct.mdhd(e), ct.hdlr(e), ct.minf(e));
     }
+
     static mdhd(e) {
-      let t = e.timescale,
-        i = e.duration;
+      const t = e.timescale;
+      const i = e.duration;
       return ct.box(
         ct.types.mdhd,
         new Uint8Array([
@@ -6071,33 +6432,37 @@
           85,
           196,
           0,
-          0,
+          0
         ])
       );
     }
+
     static hdlr(e) {
       let t = null;
       return (
-        (t =
-          "audio" === e.type
+        (t
+          = e.type === "audio"
             ? ct.constants.HDLR_AUDIO
             : ct.constants.HDLR_VIDEO),
         ct.box(ct.types.hdlr, t)
       );
     }
+
     static minf(e) {
       let t = null;
       return (
-        (t =
-          "audio" === e.type
+        (t
+          = e.type === "audio"
             ? ct.box(ct.types.smhd, ct.constants.SMHD)
             : ct.box(ct.types.vmhd, ct.constants.VMHD)),
         ct.box(ct.types.minf, t, ct.dinf(), ct.stbl(e))
       );
     }
+
     static dinf() {
       return ct.box(ct.types.dinf, ct.box(ct.types.dref, ct.constants.DREF));
     }
+
     static stbl(e) {
       return ct.box(
         ct.types.stbl,
@@ -6108,26 +6473,69 @@
         ct.box(ct.types.stco, ct.constants.STCO)
       );
     }
+
     static stsd(e) {
-      return "audio" === e.type
+      return e.type === "audio"
         ? ct.box(ct.types.stsd, ct.constants.STSD_PREFIX, ct.mp4a(e))
-        : "avc" === e.videoType
-        ? ct.box(ct.types.stsd, ct.constants.STSD_PREFIX, ct.avc1(e))
-        : ct.box(ct.types.stsd, ct.constants.STSD_PREFIX, ct.hvc1(e));
+        : e.videoType === "avc"
+          ? ct.box(ct.types.stsd, ct.constants.STSD_PREFIX, ct.avc1(e))
+          : ct.box(ct.types.stsd, ct.constants.STSD_PREFIX, ct.hvc1(e));
     }
+
     static mp4a(e) {
-      let t = e.channelCount,
-        i = e.audioSampleRate,
-        o = new Uint8Array([
+      const t = e.channelCount;
+      const i = e.audioSampleRate;
+      const o = new Uint8Array([
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        t,
+        0,
+        16,
+        0,
+        0,
+        0,
+        0,
+        (i >>> 8) & 255,
+        255 & i,
+        0,
+        0
+      ]);
+      return ct.box(ct.types.mp4a, o, ct.esds(e));
+    }
+
+    static esds(e) {
+      const t = e.config || [];
+      const i = t.length;
+      const o = new Uint8Array(
+        [
           0,
           0,
           0,
           0,
-          0,
-          0,
+          3,
+          23 + i,
           0,
           1,
           0,
+          4,
+          15 + i,
+          64,
+          21,
           0,
           0,
           0,
@@ -6136,62 +6544,23 @@
           0,
           0,
           0,
-          t,
-          0,
-          16,
           0,
           0,
           0,
-          0,
-          (i >>> 8) & 255,
-          255 & i,
-          0,
-          0,
-        ]);
-      return ct.box(ct.types.mp4a, o, ct.esds(e));
-    }
-    static esds(e) {
-      let t = e.config || [],
-        i = t.length,
-        o = new Uint8Array(
-          [
-            0,
-            0,
-            0,
-            0,
-            3,
-            23 + i,
-            0,
-            1,
-            0,
-            4,
-            15 + i,
-            64,
-            21,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            5,
-          ]
-            .concat([i])
-            .concat(t)
-            .concat([6, 1, 2])
-        );
+          5
+        ]
+          .concat([i])
+          .concat(t)
+          .concat([6, 1, 2])
+      );
       return ct.box(ct.types.esds, o);
     }
+
     static avc1(e) {
-      let t = e.avcc;
-      const i = e.codecWidth,
-        o = e.codecHeight;
-      let r = new Uint8Array([
+      const t = e.avcc;
+      const i = e.codecWidth;
+      const o = e.codecHeight;
+      const r = new Uint8Array([
         0,
         0,
         0,
@@ -6269,15 +6638,16 @@
         0,
         24,
         255,
-        255,
+        255
       ]);
       return ct.box(ct.types.avc1, r, ct.box(ct.types.avcC, t));
     }
+
     static hvc1(e) {
-      let t = e.avcc;
-      const i = e.codecWidth,
-        o = e.codecHeight;
-      let r = new Uint8Array([
+      const t = e.avcc;
+      const i = e.codecWidth;
+      const o = e.codecHeight;
+      const r = new Uint8Array([
         0,
         0,
         0,
@@ -6355,48 +6725,52 @@
         0,
         24,
         255,
-        255,
+        255
       ]);
       return ct.box(ct.types.hvc1, r, ct.box(ct.types.hvcC, t));
     }
+
     static mvex(e) {
       return ct.box(ct.types.mvex, ct.trex(e));
     }
+
     static trex(e) {
-      let t = e.id,
-        i = new Uint8Array([
-          0,
-          0,
-          0,
-          0,
-          (t >>> 24) & 255,
-          (t >>> 16) & 255,
-          (t >>> 8) & 255,
-          255 & t,
-          0,
-          0,
-          0,
-          1,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          1,
-          0,
-          1,
-        ]);
+      const t = e.id;
+      const i = new Uint8Array([
+        0,
+        0,
+        0,
+        0,
+        (t >>> 24) & 255,
+        (t >>> 16) & 255,
+        (t >>> 8) & 255,
+        255 & t,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1
+      ]);
       return ct.box(ct.types.trex, i);
     }
+
     static moof(e, t) {
       return ct.box(ct.types.moof, ct.mfhd(e.sequenceNumber), ct.traf(e, t));
     }
+
     static mfhd(e) {
-      let t = new Uint8Array([
+      const t = new Uint8Array([
         0,
         0,
         0,
@@ -6404,78 +6778,81 @@
         (e >>> 24) & 255,
         (e >>> 16) & 255,
         (e >>> 8) & 255,
-        255 & e,
+        255 & e
       ]);
       return ct.box(ct.types.mfhd, t);
     }
+
     static traf(e, t) {
-      let i = e.id,
-        o = ct.box(
-          ct.types.tfhd,
-          new Uint8Array([
-            0,
-            0,
-            0,
-            0,
-            (i >>> 24) & 255,
-            (i >>> 16) & 255,
-            (i >>> 8) & 255,
-            255 & i,
-          ])
-        ),
-        r = ct.box(
-          ct.types.tfdt,
-          new Uint8Array([
-            0,
-            0,
-            0,
-            0,
-            (t >>> 24) & 255,
-            (t >>> 16) & 255,
-            (t >>> 8) & 255,
-            255 & t,
-          ])
-        ),
-        s = ct.sdtp(e),
-        a = ct.trun(e, s.byteLength + 16 + 16 + 8 + 16 + 8 + 8);
+      const i = e.id;
+      const o = ct.box(
+        ct.types.tfhd,
+        new Uint8Array([
+          0,
+          0,
+          0,
+          0,
+          (i >>> 24) & 255,
+          (i >>> 16) & 255,
+          (i >>> 8) & 255,
+          255 & i
+        ])
+      );
+      const r = ct.box(
+        ct.types.tfdt,
+        new Uint8Array([
+          0,
+          0,
+          0,
+          0,
+          (t >>> 24) & 255,
+          (t >>> 16) & 255,
+          (t >>> 8) & 255,
+          255 & t
+        ])
+      );
+      const s = ct.sdtp(e);
+      const a = ct.trun(e, s.byteLength + 16 + 16 + 8 + 16 + 8 + 8);
       return ct.box(ct.types.traf, o, r, a, s);
     }
+
     static sdtp(e) {
-      let t = new Uint8Array(5),
-        i = e.flags;
+      const t = new Uint8Array(5);
+      const i = e.flags;
       return (
-        (t[4] =
-          (i.isLeading << 6) |
-          (i.dependsOn << 4) |
-          (i.isDependedOn << 2) |
-          i.hasRedundancy),
+        (t[4]
+          = (i.isLeading << 6)
+            | (i.dependsOn << 4)
+            | (i.isDependedOn << 2)
+            | i.hasRedundancy),
         ct.box(ct.types.sdtp, t)
       );
     }
+
     static trun(e, t) {
-      let i = new Uint8Array(28);
+      const i = new Uint8Array(28);
       (t += 36),
-        i.set(
-          [
-            0,
-            0,
-            15,
-            1,
-            0,
-            0,
-            0,
-            1,
-            (t >>> 24) & 255,
-            (t >>> 16) & 255,
-            (t >>> 8) & 255,
-            255 & t,
-          ],
-          0
-        );
-      let o = e.duration,
-        r = e.size,
-        s = e.flags,
-        a = e.cts;
+      i.set(
+        [
+          0,
+          0,
+          15,
+          1,
+          0,
+          0,
+          0,
+          1,
+          (t >>> 24) & 255,
+          (t >>> 16) & 255,
+          (t >>> 8) & 255,
+          255 & t
+        ],
+        0
+      );
+      const o = e.duration;
+      const r = e.size;
+      const s = e.flags;
+      const a = e.cts;
       return (
         i.set(
           [
@@ -6494,13 +6871,14 @@
             (a >>> 24) & 255,
             (a >>> 16) & 255,
             (a >>> 8) & 255,
-            255 & a,
+            255 & a
           ],
           12
         ),
         ct.box(ct.types.trun, i)
       );
     }
+
     static mdat(e) {
       return ct.box(ct.types.mdat, e);
     }
@@ -6509,280 +6887,308 @@
   class lt extends De {
     constructor(e) {
       super(),
-        (this.player = e),
-        (this.isAvc = !0),
-        (this.mediaSource = new window.MediaSource()),
-        (this.sourceBuffer = null),
-        (this.hasInit = !1),
-        (this.isInitInfo = !1),
-        (this.cacheTrack = {}),
-        (this.timeInit = !1),
-        (this.sequenceNumber = 0),
-        (this.mediaSourceOpen = !1),
-        (this.dropping = !1),
-        (this.firstRenderTime = null),
-        (this.mediaSourceAppendBufferError = !1),
-        (this.mediaSourceAppendBufferFull = !1),
-        (this.isDecodeFirstIIframe = !1),
-        (this.player.video.$videoElement.src = window.URL.createObjectURL(
-          this.mediaSource
-        ));
+      (this.player = e),
+      (this.isAvc = !0),
+      (this.mediaSource = new window.MediaSource()),
+      (this.sourceBuffer = null),
+      (this.hasInit = !1),
+      (this.isInitInfo = !1),
+      (this.cacheTrack = {}),
+      (this.timeInit = !1),
+      (this.sequenceNumber = 0),
+      (this.mediaSourceOpen = !1),
+      (this.dropping = !1),
+      (this.firstRenderTime = null),
+      (this.mediaSourceAppendBufferError = !1),
+      (this.mediaSourceAppendBufferFull = !1),
+      (this.isDecodeFirstIIframe = !1),
+      (this.player.video.$videoElement.src = window.URL.createObjectURL(
+        this.mediaSource
+      ));
       const {
         debug: t,
-        events: { proxy: i },
+        events: { proxy: i }
       } = e;
       i(this.mediaSource, "sourceopen", () => {
         (this.mediaSourceOpen = !0), this.player.emit(x.mseSourceOpen);
       }),
-        i(this.mediaSource, "sourceclose", () => {
-          this.player.emit(x.mseSourceClose);
-        }),
-        e.debug.log("MediaSource", "init");
+      i(this.mediaSource, "sourceclose", () => {
+        this.player.emit(x.mseSourceClose);
+      }),
+      e.debug.log("MediaSource", "init");
     }
+
     destroy() {
       this.stop(),
-        (this.mediaSource = null),
-        (this.mediaSourceOpen = !1),
-        (this.sourceBuffer = null),
-        (this.hasInit = !1),
-        (this.isInitInfo = !1),
-        (this.sequenceNumber = 0),
-        (this.cacheTrack = null),
-        (this.timeInit = !1),
-        (this.mediaSourceAppendBufferError = !1),
-        (this.mediaSourceAppendBufferFull = !1),
-        (this.isDecodeFirstIIframe = !1),
-        this.off(),
-        this.player.debug.log("MediaSource", "destroy");
+      (this.mediaSource = null),
+      (this.mediaSourceOpen = !1),
+      (this.sourceBuffer = null),
+      (this.hasInit = !1),
+      (this.isInitInfo = !1),
+      (this.sequenceNumber = 0),
+      (this.cacheTrack = null),
+      (this.timeInit = !1),
+      (this.mediaSourceAppendBufferError = !1),
+      (this.mediaSourceAppendBufferFull = !1),
+      (this.isDecodeFirstIIframe = !1),
+      this.off(),
+      this.player.debug.log("MediaSource", "destroy");
     }
+
     get state() {
       return this.mediaSource && this.mediaSource.readyState;
     }
+
     get isStateOpen() {
       return this.state === _;
     }
+
     get isStateClosed() {
       return this.state === $;
     }
+
     get isStateEnded() {
       return this.state === K;
     }
+
     get duration() {
       return this.mediaSource && this.mediaSource.duration;
     }
+
     set duration(e) {
       this.mediaSource.duration = e;
     }
+
     decodeVideo(e, t, i, o) {
       const r = this.player;
-      if (r)
+      if (r) {
         if (this.hasInit) {
-          if (i && 0 === e[1]) {
-            let t = ot(e.slice(5));
+          if (i && e[1] === 0) {
+            const t = ot(e.slice(5));
             const i = this.player.video.videoInfo;
-            i &&
-              i.width &&
-              i.height &&
-              t &&
-              t.codecWidth &&
-              t.codecHeight &&
-              (t.codecWidth !== i.width || t.codecHeight !== i.height) &&
-              (this.player.debug.warn(
-                "MediaSource",
-                `width or height is update, width ${i.width}-> ${t.codecWidth}, height ${i.height}-> ${t.codecHeight}`
-              ),
-              (this.isInitInfo = !1),
-              (this.player.video.init = !1));
+            i
+            && i.width
+            && i.height
+            && t
+            && t.codecWidth
+            && t.codecHeight
+            && (t.codecWidth !== i.width || t.codecHeight !== i.height)
+            && (this.player.debug.warn(
+              "MediaSource",
+              `width or height is update, width ${i.width}-> ${t.codecWidth}, height ${i.height}-> ${t.codecHeight}`
+            ),
+            (this.isInitInfo = !1),
+            (this.player.video.init = !1));
           }
           if (
-            (!this.isDecodeFirstIIframe &&
-              i &&
-              (this.isDecodeFirstIIframe = !0),
+            (!this.isDecodeFirstIIframe
+              && i
+              && (this.isDecodeFirstIIframe = !0),
             this.isDecodeFirstIIframe)
           ) {
-            null === this.firstRenderTime && (this.firstRenderTime = t);
+            this.firstRenderTime === null && (this.firstRenderTime = t);
             const r = t - this.firstRenderTime;
             this._decodeVideo(e, r, i, o);
-          } else
+          }
+          else {
             this.player.debug.warn(
               "MediaSource",
               "decodeVideo isDecodeFirstIIframe false"
             );
-        } else if (i && 0 === e[1]) {
+          }
+        }
+        else if (i && e[1] === 0) {
           const o = 15 & e[0];
           if ((r.video.updateVideoInfo({ encTypeCode: o }), o === Q))
             return void this.emit(j.mediaSourceH265NotSupport);
           r._times.decodeStart || (r._times.decodeStart = be()),
-            this._decodeConfigurationRecord(e, t, i, o),
-            (this.hasInit = !0);
+          this._decodeConfigurationRecord(e, t, i, o),
+          (this.hasInit = !0);
         }
+      }
     }
+
     _decodeConfigurationRecord(e, t, i, o) {
-      let r = e.slice(5),
-        s = {};
+      const r = e.slice(5);
+      let s = {};
       s = ot(r);
       const a = {
-          id: 1,
-          type: "video",
-          timescale: 1e3,
-          duration: 0,
-          avcc: r,
-          codecWidth: s.codecWidth,
-          codecHeight: s.codecHeight,
-          videoType: s.videoType,
-        },
-        n = ct.generateInitSegment(a);
+        id: 1,
+        type: "video",
+        timescale: 1e3,
+        duration: 0,
+        avcc: r,
+        codecWidth: s.codecWidth,
+        codecHeight: s.codecHeight,
+        videoType: s.videoType
+      };
+      const n = ct.generateInitSegment(a);
       (this.isAvc = !0),
-        this.appendBuffer(n.buffer),
-        (this.sequenceNumber = 0),
-        (this.cacheTrack = null),
-        (this.timeInit = !1);
+      this.appendBuffer(n.buffer),
+      (this.sequenceNumber = 0),
+      (this.cacheTrack = null),
+      (this.timeInit = !1);
     }
+
     _decodeVideo(e, t, i, o) {
       const r = this.player;
-      let s = e.slice(5),
-        a = s.byteLength;
-      const n = r.video.$videoElement,
-        A = r._opt.videoBufferDelay;
+      const s = e.slice(5);
+      const a = s.byteLength;
+      const n = r.video.$videoElement;
+      const A = r._opt.videoBufferDelay;
       if (
-        (n.buffered.length > 1 &&
-          (this.removeBuffer(n.buffered.start(0), n.buffered.end(0)),
+        (n.buffered.length > 1
+          && (this.removeBuffer(n.buffered.start(0), n.buffered.end(0)),
           (this.timeInit = !1)),
         this.dropping && t - this.cacheTrack.dts > A)
-      )
+      ) {
         (this.dropping = !1), (this.cacheTrack = {});
+      }
       else if (this.cacheTrack && t >= this.cacheTrack.dts) {
-        let e = 8 + this.cacheTrack.size,
-          i = new Uint8Array(e);
+        const e = 8 + this.cacheTrack.size;
+        const i = new Uint8Array(e);
         (i[0] = (e >>> 24) & 255),
-          (i[1] = (e >>> 16) & 255),
-          (i[2] = (e >>> 8) & 255),
-          (i[3] = 255 & e),
-          i.set(ct.types.mdat, 4),
-          i.set(this.cacheTrack.data, 8),
-          (this.cacheTrack.duration = t - this.cacheTrack.dts);
-        let o = ct.moof(this.cacheTrack, this.cacheTrack.dts),
-          s = new Uint8Array(o.byteLength + i.byteLength);
+        (i[1] = (e >>> 16) & 255),
+        (i[2] = (e >>> 8) & 255),
+        (i[3] = 255 & e),
+        i.set(ct.types.mdat, 4),
+        i.set(this.cacheTrack.data, 8),
+        (this.cacheTrack.duration = t - this.cacheTrack.dts);
+        const o = ct.moof(this.cacheTrack, this.cacheTrack.dts);
+        const s = new Uint8Array(o.byteLength + i.byteLength);
         s.set(o, 0),
-          s.set(i, o.byteLength),
-          this.appendBuffer(s.buffer),
-          r.handleRender(),
-          r.updateStats({
-            fps: !0,
-            ts: t,
-            buf: (r.demux && r.demux.delay) || 0,
-          }),
-          r._times.videoStart ||
-            ((r._times.videoStart = be()), r.handlePlayToRenderTimes());
-      } else
-        r.debug.log("MediaSource", "timeInit set false , cacheTrack = {}"),
-          (this.timeInit = !1),
-          (this.cacheTrack = {});
-      this.cacheTrack || (this.cacheTrack = {}),
-        (this.cacheTrack.id = 1),
-        (this.cacheTrack.sequenceNumber = ++this.sequenceNumber),
-        (this.cacheTrack.size = a),
-        (this.cacheTrack.dts = t),
-        (this.cacheTrack.cts = o),
-        (this.cacheTrack.isKeyframe = i),
-        (this.cacheTrack.data = s),
-        (this.cacheTrack.flags = {
-          isLeading: 0,
-          dependsOn: i ? 2 : 1,
-          isDependedOn: i ? 1 : 0,
-          hasRedundancy: 0,
-          isNonSync: i ? 0 : 1,
+        s.set(i, o.byteLength),
+        this.appendBuffer(s.buffer),
+        r.handleRender(),
+        r.updateStats({
+          fps: !0,
+          ts: t,
+          buf: (r.demux && r.demux.delay) || 0
         }),
-        this.timeInit ||
-          1 !== n.buffered.length ||
-          (r.debug.log("MediaSource", "timeInit set true"),
-          (this.timeInit = !0),
-          (n.currentTime = n.buffered.end(0))),
-        !this.isInitInfo &&
-          n.videoWidth > 0 &&
-          n.videoHeight > 0 &&
-          (r.debug.log(
-            "MediaSource",
-            `updateVideoInfo: ${n.videoWidth},${n.videoHeight}`
-          ),
-          r.video.updateVideoInfo({
-            width: n.videoWidth,
-            height: n.videoHeight,
-          }),
-          r.video.initCanvasViewSize(),
-          (this.isInitInfo = !0));
+        r._times.videoStart
+        || ((r._times.videoStart = be()), r.handlePlayToRenderTimes());
+      }
+      else {
+        r.debug.log("MediaSource", "timeInit set false , cacheTrack = {}"),
+        (this.timeInit = !1),
+        (this.cacheTrack = {});
+      }
+      this.cacheTrack || (this.cacheTrack = {}),
+      (this.cacheTrack.id = 1),
+      (this.cacheTrack.sequenceNumber = ++this.sequenceNumber),
+      (this.cacheTrack.size = a),
+      (this.cacheTrack.dts = t),
+      (this.cacheTrack.cts = o),
+      (this.cacheTrack.isKeyframe = i),
+      (this.cacheTrack.data = s),
+      (this.cacheTrack.flags = {
+        isLeading: 0,
+        dependsOn: i ? 2 : 1,
+        isDependedOn: i ? 1 : 0,
+        hasRedundancy: 0,
+        isNonSync: i ? 0 : 1
+      }),
+      this.timeInit
+      || n.buffered.length !== 1
+      || (r.debug.log("MediaSource", "timeInit set true"),
+      (this.timeInit = !0),
+      (n.currentTime = n.buffered.end(0))),
+      !this.isInitInfo
+      && n.videoWidth > 0
+      && n.videoHeight > 0
+      && (r.debug.log(
+        "MediaSource",
+        `updateVideoInfo: ${n.videoWidth},${n.videoHeight}`
+      ),
+      r.video.updateVideoInfo({
+        width: n.videoWidth,
+        height: n.videoHeight
+      }),
+      r.video.initCanvasViewSize(),
+      (this.isInitInfo = !0));
     }
+
     appendBuffer(e) {
       const {
         debug: t,
-        events: { proxy: i },
+        events: { proxy: i }
       } = this.player;
       if (
-        (null === this.sourceBuffer &&
-          ((this.sourceBuffer = this.mediaSource.addSourceBuffer(Z)),
+        (this.sourceBuffer === null
+          && ((this.sourceBuffer = this.mediaSource.addSourceBuffer(Z)),
           i(this.sourceBuffer, "error", (e) => {
             this.player.emit(x.mseSourceBufferError, e);
           })),
         this.mediaSourceAppendBufferError)
-      )
+      ) {
         t.error("MediaSource", "this.mediaSourceAppendBufferError is true");
-      else if (this.mediaSourceAppendBufferFull)
+      }
+      else if (this.mediaSourceAppendBufferFull) {
         t.error("MediaSource", "this.mediaSourceAppendBufferFull is true");
-      else if (!1 === this.sourceBuffer.updating && this.isStateOpen)
+      }
+      else if (!1 === this.sourceBuffer.updating && this.isStateOpen) {
         try {
           this.sourceBuffer.appendBuffer(e);
-        } catch (e) {
+        }
+        catch (e) {
           t.warn("MediaSource", "this.sourceBuffer.appendBuffer()", e.code, e),
-            22 === e.code
-              ? (this.stop(),
-                (this.mediaSourceAppendBufferFull = !0),
-                this.emit(j.mediaSourceFull))
-              : 11 === e.code
+          e.code === 22
+            ? (this.stop(),
+              (this.mediaSourceAppendBufferFull = !0),
+              this.emit(j.mediaSourceFull))
+            : e.code === 11
               ? (this.stop(),
                 (this.mediaSourceAppendBufferError = !0),
                 this.emit(j.mediaSourceAppendBufferError))
               : (t.error("MediaSource", "appendBuffer error", e),
                 this.player.emit(x.mseSourceBufferError, e));
         }
-      else
+      }
+      else {
         this.isStateClosed
           ? this.player.emitError(
               j.mseSourceBufferError,
               "mediaSource is not attached to video or mediaSource is closed"
             )
           : this.isStateEnded
-          ? this.player.emitError(
-              j.mseSourceBufferError,
-              "mediaSource is closed"
-            )
-          : !0 === this.sourceBuffer.updating &&
-            this.player.emit(x.mseSourceBufferBusy);
+            ? this.player.emitError(
+                j.mseSourceBufferError,
+                "mediaSource is closed"
+              )
+            : !0 === this.sourceBuffer.updating
+              && this.player.emit(x.mseSourceBufferBusy);
+      }
     }
+
     stop() {
       this.abortSourceBuffer(), this.removeSourceBuffer(), this.endOfStream();
     }
+
     dropSourceBuffer(e) {
       const t = this.player.video.$videoElement;
       (this.dropping = e),
-        t.buffered.length > 0 &&
-          t.buffered.end(0) - t.currentTime > 1 &&
-          (this.player.debug.warn(
-            "MediaSource",
-            "dropSourceBuffer",
-            `$video.buffered.end(0) is ${t.buffered.end(
-              0
-            )} - $video.currentTime ${t.currentTime}`
-          ),
-          (t.currentTime = t.buffered.end(0)));
+      t.buffered.length > 0
+      && t.buffered.end(0) - t.currentTime > 1
+      && (this.player.debug.warn(
+        "MediaSource",
+        "dropSourceBuffer",
+        `$video.buffered.end(0) is ${t.buffered.end(
+          0
+        )} - $video.currentTime ${t.currentTime}`
+      ),
+      (t.currentTime = t.buffered.end(0)));
     }
+
     removeBuffer(e, t) {
-      if (this.isStateOpen && !1 === this.sourceBuffer.updating)
+      if (this.isStateOpen && !1 === this.sourceBuffer.updating) {
         try {
           this.sourceBuffer.remove(e, t);
-        } catch (e) {
+        }
+        catch (e) {
           this.player.debug.warn("MediaSource", "removeBuffer() error", e);
         }
-      else
+      }
+      else {
         this.player.debug.warn(
           "MediaSource",
           "removeBuffer() this.isStateOpen is",
@@ -6790,64 +7196,74 @@
           "this.sourceBuffer.updating",
           this.sourceBuffer.updating
         );
+      }
     }
+
     endOfStream() {
       const e = this.player.video && this.player.video.$videoElement;
-      if (this.isStateOpen && e && e.readyState >= 1)
+      if (this.isStateOpen && e && e.readyState >= 1) {
         try {
           this.mediaSource.endOfStream();
-        } catch (e) {
+        }
+        catch (e) {
           this.player.debug.warn("MediaSource", "endOfStream() error", e);
         }
+      }
     }
+
     abortSourceBuffer() {
-      this.isStateOpen &&
-        this.sourceBuffer &&
-        (this.sourceBuffer.abort(), (this.sourceBuffer = null));
+      this.isStateOpen
+      && this.sourceBuffer
+      && (this.sourceBuffer.abort(), (this.sourceBuffer = null));
     }
+
     removeSourceBuffer() {
-      if (!this.isStateClosed && this.mediaSource && this.sourceBuffer)
+      if (!this.isStateClosed && this.mediaSource && this.sourceBuffer) {
         try {
           this.mediaSource.removeSourceBuffer(this.sourceBuffer);
-        } catch (e) {
+        }
+        catch (e) {
           this.player.debug.warn(
             "MediaSource",
             "removeSourceBuffer() error",
             e
           );
         }
+      }
     }
+
     getSourceBufferUpdating() {
       return this.sourceBuffer && this.sourceBuffer.updating;
     }
   }
   const ut = () =>
-      "undefined" != typeof navigator &&
-      parseFloat(
-        (
-          "" +
-          (/CPU.*OS ([0-9_]{3,4})[0-9_]{0,1}|(CPU like).*AppleWebKit.*Mobile/i.exec(
+    typeof navigator != "undefined"
+    && Number.parseFloat(
+      (
+        `${
+          (/CPU.*OS ([0-9_]{3,4})[0-9_]?|(CPU like).*AppleWebKit.*Mobile/i.exec(
             navigator.userAgent
-          ) || [0, ""])[1]
-        )
-          .replace("undefined", "3_2")
-          .replace("_", ".")
-          .replace("_", "")
-      ) < 10 &&
-      !window.MSStream,
-    ht = () => "wakeLock" in navigator;
+          ) || [0, ""])[1]}`
+      )
+        .replace("undefined", "3_2")
+        .replace("_", ".")
+        .replace("_", "")
+    ) < 10
+    && !window.MSStream;
+  const ht = () => "wakeLock" in navigator;
   class pt {
     constructor(e) {
       if (((this.player = e), (this.enabled = !1), ht())) {
         this._wakeLock = null;
         const e = () => {
-          null !== this._wakeLock &&
-            "visible" === document.visibilityState &&
-            this.enable();
+          this._wakeLock !== null
+          && document.visibilityState === "visible"
+          && this.enable();
         };
         document.addEventListener("visibilitychange", e),
-          document.addEventListener("fullscreenchange", e);
-      } else
+        document.addEventListener("fullscreenchange", e);
+      }
+      else {
         ut()
           ? (this.noSleepTimer = null)
           : ((this.noSleepVideo = document.createElement("video")),
@@ -6867,30 +7283,34 @@
               this.noSleepVideo.duration <= 1
                 ? this.noSleepVideo.setAttribute("loop", "")
                 : this.noSleepVideo.addEventListener("timeupdate", () => {
-                    this.noSleepVideo.currentTime > 0.5 &&
-                      (this.noSleepVideo.currentTime = Math.random());
+                    this.noSleepVideo.currentTime > 0.5
+                    && (this.noSleepVideo.currentTime = Math.random());
                   });
             }));
+      }
     }
+
     _addSourceToVideo(e, t, i) {
-      var o = document.createElement("source");
+      const o = document.createElement("source");
       (o.src = i), (o.type = `video/${t}`), e.appendChild(o);
     }
+
     get isEnabled() {
       return this.enabled;
     }
+
     enable() {
       const e = this.player.debug;
-      if (ht())
+      if (ht()) {
         return navigator.wakeLock
           .request("screen")
           .then((t) => {
             (this._wakeLock = t),
-              (this.enabled = !0),
-              e.log("wakeLock", "Wake Lock active."),
-              this._wakeLock.addEventListener("release", () => {
-                e.log("wakeLock", "Wake Lock released.");
-              });
+            (this.enabled = !0),
+            e.log("wakeLock", "Wake Lock active."),
+            this._wakeLock.addEventListener("release", () => {
+              e.log("wakeLock", "Wake Lock released.");
+            });
           })
           .catch((t) => {
             throw (
@@ -6899,271 +7319,281 @@
               t)
             );
           });
-      if (ut())
+      }
+      if (ut()) {
         return (
           this.disable(),
           (this.noSleepTimer = window.setInterval(() => {
-            document.hidden ||
-              ((window.location.href = window.location.href.split("#")[0]),
-              window.setTimeout(window.stop, 0));
+            document.hidden
+            || ((window.location.href = window.location.href.split("#")[0]),
+            window.setTimeout(window.stop, 0));
           }, 15e3)),
           (this.enabled = !0),
           Promise.resolve()
         );
+      }
       return this.noSleepVideo
         .play()
-        .then((e) => ((this.enabled = !0), e))
+        .then(e => ((this.enabled = !0), e))
         .catch((e) => {
           throw ((this.enabled = !1), e);
         });
     }
+
     disable() {
       const e = this.player.debug;
       ht()
         ? (this._wakeLock && this._wakeLock.release(), (this._wakeLock = null))
         : ut()
-        ? this.noSleepTimer &&
-          (e.warn("wakeLock", "NoSleep now disabled for older iOS devices."),
+          ? this.noSleepTimer
+          && (e.warn("wakeLock", "NoSleep now disabled for older iOS devices."),
           window.clearInterval(this.noSleepTimer),
           (this.noSleepTimer = null))
-        : this.noSleepVideo.pause(),
-        (this.enabled = !1);
+          : this.noSleepVideo.pause(),
+      (this.enabled = !1);
     }
   }
   class mt extends De {
     constructor(e, t) {
-      var i;
+      let i;
       super(),
-        (this.$container = e),
-        (this._opt = Object.assign({}, l, t)),
-        (this.debug = new he(this)),
-        this._opt.useWCS && (this._opt.useWCS = "VideoEncoder" in window),
-        this._opt.useMSE &&
-          (this._opt.useMSE =
-            window.MediaSource && window.MediaSource.isTypeSupported(Z)),
-        this._opt.wcsUseVideoRender &&
-          (this._opt.wcsUseVideoRender =
-            window.MediaStreamTrackGenerator &&
-            "function" == typeof window.MediaStreamTrackGenerator),
-        this._opt.useMSE &&
-          (this._opt.useWCS &&
-            this.debug.log("Player", "useWCS set true->false"),
-          this._opt.forceNoOffscreen ||
-            this.debug.log("Player", "forceNoOffscreen set false->true"),
-          (this._opt.useWCS = !1),
-          (this._opt.forceNoOffscreen = !0)),
-        this._opt.forceNoOffscreen ||
-          ("undefined" == typeof OffscreenCanvas
-            ? ((this._opt.forceNoOffscreen = !0), (this._opt.useOffscreen = !1))
-            : (this._opt.useOffscreen = !0)),
-        this._opt.hasAudio || (this._opt.operateBtns.audio = !1),
-        (this._opt.hasControl = this._hasControl()),
-        (this._loading = !1),
-        (this._playing = !1),
-        (this._hasLoaded = !1),
-        (this._checkHeartTimeout = null),
-        (this._checkLoadingTimeout = null),
-        (this._checkStatsInterval = null),
-        (this._startBpsTime = null),
-        (this._isPlayingBeforePageHidden = !1),
-        (this._stats = { buf: 0, fps: 0, abps: 0, vbps: 0, ts: 0 }),
-        (this._times = {
-          playInitStart: "",
-          playStart: "",
-          streamStart: "",
-          streamResponse: "",
-          demuxStart: "",
-          decodeStart: "",
-          videoStart: "",
-          playTimestamp: "",
-          streamTimestamp: "",
-          streamResponseTimestamp: "",
-          demuxTimestamp: "",
-          decodeTimestamp: "",
-          videoTimestamp: "",
-          allTimestamp: "",
-        }),
-        (this._videoTimestamp = 0),
-        (this._audioTimestamp = 0),
-        (i = this),
-        Object.defineProperty(i, "rect", {
-          get: () => {
-            const e = i.$container.getBoundingClientRect();
-            return (
-              (e.width = Math.max(e.width, i.$container.clientWidth)),
-              (e.height = Math.max(e.height, i.$container.clientHeight)),
-              e
-            );
-          },
-        }),
-        ["bottom", "height", "left", "right", "top", "width"].forEach((e) => {
-          Object.defineProperty(i, e, { get: () => i.rect[e] });
-        }),
-        (this.events = new pe(this)),
-        (this.video = new Je(this)),
-        this._opt.hasAudio && (this.audio = new Ge(this)),
-        (this.recorder = new qe(this)),
-        this._onlyMseOrWcsVideo()
-          ? (this.loaded = !0)
-          : (this.decoderWorker = new Ze(this)),
-        (this.stream = null),
-        (this.demux = null),
-        (this._lastVolume = null),
-        this._opt.useWCS &&
-          ((this.webcodecsDecoder = new rt(this)), (this.loaded = !0)),
-        this._opt.useMSE &&
-          ((this.mseDecoder = new lt(this)), (this.loaded = !0)),
-        (this.control = new dt(this)),
-        Be() && (this.keepScreenOn = new pt(this)),
-        ((e) => {
-          try {
-            const t = (t) => {
-              Te(t) === e.$container &&
-                (e.emit(D.fullscreen, e.fullscreen),
-                e.fullscreen ? e._opt.useMSE && e.resize() : e.resize());
-            };
-            me.on("change", t),
-              e.events.destroys.push(() => {
-                me.off("change", t);
-              });
-          } catch (e) {}
-          if (
-            (e.on(x.decoderWorkerInit, () => {
-              e.debug.log("player", "has loaded"), (e.loaded = !0);
-            }),
-            e.on(x.play, () => {
-              e.loading = !1;
-            }),
-            e.on(x.fullscreen, (t) => {
-              if (t)
-                try {
-                  me.request(e.$container)
-                    .then(() => {})
-                    .catch((t) => {
-                      Be() && e._opt.useWebFullScreen && (e.webFullscreen = !0);
-                    });
-                } catch (t) {
-                  Be() && e._opt.useWebFullScreen && (e.webFullscreen = !0);
-                }
-              else
-                try {
-                  me.exit()
-                    .then(() => {
-                      e.webFullscreen && (e.webFullscreen = !1);
-                    })
-                    .catch(() => {
-                      e.webFullscreen = !1;
-                    });
-                } catch (t) {
-                  e.webFullscreen = !1;
-                }
-            }),
-            Be() &&
-              e.on(x.webFullscreen, (t) => {
-                t
-                  ? e.$container.classList.add("jessibuca-fullscreen-web")
-                  : e.$container.classList.remove("jessibuca-fullscreen-web"),
-                  e.emit(D.fullscreen, e.fullscreen);
-              }),
-            e.on(x.resize, () => {
-              e.video && e.video.resize();
-            }),
-            e._opt.debug)
-          ) {
-            const t = [x.timeUpdate];
-            Object.keys(x).forEach((i) => {
-              e.on(x[i], (o) => {
-                t.includes(i) || e.debug.log("player events", x[i], o);
-              });
-            }),
-              Object.keys(j).forEach((t) => {
-                e.on(j[t], (i) => {
-                  e.debug.log("player event error", j[t], i);
-                });
-              });
-          }
-        })(this),
-        ((e) => {
-          const {
-            _opt: t,
-            debug: i,
-            events: { proxy: o },
-          } = e;
-          t.supportDblclickFullscreen &&
-            o(e.$container, "dblclick", (t) => {
-              const i = Te(t).nodeName.toLowerCase();
-              ("canvas" !== i && "video" !== i) ||
-                (e.fullscreen = !e.fullscreen);
-            }),
-            o(document, "visibilitychange", () => {
-              t.hiddenAutoPause &&
-                (i.log(
-                  "visibilitychange",
-                  document.visibilityState,
-                  e._isPlayingBeforePageHidden
-                ),
-                "visible" === document.visibilityState
-                  ? e._isPlayingBeforePageHidden && e.play()
-                  : ((e._isPlayingBeforePageHidden = e.playing),
-                    e.playing && e.pause()));
-            }),
-            o(window, "fullscreenchange", () => {
-              null !== e.keepScreenOn &&
-                "visible" === document.visibilityState &&
-                e.enableWakeLock();
+      (this.$container = e),
+      (this._opt = Object.assign({}, l, t)),
+      (this.debug = new he(this)),
+      this._opt.useWCS && (this._opt.useWCS = "VideoEncoder" in window),
+      this._opt.useMSE
+      && (this._opt.useMSE
+            = window.MediaSource && window.MediaSource.isTypeSupported(Z)),
+      this._opt.wcsUseVideoRender
+      && (this._opt.wcsUseVideoRender
+            = window.MediaStreamTrackGenerator
+              && typeof window.MediaStreamTrackGenerator == "function"),
+      this._opt.useMSE
+      && (this._opt.useWCS
+        && this.debug.log("Player", "useWCS set true->false"),
+      this._opt.forceNoOffscreen
+      || this.debug.log("Player", "forceNoOffscreen set false->true"),
+      (this._opt.useWCS = !1),
+      (this._opt.forceNoOffscreen = !0)),
+      this._opt.forceNoOffscreen
+      || (typeof OffscreenCanvas == "undefined"
+        ? ((this._opt.forceNoOffscreen = !0), (this._opt.useOffscreen = !1))
+        : (this._opt.useOffscreen = !0)),
+      this._opt.hasAudio || (this._opt.operateBtns.audio = !1),
+      (this._opt.hasControl = this._hasControl()),
+      (this._loading = !1),
+      (this._playing = !1),
+      (this._hasLoaded = !1),
+      (this._checkHeartTimeout = null),
+      (this._checkLoadingTimeout = null),
+      (this._checkStatsInterval = null),
+      (this._startBpsTime = null),
+      (this._isPlayingBeforePageHidden = !1),
+      (this._stats = { buf: 0, fps: 0, abps: 0, vbps: 0, ts: 0 }),
+      (this._times = {
+        playInitStart: "",
+        playStart: "",
+        streamStart: "",
+        streamResponse: "",
+        demuxStart: "",
+        decodeStart: "",
+        videoStart: "",
+        playTimestamp: "",
+        streamTimestamp: "",
+        streamResponseTimestamp: "",
+        demuxTimestamp: "",
+        decodeTimestamp: "",
+        videoTimestamp: "",
+        allTimestamp: ""
+      }),
+      (this._videoTimestamp = 0),
+      (this._audioTimestamp = 0),
+      (i = this),
+      Object.defineProperty(i, "rect", {
+        get: () => {
+          const e = i.$container.getBoundingClientRect();
+          return (
+            (e.width = Math.max(e.width, i.$container.clientWidth)),
+            (e.height = Math.max(e.height, i.$container.clientHeight)),
+            e
+          );
+        }
+      }),
+      ["bottom", "height", "left", "right", "top", "width"].forEach((e) => {
+        Object.defineProperty(i, e, { get: () => i.rect[e] });
+      }),
+      (this.events = new pe(this)),
+      (this.video = new Je(this)),
+      this._opt.hasAudio && (this.audio = new Ge(this)),
+      (this.recorder = new qe(this)),
+      this._onlyMseOrWcsVideo()
+        ? (this.loaded = !0)
+        : (this.decoderWorker = new Ze(this)),
+      (this.stream = null),
+      (this.demux = null),
+      (this._lastVolume = null),
+      this._opt.useWCS
+      && ((this.webcodecsDecoder = new rt(this)), (this.loaded = !0)),
+      this._opt.useMSE
+      && ((this.mseDecoder = new lt(this)), (this.loaded = !0)),
+      (this.control = new dt(this)),
+      Be() && (this.keepScreenOn = new pt(this)),
+      ((e) => {
+        try {
+          const t = (t) => {
+            Te(t) === e.$container
+            && (e.emit(D.fullscreen, e.fullscreen),
+            e.fullscreen ? e._opt.useMSE && e.resize() : e.resize());
+          };
+          me.on("change", t),
+          e.events.destroys.push(() => {
+            me.off("change", t);
+          });
+        }
+        catch (e) {}
+        if (
+          (e.on(x.decoderWorkerInit, () => {
+            e.debug.log("player", "has loaded"), (e.loaded = !0);
+          }),
+          e.on(x.play, () => {
+            e.loading = !1;
+          }),
+          e.on(x.fullscreen, (t) => {
+            if (t) {
+              try {
+                me.request(e.$container)
+                  .then(() => {})
+                  .catch((t) => {
+                    Be() && e._opt.useWebFullScreen && (e.webFullscreen = !0);
+                  });
+              }
+              catch (t) {
+                Be() && e._opt.useWebFullScreen && (e.webFullscreen = !0);
+              }
+            }
+            else {
+              try {
+                me.exit()
+                  .then(() => {
+                    e.webFullscreen && (e.webFullscreen = !1);
+                  })
+                  .catch(() => {
+                    e.webFullscreen = !1;
+                  });
+              }
+              catch (t) {
+                e.webFullscreen = !1;
+              }
+            }
+          }),
+          Be()
+          && e.on(x.webFullscreen, (t) => {
+            t
+              ? e.$container.classList.add("jessibuca-fullscreen-web")
+              : e.$container.classList.remove("jessibuca-fullscreen-web"),
+            e.emit(D.fullscreen, e.fullscreen);
+          }),
+          e.on(x.resize, () => {
+            e.video && e.video.resize();
+          }),
+          e._opt.debug)
+        ) {
+          const t = [x.timeUpdate];
+          Object.keys(x).forEach((i) => {
+            e.on(x[i], (o) => {
+              t.includes(i) || e.debug.log("player events", x[i], o);
             });
-        })(this),
-        this._opt.useWCS && this.debug.log("Player", "use WCS"),
-        this._opt.useMSE && this.debug.log("Player", "use MSE"),
-        this._opt.useOffscreen && this.debug.log("Player", "use offscreen"),
-        this.debug.log("Player options", this._opt);
+          }),
+          Object.keys(j).forEach((t) => {
+            e.on(j[t], (i) => {
+              e.debug.log("player event error", j[t], i);
+            });
+          });
+        }
+      })(this),
+      ((e) => {
+        const {
+          _opt: t,
+          debug: i,
+          events: { proxy: o }
+        } = e;
+        t.supportDblclickFullscreen
+        && o(e.$container, "dblclick", (t) => {
+          const i = Te(t).nodeName.toLowerCase();
+          (i !== "canvas" && i !== "video")
+          || (e.fullscreen = !e.fullscreen);
+        }),
+        o(document, "visibilitychange", () => {
+          t.hiddenAutoPause
+          && (i.log(
+            "visibilitychange",
+            document.visibilityState,
+            e._isPlayingBeforePageHidden
+          ),
+          document.visibilityState === "visible"
+            ? e._isPlayingBeforePageHidden && e.play()
+            : ((e._isPlayingBeforePageHidden = e.playing),
+              e.playing && e.pause()));
+        }),
+        o(window, "fullscreenchange", () => {
+          e.keepScreenOn !== null
+          && document.visibilityState === "visible"
+          && e.enableWakeLock();
+        });
+      })(this),
+      this._opt.useWCS && this.debug.log("Player", "use WCS"),
+      this._opt.useMSE && this.debug.log("Player", "use MSE"),
+      this._opt.useOffscreen && this.debug.log("Player", "use offscreen"),
+      this.debug.log("Player options", this._opt);
     }
+
     destroy() {
       (this._loading = !1),
-        (this._playing = !1),
-        (this._hasLoaded = !1),
-        (this._lastVolume = null),
-        (this._times = {
-          playInitStart: "",
-          playStart: "",
-          streamStart: "",
-          streamResponse: "",
-          demuxStart: "",
-          decodeStart: "",
-          videoStart: "",
-          playTimestamp: "",
-          streamTimestamp: "",
-          streamResponseTimestamp: "",
-          demuxTimestamp: "",
-          decodeTimestamp: "",
-          videoTimestamp: "",
-          allTimestamp: "",
-        }),
-        this.decoderWorker &&
-          (this.decoderWorker.destroy(), (this.decoderWorker = null)),
-        this.video && (this.video.destroy(), (this.video = null)),
-        this.audio && (this.audio.destroy(), (this.audio = null)),
-        this.stream && (this.stream.destroy(), (this.stream = null)),
-        this.recorder && (this.recorder.destroy(), (this.recorder = null)),
-        this.control && (this.control.destroy(), (this.control = null)),
-        this.webcodecsDecoder &&
-          (this.webcodecsDecoder.destroy(), (this.webcodecsDecoder = null)),
-        this.mseDecoder &&
-          (this.mseDecoder.destroy(), (this.mseDecoder = null)),
-        this.demux && (this.demux.destroy(), (this.demux = null)),
-        this.events && (this.events.destroy(), (this.events = null)),
-        this.clearCheckHeartTimeout(),
-        this.clearCheckLoadingTimeout(),
-        this.clearStatsInterval(),
-        this.releaseWakeLock(),
-        (this.keepScreenOn = null),
-        this.resetStats(),
-        (this._audioTimestamp = 0),
-        (this._videoTimestamp = 0),
-        this.emit("destroy"),
-        this.off(),
-        this.debug.log("play", "destroy end");
+      (this._playing = !1),
+      (this._hasLoaded = !1),
+      (this._lastVolume = null),
+      (this._times = {
+        playInitStart: "",
+        playStart: "",
+        streamStart: "",
+        streamResponse: "",
+        demuxStart: "",
+        decodeStart: "",
+        videoStart: "",
+        playTimestamp: "",
+        streamTimestamp: "",
+        streamResponseTimestamp: "",
+        demuxTimestamp: "",
+        decodeTimestamp: "",
+        videoTimestamp: "",
+        allTimestamp: ""
+      }),
+      this.decoderWorker
+      && (this.decoderWorker.destroy(), (this.decoderWorker = null)),
+      this.video && (this.video.destroy(), (this.video = null)),
+      this.audio && (this.audio.destroy(), (this.audio = null)),
+      this.stream && (this.stream.destroy(), (this.stream = null)),
+      this.recorder && (this.recorder.destroy(), (this.recorder = null)),
+      this.control && (this.control.destroy(), (this.control = null)),
+      this.webcodecsDecoder
+      && (this.webcodecsDecoder.destroy(), (this.webcodecsDecoder = null)),
+      this.mseDecoder
+      && (this.mseDecoder.destroy(), (this.mseDecoder = null)),
+      this.demux && (this.demux.destroy(), (this.demux = null)),
+      this.events && (this.events.destroy(), (this.events = null)),
+      this.clearCheckHeartTimeout(),
+      this.clearCheckLoadingTimeout(),
+      this.clearStatsInterval(),
+      this.releaseWakeLock(),
+      (this.keepScreenOn = null),
+      this.resetStats(),
+      (this._audioTimestamp = 0),
+      (this._videoTimestamp = 0),
+      this.emit("destroy"),
+      this.off(),
+      this.debug.log("play", "destroy end");
     }
+
     set fullscreen(e) {
       Be() && this._opt.useWebFullScreen
         ? (this.emit(x.webFullscreen, e),
@@ -7172,167 +7602,190 @@
           }, 10))
         : this.emit(x.fullscreen, e);
     }
+
     get fullscreen() {
       return me.isFullscreen || this.webFullscreen;
     }
+
     set webFullscreen(e) {
       this.emit(x.webFullscreen, e);
     }
+
     get webFullscreen() {
       return this.$container.classList.contains("jessibuca-fullscreen-web");
     }
+
     set loaded(e) {
       this._hasLoaded = e;
     }
+
     get loaded() {
       return this._hasLoaded;
     }
+
     set playing(e) {
       e && (this.loading = !1),
-        this.playing !== e &&
-          ((this._playing = e),
-          this.emit(x.playing, e),
-          this.emit(x.volumechange, this.volume),
-          e ? this.emit(x.play) : this.emit(x.pause));
+      this.playing !== e
+      && ((this._playing = e),
+      this.emit(x.playing, e),
+      this.emit(x.volumechange, this.volume),
+      e ? this.emit(x.play) : this.emit(x.pause));
     }
+
     get playing() {
       return this._playing;
     }
+
     get volume() {
       return (this.audio && this.audio.volume) || 0;
     }
+
     set volume(e) {
-      e !== this.volume &&
-        (this.audio && this.audio.setVolume(e), (this._lastVolume = e));
+      e !== this.volume
+      && (this.audio && this.audio.setVolume(e), (this._lastVolume = e));
     }
+
     get lastVolume() {
       return this._lastVolume;
     }
+
     set loading(e) {
-      this.loading !== e &&
-        ((this._loading = e), this.emit(x.loading, this._loading));
+      this.loading !== e
+      && ((this._loading = e), this.emit(x.loading, this._loading));
     }
+
     get loading() {
       return this._loading;
     }
+
     set recording(e) {
       e
         ? this.playing && this.recorder && this.recorder.startRecord()
         : this.recorder && this.recorder.stopRecordAndSave();
     }
+
     get recording() {
       return !!this.recorder && this.recorder.recording;
     }
+
     set audioTimestamp(e) {
-      null !== e && (this._audioTimestamp = e);
+      e !== null && (this._audioTimestamp = e);
     }
+
     get audioTimestamp() {
       return this._audioTimestamp;
     }
+
     set videoTimestamp(e) {
-      null !== e &&
-        ((this._videoTimestamp = e),
-        this._opt.useWCS ||
-          this._opt.useMSE ||
-          (this.audioTimestamp &&
-            this.videoTimestamp &&
-            this.audio &&
-            this.audio.emit(x.videoSyncAudio, {
-              audioTimestamp: this.audioTimestamp,
-              videoTimestamp: this.videoTimestamp,
-              diff: this.audioTimestamp - this.videoTimestamp,
-            })));
+      e !== null
+      && ((this._videoTimestamp = e),
+      this._opt.useWCS
+      || this._opt.useMSE
+      || (this.audioTimestamp
+        && this.videoTimestamp
+        && this.audio
+        && this.audio.emit(x.videoSyncAudio, {
+          audioTimestamp: this.audioTimestamp,
+          videoTimestamp: this.videoTimestamp,
+          diff: this.audioTimestamp - this.videoTimestamp
+        })));
     }
+
     get videoTimestamp() {
       return this._videoTimestamp;
     }
+
     get isDebug() {
       return !0 === this._opt.debug;
     }
+
     updateOption(e) {
       this._opt = Object.assign({}, this._opt, e);
     }
+
     init() {
       return new Promise((e, t) => {
         this.stream || (this.stream = new ze(this)),
-          this.audio || (this._opt.hasAudio && (this.audio = new Ge(this))),
-          this.demux || (this.demux = new et(this)),
-          this._opt.useWCS &&
-            (this.webcodecsDecoder || (this.webcodecsDecoder = new rt(this))),
-          this._opt.useMSE &&
-            (this.mseDecoder || (this.mseDecoder = new lt(this))),
-          this.decoderWorker || this._onlyMseOrWcsVideo()
-            ? e()
-            : ((this.decoderWorker = new Ze(this)),
-              this.once(x.decoderWorkerInit, () => {
-                e();
-              }));
+        this.audio || (this._opt.hasAudio && (this.audio = new Ge(this))),
+        this.demux || (this.demux = new et(this)),
+        this._opt.useWCS
+        && (this.webcodecsDecoder || (this.webcodecsDecoder = new rt(this))),
+        this._opt.useMSE
+        && (this.mseDecoder || (this.mseDecoder = new lt(this))),
+        this.decoderWorker || this._onlyMseOrWcsVideo()
+          ? e()
+          : ((this.decoderWorker = new Ze(this)),
+            this.once(x.decoderWorkerInit, () => {
+              e();
+            }));
       });
     }
+
     play(e, t) {
       return new Promise((i, o) => {
         if (!e && !this._opt.url) return o();
         (this.loading = !0),
-          (this.playing = !1),
-          (this._times.playInitStart = be()),
-          e || (e = this._opt.url),
-          (this._opt.url = e),
-          this.clearCheckHeartTimeout(),
-          this.init()
-            .then(() => {
-              (this._times.playStart = be()),
-                this._opt.isNotMute && this.mute(!1),
-                this.webcodecsDecoder &&
-                  this.webcodecsDecoder.once(j.webcodecsH265NotSupport, () => {
-                    this.emit(j.webcodecsH265NotSupport),
-                      this._opt.autoWasm ||
-                        this.emit(x.error, j.webcodecsH265NotSupport);
-                  }),
-                this.mseDecoder &&
-                  (this.mseDecoder.once(j.mediaSourceH265NotSupport, () => {
-                    this.emit(j.mediaSourceH265NotSupport),
-                      this._opt.autoWasm ||
-                        this.emit(x.error, j.mediaSourceH265NotSupport);
-                  }),
-                  this.mseDecoder.once(j.mediaSourceFull, () => {
-                    this.emitError(j.mediaSourceFull);
-                  }),
-                  this.mseDecoder.once(j.mediaSourceAppendBufferError, () => {
-                    this.emitError(j.mediaSourceAppendBufferError);
-                  }),
-                  this.mseDecoder.once(j.mediaSourceBufferListLarge, () => {
-                    this.emitError(j.mediaSourceBufferListLarge);
-                  }),
-                  this.mseDecoder.once(
-                    j.mediaSourceAppendBufferEndTimeout,
-                    () => {
-                      this.emitError(j.mediaSourceAppendBufferEndTimeout);
-                    }
-                  )),
-                this.enableWakeLock(),
-                this.stream.fetchStream(e, t),
-                this.checkLoadingTimeout(),
-                this.stream.once(j.fetchError, (e) => {
-                  o(e);
-                }),
-                this.stream.once(j.websocketError, (e) => {
-                  o(e);
-                }),
-                this.stream.once(x.streamEnd, () => {
-                  o();
-                }),
-                this.stream.once(x.streamSuccess, () => {
-                  i(),
-                    (this._times.streamResponse = be()),
-                    this.video.play(),
-                    this.checkStatsInterval();
-                });
-            })
-            .catch((e) => {
+        (this.playing = !1),
+        (this._times.playInitStart = be()),
+        e || (e = this._opt.url),
+        (this._opt.url = e),
+        this.clearCheckHeartTimeout(),
+        this.init()
+          .then(() => {
+            (this._times.playStart = be()),
+            this._opt.isNotMute && this.mute(!1),
+            this.webcodecsDecoder
+            && this.webcodecsDecoder.once(j.webcodecsH265NotSupport, () => {
+              this.emit(j.webcodecsH265NotSupport),
+              this._opt.autoWasm
+              || this.emit(x.error, j.webcodecsH265NotSupport);
+            }),
+            this.mseDecoder
+            && (this.mseDecoder.once(j.mediaSourceH265NotSupport, () => {
+              this.emit(j.mediaSourceH265NotSupport),
+              this._opt.autoWasm
+              || this.emit(x.error, j.mediaSourceH265NotSupport);
+            }),
+            this.mseDecoder.once(j.mediaSourceFull, () => {
+              this.emitError(j.mediaSourceFull);
+            }),
+            this.mseDecoder.once(j.mediaSourceAppendBufferError, () => {
+              this.emitError(j.mediaSourceAppendBufferError);
+            }),
+            this.mseDecoder.once(j.mediaSourceBufferListLarge, () => {
+              this.emitError(j.mediaSourceBufferListLarge);
+            }),
+            this.mseDecoder.once(
+              j.mediaSourceAppendBufferEndTimeout,
+              () => {
+                this.emitError(j.mediaSourceAppendBufferEndTimeout);
+              }
+            )),
+            this.enableWakeLock(),
+            this.stream.fetchStream(e, t),
+            this.checkLoadingTimeout(),
+            this.stream.once(j.fetchError, (e) => {
               o(e);
+            }),
+            this.stream.once(j.websocketError, (e) => {
+              o(e);
+            }),
+            this.stream.once(x.streamEnd, () => {
+              o();
+            }),
+            this.stream.once(x.streamSuccess, () => {
+              i(),
+              (this._times.streamResponse = be()),
+              this.video.play(),
+              this.checkStatsInterval();
             });
+          })
+          .catch((e) => {
+            o(e);
+          });
       });
     }
+
     close() {
       return new Promise((e, t) => {
         this._close().then(() => {
@@ -7340,73 +7793,81 @@
         });
       });
     }
+
     resumeAudioAfterPause() {
       this.lastVolume && (this.volume = this.lastVolume);
     }
+
     _close() {
       return new Promise((e, t) => {
         this.stream && (this.stream.destroy(), (this.stream = null)),
-          this.demux && (this.demux.destroy(), (this.demux = null)),
-          this.decoderWorker &&
-            (this.decoderWorker.destroy(), (this.decoderWorker = null)),
-          this.webcodecsDecoder &&
-            (this.webcodecsDecoder.destroy(), (this.webcodecsDecoder = null)),
-          this.mseDecoder &&
-            (this.mseDecoder.destroy(), (this.mseDecoder = null)),
-          this.audio && (this.audio.destroy(), (this.audio = null)),
-          this.clearCheckHeartTimeout(),
-          this.clearCheckLoadingTimeout(),
-          this.clearStatsInterval(),
-          (this.playing = !1),
-          (this.loading = !1),
-          (this.recording = !1),
-          this.video && (this.video.resetInit(), this.video.pause(!0)),
-          this.releaseWakeLock(),
-          this.resetStats(),
-          (this._audioTimestamp = 0),
-          (this._videoTimestamp = 0),
-          (this._times = {
-            playInitStart: "",
-            playStart: "",
-            streamStart: "",
-            streamResponse: "",
-            demuxStart: "",
-            decodeStart: "",
-            videoStart: "",
-            playTimestamp: "",
-            streamTimestamp: "",
-            streamResponseTimestamp: "",
-            demuxTimestamp: "",
-            decodeTimestamp: "",
-            videoTimestamp: "",
-            allTimestamp: "",
-          }),
-          setTimeout(() => {
-            e();
-          }, 0);
+        this.demux && (this.demux.destroy(), (this.demux = null)),
+        this.decoderWorker
+        && (this.decoderWorker.destroy(), (this.decoderWorker = null)),
+        this.webcodecsDecoder
+        && (this.webcodecsDecoder.destroy(), (this.webcodecsDecoder = null)),
+        this.mseDecoder
+        && (this.mseDecoder.destroy(), (this.mseDecoder = null)),
+        this.audio && (this.audio.destroy(), (this.audio = null)),
+        this.clearCheckHeartTimeout(),
+        this.clearCheckLoadingTimeout(),
+        this.clearStatsInterval(),
+        (this.playing = !1),
+        (this.loading = !1),
+        (this.recording = !1),
+        this.video && (this.video.resetInit(), this.video.pause(!0)),
+        this.releaseWakeLock(),
+        this.resetStats(),
+        (this._audioTimestamp = 0),
+        (this._videoTimestamp = 0),
+        (this._times = {
+          playInitStart: "",
+          playStart: "",
+          streamStart: "",
+          streamResponse: "",
+          demuxStart: "",
+          decodeStart: "",
+          videoStart: "",
+          playTimestamp: "",
+          streamTimestamp: "",
+          streamResponseTimestamp: "",
+          demuxTimestamp: "",
+          decodeTimestamp: "",
+          videoTimestamp: "",
+          allTimestamp: ""
+        }),
+        setTimeout(() => {
+          e();
+        }, 0);
       });
     }
+
     pause() {
       return arguments.length > 0 && void 0 !== arguments[0] && arguments[0]
         ? this.close()
         : this._close();
     }
+
     mute(e) {
       this.audio && this.audio.mute(e);
     }
+
     resize() {
       this.video.resize();
     }
+
     startRecord(e, t) {
-      this.recording ||
-        (this.recorder.setFileName(e, t), (this.recording = !0));
+      this.recording
+      || (this.recorder.setFileName(e, t), (this.recording = !0));
     }
+
     stopRecordAndSave() {
       this.recording && (this.recording = !1);
     }
+
     _hasControl() {
-      let e = !1,
-        t = !1;
+      let e = !1;
+      let t = !1;
       return (
         Object.keys(this._opt.operateBtns).forEach((e) => {
           this._opt.operateBtns[e] && (t = !0);
@@ -7415,174 +7876,197 @@
         e
       );
     }
+
     _onlyMseOrWcsVideo() {
       return (
-        !1 === this._opt.hasAudio &&
-        (this._opt.useMSE || (this._opt.useWCS && !this._opt.useOffscreen))
+        !1 === this._opt.hasAudio
+        && (this._opt.useMSE || (this._opt.useWCS && !this._opt.useOffscreen))
       );
     }
+
     checkHeart() {
       this.clearCheckHeartTimeout(), this.checkHeartTimeout();
     }
+
     checkHeartTimeout() {
       this._checkHeartTimeout = setTimeout(() => {
         if (this.playing) {
-          if (0 !== this._stats.fps) return;
+          if (this._stats.fps !== 0) return;
           this.pause().then(() => {
             this.emit(x.timeout, x.delayTimeout), this.emit(x.delayTimeout);
           });
         }
       }, 1e3 * this._opt.heartTimeout);
     }
+
     checkStatsInterval() {
       this._checkStatsInterval = setInterval(() => {
         this.updateStats();
       }, 1e3);
     }
+
     clearCheckHeartTimeout() {
-      this._checkHeartTimeout &&
-        (clearTimeout(this._checkHeartTimeout),
-        (this._checkHeartTimeout = null));
+      this._checkHeartTimeout
+      && (clearTimeout(this._checkHeartTimeout),
+      (this._checkHeartTimeout = null));
     }
+
     checkLoadingTimeout() {
       this._checkLoadingTimeout = setTimeout(() => {
-        this.playing ||
-          this.pause().then(() => {
-            this.emit(x.timeout, x.loadingTimeout), this.emit(x.loadingTimeout);
-          });
+        this.playing
+        || this.pause().then(() => {
+          this.emit(x.timeout, x.loadingTimeout), this.emit(x.loadingTimeout);
+        });
       }, 1e3 * this._opt.loadingTimeout);
     }
+
     clearCheckLoadingTimeout() {
-      this._checkLoadingTimeout &&
-        (clearTimeout(this._checkLoadingTimeout),
-        (this._checkLoadingTimeout = null));
+      this._checkLoadingTimeout
+      && (clearTimeout(this._checkLoadingTimeout),
+      (this._checkLoadingTimeout = null));
     }
+
     clearStatsInterval() {
-      this._checkStatsInterval &&
-        (clearInterval(this._checkStatsInterval),
-        (this._checkStatsInterval = null));
+      this._checkStatsInterval
+      && (clearInterval(this._checkStatsInterval),
+      (this._checkStatsInterval = null));
     }
+
     handleRender() {
-      this.loading &&
-        (this.emit(x.start),
-        (this.loading = !1),
-        this.clearCheckLoadingTimeout()),
-        this.playing || (this.playing = !0),
-        this.checkHeart();
+      this.loading
+      && (this.emit(x.start),
+      (this.loading = !1),
+      this.clearCheckLoadingTimeout()),
+      this.playing || (this.playing = !0),
+      this.checkHeart();
     }
+
     updateStats(e) {
       (e = e || {}),
-        this._startBpsTime || (this._startBpsTime = be()),
-        ke(e.ts) && (this._stats.ts = e.ts),
-        ke(e.buf) && (this._stats.buf = e.buf),
-        e.fps && (this._stats.fps += 1),
-        e.abps && (this._stats.abps += e.abps),
-        e.vbps && (this._stats.vbps += e.vbps);
+      this._startBpsTime || (this._startBpsTime = be()),
+      ke(e.ts) && (this._stats.ts = e.ts),
+      ke(e.buf) && (this._stats.buf = e.buf),
+      e.fps && (this._stats.fps += 1),
+      e.abps && (this._stats.abps += e.abps),
+      e.vbps && (this._stats.vbps += e.vbps);
       const t = be();
-      t - this._startBpsTime < 1e3 ||
-        (this.emit(x.stats, this._stats),
-        this.emit(
-          x.performance,
-          (function (e) {
-            let t = 0;
-            return e >= 24 ? (t = 2) : e >= 15 && (t = 1), t;
-          })(this._stats.fps)
-        ),
-        (this._stats.fps = 0),
-        (this._stats.abps = 0),
-        (this._stats.vbps = 0),
-        (this._startBpsTime = t));
+      t - this._startBpsTime < 1e3
+      || (this.emit(x.stats, this._stats),
+      this.emit(
+        x.performance,
+        (function (e) {
+          let t = 0;
+          return e >= 24 ? (t = 2) : e >= 15 && (t = 1), t;
+        })(this._stats.fps)
+      ),
+      (this._stats.fps = 0),
+      (this._stats.abps = 0),
+      (this._stats.vbps = 0),
+      (this._startBpsTime = t));
     }
+
     resetStats() {
       (this._startBpsTime = null),
-        (this._stats = { buf: 0, fps: 0, abps: 0, vbps: 0, ts: 0 });
+      (this._stats = { buf: 0, fps: 0, abps: 0, vbps: 0, ts: 0 });
     }
+
     enableWakeLock() {
       this._opt.keepScreenOn && this.keepScreenOn && this.keepScreenOn.enable();
     }
+
     releaseWakeLock() {
-      this._opt.keepScreenOn &&
-        this.keepScreenOn &&
-        this.keepScreenOn.disable();
+      this._opt.keepScreenOn
+      && this.keepScreenOn
+      && this.keepScreenOn.disable();
     }
+
     handlePlayToRenderTimes() {
       const e = this._times;
       (e.playTimestamp = e.playStart - e.playInitStart),
-        (e.streamTimestamp = e.streamStart - e.playStart),
-        (e.streamResponseTimestamp = e.streamResponse - e.streamStart),
-        (e.demuxTimestamp = e.demuxStart - e.streamResponse),
-        (e.decodeTimestamp = e.decodeStart - e.demuxStart),
-        (e.videoTimestamp = e.videoStart - e.decodeStart),
-        (e.allTimestamp = e.videoStart - e.playInitStart),
-        this.emit(x.playToRenderTimes, e);
+      (e.streamTimestamp = e.streamStart - e.playStart),
+      (e.streamResponseTimestamp = e.streamResponse - e.streamStart),
+      (e.demuxTimestamp = e.demuxStart - e.streamResponse),
+      (e.decodeTimestamp = e.decodeStart - e.demuxStart),
+      (e.videoTimestamp = e.videoStart - e.decodeStart),
+      (e.allTimestamp = e.videoStart - e.playInitStart),
+      this.emit(x.playToRenderTimes, e);
     }
+
     getOption() {
       return this._opt;
     }
+
     emitError(e) {
-      let t =
-        arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "";
+      const t
+        = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "";
       this.emit(x.error, e, t), this.emit(e, t);
     }
   }
   class gt extends De {
     constructor(e) {
       super();
-      let t = e,
-        i = e.container;
+      const t = e;
+      let i = e.container;
       if (
-        ("string" == typeof e.container &&
-          (i = document.querySelector(e.container)),
+        (typeof e.container == "string"
+          && (i = document.querySelector(e.container)),
         !i)
-      )
+      ) {
         throw new Error("Jessibuca need container option");
-      if ("CANVAS" === i.nodeName || "VIDEO" === i.nodeName)
+      }
+      if (i.nodeName === "CANVAS" || i.nodeName === "VIDEO") {
         throw new Error(
           `Jessibuca container type can not be ${i.nodeName} type`
         );
-      if (t.videoBuffer >= t.heartTimeout)
+      }
+      if (t.videoBuffer >= t.heartTimeout) {
         throw new Error(
           `Jessibuca videoBuffer ${t.videoBuffer}s must be less than heartTimeout ${t.heartTimeout}s`
         );
+      }
       i.classList.add("jessibuca-container"),
-        delete t.container,
-        (t.forceNoOffscreen = !0),
-        Be() && (t.controlAutoHide = !1),
-        ke(t.videoBuffer) && (t.videoBuffer = 1e3 * Number(t.videoBuffer)),
-        ke(t.timeout) &&
-          (Re(t.loadingTimeout) && (t.loadingTimeout = t.timeout),
-          Re(t.heartTimeout) && (t.heartTimeout = t.timeout)),
-        (this._opt = t),
-        (this.$container = i),
-        (this._loadingTimeoutReplayTimes = 0),
-        (this._heartTimeoutReplayTimes = 0),
-        (this.events = new pe(this)),
-        (this.debug = new he(this)),
-        this._initPlayer(i, t);
+      delete t.container,
+      (t.forceNoOffscreen = !0),
+      Be() && (t.controlAutoHide = !1),
+      ke(t.videoBuffer) && (t.videoBuffer = 1e3 * Number(t.videoBuffer)),
+      ke(t.timeout)
+      && (Re(t.loadingTimeout) && (t.loadingTimeout = t.timeout),
+      Re(t.heartTimeout) && (t.heartTimeout = t.timeout)),
+      (this._opt = t),
+      (this.$container = i),
+      (this._loadingTimeoutReplayTimes = 0),
+      (this._heartTimeoutReplayTimes = 0),
+      (this.events = new pe(this)),
+      (this.debug = new he(this)),
+      this._initPlayer(i, t);
     }
+
     destroy() {
       this.events && (this.events.destroy(), (this.events = null)),
-        this.player && (this.player.destroy(), (this.player = null)),
-        (this.$container = null),
-        (this._opt = null),
-        (this._loadingTimeoutReplayTimes = 0),
-        (this._heartTimeoutReplayTimes = 0),
-        this.off();
+      this.player && (this.player.destroy(), (this.player = null)),
+      (this.$container = null),
+      (this._opt = null),
+      (this._loadingTimeoutReplayTimes = 0),
+      (this._heartTimeoutReplayTimes = 0),
+      this.off();
     }
+
     _initPlayer(e, t) {
       (this.player = new mt(e, t)),
-        this.debug.log("jessibuca", "_initPlayer", this.player.getOption()),
-        this._bindEvents();
+      this.debug.log("jessibuca", "_initPlayer", this.player.getOption()),
+      this._bindEvents();
     }
+
     _resetPlayer() {
-      let e =
-        arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
+      const e
+        = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
       this.player.destroy(),
-        (this.player = null),
-        (this._opt = Object.assign(this._opt, e)),
-        (this._opt.url = ""),
-        this._initPlayer(this.$container, this._opt);
+      (this.player = null),
+      (this._opt = Object.assign(this._opt, e)),
+      (this._opt.url = ""),
+      this._initPlayer(this.$container, this._opt);
     }
+
     _bindEvents() {
       Object.keys(D).forEach((e) => {
         this.player.on(D[e], (t) => {
@@ -7590,31 +8074,38 @@
         });
       });
     }
+
     setDebug(e) {
       this.player.updateOption({ debug: !!e });
     }
+
     mute() {
       this.player.mute(!0);
     }
+
     cancelMute() {
       this.player.mute(!1);
     }
+
     setVolume(e) {
       this.player.volume = e;
     }
+
     audioResume() {
       this.player.audio && this.player.audio.audioEnabled(!0);
     }
+
     setTimeout(e) {
       (e = Number(e)),
-        this.player.updateOption({
-          timeout: e,
-          loadingTimeout: e,
-          heartTimeout: e,
-        });
+      this.player.updateOption({
+        timeout: e,
+        loadingTimeout: e,
+        heartTimeout: e
+      });
     }
+
     setScaleMode(e) {
-      let t = { isFullResize: !1, isResize: !1 };
+      const t = { isFullResize: !1, isResize: !1 };
       switch ((e = Number(e))) {
         case P:
           (t.isFullResize = !1), (t.isResize = !1);
@@ -7627,6 +8118,7 @@
       }
       this.player.updateOption(t), this.resize();
     }
+
     pause() {
       return new Promise((e, t) => {
         this.player
@@ -7641,17 +8133,20 @@
           : t("player is null");
       });
     }
+
     close() {
       return (
         (this._opt.url = ""), (this._opt.playOptions = {}), this.player.close()
       );
     }
+
     clearView() {
       this.player.video.clearView();
     }
+
     play(e) {
-      let t =
-        arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
+      const t
+        = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
       return new Promise((i, o) => {
         if (!e && !this._opt.url)
           return this.emit(x.error, j.playError), void o("play url is empty");
@@ -7672,22 +8167,22 @@
                         "pause ->  play and play error",
                         e
                       ),
-                        this.player.pause().then(() => {
-                          o(e);
-                        });
+                      this.player.pause().then(() => {
+                        o(e);
+                      });
                     }))
               : this.player
                   .pause()
                   .then(() => {
                     this.clearView(),
-                      this._play(e, t)
-                        .then(() => {
-                          i();
-                        })
-                        .catch((e) => {
-                          this.debug.warn("jessibuca", "this._play error", e),
-                            o(e);
-                        });
+                    this._play(e, t)
+                      .then(() => {
+                        i();
+                      })
+                      .catch((e) => {
+                        this.debug.warn("jessibuca", "this._play error", e),
+                        o(e);
+                      });
                   })
                   .catch((e) => {
                     this.debug.warn(
@@ -7695,7 +8190,7 @@
                       "this._opt.url is null and pause error",
                       e
                     ),
-                      o(e);
+                    o(e);
                   })
             : this._play(e, t)
                 .then(() => {
@@ -7711,366 +8206,379 @@
               })
               .catch((e) => {
                 this.debug.warn("jessibuca", "url is null and play error", e),
-                  this.player.pause().then(() => {
-                    o(e);
-                  });
+                this.player.pause().then(() => {
+                  o(e);
+                });
               });
       });
     }
+
     _play(e) {
-      let t =
-        arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
+      const t
+        = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
       return new Promise((i, o) => {
         (this._opt.url = e), (this._opt.playOptions = t);
-        const r = 0 === e.indexOf("http"),
-          d = r ? a : s,
-          c = r || -1 !== e.indexOf(".flv") || this._opt.isFlv ? n : A;
+        const r = e.indexOf("http") === 0;
+        const d = r ? a : s;
+        const c = r || e.includes(".flv") || this._opt.isFlv ? n : A;
         this.player.updateOption({ protocol: d, demuxType: c }),
-          this.player.once(j.webglAlignmentError, () => {
-            this.pause().then(() => {
-              this.debug.log("Jessibuca", "webglAlignmentError"),
-                this._resetPlayer({ openWebglAlignment: !0 }),
-                this.play(e, t)
-                  .then(() => {
-                    this.debug.log(
-                      "Jessibuca",
-                      "webglAlignmentError and play success"
-                    );
-                  })
-                  .catch(() => {
-                    this.debug.log(
-                      "Jessibuca",
-                      "webglAlignmentError and play error"
-                    );
-                  });
-            });
-          }),
-          this.player.once(j.mediaSourceH265NotSupport, () => {
-            this.pause().then(() => {
-              this.player._opt.autoWasm &&
-                (this.debug.log(
-                  "Jessibuca",
-                  "auto wasm [mse-> wasm] reset player and play"
-                ),
-                this._resetPlayer({ useMSE: !1 }),
-                this.play(e, t)
-                  .then(() => {
-                    this.debug.log(
-                      "Jessibuca",
-                      "auto wasm [mse-> wasm] reset player and play success"
-                    );
-                  })
-                  .catch(() => {
-                    this.debug.log(
-                      "Jessibuca",
-                      "auto wasm [mse-> wasm] reset player and play error"
-                    );
-                  }));
-            });
-          }),
-          this.player.once(j.mediaSourceFull, () => {
-            this.pause().then(() => {
-              this.debug.log("Jessibuca", "media source full"),
-                this._resetPlayer(),
-                this.play(e, t)
-                  .then(() => {
-                    this.debug.log(
-                      "Jessibuca",
-                      "media source full and reset player and play success"
-                    );
-                  })
-                  .catch(() => {
-                    this.debug.warn(
-                      "Jessibuca",
-                      "media source full and reset player and play error"
-                    );
-                  });
-            });
-          }),
-          this.player.once(j.mediaSourceAppendBufferError, () => {
-            this.pause().then(() => {
-              this.debug.log("Jessibuca", "media source append buffer error"),
-                this._resetPlayer(),
-                this.play(e, t)
-                  .then(() => {
-                    this.debug.log(
-                      "Jessibuca",
-                      "media source append buffer error and reset player and play success"
-                    );
-                  })
-                  .catch(() => {
-                    this.debug.warn(
-                      "Jessibuca",
-                      "media source append buffer error and reset player and play error"
-                    );
-                  });
-            });
-          }),
-          this.player.once(j.mediaSourceBufferListLarge, () => {
-            this.pause().then(() => {
-              this.debug.log("Jessibuca", "media source buffer list large"),
-                this._resetPlayer(),
-                this.play(e, t)
-                  .then(() => {
-                    this.debug.log(
-                      "Jessibuca",
-                      "media source buffer list large and reset player and play success"
-                    );
-                  })
-                  .catch(() => {
-                    this.debug.warn(
-                      "Jessibuca",
-                      "media source buffer list large and reset player and play error"
-                    );
-                  });
-            });
-          }),
-          this.player.once(j.mediaSourceAppendBufferEndTimeout, () => {
-            this.pause().then(() => {
-              this.debug.log(
-                "Jessibuca",
-                "media source append buffer end timeout"
-              ),
-                this._resetPlayer(),
-                this.play(e, t)
-                  .then(() => {
-                    this.debug.log(
-                      "Jessibuca",
-                      "media source append buffer end timeout and reset player and play success"
-                    );
-                  })
-                  .catch(() => {
-                    this.debug.warn(
-                      "Jessibuca",
-                      "media source append buffer end timeout and reset player and play error"
-                    );
-                  });
-            });
-          }),
-          this.player.once(j.mseSourceBufferError, () => {
-            this.pause().then(() => {
-              this.player._opt.autoWasm &&
-                (this.debug.log(
-                  "Jessibuca",
-                  "auto wasm [mse-> wasm] reset player and play"
-                ),
-                this._resetPlayer({ useMSE: !1 }),
-                this.play(e, t)
-                  .then(() => {
-                    this.debug.log(
-                      "Jessibuca",
-                      "auto wasm [mse-> wasm] reset player and play success"
-                    );
-                  })
-                  .catch(() => {
-                    this.debug.warn(
-                      "Jessibuca",
-                      "auto wasm [mse-> wasm] reset player and play error"
-                    );
-                  }));
-            });
-          }),
-          this.player.once(j.webcodecsH265NotSupport, () => {
-            this.pause().then(() => {
-              this.player._opt.autoWasm &&
-                (this.debug.log(
-                  "Jessibuca",
-                  "auto wasm [wcs-> wasm] reset player and play"
-                ),
-                this._resetPlayer({ useWCS: !1 }),
-                this.play(e, t)
-                  .then(() => {
-                    this.debug.log(
-                      "Jessibuca",
-                      "auto wasm [wcs-> wasm] reset player and play success"
-                    );
-                  })
-                  .catch(() => {
-                    this.debug.warn(
-                      "Jessibuca",
-                      "auto wasm [wcs-> wasm] reset player and play error"
-                    );
-                  }));
-            });
-          }),
-          this.player.once(j.webcodecsWidthOrHeightChange, () => {
-            this.pause().then(() => {
-              this.debug.log(
-                "Jessibuca",
-                "webcodecs Width Or Height Change reset player and play"
-              ),
-                this._resetPlayer({ useWCS: !0 }),
-                this.play(e, t)
-                  .then(() => {
-                    this.debug.log(
-                      "Jessibuca",
-                      "webcodecs Width Or Height Change reset player and play success"
-                    );
-                  })
-                  .catch(() => {
-                    this.debug.warn(
-                      "Jessibuca",
-                      "webcodecs Width Or Height Change reset player and play error"
-                    );
-                  });
-            });
-          }),
-          this.player.once(j.webcodecsDecodeError, () => {
-            this.pause().then(() => {
-              this.player._opt.autoWasm &&
-                (this.debug.log(
-                  "Jessibuca",
-                  "webcodecs decode error reset player and play"
-                ),
-                this._resetPlayer({ useWCS: !1 }),
-                this.play(e, t)
-                  .then(() => {
-                    this.debug.log(
-                      "Jessibuca",
-                      "webcodecs decode error  reset player and play success"
-                    );
-                  })
-                  .catch(() => {
-                    this.debug.warn(
-                      "Jessibuca",
-                      "webcodecs decode error reset player and play error"
-                    );
-                  }));
-            });
-          }),
-          this.player.once(j.wasmDecodeError, () => {
-            this.player._opt.wasmDecodeErrorReplay &&
-              this.pause().then(() => {
+        this.player.once(j.webglAlignmentError, () => {
+          this.pause().then(() => {
+            this.debug.log("Jessibuca", "webglAlignmentError"),
+            this._resetPlayer({ openWebglAlignment: !0 }),
+            this.play(e, t)
+              .then(() => {
                 this.debug.log(
                   "Jessibuca",
-                  "wasm decode error and reset player and play"
-                ),
-                  this._resetPlayer({ useWCS: !1 }),
-                  this.play(e, t)
-                    .then(() => {
-                      this.debug.log(
-                        "Jessibuca",
-                        "wasm decode error and reset player and play success"
-                      );
-                    })
-                    .catch(() => {
-                      this.debug.warn(
-                        "Jessibuca",
-                        "wasm decode error and reset player and play error"
-                      );
-                    });
+                  "webglAlignmentError and play success"
+                );
+              })
+              .catch(() => {
+                this.debug.log(
+                  "Jessibuca",
+                  "webglAlignmentError and play error"
+                );
               });
-          }),
-          this.player.on(x.delayTimeout, () => {
-            this.player._opt.heartTimeoutReplay &&
-              (this._heartTimeoutReplayTimes <
-                this.player._opt.heartTimeoutReplayTimes ||
-                -1 === this.player._opt.heartTimeoutReplayTimes) &&
-              (this.debug.log(
-                "Jessibuca",
-                `delay timeout replay time is ${this._heartTimeoutReplayTimes}`
-              ),
-              (this._heartTimeoutReplayTimes += 1),
-              this.play(e, t)
-                .then(() => {
-                  this._heartTimeoutReplayTimes = 0;
-                })
-                .catch(() => {}));
-          }),
-          this.player.on(x.loadingTimeout, () => {
-            this.player._opt.loadingTimeoutReplay &&
-              (this._loadingTimeoutReplayTimes <
-                this.player._opt.loadingTimeoutReplayTimes ||
-                -1 === this.player._opt.loadingTimeoutReplayTimes) &&
-              (this.debug.log(
-                "Jessibuca",
-                `loading timeout replay time is ${this._loadingTimeoutReplayTimes}`
-              ),
-              (this._loadingTimeoutReplayTimes += 1),
-              this.play(e, t)
-                .then(() => {
-                  this._loadingTimeoutReplayTimes = 0;
-                })
-                .catch(() => {}));
-          }),
-          this.hasLoaded()
-            ? this.player
+          });
+        }),
+        this.player.once(j.mediaSourceH265NotSupport, () => {
+          this.pause().then(() => {
+            this.player._opt.autoWasm
+            && (this.debug.log(
+              "Jessibuca",
+              "auto wasm [mse-> wasm] reset player and play"
+            ),
+            this._resetPlayer({ useMSE: !1 }),
+            this.play(e, t)
+              .then(() => {
+                this.debug.log(
+                  "Jessibuca",
+                  "auto wasm [mse-> wasm] reset player and play success"
+                );
+              })
+              .catch(() => {
+                this.debug.log(
+                  "Jessibuca",
+                  "auto wasm [mse-> wasm] reset player and play error"
+                );
+              }));
+          });
+        }),
+        this.player.once(j.mediaSourceFull, () => {
+          this.pause().then(() => {
+            this.debug.log("Jessibuca", "media source full"),
+            this._resetPlayer(),
+            this.play(e, t)
+              .then(() => {
+                this.debug.log(
+                  "Jessibuca",
+                  "media source full and reset player and play success"
+                );
+              })
+              .catch(() => {
+                this.debug.warn(
+                  "Jessibuca",
+                  "media source full and reset player and play error"
+                );
+              });
+          });
+        }),
+        this.player.once(j.mediaSourceAppendBufferError, () => {
+          this.pause().then(() => {
+            this.debug.log("Jessibuca", "media source append buffer error"),
+            this._resetPlayer(),
+            this.play(e, t)
+              .then(() => {
+                this.debug.log(
+                  "Jessibuca",
+                  "media source append buffer error and reset player and play success"
+                );
+              })
+              .catch(() => {
+                this.debug.warn(
+                  "Jessibuca",
+                  "media source append buffer error and reset player and play error"
+                );
+              });
+          });
+        }),
+        this.player.once(j.mediaSourceBufferListLarge, () => {
+          this.pause().then(() => {
+            this.debug.log("Jessibuca", "media source buffer list large"),
+            this._resetPlayer(),
+            this.play(e, t)
+              .then(() => {
+                this.debug.log(
+                  "Jessibuca",
+                  "media source buffer list large and reset player and play success"
+                );
+              })
+              .catch(() => {
+                this.debug.warn(
+                  "Jessibuca",
+                  "media source buffer list large and reset player and play error"
+                );
+              });
+          });
+        }),
+        this.player.once(j.mediaSourceAppendBufferEndTimeout, () => {
+          this.pause().then(() => {
+            this.debug.log(
+              "Jessibuca",
+              "media source append buffer end timeout"
+            ),
+            this._resetPlayer(),
+            this.play(e, t)
+              .then(() => {
+                this.debug.log(
+                  "Jessibuca",
+                  "media source append buffer end timeout and reset player and play success"
+                );
+              })
+              .catch(() => {
+                this.debug.warn(
+                  "Jessibuca",
+                  "media source append buffer end timeout and reset player and play error"
+                );
+              });
+          });
+        }),
+        this.player.once(j.mseSourceBufferError, () => {
+          this.pause().then(() => {
+            this.player._opt.autoWasm
+            && (this.debug.log(
+              "Jessibuca",
+              "auto wasm [mse-> wasm] reset player and play"
+            ),
+            this._resetPlayer({ useMSE: !1 }),
+            this.play(e, t)
+              .then(() => {
+                this.debug.log(
+                  "Jessibuca",
+                  "auto wasm [mse-> wasm] reset player and play success"
+                );
+              })
+              .catch(() => {
+                this.debug.warn(
+                  "Jessibuca",
+                  "auto wasm [mse-> wasm] reset player and play error"
+                );
+              }));
+          });
+        }),
+        this.player.once(j.webcodecsH265NotSupport, () => {
+          this.pause().then(() => {
+            this.player._opt.autoWasm
+            && (this.debug.log(
+              "Jessibuca",
+              "auto wasm [wcs-> wasm] reset player and play"
+            ),
+            this._resetPlayer({ useWCS: !1 }),
+            this.play(e, t)
+              .then(() => {
+                this.debug.log(
+                  "Jessibuca",
+                  "auto wasm [wcs-> wasm] reset player and play success"
+                );
+              })
+              .catch(() => {
+                this.debug.warn(
+                  "Jessibuca",
+                  "auto wasm [wcs-> wasm] reset player and play error"
+                );
+              }));
+          });
+        }),
+        this.player.once(j.webcodecsWidthOrHeightChange, () => {
+          this.pause().then(() => {
+            this.debug.log(
+              "Jessibuca",
+              "webcodecs Width Or Height Change reset player and play"
+            ),
+            this._resetPlayer({ useWCS: !0 }),
+            this.play(e, t)
+              .then(() => {
+                this.debug.log(
+                  "Jessibuca",
+                  "webcodecs Width Or Height Change reset player and play success"
+                );
+              })
+              .catch(() => {
+                this.debug.warn(
+                  "Jessibuca",
+                  "webcodecs Width Or Height Change reset player and play error"
+                );
+              });
+          });
+        }),
+        this.player.once(j.webcodecsDecodeError, () => {
+          this.pause().then(() => {
+            this.player._opt.autoWasm
+            && (this.debug.log(
+              "Jessibuca",
+              "webcodecs decode error reset player and play"
+            ),
+            this._resetPlayer({ useWCS: !1 }),
+            this.play(e, t)
+              .then(() => {
+                this.debug.log(
+                  "Jessibuca",
+                  "webcodecs decode error  reset player and play success"
+                );
+              })
+              .catch(() => {
+                this.debug.warn(
+                  "Jessibuca",
+                  "webcodecs decode error reset player and play error"
+                );
+              }));
+          });
+        }),
+        this.player.once(j.wasmDecodeError, () => {
+          this.player._opt.wasmDecodeErrorReplay
+          && this.pause().then(() => {
+            this.debug.log(
+              "Jessibuca",
+              "wasm decode error and reset player and play"
+            ),
+            this._resetPlayer({ useWCS: !1 }),
+            this.play(e, t)
+              .then(() => {
+                this.debug.log(
+                  "Jessibuca",
+                  "wasm decode error and reset player and play success"
+                );
+              })
+              .catch(() => {
+                this.debug.warn(
+                  "Jessibuca",
+                  "wasm decode error and reset player and play error"
+                );
+              });
+          });
+        }),
+        this.player.on(x.delayTimeout, () => {
+          this.player._opt.heartTimeoutReplay
+          && (this._heartTimeoutReplayTimes
+            < this.player._opt.heartTimeoutReplayTimes
+            || this.player._opt.heartTimeoutReplayTimes === -1)
+          && (this.debug.log(
+            "Jessibuca",
+            `delay timeout replay time is ${this._heartTimeoutReplayTimes}`
+          ),
+          (this._heartTimeoutReplayTimes += 1),
+          this.play(e, t)
+            .then(() => {
+              this._heartTimeoutReplayTimes = 0;
+            })
+            .catch(() => {}));
+        }),
+        this.player.on(x.loadingTimeout, () => {
+          this.player._opt.loadingTimeoutReplay
+          && (this._loadingTimeoutReplayTimes
+            < this.player._opt.loadingTimeoutReplayTimes
+            || this.player._opt.loadingTimeoutReplayTimes === -1)
+          && (this.debug.log(
+            "Jessibuca",
+            `loading timeout replay time is ${this._loadingTimeoutReplayTimes}`
+          ),
+          (this._loadingTimeoutReplayTimes += 1),
+          this.play(e, t)
+            .then(() => {
+              this._loadingTimeoutReplayTimes = 0;
+            })
+            .catch(() => {}));
+        }),
+        this.hasLoaded()
+          ? this.player
+              .play(e, t)
+              .then(() => {
+                i();
+              })
+              .catch((e) => {
+                this.debug.warn("Jessibuca", "hasLoaded and play error", e),
+                this.player
+                && this.player.pause().then(() => {
+                  o(e);
+                });
+              })
+          : this.player.once(x.decoderWorkerInit, () => {
+              this.player
                 .play(e, t)
                 .then(() => {
                   i();
                 })
                 .catch((e) => {
-                  this.debug.warn("Jessibuca", "hasLoaded and play error", e),
-                    this.player &&
-                      this.player.pause().then(() => {
-                        o(e);
-                      });
-                })
-            : this.player.once(x.decoderWorkerInit, () => {
-                this.player
-                  .play(e, t)
-                  .then(() => {
-                    i();
-                  })
-                  .catch((e) => {
-                    this.debug.warn(
-                      "Jessibuca",
-                      "decoderWorkerInit and play error",
-                      e
-                    ),
-                      this.player &&
-                        this.player.pause().then(() => {
-                          o(e);
-                        });
+                  this.debug.warn(
+                    "Jessibuca",
+                    "decoderWorkerInit and play error",
+                    e
+                  ),
+                  this.player
+                  && this.player.pause().then(() => {
+                    o(e);
                   });
-              });
+                });
+            });
       });
     }
+
     resize() {
       this.player.resize();
     }
+
     setBufferTime(e) {
       (e = Number(e)),
-        this.player.updateOption({ videoBuffer: 1e3 * e }),
-        this.player.decoderWorker &&
-          this.player.decoderWorker.updateWorkConfig({
-            key: "videoBuffer",
-            value: 1e3 * e,
-          });
+      this.player.updateOption({ videoBuffer: 1e3 * e }),
+      this.player.decoderWorker
+      && this.player.decoderWorker.updateWorkConfig({
+        key: "videoBuffer",
+        value: 1e3 * e
+      });
     }
+
     setRotate(e) {
-      e = parseInt(e, 10);
-      this._opt.rotate !== e &&
-        -1 !== [0, 90, 180, 270].indexOf(e) &&
-        (this.player.updateOption({ rotate: e }), this.resize());
+      e = Number.parseInt(e, 10);
+      this._opt.rotate !== e
+      && [0, 90, 180, 270].includes(e)
+      && (this.player.updateOption({ rotate: e }), this.resize());
     }
+
     hasLoaded() {
       return this.player.loaded;
     }
+
     setKeepScreenOn() {
       this.player.updateOption({ keepScreenOn: !0 });
     }
+
     setFullscreen(e) {
       const t = !!e;
       this.player.fullscreen !== t && (this.player.fullscreen = t);
     }
+
     screenshot(e, t, i, o) {
       return this.player.video ? this.player.video.screenshot(e, t, i, o) : "";
     }
+
     startRecord(e, t) {
       return new Promise((i, o) => {
         this.player.playing ? (this.player.startRecord(e, t), i()) : o();
       });
     }
+
     stopRecordAndSave() {
       this.player.recording && this.player.stopRecordAndSave();
     }
+
     isPlaying() {
       return !!this.player && this.player.playing;
     }
+
     isMute() {
       return !this.player.audio || this.player.audio.isMute;
     }
+
     isRecording() {
       return this.player.recorder.recording;
     }
@@ -8079,7 +8587,7 @@
     r(gt, "ERROR", j),
     r(gt, "TIMEOUT", {
       loadingTimeout: x.loadingTimeout,
-      delayTimeout: x.delayTimeout,
+      delayTimeout: x.delayTimeout
     }),
     (window.Jessibuca = gt),
     gt

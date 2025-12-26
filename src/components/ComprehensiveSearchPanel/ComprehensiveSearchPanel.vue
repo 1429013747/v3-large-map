@@ -1,13 +1,131 @@
+<script setup>
+import { getIconPath } from "@/utils/utilstools.js";
+import {
+  CloseOutlined,
+  SearchOutlined
+} from "@ant-design/icons-vue";
+import { computed, ref } from "vue";
+// Props
+const props = defineProps({
+  open: {
+    type: Boolean,
+    default: false
+  }
+});
+
+// Emits
+const emit = defineEmits(["update:open"]);
+// 响应式数据
+const visible = computed({
+  get: () => props.open,
+  set: value => emit("update:open", value)
+});
+
+const searchKeyword = ref("");
+const selectedArea = ref();
+const selectedDimension = ref();
+const totalDataCount = ref(1240);
+
+// 将总数据量拆分为单个数字
+const totalDataCountDigits = computed(() => {
+  return totalDataCount.value.toString().split("");
+});
+
+// 统计卡片数据
+const summaryCards = ref([
+  { key: "personnel", name: "人员库", count: 92, icon: "vactor-p" },
+  { key: "ship", name: "船舶库", count: 89, icon: "boat-line" },
+  { key: "vehicle", name: "车辆库", count: 119, icon: "tank" },
+  { key: "risk", name: "风险点库", count: 119, icon: "warn-bg" },
+  { key: "case", name: "案件库", count: 67, icon: "bage" },
+  { key: "clue", name: "线索库", count: 11, icon: "line-bg" },
+  { key: "project", name: "项目库", count: 189, icon: "pos-bg" },
+  { key: "warning", name: "预警库", count: 189, icon: "imp-bg" }
+]);
+
+// 左侧详情面板数据
+const leftPanels = ref([
+  {
+    type: "location",
+    title: "地点",
+    icon: "position",
+    items: [{ key: "location", label: "地点", value: "XX地点" }]
+  },
+  {
+    type: "person",
+    title: "人员",
+    icon: "icon-user",
+    items: [
+      { key: "name", label: "姓名", value: "张三" },
+      { key: "id", label: "证件号码", value: "33011019890718" },
+      { key: "phone", label: "手机号", value: "13766766889" },
+      { key: "address", label: "户籍地", value: "安徽省合肥市" }
+    ]
+  },
+  {
+    type: "case",
+    title: "案件",
+    icon: "bage-icon",
+    items: [
+      { key: "caseName", label: "案件名称", value: "张三" },
+      { key: "caseNumber", label: "案件编号", value: "XS20250001" },
+      { key: "caseContent", label: "案件内容", value: "发生冻品走私案件" }
+    ]
+  },
+  {
+    type: "items",
+    title: "物品",
+    icon: "file-icon",
+    items: [
+      { key: "itemType", label: "物品类型", value: "冻品" },
+      { key: "involvedCase", label: "涉及案件", value: "某某某走私案" },
+      { key: "caseNumber", label: "案件编号", value: "XS2025001" },
+      { key: "personnel", label: "涉案人员", value: "张三" }
+    ]
+  },
+  {
+    type: "ship",
+    title: "船舶",
+    icon: "boat-icon",
+    items: [
+      { key: "shipNumber", label: "船舶编号", value: "浙象渔001" },
+      { key: "shipType", label: "船舶类型", value: "渔船" },
+      { key: "owner", label: "船主", value: "某某某" },
+      { key: "crew", label: "船员", value: "某某某、某某东" }
+    ]
+  }
+]);
+
+// 方法
+function handleClose() {
+  visible.value = false;
+}
+
+function handleSearch() {
+  console.log("搜索:", searchKeyword.value);
+}
+
+function handleAreaChange(value) {
+  selectedArea.value = value;
+  console.log("选择区域:", value);
+}
+
+function handleDimensionChange(value) {
+  selectedDimension.value = value;
+  console.log("选择维度:", value);
+}
+</script>
+
 <template>
   <a-drawer
     v-model:open="visible"
     title="综合检索"
     placement="right"
-    getContainer=".ui-container"
+    get-container=".ui-container"
     :width="1200"
     :closable="true"
     :mask="false"
-    rootClassName="layer-box"
+    root-class-name="layer-box"
     class="layer-control-drawer"
   >
     <template #closeIcon>
@@ -18,7 +136,7 @@
       <div class="data-summary">
         <div class="summary-title-section">
           <h3 class="summary-title">
-            <img src="@/assets/imgs/title-icon.png" alt="数据总量" />
+            <img src="@/assets/imgs/title-icon.png" alt="数据总量">
             数据总量
           </h3>
           <div class="summary-number-cards">
@@ -38,11 +156,15 @@
             class="summary-card"
           >
             <div class="card-icon">
-              <img :src="getIconPath(card.icon)" :alt="card.name" />
+              <img :src="getIconPath(card.icon)" :alt="card.name">
             </div>
             <div class="card-content">
-              <div class="card-name">{{ card.name }}</div>
-              <div class="card-number">{{ card.count }}</div>
+              <div class="card-name">
+                {{ card.name }}
+              </div>
+              <div class="card-number">
+                {{ card.count }}
+              </div>
             </div>
           </div>
         </div>
@@ -55,8 +177,8 @@
             placeholder="请输入内容"
             class="search-input"
             size="large"
-            allowClear
-            @pressEnter="handleSearch"
+            allow-clear
+            @press-enter="handleSearch"
           >
             <template #suffix>
               <SearchOutlined @click="handleSearch" />
@@ -68,12 +190,18 @@
             placeholder="全部区域"
             class="area-select"
             size="large"
-            allowClear
+            allow-clear
             @change="handleAreaChange"
           >
-            <a-select-option value="宁波市">宁波市</a-select-option>
-            <a-select-option value="台州市">台州市</a-select-option>
-            <a-select-option value="温州市">温州市</a-select-option>
+            <a-select-option value="宁波市">
+              宁波市
+            </a-select-option>
+            <a-select-option value="台州市">
+              台州市
+            </a-select-option>
+            <a-select-option value="温州市">
+              温州市
+            </a-select-option>
           </a-select>
 
           <a-select
@@ -81,13 +209,21 @@
             placeholder="全部维度"
             class="dimension-select"
             size="large"
-            allowClear
+            allow-clear
             @change="handleDimensionChange"
           >
-            <a-select-option value="人员">人员</a-select-option>
-            <a-select-option value="船舶">船舶</a-select-option>
-            <a-select-option value="车辆">车辆</a-select-option>
-            <a-select-option value="案件">案件</a-select-option>
+            <a-select-option value="人员">
+              人员
+            </a-select-option>
+            <a-select-option value="船舶">
+              船舶
+            </a-select-option>
+            <a-select-option value="车辆">
+              车辆
+            </a-select-option>
+            <a-select-option value="案件">
+              案件
+            </a-select-option>
           </a-select>
         </div>
       </div>
@@ -101,7 +237,7 @@
             class="detail-panel"
           >
             <div class="panel-header">
-              <img :src="getIconPath(panel.icon)" alt="地点" />
+              <img :src="getIconPath(panel.icon)" alt="地点">
               {{ panel.title }}
             </div>
             <div class="panel-content">
@@ -140,7 +276,7 @@
 
             <div class="person-content">
               <div class="person-avatar">
-                <img src="@/assets/imgs/vactor.png" alt="人员头像" />
+                <img src="@/assets/imgs/vactor.png" alt="人员头像">
               </div>
 
               <div class="person-info">
@@ -188,125 +324,6 @@
     </div>
   </a-drawer>
 </template>
-
-<script setup>
-import { ref, computed } from "vue";
-import {
-  CloseOutlined,
-  SearchOutlined,
-  DownOutlined,
-} from "@ant-design/icons-vue";
-import { getIconPath } from "@/utils/utilstools.js";
-// Props
-const props = defineProps({
-  open: {
-    type: Boolean,
-    default: false,
-  },
-});
-
-// Emits
-const emit = defineEmits(["update:open"]);
-// 响应式数据
-const visible = computed({
-  get: () => props.open,
-  set: (value) => emit("update:open", value),
-});
-
-const searchKeyword = ref("");
-const selectedArea = ref();
-const selectedDimension = ref();
-const totalDataCount = ref(1240);
-
-// 将总数据量拆分为单个数字
-const totalDataCountDigits = computed(() => {
-  return totalDataCount.value.toString().split("");
-});
-
-// 统计卡片数据
-const summaryCards = ref([
-  { key: "personnel", name: "人员库", count: 92, icon: "vactor-p" },
-  { key: "ship", name: "船舶库", count: 89, icon: "boat-line" },
-  { key: "vehicle", name: "车辆库", count: 119, icon: "tank" },
-  { key: "risk", name: "风险点库", count: 119, icon: "warn-bg" },
-  { key: "case", name: "案件库", count: 67, icon: "bage" },
-  { key: "clue", name: "线索库", count: 11, icon: "line-bg" },
-  { key: "project", name: "项目库", count: 189, icon: "pos-bg" },
-  { key: "warning", name: "预警库", count: 189, icon: "imp-bg" },
-]);
-
-// 左侧详情面板数据
-const leftPanels = ref([
-  {
-    type: "location",
-    title: "地点",
-    icon: "position",
-    items: [{ key: "location", label: "地点", value: "XX地点" }],
-  },
-  {
-    type: "person",
-    title: "人员",
-    icon: "icon-user",
-    items: [
-      { key: "name", label: "姓名", value: "张三" },
-      { key: "id", label: "证件号码", value: "33011019890718" },
-      { key: "phone", label: "手机号", value: "13766766889" },
-      { key: "address", label: "户籍地", value: "安徽省合肥市" },
-    ],
-  },
-  {
-    type: "case",
-    title: "案件",
-    icon: "bage-icon",
-    items: [
-      { key: "caseName", label: "案件名称", value: "张三" },
-      { key: "caseNumber", label: "案件编号", value: "XS20250001" },
-      { key: "caseContent", label: "案件内容", value: "发生冻品走私案件" },
-    ],
-  },
-  {
-    type: "items",
-    title: "物品",
-    icon: "file-icon",
-    items: [
-      { key: "itemType", label: "物品类型", value: "冻品" },
-      { key: "involvedCase", label: "涉及案件", value: "某某某走私案" },
-      { key: "caseNumber", label: "案件编号", value: "XS2025001" },
-      { key: "personnel", label: "涉案人员", value: "张三" },
-    ],
-  },
-  {
-    type: "ship",
-    title: "船舶",
-    icon: "boat-icon",
-    items: [
-      { key: "shipNumber", label: "船舶编号", value: "浙象渔001" },
-      { key: "shipType", label: "船舶类型", value: "渔船" },
-      { key: "owner", label: "船主", value: "某某某" },
-      { key: "crew", label: "船员", value: "某某某、某某东" },
-    ],
-  },
-]);
-
-// 方法
-const handleClose = () => {
-  visible.value = false;
-};
-
-const handleSearch = () => {
-  console.log("搜索:", searchKeyword.value);
-};
-
-const handleAreaChange = (value) => {
-  selectedArea.value = value;
-  console.log("选择区域:", value);
-};
-
-const handleDimensionChange = (value) => {
-  selectedDimension.value = value;
-  console.log("选择维度:", value);
-};
-</script>
 
 <style lang="scss" scoped>
 .comprehensive-search-content {

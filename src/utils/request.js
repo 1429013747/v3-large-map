@@ -1,5 +1,5 @@
 import router from '@/router'
-import { message, Modal, notification } from 'ant-design-vue'
+import { message, notification } from 'ant-design-vue'
 import axios from 'axios'
 
 // 加载指示器
@@ -38,7 +38,8 @@ service.interceptors.request.use(
               const data = JSON.parse(reader.result)
               message.error(data.message || '请求出错')
               reject(data)
-            } catch (e) {
+            }
+            catch (e) {
               message.error('请求出错')
               reject(e)
             }

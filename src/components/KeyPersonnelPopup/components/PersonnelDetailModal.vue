@@ -1,3 +1,24 @@
+<script setup>
+import { CloseOutlined } from "@ant-design/icons-vue";
+
+const props = defineProps({
+  open: {
+    type: Boolean,
+    default: false
+  },
+  personnelData: {
+    type: Object,
+    default: () => {}
+  }
+});
+
+// Emits
+const emit = defineEmits(["update:open"]);
+function handleCancel() {
+  emit("update:open", false);
+}
+</script>
+
 <template>
   <div>
     <a-modal
@@ -6,17 +27,19 @@
       :width="1200"
       :centered="true"
       :mask-closable="false"
-      getContainer=".ui-container"
+      get-container=".ui-container"
       class="modal-container"
-      @cancel="handleCancel"
       :footer="null"
+      @cancel="handleCancel"
     >
       <template #closeIcon>
         <CloseOutlined style="color: #ffffff; font-size: 16px" />
       </template>
 
       <div class="vehicle-detail-content">
-        <div class="basic-info-title">基本信息</div>
+        <div class="basic-info-title">
+          基本信息
+        </div>
         <!-- 基本信息区域 -->
         <div class="basic-info-section">
           <div class="vehicle-header">
@@ -33,7 +56,7 @@
               <img
                 src="@/assets/imgs/personnel.png"
                 :alt="personnelData.nationality"
-              />
+              >
             </div>
 
             <div class="vehicle-details">
@@ -83,28 +106,6 @@
     </a-modal>
   </div>
 </template>
-
-<script setup>
-import { ref, reactive, watch } from "vue";
-import { CloseOutlined } from "@ant-design/icons-vue";
-
-const props = defineProps({
-  open: {
-    type: Boolean,
-    default: false,
-  },
-  personnelData: {
-    type: Object,
-    default: () => {},
-  },
-});
-
-// Emits
-const emit = defineEmits(["update:open"]);
-const handleCancel = () => {
-  emit("update:open", false);
-};
-</script>
 
 <style lang="scss" scoped>
 .vehicle-detail-content {

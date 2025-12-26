@@ -1,9 +1,362 @@
+<script setup>
+import {
+  CloseOutlined,
+  DownOutlined,
+  EnvironmentOutlined,
+  EyeOutlined,
+  PlayCircleOutlined
+} from "@ant-design/icons-vue";
+import { computed, ref } from "vue";
+import WarningDetailPanel from "./components/WarningDetailPanel/WarningDetailPanel.vue";
+
+// Props
+const props = defineProps({
+  open: {
+    type: Boolean,
+    default: false
+  }
+});
+
+// Emits
+const emit = defineEmits([
+  "update:open",
+  "warning-click",
+  "track-click",
+  "detail-click",
+  "getwarning"
+]);
+
+// 响应式数据
+const statusFilter = ref("");
+const locationFilter = ref("");
+const timeFilter = ref("");
+const activeCategory = ref("all");
+const detailDrawerVisible = ref(false);
+const selectedWarning = ref(null);
+
+const visibleModal = computed({
+  get() {
+    return props.open;
+  },
+  set(value) {
+    emit("update:open", value);
+  }
+});
+// 分类选项
+const categories = [
+  { value: "all", label: "全部预警" },
+  { value: "ship", label: "船舶预警" },
+  { value: "vehicle", label: "车辆预警" }
+];
+
+// 预警数据
+const warnings = ref([
+  {
+    id: 1,
+    type: "团伙车辆聚集",
+    location: "台州市黄岩区",
+    time: "本周",
+    createTime: "2025-09-01 10:00",
+    status: "待处置",
+    category: "vehicle",
+    coordinates: [121.4, 28.6],
+    description: "发现多辆可疑车辆在指定区域聚集，疑似进行非法活动",
+    // 详情数据
+    shipName: "华盛123",
+    warningType: "一般多AIS",
+    riskPoint: "白岩码头",
+    suspiciousVehicle: "可疑车辆",
+    warningTime: "2025.06.12 21:00:09",
+    reason: "浙普渔87392 2025.06.12 21:00:09在高风险点白岩码头停靠",
+    notifier: "王五",
+    notificationTime: "2025.06.12 21:00:09",
+    notificationMethod: "浙征钉、站内信",
+    deliveryTime: "2025.06.12 21:00",
+    deliverySystem: "--",
+    deliveryArea: "宁波象山县",
+    warningType: "伪造信号",
+    name: "船舶123",
+    riskPoint: "手动关联",
+    forgeStartTime: "2025-09-01 10:00",
+    forgeEndTime: "2025-09-01 12:00",
+    appearTime: "2025-09-01 09:00"
+  },
+  {
+    id: 2,
+    type: "团伙车辆聚集",
+    location: "台州市三门县",
+    time: "本周",
+    createTime: "2025-09-01 10:00",
+    status: "待处置",
+    category: "vehicle",
+    coordinates: [121.5, 29.1],
+    description: "三门县发现可疑车辆聚集，需要立即核实",
+    warningType: "伪造信号",
+    name: "船舶123",
+    riskPoint: "手动关联",
+    forgeStartTime: "2025-09-01 10:00",
+    forgeEndTime: "2025-09-01 12:00",
+    appearTime: "2025-09-01 09:00"
+  },
+  {
+    id: 3,
+    type: "一船多AIS",
+    location: "台州市三门县",
+    time: "本周",
+    createTime: "2025-09-01 10:00",
+    status: "已送达",
+    category: "ship",
+    coordinates: [121.5, 29.1],
+    description: "检测到同一船只使用多个AIS设备，存在异常行为",
+    warningType: "伪造信号",
+    name: "船舶123",
+    riskPoint: "手动关联",
+    forgeStartTime: "2025-09-01 10:00",
+    forgeEndTime: "2025-09-01 12:00",
+    appearTime: "2025-09-01 09:00"
+  },
+  {
+    id: 4,
+    type: "一船多AIS",
+    location: "台州市三门县",
+    time: "今天",
+    createTime: "2025-09-01 10:00",
+    status: "已送达",
+    category: "ship",
+    coordinates: [121.5, 29.1],
+    description: "再次检测到AIS设备异常，已发送预警通知",
+    warningType: "伪造信号",
+    name: "船舶123",
+    riskPoint: "手动关联",
+    forgeStartTime: "2025-09-01 10:00",
+    forgeEndTime: "2025-09-01 12:00",
+    appearTime: "2025-09-01 09:00"
+  },
+  {
+    id: 5,
+    type: "涉台异常船舶",
+    location: "台州市椒江区",
+    time: "今天",
+    createTime: "2025-09-01 10:00",
+    status: "已处理",
+    category: "ship",
+    coordinates: [121.4, 28.6],
+    description: "发现与台湾相关的异常船舶活动，已处理完毕",
+    warningType: "伪造信号",
+    name: "船舶123",
+    riskPoint: "手动关联",
+    forgeStartTime: "2025-09-01 10:00",
+    forgeEndTime: "2025-09-01 12:00",
+    appearTime: "2025-09-01 09:00"
+  },
+  {
+    id: 6,
+    type: "可疑人员聚集",
+    location: "台州市路桥区",
+    time: "本月",
+    createTime: "2025-09-01 10:00",
+    status: "待处置",
+    category: "vehicle",
+    coordinates: [121.4, 28.6],
+    description: "路桥区发现可疑人员聚集，疑似进行非法交易",
+    warningType: "伪造信号",
+    name: "船舶123",
+    riskPoint: "手动关联",
+    forgeStartTime: "2025-09-01 10:00",
+    forgeEndTime: "2025-09-01 12:00",
+    appearTime: "2025-09-01 09:00"
+  },
+  {
+    id: 7,
+    type: "可疑人员聚集",
+    location: "台州市路桥区",
+    time: "本月",
+    createTime: "2025-09-01 10:00",
+    status: "待处置",
+    category: "vehicle",
+    coordinates: [121.4, 28.6],
+    description: "路桥区发现可疑人员聚集，疑似进行非法交易",
+    warningType: "伪造信号",
+    name: "船舶123",
+    riskPoint: "手动关联",
+    forgeStartTime: "2025-09-01 10:00",
+    forgeEndTime: "2025-09-01 12:00",
+    appearTime: "2025-09-01 09:00"
+  },
+  {
+    id: 8,
+    type: "可疑人员聚集",
+    location: "台州市路桥区",
+    time: "本月",
+    createTime: "2025-09-01 10:00",
+    status: "待处置",
+    category: "vehicle",
+    coordinates: [121.4, 28.6],
+    description: "路桥区发现可疑人员聚集，疑似进行非法交易",
+    warningType: "伪造信号",
+    name: "船舶123",
+    riskPoint: "手动关联",
+    forgeStartTime: "2025-09-01 10:00",
+    forgeEndTime: "2025-09-01 12:00",
+    appearTime: "2025-09-01 09:00"
+  },
+  {
+    id: 9,
+    type: "可疑人员聚集",
+    location: "台州市路桥区",
+    time: "本月",
+    createTime: "2025-09-01 10:00",
+    status: "待处置",
+    category: "vehicle",
+    coordinates: [121.4, 28.6],
+    description: "路桥区发现可疑人员聚集，疑似进行非法交易",
+    warningType: "伪造信号",
+    name: "船舶123",
+    riskPoint: "手动关联",
+    forgeStartTime: "2025-09-01 10:00",
+    forgeEndTime: "2025-09-01 12:00",
+    appearTime: "2025-09-01 09:00"
+  },
+  {
+    id: 10,
+    type: "可疑人员聚集",
+    location: "台州市路桥区",
+    time: "本月",
+    createTime: "2025-09-01 10:00",
+    status: "待处置",
+    category: "vehicle",
+    coordinates: [121.4, 28.6],
+    description: "路桥区发现可疑人员聚集，疑似进行非法交易",
+    warningType: "伪造信号",
+    name: "船舶123",
+    riskPoint: "手动关联",
+    forgeStartTime: "2025-09-01 10:00",
+    forgeEndTime: "2025-09-01 12:00",
+    appearTime: "2025-09-01 09:00"
+  },
+  {
+    id: 11,
+    type: "可疑人员聚集",
+    location: "台州市路桥区",
+    time: "本月",
+    createTime: "2025-09-01 10:00",
+    status: "待处置",
+    category: "vehicle",
+    coordinates: [121.4, 28.6],
+    description: "路桥区发现可疑人员聚集，疑似进行非法交易",
+    warningType: "伪造信号",
+    name: "船舶123",
+    riskPoint: "手动关联",
+    forgeStartTime: "2025-09-01 10:00",
+    forgeEndTime: "2025-09-01 12:00",
+    appearTime: "2025-09-01 09:00"
+  }
+]);
+
+// 计算属性
+const filteredWarnings = computed(() => {
+  let filtered = warnings.value;
+
+  // 按分类筛选
+  if (activeCategory.value !== "all") {
+    filtered = filtered.filter(
+      warning => warning.category === activeCategory.value
+    );
+  }
+
+  // 按状态筛选
+  if (statusFilter.value) {
+    filtered = filtered.filter(
+      warning => warning.status === statusFilter.value
+    );
+  }
+
+  // 按位置筛选
+  if (locationFilter.value) {
+    filtered = filtered.filter(warning =>
+      warning.location.includes(locationFilter.value)
+    );
+  }
+  if (timeFilter.value) {
+    filtered = filtered.filter(warning =>
+      warning.time.includes(timeFilter.value)
+    );
+  }
+
+  return filtered;
+});
+
+const totalWarnings = computed(() => filteredWarnings.value.length);
+
+function handleTimeChange(time) {
+  timeFilter.value = time;
+}
+
+function handleStatusChange(status) {
+  statusFilter.value = status;
+}
+// 方法
+function getStatusColor(status) {
+  const colorMap = {
+    待处置: "orange",
+    已送达: "green",
+    已处理: "blue"
+  };
+  return colorMap[status] || "default";
+}
+
+function getStatusText(status) {
+  return status;
+}
+
+function handleClose() {
+  emit("update:open", false);
+}
+
+function handleQuery() {
+  handleReset();
+}
+
+function handleReset() {
+  timeFilter.value = "";
+  statusFilter.value = "";
+  locationFilter.value = "";
+  activeCategory.value = "all";
+}
+
+function handleCategoryChange(category) {
+  activeCategory.value = category;
+}
+
+function handleWarningClick(warning) {
+  emit("warning-click", warning);
+}
+
+function handleTrack(warning) {
+  emit("track-click", warning);
+}
+
+function handleDetail(warning) {
+  selectedWarning.value = warning;
+  detailDrawerVisible.value = true;
+  emit("detail-click", warning);
+}
+
+function handleGetWarning(item) {
+  emit("getwarning", item);
+  detailDrawerVisible.value = false;
+}
+function handleDetailClose() {
+  detailDrawerVisible.value = false;
+}
+</script>
+
 <template>
   <a-drawer
     v-model:open="visibleModal"
     title="预警中心"
     placement="left"
-    getContainer=".ui-container"
+    get-container=".ui-container"
     :width="475"
     :closable="true"
     :mask="false"
@@ -15,7 +368,7 @@
         style="margin-top: -6px"
         src="@/assets/imgs/warn.png"
         alt=""
-      />
+      >
     </template>
     <template #extra>
       <CloseOutlined @click="handleClose" />
@@ -90,16 +443,16 @@
             type="primary"
             style="flex: 0.1725"
             size="small"
-            @click="handleQuery"
             class="query-btn"
+            @click="handleQuery"
           >
             查询
           </a-button>
           <a-button
-            @click="handleReset"
             style="flex: 0.1725"
             class="reset-btn"
             size="small"
+            @click="handleReset"
           >
             重置
           </a-button>
@@ -115,8 +468,8 @@
           :key="category.value"
           :type="activeCategory === category.value ? 'primary' : 'default'"
           size="small"
-          @click="handleCategoryChange(category.value)"
           class="category-tab"
+          @click="handleCategoryChange(category.value)"
         >
           {{ category.label }}
         </a-button>
@@ -129,9 +482,15 @@
         </a-button>
         <template #overlay>
           <a-menu>
-            <a-menu-item key="excel">导出Excel</a-menu-item>
-            <a-menu-item key="pdf">导出PDF</a-menu-item>
-            <a-menu-item key="csv">导出CSV</a-menu-item>
+            <a-menu-item key="excel">
+              导出Excel
+            </a-menu-item>
+            <a-menu-item key="pdf">
+              导出PDF
+            </a-menu-item>
+            <a-menu-item key="csv">
+              导出CSV
+            </a-menu-item>
           </a-menu>
         </template>
       </a-dropdown>
@@ -140,19 +499,23 @@
     <!-- 预警列表 -->
     <div class="warning-list">
       <div
-        v-for="(warning, index) in filteredWarnings"
+        v-for="warning in filteredWarnings"
         :key="warning.id"
         class="warning-item"
         @click="handleWarningClick(warning)"
       >
         <div class="warning-header">
-          <div class="warning-time">预警时间: {{ warning.createTime }}</div>
+          <div class="warning-time">
+            预警时间: {{ warning.createTime }}
+          </div>
           <a-tag :color="getStatusColor(warning.status)" class="status-tag">
             {{ getStatusText(warning.status) }}
           </a-tag>
         </div>
 
-        <div class="warning-type">{{ warning.type }}</div>
+        <div class="warning-type">
+          {{ warning.type }}
+        </div>
         <div class="warning-location-actions">
           <div class="warning-location">
             <EnvironmentOutlined />
@@ -163,8 +526,8 @@
             <a-button
               type="link"
               size="small"
-              @click.stop="handleTrack(warning)"
               class="action-btn"
+              @click.stop="handleTrack(warning)"
             >
               <PlayCircleOutlined style="" />
               <span style="margin-left: 0px">轨迹</span>
@@ -172,8 +535,8 @@
             <a-button
               type="link"
               size="small"
-              @click.stop="handleDetail(warning)"
               class="action-btn"
+              @click.stop="handleDetail(warning)"
             >
               <EyeOutlined />
               <span style="margin-left: 0px">详情</span>
@@ -192,360 +555,6 @@
     @getwarning="handleGetWarning"
   />
 </template>
-
-<script setup>
-import { ref, computed, watch } from "vue";
-import WarningDetailPanel from "./components/WarningDetailPanel/WarningDetailPanel.vue";
-import {
-  SearchOutlined,
-  DownOutlined,
-  EnvironmentOutlined,
-  PlayCircleOutlined,
-  EyeOutlined,
-  CloseOutlined,
-} from "@ant-design/icons-vue";
-
-// Props
-const props = defineProps({
-  open: {
-    type: Boolean,
-    default: false,
-  },
-});
-
-// Emits
-const emit = defineEmits([
-  "update:open",
-  "warning-click",
-  "track-click",
-  "detail-click",
-  "getwarning",
-]);
-
-// 响应式数据
-const statusFilter = ref("");
-const locationFilter = ref("");
-const timeFilter = ref("");
-const activeCategory = ref("all");
-const detailDrawerVisible = ref(false);
-const selectedWarning = ref(null);
-
-const visibleModal = computed({
-  get() {
-    return props.open;
-  },
-  set(value) {
-    emit("update:open", value);
-  },
-});
-// 分类选项
-const categories = [
-  { value: "all", label: "全部预警" },
-  { value: "ship", label: "船舶预警" },
-  { value: "vehicle", label: "车辆预警" },
-];
-
-// 预警数据
-const warnings = ref([
-  {
-    id: 1,
-    type: "团伙车辆聚集",
-    location: "台州市黄岩区",
-    time: "本周",
-    createTime: "2025-09-01 10:00",
-    status: "待处置",
-    category: "vehicle",
-    coordinates: [121.4, 28.6],
-    description: "发现多辆可疑车辆在指定区域聚集，疑似进行非法活动",
-    // 详情数据
-    shipName: "华盛123",
-    warningType: "一般多AIS",
-    riskPoint: "白岩码头",
-    suspiciousVehicle: "可疑车辆",
-    warningTime: "2025.06.12 21:00:09",
-    reason: "浙普渔87392 2025.06.12 21:00:09在高风险点白岩码头停靠",
-    notifier: "王五",
-    notificationTime: "2025.06.12 21:00:09",
-    notificationMethod: "浙征钉、站内信",
-    deliveryTime: "2025.06.12 21:00",
-    deliverySystem: "--",
-    deliveryArea: "宁波象山县",
-    warningType: "伪造信号",
-    name: "船舶123",
-    riskPoint: "手动关联",
-    forgeStartTime: "2025-09-01 10:00",
-    forgeEndTime: "2025-09-01 12:00",
-    appearTime: "2025-09-01 09:00",
-  },
-  {
-    id: 2,
-    type: "团伙车辆聚集",
-    location: "台州市三门县",
-    time: "本周",
-    createTime: "2025-09-01 10:00",
-    status: "待处置",
-    category: "vehicle",
-    coordinates: [121.5, 29.1],
-    description: "三门县发现可疑车辆聚集，需要立即核实",
-    warningType: "伪造信号",
-    name: "船舶123",
-    riskPoint: "手动关联",
-    forgeStartTime: "2025-09-01 10:00",
-    forgeEndTime: "2025-09-01 12:00",
-    appearTime: "2025-09-01 09:00",
-  },
-  {
-    id: 3,
-    type: "一船多AIS",
-    location: "台州市三门县",
-    time: "本周",
-    createTime: "2025-09-01 10:00",
-    status: "已送达",
-    category: "ship",
-    coordinates: [121.5, 29.1],
-    description: "检测到同一船只使用多个AIS设备，存在异常行为",
-    warningType: "伪造信号",
-    name: "船舶123",
-    riskPoint: "手动关联",
-    forgeStartTime: "2025-09-01 10:00",
-    forgeEndTime: "2025-09-01 12:00",
-    appearTime: "2025-09-01 09:00",
-  },
-  {
-    id: 4,
-    type: "一船多AIS",
-    location: "台州市三门县",
-    time: "今天",
-    createTime: "2025-09-01 10:00",
-    status: "已送达",
-    category: "ship",
-    coordinates: [121.5, 29.1],
-    description: "再次检测到AIS设备异常，已发送预警通知",
-    warningType: "伪造信号",
-    name: "船舶123",
-    riskPoint: "手动关联",
-    forgeStartTime: "2025-09-01 10:00",
-    forgeEndTime: "2025-09-01 12:00",
-    appearTime: "2025-09-01 09:00",
-  },
-  {
-    id: 5,
-    type: "涉台异常船舶",
-    location: "台州市椒江区",
-    time: "今天",
-    createTime: "2025-09-01 10:00",
-    status: "已处理",
-    category: "ship",
-    coordinates: [121.4, 28.6],
-    description: "发现与台湾相关的异常船舶活动，已处理完毕",
-    warningType: "伪造信号",
-    name: "船舶123",
-    riskPoint: "手动关联",
-    forgeStartTime: "2025-09-01 10:00",
-    forgeEndTime: "2025-09-01 12:00",
-    appearTime: "2025-09-01 09:00",
-  },
-  {
-    id: 6,
-    type: "可疑人员聚集",
-    location: "台州市路桥区",
-    time: "本月",
-    createTime: "2025-09-01 10:00",
-    status: "待处置",
-    category: "vehicle",
-    coordinates: [121.4, 28.6],
-    description: "路桥区发现可疑人员聚集，疑似进行非法交易",
-    warningType: "伪造信号",
-    name: "船舶123",
-    riskPoint: "手动关联",
-    forgeStartTime: "2025-09-01 10:00",
-    forgeEndTime: "2025-09-01 12:00",
-    appearTime: "2025-09-01 09:00",
-  },
-  {
-    id: 7,
-    type: "可疑人员聚集",
-    location: "台州市路桥区",
-    time: "本月",
-    createTime: "2025-09-01 10:00",
-    status: "待处置",
-    category: "vehicle",
-    coordinates: [121.4, 28.6],
-    description: "路桥区发现可疑人员聚集，疑似进行非法交易",
-    warningType: "伪造信号",
-    name: "船舶123",
-    riskPoint: "手动关联",
-    forgeStartTime: "2025-09-01 10:00",
-    forgeEndTime: "2025-09-01 12:00",
-    appearTime: "2025-09-01 09:00",
-  },
-  {
-    id: 8,
-    type: "可疑人员聚集",
-    location: "台州市路桥区",
-    time: "本月",
-    createTime: "2025-09-01 10:00",
-    status: "待处置",
-    category: "vehicle",
-    coordinates: [121.4, 28.6],
-    description: "路桥区发现可疑人员聚集，疑似进行非法交易",
-    warningType: "伪造信号",
-    name: "船舶123",
-    riskPoint: "手动关联",
-    forgeStartTime: "2025-09-01 10:00",
-    forgeEndTime: "2025-09-01 12:00",
-    appearTime: "2025-09-01 09:00",
-  },
-  {
-    id: 9,
-    type: "可疑人员聚集",
-    location: "台州市路桥区",
-    time: "本月",
-    createTime: "2025-09-01 10:00",
-    status: "待处置",
-    category: "vehicle",
-    coordinates: [121.4, 28.6],
-    description: "路桥区发现可疑人员聚集，疑似进行非法交易",
-    warningType: "伪造信号",
-    name: "船舶123",
-    riskPoint: "手动关联",
-    forgeStartTime: "2025-09-01 10:00",
-    forgeEndTime: "2025-09-01 12:00",
-    appearTime: "2025-09-01 09:00",
-  },
-  {
-    id: 10,
-    type: "可疑人员聚集",
-    location: "台州市路桥区",
-    time: "本月",
-    createTime: "2025-09-01 10:00",
-    status: "待处置",
-    category: "vehicle",
-    coordinates: [121.4, 28.6],
-    description: "路桥区发现可疑人员聚集，疑似进行非法交易",
-    warningType: "伪造信号",
-    name: "船舶123",
-    riskPoint: "手动关联",
-    forgeStartTime: "2025-09-01 10:00",
-    forgeEndTime: "2025-09-01 12:00",
-    appearTime: "2025-09-01 09:00",
-  },
-  {
-    id: 11,
-    type: "可疑人员聚集",
-    location: "台州市路桥区",
-    time: "本月",
-    createTime: "2025-09-01 10:00",
-    status: "待处置",
-    category: "vehicle",
-    coordinates: [121.4, 28.6],
-    description: "路桥区发现可疑人员聚集，疑似进行非法交易",
-    warningType: "伪造信号",
-    name: "船舶123",
-    riskPoint: "手动关联",
-    forgeStartTime: "2025-09-01 10:00",
-    forgeEndTime: "2025-09-01 12:00",
-    appearTime: "2025-09-01 09:00",
-  },
-]);
-
-// 计算属性
-const filteredWarnings = computed(() => {
-  let filtered = warnings.value;
-
-  // 按分类筛选
-  if (activeCategory.value !== "all") {
-    filtered = filtered.filter(
-      (warning) => warning.category === activeCategory.value
-    );
-  }
-
-  // 按状态筛选
-  if (statusFilter.value) {
-    filtered = filtered.filter(
-      (warning) => warning.status === statusFilter.value
-    );
-  }
-
-  // 按位置筛选
-  if (locationFilter.value) {
-    filtered = filtered.filter((warning) =>
-      warning.location.includes(locationFilter.value)
-    );
-  }
-  if (timeFilter.value) {
-    filtered = filtered.filter((warning) =>
-      warning.time.includes(timeFilter.value)
-    );
-  }
-
-  return filtered;
-});
-
-const totalWarnings = computed(() => filteredWarnings.value.length);
-
-const handleTimeChange = (time) => {
-  timeFilter.value = time;
-};
-
-const handleStatusChange = (status) => {
-  statusFilter.value = status;
-};
-// 方法
-const getStatusColor = (status) => {
-  const colorMap = {
-    待处置: "orange",
-    已送达: "green",
-    已处理: "blue",
-  };
-  return colorMap[status] || "default";
-};
-
-const getStatusText = (status) => {
-  return status;
-};
-
-const handleClose = () => {
-  emit("update:open", false);
-};
-
-const handleQuery = () => {
-  handleReset();
-};
-
-const handleReset = () => {
-  timeFilter.value = "";
-  statusFilter.value = "";
-  locationFilter.value = "";
-  activeCategory.value = "all";
-};
-
-const handleCategoryChange = (category) => {
-  activeCategory.value = category;
-};
-
-const handleWarningClick = (warning) => {
-  emit("warning-click", warning);
-};
-
-const handleTrack = (warning) => {
-  emit("track-click", warning);
-};
-
-const handleDetail = (warning) => {
-  selectedWarning.value = warning;
-  detailDrawerVisible.value = true;
-  emit("detail-click", warning);
-};
-
-const handleGetWarning = (item) => {
-  emit("getwarning", item);
-  detailDrawerVisible.value = false;
-};
-const handleDetailClose = () => {
-  detailDrawerVisible.value = false;
-};
-</script>
 
 <style lang="scss" scoped>
 .warning-drawer {

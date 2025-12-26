@@ -28,11 +28,13 @@ export const useThemeStore = defineStore('theme', {
           this.themeMode = 'system'
           localStorage.removeItem('theme')
           this.isDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-        } else if (theme === 'dark' || theme === 'light') {
+        }
+        else if (theme === 'dark' || theme === 'light') {
           this.themeMode = theme
           this.isDark = theme === 'dark'
           localStorage.setItem('theme', theme)
-        } else {
+        }
+        else {
           console.error('主题设置失败: 参数必须是 "dark"、"light" 或 "system"')
           return false
         }

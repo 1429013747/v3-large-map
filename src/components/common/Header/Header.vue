@@ -1,56 +1,7 @@
-<template>
-  <div class="header-container">
-    <!-- 左侧区域 -->
-    <div class="header-left">
-      <!-- 返回按钮 -->
-      <img src="@/assets/imgs/header-back.png" @click="handleReturn" />
-
-      <!-- 分辨率选择 -->
-      <!-- <div class="resolution-selector">
-        <a-select
-          v-model:value="selectedResolution"
-          @change="handleResolutionChange"
-          class="resolution-select"
-          placeholder="选择分辨率"
-          :options="resolutionOptions"
-        />
-      </div> -->
-    </div>
-
-    <!-- 中央标题区域 -->
-    <p class="main-title">浙江省反走私智慧综合治理中心</p>
-
-    <!-- 右侧区域 -->
-    <div class="header-right">
-      <!-- 日期和天气 -->
-      <div class="date-weather">
-        <div class="date-info">
-          <span class="date">{{ currentDate }}</span>
-          <span class="day">{{ currentDay }}</span>
-        </div>
-        <div class="weather-info">
-          <span class="temperature">⛅ {{ temperature }}°C</span>
-        </div>
-      </div>
-
-      <!-- 后台按钮 -->
-      <a-button
-        class="backend-btn"
-        type="primary"
-        ghost
-        @click="handleBackend"
-        :icon="h(DesktopOutlined)"
-      >
-        进入后台
-      </a-button>
-    </div>
-  </div>
-</template>
-
 <script setup>
-import { ref, computed, onMounted, h } from "vue";
+import { DesktopOutlined } from "@ant-design/icons-vue";
+import { computed, h, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import { ArrowLeftOutlined, DesktopOutlined } from "@ant-design/icons-vue";
 
 const router = useRouter();
 
@@ -61,7 +12,7 @@ const temperature = ref(30);
 // 分辨率选项
 const resolutionOptions = [
   { value: "1920x1080", label: "1920x1080" },
-  { value: "3840x2160", label: "3840x2160" },
+  { value: "3840x2160", label: "3840x2160" }
 ];
 
 // 计算属性 - 当前日期
@@ -82,31 +33,82 @@ const currentDay = computed(() => {
     "星期三",
     "星期四",
     "星期五",
-    "星期六",
+    "星期六"
   ];
   return days[new Date().getDay()];
 });
 
 // 方法
-const handleReturn = () => {
+function handleReturn() {
   router.go(-1);
-};
+}
 
-const handleResolutionChange = () => {
+function handleResolutionChange() {
   console.log("分辨率切换为:", selectedResolution.value);
   // 这里可以添加分辨率切换的逻辑
-};
+}
 
-const handleBackend = () => {
+function handleBackend() {
   console.log("进入后台");
   // 这里可以添加进入后台的逻辑
-};
+}
 
 // 组件挂载时初始化
 onMounted(() => {
   // 可以在这里添加初始化逻辑
 });
 </script>
+
+<template>
+  <div class="header-container">
+    <!-- 左侧区域 -->
+    <div class="header-left">
+      <!-- 返回按钮 -->
+      <img src="@/assets/imgs/header-back.png" @click="handleReturn">
+
+      <!-- 分辨率选择 -->
+      <!-- <div class="resolution-selector">
+        <a-select
+          v-model:value="selectedResolution"
+          @change="handleResolutionChange"
+          class="resolution-select"
+          placeholder="选择分辨率"
+          :options="resolutionOptions"
+        />
+      </div> -->
+    </div>
+
+    <!-- 中央标题区域 -->
+    <p class="main-title">
+      浙江省反走私智慧综合治理中心
+    </p>
+
+    <!-- 右侧区域 -->
+    <div class="header-right">
+      <!-- 日期和天气 -->
+      <div class="date-weather">
+        <div class="date-info">
+          <span class="date">{{ currentDate }}</span>
+          <span class="day">{{ currentDay }}</span>
+        </div>
+        <div class="weather-info">
+          <span class="temperature">⛅ {{ temperature }}°C</span>
+        </div>
+      </div>
+
+      <!-- 后台按钮 -->
+      <a-button
+        class="backend-btn"
+        type="primary"
+        ghost
+        :icon="h(DesktopOutlined)"
+        @click="handleBackend"
+      >
+        进入后台
+      </a-button>
+    </div>
+  </div>
+</template>
 
 <style lang="scss" scoped>
 .header-container {

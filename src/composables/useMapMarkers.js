@@ -1,20 +1,20 @@
-import { ref, reactive, nextTick, watch } from 'vue';
-import Feature from 'ol/Feature';
-import Overlay from 'ol/Overlay';
-import { Point, LineString, Polygon as OlPolygon } from 'ol/geom';
-import { fromLonLat, toLonLat } from 'ol/proj';
-import { Style, Icon, Text, Circle, Fill, Stroke, RegularShape } from 'ol/style';
-import VectorSource from 'ol/source/Vector';
-import VectorLayer from 'ol/layer/Vector';
-
-import { useMapTracks } from "@/composables/useMapTracks.js";
 import { useMapClustering } from "@/composables/useMapClustering.js";
+import { useMapTracks } from "@/composables/useMapTracks.js";
 import { getIconPathMarkIcons } from "@/utils/utilstools.js";
+import Feature from 'ol/Feature';
+import { Polygon as OlPolygon, Point } from 'ol/geom';
+import VectorLayer from 'ol/layer/Vector';
+import Overlay from 'ol/Overlay';
+import { fromLonLat, toLonLat } from 'ol/proj';
+
+import VectorSource from 'ol/source/Vector';
+import { Circle, Fill, Icon, RegularShape, Stroke, Style, Text } from 'ol/style';
+import { reactive, ref } from 'vue';
 
 /**
  * 地图标记点管理Hook
- * @param {Object} map - OpenLayers地图实例
- * @returns {Object} 标记点管理方法和状态
+ * @param {object} map - OpenLayers地图实例
+ * @returns {object} 标记点管理方法和状态
  */
 export function useMapMarkers(map) {
   // 标记点数据
@@ -35,7 +35,7 @@ export function useMapMarkers(map) {
   const customPolygonLayer = ref(null);
 
   // 点击事件回调
-  let onMarkerClickCallback = null;
+  const onMarkerClickCallback = null;
 
   // 标记点配置
   const markerConfig = reactive({
@@ -104,7 +104,7 @@ export function useMapMarkers(map) {
       source: customPolygonSource.value,
       zIndex: 1008,
       type: "electronic-fence",
-      title: "electronic-fence",
+      title: "electronic-fence"
     });
     map.addLayer(customPolygonLayer.value);
 
@@ -122,7 +122,7 @@ export function useMapMarkers(map) {
   /**
    * 创建标记点弹窗 Overlay
    */
-  const createMarkerPopupOverlay = () => {
+  function createMarkerPopupOverlay() {
     if (!map) return;
 
     // 创建弹窗元素
@@ -135,7 +135,7 @@ export function useMapMarkers(map) {
       element: markerPopupElement.value,
       stopEvent: true, // 阻止事件冒泡到地图
       offset: [0, -20], // 偏移量，使弹窗在标记点上方
-      positioning: 'bottom-center',
+      positioning: 'bottom-center'
     });
 
     map.addOverlay(markerPopupOverlay.value);
@@ -147,7 +147,7 @@ export function useMapMarkers(map) {
    * @param {Function} contentFunction - overlay内容生成函数
    * @returns {Array} 创建的overlay ID列表
    */
-  const createMultipleMarkers = (positions, contentFunction) => {
+  function createMultipleMarkers(positions, contentFunction) {
     if (!Array.isArray(positions) || positions.length === 0) {
       console.warn('位置数组为空');
       return [];
@@ -167,7 +167,8 @@ export function useMapMarkers(map) {
       // 生成内容
       if (contentFunction && typeof contentFunction === 'function') {
         overlayElement.innerHTML = contentFunction(position);
-      } else {
+      }
+      else {
         overlayElement.innerHTML = `
             <div class="warn-overlay" onclick="window.disPlayWarnDetail&&window.disPlayWarnDetail(event)">
               <div class="warn-header">
@@ -188,11 +189,11 @@ export function useMapMarkers(map) {
       const overlay = new Overlay({
         element: overlayElement,
         title: 'warn-overlay',
-        id: id,
+        id,
         stopEvent: true,
         offset: [0, 0],
         anchor: [0, 0],
-        positioning: 'bottom-center',
+        positioning: 'bottom-center'
       });
 
       // 设置位置并添加到地图
@@ -203,12 +204,12 @@ export function useMapMarkers(map) {
     });
 
     return createdOverlays;
-  };
+  }
 
   /**
    * 清除所有Overlay
    */
-  const clearOverlaysByType = () => {
+  function clearOverlaysByType() {
     if (!map) return;
     const overlays = map.getOverlays().getArray();
     overlays.forEach((overlay) => {
@@ -220,7 +221,7 @@ export function useMapMarkers(map) {
   /**
    * 隐藏标记点弹窗
    */
-  const hideMarkerPopup = () => {
+  function hideMarkerPopup() {
     if (!markerPopupElement.value) return;
     markerPopupElement.value.style.display = 'none';
     if (markerPopupOverlay.value) {
@@ -230,10 +231,10 @@ export function useMapMarkers(map) {
 
   /**
    * 创建标记点样式
-   * @param {Object} options - 样式选项
+   * @param {object} options - 样式选项
    * @returns {Style} OpenLayers样式对象
    */
-  const createMarkerStyle = (options = {}) => {
+  function createMarkerStyle(options = {}) {
     const { icon, text } = options;
     const styles = [];
 
@@ -268,7 +269,7 @@ export function useMapMarkers(map) {
               width: borderWidth,
               lineDash: [5, 5] // 虚线效果
             }),
-            displacement: displacement // 使用 displacement 属性偏移
+            displacement // 使用 displacement 属性偏移
           })
         }));
       }
@@ -284,10 +285,11 @@ export function useMapMarkers(map) {
           scale: iconScale,
           offset: iconOffset, // 支持精灵图偏移
           rotation: rotation || 0, // 弧度
-          rotationOrigin: rotationOrigin,
+          rotationOrigin
         })
       }));
-    } else {
+    }
+    else {
       const borderSize = options.borderSize || 8 * 2.5;
       const borderColor = options.borderColor || '#ffa502';
       const borderWidth = options.borderWidth || 2;
@@ -305,9 +307,9 @@ export function useMapMarkers(map) {
             stroke: new Stroke({
               color: borderColor,
               width: borderWidth,
-              lineDash: lineDash // 虚线效果
+              lineDash // 虚线效果
             }),
-            displacement: displacement // 使用 displacement 属性偏移
+            displacement // 使用 displacement 属性偏移
           })
         }));
       }
@@ -316,7 +318,7 @@ export function useMapMarkers(map) {
         image: new Circle({
           radius: 4,
           fill: new Fill({ color: '#00ff00A0' }),
-          stroke: new Stroke({ color: '#00ff00', width: 1, lineDash: [2, 2] }),
+          stroke: new Stroke({ color: '#00ff00', width: 1, lineDash: [2, 2] })
 
         })
       }));
@@ -332,7 +334,7 @@ export function useMapMarkers(map) {
           fill: new Fill({ color: text.color || '#ffffff' }),
           offsetX: text.offsetX || 10,
           offsetY: text.offsetY || -17,
-          textAlign: text.align || 'center',
+          textAlign: text.align || 'center'
           // 保持文字不随图标旋转
         })
       }));
@@ -350,7 +352,6 @@ export function useMapMarkers(map) {
           opacity: text.bgOpacity || 1 // 透明度
         })
       }));
-
     }
 
     return styles.length === 1 ? styles[0] : styles;
@@ -366,11 +367,11 @@ export function useMapMarkers(map) {
   /**
    * 添加标记点 - 优化版本，支持批量处理
    * @param {Array} coordinates - 坐标 [经度, 纬度]
-   * @param {Object} options - 标记点选项
-   * @param {Boolean} useBatch - 是否使用批量处理
-   * @returns {String} 标记点ID
+   * @param {object} options - 标记点选项
+   * @param {boolean} useBatch - 是否使用批量处理
+   * @returns {string} 标记点ID
    */
-  const addMarker = (coordinates, options = {}, useBatch = false) => {
+  function addMarker(coordinates, options = {}, useBatch = false) {
     if (!map) {
       console.warn('地图或标记点图层未初始化');
       return null;
@@ -385,7 +386,7 @@ export function useMapMarkers(map) {
     // 创建要素
     const feature = new Feature({
       geometry: point,
-      id: id,
+      id,
       type: 'marker',
       ...options.data
     });
@@ -415,36 +416,38 @@ export function useMapMarkers(map) {
       // 如果队列达到批量大小，立即处理
       if (batchQueue.length >= BATCH_SIZE) {
         processBatchQueue();
-      } else {
+      }
+      else {
         // 延迟处理，等待更多标记点
         if (batchTimeout) {
           clearTimeout(batchTimeout);
         }
         batchTimeout = setTimeout(processBatchQueue, 16); // 约60fps
       }
-    } else {
+    }
+    else {
       // 立即添加到图层
       addMarkerToLayer(marker, options);
       markers.value.push(marker);
     }
 
     return id;
-  };
+  }
 
   /**
    * 生成样式缓存键
-   * @param {Object} styleOptions - 样式选项
-   * @returns {String} 缓存键
+   * @param {object} styleOptions - 样式选项
+   * @returns {string} 缓存键
    */
-  const getStyleKey = (styleOptions) => {
+  function getStyleKey(styleOptions) {
     if (!styleOptions) return {};
     return styleOptions;
-  };
+  }
 
   /**
    * 处理批量队列
    */
-  const processBatchQueue = () => {
+  function processBatchQueue() {
     if (batchQueue.length === 0) return;
 
     const features = [];
@@ -454,13 +457,14 @@ export function useMapMarkers(map) {
     const markersByType = {};
     const defaultMarkers = [];
 
-    batchQueue.forEach(marker => {
+    batchQueue.forEach((marker) => {
       if (marker.options.type && marker.options.useTypeLayer) {
         if (!markersByType[marker.options.type]) {
           markersByType[marker.options.type] = [];
         }
         markersByType[marker.options.type].push(marker);
-      } else {
+      }
+      else {
         defaultMarkers.push(marker);
       }
     });
@@ -473,7 +477,7 @@ export function useMapMarkers(map) {
     }
 
     // 批量添加到类型图层
-    Object.keys(markersByType).forEach(type => {
+    Object.keys(markersByType).forEach((type) => {
       const typeMarkers = markersByType[type];
       const typeFeatures = typeMarkers.map(m => m.feature);
 
@@ -498,22 +502,23 @@ export function useMapMarkers(map) {
 
   /**
    * 添加标记点到图层
-   * @param {Object} marker - 标记点对象
-   * @param {Object} options - 选项
+   * @param {object} marker - 标记点对象
+   * @param {object} options - 选项
    */
-  const addMarkerToLayer = (marker, options) => {
+  function addMarkerToLayer(marker, options) {
     if (options.type && options.useTypeLayer) {
       addMarkerToTypeLayer(options.type, marker.feature);
-    } else {
+    }
+    else {
       markerSource.value.addFeature(marker.feature);
     }
-  };
+  }
 
   /**
    * 移除标记点
-   * @param {String} id - 标记点ID
+   * @param {string} id - 标记点ID
    */
-  const removeMarker = (id) => {
+  function removeMarker(id) {
     const markerIndex = markers.value.findIndex(m => m.id === id);
     if (markerIndex === -1) return;
 
@@ -521,7 +526,8 @@ export function useMapMarkers(map) {
     // 如果标记点有类型且使用类型图层，从对应的类型图层中删除
     if (marker.options.type && marker.options.useTypeLayer) {
       removeMarkerFromTypeLayer(marker.options.type, marker.feature);
-    } else if (markerSource.value) {
+    }
+    else if (markerSource.value) {
       // 否则从默认图层中删除
       markerSource.value.removeFeature(marker.feature);
     }
@@ -531,10 +537,10 @@ export function useMapMarkers(map) {
 
   /**
    * 更新标记点
-   * @param {String} id - 标记点ID
-   * @param {Object} updates - 更新内容
+   * @param {string} id - 标记点ID
+   * @param {object} updates - 更新内容
    */
-  const updateMarker = (id, updates = {}) => {
+  function updateMarker(id, updates = {}) {
     const marker = markers.value.find(m => m.id === id);
     if (!marker) return;
 
@@ -556,7 +562,7 @@ export function useMapMarkers(map) {
     // 更新数据
     if (updates.data) {
       marker.options.data = { ...marker.options.data, ...updates.data };
-      Object.keys(updates.data).forEach(key => {
+      Object.keys(updates.data).forEach((key) => {
         marker.feature.set(key, updates.data[key]);
       });
     }
@@ -564,17 +570,18 @@ export function useMapMarkers(map) {
 
   /**
    * 显示/隐藏标记点边框
-   * @param {String} id - 标记点ID
-   * @param {Boolean} show - 是否显示边框
+   * @param {string} id - 标记点ID
+   * @param {boolean} show - 是否显示边框
    */
-  const toggleMarkerBorder = (id, show = true) => {
+  function toggleMarkerBorder(id, show = true) {
     // const marker = markers.value.find(m => m.id === id);
-    markers.value.forEach(marker => {
+    markers.value.forEach((marker) => {
       if (marker.id === id) {
         // 更新样式配置
         if (marker.options.style.icon) {
           marker.options.style.icon.showBorder = show;
-        } else {
+        }
+        else {
           marker.options.style.showBorder = show;
         }
         // 重新创建样式
@@ -582,14 +589,13 @@ export function useMapMarkers(map) {
         marker.feature.setStyle(newStyle);
       }
     });
-
   };
 
   /**
    * 创建完全透明的样式（用于隐藏标记点）
    * @returns {Style} 透明样式对象
    */
-  const createInvisibleStyle = () => {
+  function createInvisibleStyle() {
     return new Style({
       image: new Circle({
         radius: 0, // 半径为0
@@ -601,10 +607,10 @@ export function useMapMarkers(map) {
 
   /**
    * 显示/隐藏标记点
-   * @param {String} id - 标记点ID
-   * @param {Boolean} visible - 是否显示
+   * @param {string} id - 标记点ID
+   * @param {boolean} visible - 是否显示
    */
-  const toggleMarkerVisibility = (id, visible) => {
+  function toggleMarkerVisibility(id, visible) {
     const marker = markers.value.find(m => m.id === id);
     if (!marker) return;
 
@@ -614,11 +620,11 @@ export function useMapMarkers(map) {
   };
 
   /**
- * 显示/隐藏标记点 - 优化版本，支持大量数据
- * @param {String} type - 标记点类型
- * @param {Boolean} visible - 是否显示
- */
-  const toggleMarkerVisibilityList = (type, visible, isDelete = false) => {
+   * 显示/隐藏标记点 - 优化版本，支持大量数据
+   * @param {string} type - 标记点类型
+   * @param {boolean} visible - 是否显示
+   */
+  function toggleMarkerVisibilityList(type, visible, isDelete = false) {
     const markerlist = markers.value.filter(m => m.options.type === type);
     if (markerlist.length === 0) return;
 
@@ -626,12 +632,14 @@ export function useMapMarkers(map) {
     if (markerlist.length > 1000) {
       if (isDelete) {
         batchToggleMarkerDelete(markerlist, type);
-      } else {
+      }
+      else {
         batchToggleMarkerVisibility(markerlist, visible);
       }
-    } else {
+    }
+    else {
       // 数据量较小时，直接更新
-      markerlist.forEach(marker => {
+      markerlist.forEach((marker) => {
         marker.visible = visible;
         marker.feature.setStyle(visible ? createMarkerStyle(marker.options.style) : createInvisibleStyle());
       });
@@ -641,9 +649,9 @@ export function useMapMarkers(map) {
   /**
    * 批量切换标记点可见性 - 使用 requestAnimationFrame 分批处理
    * @param {Array} markerlist - 标记点列表
-   * @param {Boolean} visible - 是否显示
+   * @param {boolean} visible - 是否显示
    */
-  const batchToggleMarkerVisibility = (markerlist, visible) => {
+  function batchToggleMarkerVisibility(markerlist, visible) {
     const batchSize = 1000; // 每批处理1000个
     let currentIndex = 0;
 
@@ -671,9 +679,9 @@ export function useMapMarkers(map) {
   /**
    * 批量删除标记点 - 使用 requestAnimationFrame 分批处理
    * @param {Array} markerlist - 标记点列表
-   * @param {String} type - 标记点类型
+   * @param {string} type - 标记点类型
    */
-  const batchToggleMarkerDelete = (markerlist, type) => {
+  function batchToggleMarkerDelete(markerlist, type) {
     const batchSize = 1000; // 每批处理1000个
     let currentIndex = 0;
 
@@ -697,10 +705,10 @@ export function useMapMarkers(map) {
 
   /**
    * 基于图层的标记点可见性切换
-   * @param {String} type - 标记点类型
-   * @param {Boolean} visible - 是否显示
+   * @param {string} type - 标记点类型
+   * @param {boolean} visible - 是否显示
    */
-  const toggleMarkerVisibilityByLayer = (type, visible) => {
+  function toggleMarkerVisibilityByLayer(type, visible) {
     const layers = getAllLayers();
     const targetLayers = layers.filter((layer, index) => layer.get("type") === type);
 
@@ -716,16 +724,16 @@ export function useMapMarkers(map) {
 
     // 更新标记点的可见性状态
     const markerlist = markers.value.filter(m => m.options.type === type);
-    markerlist.forEach(marker => {
+    markerlist.forEach((marker) => {
       marker.visible = visible;
     });
   };
 
   /**
    * 创建按类型分组的标记点图层
-   * @param {String} type - 标记点类型
+   * @param {string} type - 标记点类型
    */
-  const createMarkerLayerByType = (type) => {
+  function createMarkerLayerByType(type) {
     if (markerLayersByType.value[type]) {
       return markerLayersByType.value[type];
     }
@@ -755,28 +763,28 @@ export function useMapMarkers(map) {
 
   /**
    * 将标记点添加到指定类型的图层
-   * @param {String} type - 标记点类型
+   * @param {string} type - 标记点类型
    * @param {Feature} feature - 标记点要素
    */
-  const addMarkerToTypeLayer = (type, feature) => {
-
+  function addMarkerToTypeLayer(type, feature) {
     if (!markerSourcesByType.value[type]) {
       createMarkerLayerByType(type);
     }
 
     if (markerSourcesByType.value[type]) {
       markerSourcesByType.value[type].addFeature(feature);
-    } else {
+    }
+    else {
       console.error(`无法创建类型图层: ${type}`);
     }
   };
 
   /**
    * 从指定类型的图层移除标记点
-   * @param {String} type - 标记点类型
+   * @param {string} type - 标记点类型
    * @param {Feature} feature - 标记点要素
    */
-  const removeMarkerFromTypeLayer = (type, feature) => {
+  function removeMarkerFromTypeLayer(type, feature) {
     if (markerSourcesByType.value[type]) {
       markerSourcesByType.value[type].removeFeature(feature);
     }
@@ -784,9 +792,9 @@ export function useMapMarkers(map) {
 
   /**
    * 清除指定类型的所有标记点
-   * @param {String} type - 标记点类型
+   * @param {string} type - 标记点类型
    */
-  const clearMarkersByType = (type) => {
+  function clearMarkersByType(type) {
     if (markerSourcesByType.value[type]) {
       markerSourcesByType.value[type].clear();
     }
@@ -798,7 +806,7 @@ export function useMapMarkers(map) {
    * 获取所有图层
    * @returns {Array} 图层数组
    */
-  const getAllLayers = () => {
+  function getAllLayers() {
     return map.getLayers().getArray();
   };
 
@@ -806,16 +814,16 @@ export function useMapMarkers(map) {
    * 获取自定义图层
    * @returns {Array} 图层数组
    */
-  const getCustomLayers = () => {
+  function getCustomLayers() {
     return markerLayersByType.value;
   };
 
   /**
    * 显示/隐藏标记点的文本和气泡
-   * @param {String} id - 标记点ID
-   * @param {Boolean} visible - 是否显示
+   * @param {string} id - 标记点ID
+   * @param {boolean} visible - 是否显示
    */
-  const toggleMarkerTextVisibility = (id, visible) => {
+  function toggleMarkerTextVisibility(id, visible) {
     const marker = markers.value.find(m => m.id === id);
     if (!marker) return;
 
@@ -831,14 +839,14 @@ export function useMapMarkers(map) {
 
   /**
    * 批量显示/隐藏文本和气泡
-   * @param {String} type - 标记点类型
-   * @param {Boolean} visible - 是否显示
+   * @param {string} type - 标记点类型
+   * @param {boolean} visible - 是否显示
    */
-  const toggleMarkerTextVisibilityByType = (type, visible) => {
+  function toggleMarkerTextVisibilityByType(type, visible) {
     const markerlist = markers.value.filter(m => m.options.type === type);
     if (markerlist.length === 0) return;
 
-    markerlist.forEach(marker => {
+    markerlist.forEach((marker) => {
       if (marker.options.style.text && marker.visible) {
         marker.options.style.text.showBackground = visible;
         const newStyle = createMarkerStyle(marker.options.style);
@@ -849,11 +857,10 @@ export function useMapMarkers(map) {
 
   /**
    * 切换船舶标记样式（图标 vs 小绿点）
-   * @param {String} type - 标记点类型
-   * @param {Boolean} useSimpleStyle - 是否使用简单样式（小绿点）
+   * @param {string} type - 标记点类型
+   * @param {boolean} useSimpleStyle - 是否使用简单样式（小绿点）
    */
-  const toggleShipMarkerStyle = (type, useSimpleStyle, style) => {
-
+  function toggleShipMarkerStyle(type, useSimpleStyle, style) {
     markers.value.forEach((marker, index) => {
       if (marker.options.type === type) {
         const prevStyle = marker.options.style || {};
@@ -871,25 +878,25 @@ export function useMapMarkers(map) {
             strokeWidth: 1,
             displacement: [0, 0],
             prevtext: prevText,
-            previcon: prevIcon,
+            previcon: prevIcon
           };
-        } else {
+        }
+        else {
           marker.options.style = {
             icon: prevIcon,
-            text: prevText,
+            text: prevText
           };
         }
         const newStyle = createMarkerStyle(marker.options.style);
         marker.feature.setStyle(newStyle);
       }
-
     });
   };
 
   /**
    * 清除所有标记点
    */
-  const clearMarkers = () => {
+  function clearMarkers() {
     if (!markerSource.value) return;
 
     markerSource.value.clear();
@@ -898,10 +905,10 @@ export function useMapMarkers(map) {
 
   /**
    * 获取标记点
-   * @param {String} id - 标记点ID
-   * @returns {Object|null} 标记点对象
+   * @param {string} id - 标记点ID
+   * @returns {object | null} 标记点对象
    */
-  const getMarker = (id) => {
+  function getMarker(id) {
     return markers.value.find(m => m.id === id) || null;
   };
 
@@ -909,33 +916,33 @@ export function useMapMarkers(map) {
    * 获取所有标记点
    * @returns {Array} 标记点数组
    */
-  const getAllMarkers = () => {
+  function getAllMarkers() {
     return [...markers.value];
   };
 
   /**
    * 根据类型获取标记点
-   * @param {String} type - 标记点类型
+   * @param {string} type - 标记点类型
    * @returns {Array} 标记点数组
    */
-  const getMarkersByType = (type) => {
+  function getMarkersByType(type) {
     return markers.value.filter(m => m.options.type === type);
   };
 
   /**
    * 设置标记点配置
-   * @param {Object} config - 配置对象
+   * @param {object} config - 配置对象
    */
-  const setMarkerConfig = (config) => {
+  function setMarkerConfig(config) {
     Object.assign(markerConfig, config);
   };
 
   /**
    * 设置标记点坐标
-   * @param {String} id - 标记点ID
+   * @param {string} id - 标记点ID
    * @param {Array} coordinates - 坐标
    */
-  const setMarkerCoordinates = (id, coordinates) => {
+  function setMarkerCoordinates(id, coordinates) {
     const [lng, lat] = coordinates;
     const marker = markers.value.find(m => m.id === id);
     if (!marker) return;
@@ -945,9 +952,9 @@ export function useMapMarkers(map) {
   /**
    * 批量添加标记点 - 高性能版本
    * @param {Array} markerList - 标记点列表
-   * @param {Object} batchOptions - 批量选项
+   * @param {object} batchOptions - 批量选项
    */
-  const addMarkers = (markerList, batchOptions = {}) => {
+  function addMarkers(markerList, batchOptions = {}) {
     const {
       useBatch = true,
       batchSize = BATCH_SIZE,
@@ -962,10 +969,10 @@ export function useMapMarkers(map) {
       });
       if (isEnableCluster) {
         // 启用指定类型的聚合
-        Object.keys(markerSourcesByType.value).forEach(el => {
+        Object.keys(markerSourcesByType.value).forEach((el) => {
           enableClustering(el, {
             distance: 40, // 聚合距离
-            minDistance: 20, // 最小聚合距离
+            minDistance: 20 // 最小聚合距离
           });
           toggleClustering(el, true);
         })
@@ -988,11 +995,11 @@ export function useMapMarkers(map) {
   /**
    * 分批添加大量标记点
    * @param {Array} markerList - 标记点列表
-   * @param {Number} batchSize - 每批大小
+   * @param {number} batchSize - 每批大小
    * @param {Function} onProgress - 进度回调
    * @param {Function} onComplete - 完成回调
    */
-  const addMarkersBatch = (params) => {
+  function addMarkersBatch(params) {
     const { markerList, batchSize, onProgress, onComplete, isEnableCluster } = params;
     let currentIndex = 0;
     const total = markerList.length;
@@ -1016,7 +1023,7 @@ export function useMapMarkers(map) {
         // 创建要素
         const feature = new Feature({
           geometry: point,
-          id: id,
+          id,
           type: 'marker',
           ...options.data
         });
@@ -1044,13 +1051,14 @@ export function useMapMarkers(map) {
       const markersByType = {};
       const defaultMarkers = [];
 
-      markersToAdd.forEach(marker => {
+      markersToAdd.forEach((marker) => {
         if (marker.options.type && marker.options.useTypeLayer) {
           if (!markersByType[marker.options.type]) {
             markersByType[marker.options.type] = [];
           }
           markersByType[marker.options.type].push(marker);
-        } else {
+        }
+        else {
           defaultMarkers.push(marker);
         }
       });
@@ -1063,7 +1071,7 @@ export function useMapMarkers(map) {
       }
 
       // 批量添加到类型图层
-      Object.keys(markersByType).forEach(type => {
+      Object.keys(markersByType).forEach((type) => {
         const typeMarkers = markersByType[type];
         const typeFeatures = typeMarkers.map(m => m.feature);
 
@@ -1091,13 +1099,14 @@ export function useMapMarkers(map) {
       // 如果还有数据需要处理，继续下一批
       if (currentIndex < total) {
         requestAnimationFrame(processBatch);
-      } else {
+      }
+      else {
         if (isEnableCluster) {
           // 启用指定类型的聚合
-          Object.keys(markerSourcesByType.value).forEach(el => {
+          Object.keys(markerSourcesByType.value).forEach((el) => {
             enableClustering(el, {
               distance: 40, // 聚合距离
-              minDistance: 20, // 最小聚合距离
+              minDistance: 20 // 最小聚合距离
             });
             toggleClustering(el, true);
           })
@@ -1118,23 +1127,24 @@ export function useMapMarkers(map) {
 
   /**
    * 监听地图点击事件添加标记点
-   * @param {Boolean} enabled - 是否启用
+   * @param {boolean} enabled - 是否启用
    */
-  const enableClickToAdd = (enabled = true) => {
+  function enableClickToAdd(enabled = true) {
     if (!map) return;
 
     if (enabled) {
       map.on('click', handleMapClick);
-    } else {
+    }
+    else {
       map.un('click', handleMapClick);
     }
   };
 
   /**
    * 地图点击事件处理
-   * @param {Object} event - 点击事件
+   * @param {object} event - 点击事件
    */
-  const handleMapClick = (event) => {
+  function handleMapClick(event) {
     const coordinates = event.coordinate;
     const [lng, lat] = toLonLat(coordinates);
 
@@ -1144,7 +1154,7 @@ export function useMapMarkers(map) {
         radius: 6,
         borderSize: 15, // 外边框大小
         borderColor: '#00ffff', // 外边框颜色
-        borderWidth: 2, // 外边框宽度
+        borderWidth: 2 // 外边框宽度
       },
       data: {
         clickTime: new Date().toISOString()
@@ -1154,19 +1164,19 @@ export function useMapMarkers(map) {
 
   /**
    * 检查标记点ID是否唯一
-   * @param {String} id - 标记点ID
-   * @returns {Boolean} 是否唯一
+   * @param {string} id - 标记点ID
+   * @returns {boolean} 是否唯一
    */
-  const isMarkerIdUnique = (id) => {
+  function isMarkerIdUnique(id) {
     return !markers.value.some(marker => marker.id === id);
   };
 
   /**
    * 生成唯一的标记点ID
-   * @param {String} prefix - ID前缀
-   * @returns {String} 唯一的ID
+   * @param {string} prefix - ID前缀
+   * @returns {string} 唯一的ID
    */
-  const generateUniqueMarkerId = (prefix = 'marker') => {
+  function generateUniqueMarkerId(prefix = 'marker') {
     let id;
     let counter = 0;
     do {
@@ -1180,9 +1190,7 @@ export function useMapMarkers(map) {
     }
 
     return id;
-  };
-
-
+  }
 
   // 存储已加载的标记点ID，用于避免重复加载
   const loadedMarkers = new Set();
@@ -1190,9 +1198,9 @@ export function useMapMarkers(map) {
   /**
    * 虚拟化渲染 - 只渲染当前视口内的标记点
    * @param {Array} markerList - 标记点列表
-   * @param {Object} options - 选项
+   * @param {object} options - 选项
    */
-  const addMarkersVirtualized = (markerList, options = {}) => {
+  function addMarkersVirtualized(markerList, options = {}) {
     const {
       viewportBuffer = 0.1, // 视口缓冲区（度）
       onViewportChange = null,
@@ -1220,22 +1228,17 @@ export function useMapMarkers(map) {
     const filterMarkersInViewport = (markers, bounds) => {
       return markers.filter(({ coordinates, id }) => {
         const [lng, lat] = coordinates;
-        return lng >= bounds.minLng && lng <= bounds.maxLng &&
-          lat >= bounds.minLat && lat <= bounds.maxLat;
+        return lng >= bounds.minLng && lng <= bounds.maxLng
+          && lat >= bounds.minLat && lat <= bounds.maxLat;
       });
     };
 
-    // 生成标记点唯一标识
-    const getMarkerKey = (marker) => {
-      return marker.options.id || `${marker.coordinates[0]}_${marker.coordinates[1]}`;
-    };
-
     // 添加标记点到地图
-    const addMarkersToMap = (markersToAdd) => {
+    function addMarkersToMap(markersToAdd) {
       if (markersToAdd.length === 0) return;
 
       // 过滤出未加载的标记点
-      const newMarkers = markersToAdd.filter(marker => {
+      const newMarkers = markersToAdd.filter((marker) => {
         const key = getMarkerKey(marker);
         return !loadedMarkers.has(key);
       });
@@ -1253,23 +1256,23 @@ export function useMapMarkers(map) {
         batchSize: 1000,
         onComplete: () => {
           // 将新加载的标记点ID添加到Set中
-          newMarkers.forEach(marker => {
+          newMarkers.forEach((marker) => {
             const key = getMarkerKey(marker);
             loadedMarkers.add(key);
           });
           console.log(`虚拟化渲染完成，新增渲染了 ${newMarkers.length} 个标记点，总计已加载 ${loadedMarkers.size} 个标记点`);
         }
       });
-    };
+    }
 
     // 清理不在视口内的标记点
-    const cleanupMarkersOutsideViewport = (currentVisibleKeys) => {
+    function cleanupMarkersOutsideViewport(currentVisibleKeys) {
       if (!enableCleanup) return;
 
       const markersToRemove = [];
 
       // 找出需要移除的标记点
-      markers.value.forEach(marker => {
+      markers.value.forEach((marker) => {
         const key = getMarkerKey(marker);
         if (loadedMarkers.has(key) && !currentVisibleKeys.has(key)) {
           markersToRemove.push(marker);
@@ -1277,7 +1280,7 @@ export function useMapMarkers(map) {
       });
 
       // 移除标记点
-      markersToRemove.forEach(marker => {
+      markersToRemove.forEach((marker) => {
         const key = getMarkerKey(marker);
         removeMarker(marker.id);
         loadedMarkers.delete(key);
@@ -1286,7 +1289,7 @@ export function useMapMarkers(map) {
       if (markersToRemove.length > 0) {
         console.log(`清理了 ${markersToRemove.length} 个不在视口内的标记点`);
       }
-    };
+    }
 
     // 初始渲染
     const initialBounds = getViewportBounds();
@@ -1325,13 +1328,18 @@ export function useMapMarkers(map) {
     }
   };
 
+  // 生成标记点唯一标识
+  function getMarkerKey(marker) {
+    return marker.options.id || `${marker.coordinates[0]}_${marker.coordinates[1]}`;
+  };
+
   /**
    * 在地图上绘制带填充色的多边形
    * @param {Array<[number, number]>} lonLatCoordinates - 多边形经纬度坐标（顺时针或逆时针），至少3个点
-   * @param {Object} [options]
-   * @param {string} [options.fillColor="#1989fa80"] - 填充色，支持 rgba/hex，默认含0.5透明度
-   * @param {string} [options.strokeColor="#1989fa"] - 边框颜色
-   * @param {number} [options.strokeWidth=2] - 边框宽度
+   * @param {object} [options]
+   * @param {string} [options.fillColor] - 填充色，支持 rgba/hex，默认含0.5透明度
+   * @param {string} [options.strokeColor] - 边框颜色
+   * @param {number} [options.strokeWidth] - 边框宽度
    * @returns {Feature|undefined} 返回创建的要素
    */
   const drawFilledPolygon = (
@@ -1345,16 +1353,16 @@ export function useMapMarkers(map) {
     }
 
     // 闭合坐标环：若首尾不一致则自动闭合
-    const needClose =
-      lonLatCoordinates.length < 1 ||
-      lonLatCoordinates[0][0] !== lonLatCoordinates[lonLatCoordinates.length - 1][0] ||
-      lonLatCoordinates[0][1] !== lonLatCoordinates[lonLatCoordinates.length - 1][1];
+    const needClose
+      = lonLatCoordinates.length < 1
+      || lonLatCoordinates[0][0] !== lonLatCoordinates[lonLatCoordinates.length - 1][0]
+      || lonLatCoordinates[0][1] !== lonLatCoordinates[lonLatCoordinates.length - 1][1];
     const ringLonLat = needClose
       ? [...lonLatCoordinates, lonLatCoordinates[0]]
       : lonLatCoordinates;
 
     // 转换为投影坐标
-    const ring3857 = ringLonLat.map((lngLat) => fromLonLat(lngLat));
+    const ring3857 = ringLonLat.map(lngLat => fromLonLat(lngLat));
 
     const polygon = new OlPolygon([ring3857]);
     const feature = new Feature({ geometry: polygon });
@@ -1362,7 +1370,7 @@ export function useMapMarkers(map) {
     feature.setStyle(
       new Style({
         fill: new Fill({ color: fillColor }),
-        stroke: new Stroke({ color: strokeColor, width: strokeWidth }),
+        stroke: new Stroke({ color: strokeColor, width: strokeWidth })
       })
     );
 
@@ -1373,45 +1381,45 @@ export function useMapMarkers(map) {
   /**
    * 清理已加载标记点记录
    */
-  const clearLoadedMarkers = () => {
+  function clearLoadedMarkers() {
     loadedMarkers.clear();
   };
 
   /**
    * 获取已加载标记点数量
-   * @returns {Number} 已加载标记点数量
+   * @returns {number} 已加载标记点数量
    */
-  const getLoadedMarkersCount = () => {
+  function getLoadedMarkersCount() {
     return loadedMarkers.size;
-  };
+  }
 
   /**
    * 检查标记点是否已加载
-   * @param {String|Object} markerIdOrMarker - 标记点ID或标记点对象
-   * @returns {Boolean} 是否已加载
+   * @param {string | object} markerIdOrMarker - 标记点ID或标记点对象
+   * @returns {boolean} 是否已加载
    */
-  const isMarkerLoaded = (markerIdOrMarker) => {
+  function isMarkerLoaded(markerIdOrMarker) {
     const key = typeof markerIdOrMarker === 'string'
       ? markerIdOrMarker
       : getMarkerKey(markerIdOrMarker);
     return loadedMarkers.has(key);
-  };
+  }
 
   /**
    * 强制处理批量队列
    */
-  const flushBatchQueue = () => {
+  function flushBatchQueue() {
     if (batchQueue.length > 0) {
       processBatchQueue();
     }
-  };
+  }
 
   /**
    * 启用聚合功能
-   * @param {String} type - 标记点类型
-   * @param {Object} options - 聚合选项
+   * @param {string} type - 标记点类型
+   * @param {object} options - 聚合选项
    */
-  const enableClustering = (type, options = {}) => {
+  function enableClustering(type, options = {}) {
     const typeMarkers = getMarkersByType(type);
     if (typeMarkers.length === 0) {
       console.warn(`类型 ${type} 的标记点不存在`);
@@ -1444,9 +1452,9 @@ export function useMapMarkers(map) {
 
   /**
    * 禁用聚合功能
-   * @param {String} type - 标记点类型
+   * @param {string} type - 标记点类型
    */
-  const disableClustering = (type) => {
+  function disableClustering(type) {
     // 清除聚合图层
     clearClusterLayer(type);
 
@@ -1460,22 +1468,23 @@ export function useMapMarkers(map) {
 
   /**
    * 切换聚合功能
-   * @param {String} type - 标记点类型
-   * @param {Boolean} enabled - 是否启用
+   * @param {string} type - 标记点类型
+   * @param {boolean} enabled - 是否启用
    */
-  const toggleClustering = (type, enabled) => {
+  function toggleClustering(type, enabled) {
     if (enabled) {
       enableClustering(type);
-    } else {
+    }
+    else {
       disableClustering(type);
     }
   };
 
   /**
    * 更新聚合图层
-   * @param {String} type - 标记点类型
+   * @param {string} type - 标记点类型
    */
-  const refreshClusterLayer = (type) => {
+  function refreshClusterLayer(type) {
     const typeMarkers = getMarkersByType(type);
     const clusterData = typeMarkers.map(marker => ({
       coordinates: marker.coordinates,
@@ -1490,26 +1499,26 @@ export function useMapMarkers(map) {
 
   /**
    * 设置聚合距离
-   * @param {String} type - 标记点类型
-   * @param {Number} distance - 聚合距离
+   * @param {string} type - 标记点类型
+   * @param {number} distance - 聚合距离
    */
-  const setClusterDistanceForType = (type, distance) => {
+  function setClusterDistanceForType(type, distance) {
     setClusterDistance(type, distance);
   };
 
   /**
    * 获取聚合信息
-   * @param {String} type - 标记点类型
-   * @returns {Object} 聚合信息
+   * @param {string} type - 标记点类型
+   * @returns {object} 聚合信息
    */
-  const getClusterInfoForType = (type) => {
+  function getClusterInfoForType(type) {
     return getClusterInfo(type);
   };
 
   /**
    * 销毁标记点图层
    */
-  const destroy = () => {
+  function destroy() {
     if (map && markerLayer.value) {
       map.removeLayer(markerLayer.value);
     }
@@ -1519,7 +1528,7 @@ export function useMapMarkers(map) {
     }
 
     // 清理类型图层
-    Object.values(markerLayersByType.value).forEach(layer => {
+    Object.values(markerLayersByType.value).forEach((layer) => {
       if (map && layer) {
         map.removeLayer(layer);
       }
@@ -1544,20 +1553,20 @@ export function useMapMarkers(map) {
   };
 
   // 动画飞行到指定位置
-  const flyTo = (center, zoom, duration = 1000) => {
+  function flyTo(center, zoom, duration = 1000) {
     if (!map) return;
     const view = map.getView();
     view.animate({
       center: fromLonLat(center),
-      zoom: zoom,
-      duration: duration
+      zoom,
+      duration
     });
   };
 
   /**
    * 放大
    */
-  const zoomIn = () => {
+  function zoomIn() {
     if (!map) return;
     const view = map.getView();
     const currentZoom = view.getZoom();
@@ -1567,13 +1576,12 @@ export function useMapMarkers(map) {
   /**
    * 缩小
    */
-  const zoomOut = () => {
+  function zoomOut() {
     if (!map) return;
     const view = map.getView();
     const currentZoom = view.getZoom();
     view.animate({ zoom: currentZoom - 1, duration: 300 });
   };
-
 
   return {
     // 状态

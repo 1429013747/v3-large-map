@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from "vue-router";
-import { handleHotUpdate, routes } from "vue-router/auto-routes";
+import { routes } from "vue-router/auto-routes";
 
 // 白名单路由
 const whiteList = ["/login"];
@@ -10,15 +10,15 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      redirect: "/smart-map",
+      redirect: "/smart-map"
     },
     {
       path: "/coastline-detail",
       name: "CoastlineDetail",
-      component: () => import("@/views/coastline-detail/index.vue"),
+      component: () => import("@/views/coastline-detail/index.vue")
     },
-    ...routes,
-  ],
+    ...routes
+  ]
   // routes: [
   //   {
   //     path: '/login',

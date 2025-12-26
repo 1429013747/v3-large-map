@@ -3,116 +3,27 @@
  * @author: guoqiancheng
  * @since: 2025-09-27
 -->
-<template>
-  <div class="right-toolbar-container">
-    <!-- toggle按钮 -->
-    <div
-      class="toggle-btn"
-      @click="handleToggle"
-      :class="{ collapsed: !isVisible }"
-    >
-      <img src="@/assets/imgs/toggle-icon.png" alt="toggle" />
-    </div>
-    <div class="right-toolbar" :class="{ collapsed: !isVisible }">
-      <!-- 工具栏项目循环 -->
-      <div class="toolbar-group">
-        <div
-          v-for="item in toolbarItems"
-          :key="item.id"
-          class="toolbar-item"
-          :class="{ active: activeTool === item.id }"
-          @click="handleToolbarItemClick(item)"
-        >
-          <div class="toolbar-icon" :class="`${item.icon}-icon`">
-            <div class="badge" v-if="item.nums > 0">
-              {{ item.nums }}
-            </div>
-          </div>
-          <div class="toolbar-label">{{ item.label }}</div>
-        </div>
-      </div>
-
-      <!-- 分割线 -->
-      <div class="divider"></div>
-      <div class="toolbar-item-group">
-        <div class="toolbar-item-group-inner" :class="{ expanded: isExpanded }">
-          <!-- 测距 -->
-          <div
-            class="toolbar-item"
-            style="width: 100%"
-            @click="handleMeasureDistance"
-          >
-            <div class="toolbar-icon">
-              <!-- <div class="measure-distance-icon"></div> -->
-              <img src="@/assets/imgs/ruler-a.png" alt="measure" />
-            </div>
-            <div class="toolbar-label">测距</div>
-          </div>
-
-          <!-- 测面 -->
-          <div class="toolbar-item" @click="handleMeasureArea">
-            <div class="toolbar-icon">
-              <!-- <div class="measure-area-icon"></div> -->
-              <img src="@/assets/imgs/area-a.png" alt="measure" />
-            </div>
-            <div class="toolbar-label">测面</div>
-          </div>
-
-          <!-- 标绘 -->
-          <div class="toolbar-item" @click="handlePlotting">
-            <div class="toolbar-icon">
-              <!-- <div class="plotting-icon"></div> -->
-              <img src="@/assets/imgs/draw-mark-a.png" alt="measure" />
-            </div>
-            <div class="toolbar-label">标绘</div>
-          </div>
-
-          <!-- 清空 -->
-          <div class="toolbar-item" @click="handleClear">
-            <div class="toolbar-icon">
-              <!-- <div class="clear-icon"></div> -->
-              <img src="@/assets/imgs/clear-a.png" alt="measure" />
-            </div>
-            <div class="toolbar-label">清空</div>
-          </div>
-
-          <!-- 定位 -->
-          <div class="toolbar-item active" @click="handleLocate">
-            <div class="toolbar-icon">
-              <!-- <div class="locate-icon"></div> -->
-              <img src="@/assets/imgs/dw-a.png" alt="measure" />
-            </div>
-            <div class="toolbar-label">定位</div>
-          </div>
-        </div>
-        <div
-          class="toolbar-item-group-inner-expand"
-          :class="{ expanded: isExpanded }"
-          @click="handleToggleExpand"
-        >
-          <img src="@/assets/imgs/toggle.png" alt="" />
-        </div>
-      </div>
-
-      <!-- 分割线 -->
-      <div class="divider"></div>
-
-      <!-- 缩放控制 -->
-      <div class="zoom-controls">
-        <div class="zoom-btn" @click="handleZoomIn">
-          <div class="zoom-plus">+</div>
-        </div>
-        <div class="zoom-btn" @click="handleZoomOut">
-          <div class="zoom-minus">-</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
-import { ref, inject, onMounted } from "vue";
 import { useDefaultConfigStore } from "@/stores/defaultConfig";
+import { onMounted, ref } from "vue";
+// 定义emit事件
+const emit = defineEmits([
+  "layer-control",
+  "legend-display",
+  "ship-events",
+  "comprehensive-search",
+  "track-query",
+  "gang-vehicle-query",
+  "tide-query",
+  "measure-distance",
+  "measure-area",
+  "plotting",
+  "clear",
+  "locate",
+  "zoom-in",
+  "zoom-out",
+  "toggle"
+]);
 const defaultConfigStore = useDefaultConfigStore();
 const loginUser = computed(() => defaultConfigStore.getLoginUser);
 // 当前激活的工具
@@ -130,123 +41,227 @@ const toolbarItems = ref([
     id: "layer-control",
     label: "控制图层",
     icon: "layers",
-    emit: "layer-control",
+    emit: "layer-control"
   },
   {
     id: "legend-display",
     label: "图例展示",
     icon: "legend",
-    emit: "legend-display",
+    emit: "legend-display"
   },
   {
     id: "ship-events",
     label: "船舶事件",
     icon: "ship",
     handler: "handleShipEvents",
-    emit: "ship-events",
+    emit: "ship-events"
   },
   {
     id: "comprehensive-search",
     label: "综合检索",
     icon: "search-comprehensive",
-    emit: "comprehensive-search",
+    emit: "comprehensive-search"
   },
   {
     id: "track-query",
     label: "轨迹查询",
     icon: "track-search",
-    emit: "track-query",
+    emit: "track-query"
   },
   {
     id: "gang-vehicle-query",
     label: "团伙车辆查询",
     icon: "group-car",
-    emit: "gang-vehicle-query",
+    emit: "gang-vehicle-query"
   },
   {
     id: "tide-query",
     label: "潮汐查询",
     icon: "tide-search",
-    emit: "tide-query",
-  },
+    emit: "tide-query"
+  }
 ]);
 
 // 事件处理函数
 
-const handleToolbarItemClick = (item) => {
+function handleToolbarItemClick(item) {
   console.log("工具栏项目被点击:", item);
   // 切换激活状态
   activeTool.value = item.id;
   // 可以触发对应面板的显示
   emit(item.emit);
-};
+}
 
-const handleMeasureDistance = () => {
+function handleMeasureDistance() {
   console.log("测距");
   emit("measure-distance");
-};
+}
 
-const handleMeasureArea = () => {
+function handleMeasureArea() {
   console.log("测面");
   emit("measure-area");
-};
+}
 
-const handlePlotting = () => {
+function handlePlotting() {
   console.log("标绘");
   emit("plotting");
-};
+}
 
-const handleClear = () => {
+function handleClear() {
   console.log("清空");
   emit("clear");
-};
+}
 
-const handleLocate = () => {
+function handleLocate() {
   console.log("定位");
   // 可以定位到当前位置或指定位置
   emit("locate");
-};
+}
 
-const handleZoomIn = () => {
+function handleZoomIn() {
   console.log("放大");
   emit("zoom-in");
-};
+}
 
-const handleZoomOut = () => {
+function handleZoomOut() {
   console.log("缩小");
   emit("zoom-out");
-};
+}
 
-const handleToggleExpand = () => {
+function handleToggleExpand() {
   isExpanded.value = !isExpanded.value;
-};
+}
 
-const handleToggle = () => {
+function handleToggle() {
   isVisible.value = !isVisible.value;
   console.log("工具栏显示状态:", isVisible.value ? "显示" : "隐藏");
-};
+}
 
 onMounted(async () => {});
-
-// 定义emit事件
-const emit = defineEmits([
-  "layer-control",
-  "legend-display",
-  "ship-events",
-  "comprehensive-search",
-  "track-query",
-  "gang-vehicle-query",
-  "tide-query",
-  "measure-distance",
-  "measure-area",
-  "plotting",
-  "clear",
-  "locate",
-  "zoom-in",
-  "zoom-out",
-  "toggle",
-]);
 </script>
+
+<template>
+  <div class="right-toolbar-container">
+    <!-- toggle按钮 -->
+    <div
+      class="toggle-btn"
+      :class="{ collapsed: !isVisible }"
+      @click="handleToggle"
+    >
+      <img src="@/assets/imgs/toggle-icon.png" alt="toggle">
+    </div>
+    <div class="right-toolbar" :class="{ collapsed: !isVisible }">
+      <!-- 工具栏项目循环 -->
+      <div class="toolbar-group">
+        <div
+          v-for="item in toolbarItems"
+          :key="item.id"
+          class="toolbar-item"
+          :class="{ active: activeTool === item.id }"
+          @click="handleToolbarItemClick(item)"
+        >
+          <div class="toolbar-icon" :class="`${item.icon}-icon`">
+            <div v-if="item.nums > 0" class="badge">
+              {{ item.nums }}
+            </div>
+          </div>
+          <div class="toolbar-label">
+            {{ item.label }}
+          </div>
+        </div>
+      </div>
+
+      <!-- 分割线 -->
+      <div class="divider" />
+      <div class="toolbar-item-group">
+        <div class="toolbar-item-group-inner" :class="{ expanded: isExpanded }">
+          <!-- 测距 -->
+          <div
+            class="toolbar-item"
+            style="width: 100%"
+            @click="handleMeasureDistance"
+          >
+            <div class="toolbar-icon">
+              <!-- <div class="measure-distance-icon"></div> -->
+              <img src="@/assets/imgs/ruler-a.png" alt="measure">
+            </div>
+            <div class="toolbar-label">
+              测距
+            </div>
+          </div>
+
+          <!-- 测面 -->
+          <div class="toolbar-item" @click="handleMeasureArea">
+            <div class="toolbar-icon">
+              <!-- <div class="measure-area-icon"></div> -->
+              <img src="@/assets/imgs/area-a.png" alt="measure">
+            </div>
+            <div class="toolbar-label">
+              测面
+            </div>
+          </div>
+
+          <!-- 标绘 -->
+          <div class="toolbar-item" @click="handlePlotting">
+            <div class="toolbar-icon">
+              <!-- <div class="plotting-icon"></div> -->
+              <img src="@/assets/imgs/draw-mark-a.png" alt="measure">
+            </div>
+            <div class="toolbar-label">
+              标绘
+            </div>
+          </div>
+
+          <!-- 清空 -->
+          <div class="toolbar-item" @click="handleClear">
+            <div class="toolbar-icon">
+              <!-- <div class="clear-icon"></div> -->
+              <img src="@/assets/imgs/clear-a.png" alt="measure">
+            </div>
+            <div class="toolbar-label">
+              清空
+            </div>
+          </div>
+
+          <!-- 定位 -->
+          <div class="toolbar-item active" @click="handleLocate">
+            <div class="toolbar-icon">
+              <!-- <div class="locate-icon"></div> -->
+              <img src="@/assets/imgs/dw-a.png" alt="measure">
+            </div>
+            <div class="toolbar-label">
+              定位
+            </div>
+          </div>
+        </div>
+        <div
+          class="toolbar-item-group-inner-expand"
+          :class="{ expanded: isExpanded }"
+          @click="handleToggleExpand"
+        >
+          <img src="@/assets/imgs/toggle.png" alt="">
+        </div>
+      </div>
+
+      <!-- 分割线 -->
+      <div class="divider" />
+
+      <!-- 缩放控制 -->
+      <div class="zoom-controls">
+        <div class="zoom-btn" @click="handleZoomIn">
+          <div class="zoom-plus">
+            +
+          </div>
+        </div>
+        <div class="zoom-btn" @click="handleZoomOut">
+          <div class="zoom-minus">
+            -
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style lang="scss" scoped>
 .right-toolbar-container {

@@ -1,45 +1,41 @@
-<template>
-  <div ref="chart" class="chart-container"></div>
-</template>
-
 <script setup>
-import { ref, watch, onMounted, onUnmounted, computed } from "vue";
 import * as echarts from "echarts";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 
-const chart = ref(null);
-const chartInstance = ref(null);
 const props = defineProps({
   chartData: {
     type: Object,
     default: () => ({
       dates: [],
-      levels: [],
-    }),
-  },
+      levels: []
+    })
+  }
 });
+const chart = ref(null);
+const chartInstance = ref(null);
 // 示例数据 - 实际使用时可以通过props传入
 const chartData = computed(() => props.chartData);
 
-const initChart = () => {
+function initChart() {
   if (!chart.value) return;
 
   chartInstance.value = echarts.init(chart.value);
 
   const option = {
     tooltip: {
-      show: true,
+      show: true
     },
     xAxis: {
       type: "category",
       data: chartData.value.dates,
       axisLabel: {
-        color: "#ffffff",
+        color: "#ffffff"
       },
       axisLine: {
         lineStyle: {
-          color: "rgba(255, 255, 255, 0.3)",
-        },
-      },
+          color: "rgba(255, 255, 255, 0.3)"
+        }
+      }
     },
     yAxis: {
       type: "value",
@@ -50,14 +46,14 @@ const initChart = () => {
 
       axisLine: {
         lineStyle: {
-          color: "rgba(255, 255, 255, 0.3)",
-        },
+          color: "rgba(255, 255, 255, 0.3)"
+        }
       },
       splitLine: {
         lineStyle: {
-          color: "rgba(255, 255, 255, 0.1)",
-        },
-      },
+          color: "rgba(255, 255, 255, 0.1)"
+        }
+      }
     },
     series: [
       {
@@ -66,47 +62,47 @@ const initChart = () => {
         smooth: true,
         lineStyle: {
           color: "#1987ff",
-          width: 2,
+          width: 2
         },
         itemStyle: {
-          color: "#1987ff",
+          color: "#1987ff"
         },
         areaStyle: {
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
             {
               offset: 0,
-              color: "rgb(25, 135, 255,.3)",
+              color: "rgb(25, 135, 255,.3)"
             },
             {
               offset: 1,
-              color: "rgba(0, 255, 255, 0)",
-            },
-          ]),
+              color: "rgba(0, 255, 255, 0)"
+            }
+          ])
         },
         symbolSize: 8,
-        symbol: "circle",
-      },
+        symbol: "circle"
+      }
     ],
     grid: {
       left: "10%",
       right: "0%",
       top: "10%",
-      bottom: "10%",
+      bottom: "10%"
       // containLabel: true,
-    },
+    }
   };
 
   chartInstance.value.setOption(option);
 
   // 监听窗口大小变化
   window.addEventListener("resize", handleResize);
-};
+}
 
-const handleResize = () => {
+function handleResize() {
   if (chartInstance.value) {
     chartInstance.value.resize();
   }
-};
+}
 
 // 销毁图表实例
 onUnmounted(() => {
@@ -138,9 +134,13 @@ watch(chartData, () => {
 defineExpose({
   updateChartData: (data) => {
     chartData.value = data;
-  },
+  }
 });
 </script>
+
+<template>
+  <div ref="chart" class="chart-container" />
+</template>
 
 <style scoped>
 .chart-container {
