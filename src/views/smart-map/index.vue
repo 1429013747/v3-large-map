@@ -7,7 +7,7 @@ import {
   createPopupContentCar,
   createPopupContentRisk,
   createPopupContentShip,
-  createPopupMenuShip
+  createPopupMenuShip,
 } from "@/composables/createPopupContent.js";
 import { useMapMarkers } from "@/composables/useMapMarkers.js";
 import { getMarkerData } from "@/mock/data.js";
@@ -22,7 +22,7 @@ import {
   onUnmounted,
   reactive,
   ref,
-  watch
+  watch,
 } from "vue";
 import { Vue3SeamlessScroll } from "vue3-seamless-scroll";
 
@@ -43,7 +43,7 @@ const statistics = reactive({
   yesterdayVehicles: 291,
   electronicFences: 291,
   keyPersonnel: 160,
-  riskPoints: 1560
+  riskPoints: 1560,
 });
 const mapZoom = ref(10);
 const mapLayerButtons = ref(null);
@@ -99,7 +99,7 @@ const riskTyes = [
   "埠口",
   "岙口",
   "岸线",
-  "其他"
+  "其他",
 ];
 
 // 标绘面板引用
@@ -116,20 +116,20 @@ const useTypeLayer = ref(false);
 const bottomMenu = ref([
   {
     name: "岸线管控",
-    icon: "pos"
+    icon: "pos",
   },
   {
     name: "重点船舶",
-    icon: "boat"
+    icon: "boat",
   },
   {
     name: "重点人员",
-    icon: "peo"
+    icon: "peo",
   },
   {
     name: "可疑车辆",
-    icon: "bus"
-  }
+    icon: "bus",
+  },
 ]);
 const options = ref([
   {
@@ -142,11 +142,11 @@ const options = ref([
         children: [
           {
             value: "xihu",
-            label: "West Lake"
-          }
-        ]
-      }
-    ]
+            label: "West Lake",
+          },
+        ],
+      },
+    ],
   },
   {
     value: "jiangsu",
@@ -158,12 +158,12 @@ const options = ref([
         children: [
           {
             value: "zhonghuamen",
-            label: "Zhong Hua Men"
-          }
-        ]
-      }
-    ]
-  }
+            label: "Zhong Hua Men",
+          },
+        ],
+      },
+    ],
+  },
 ]);
 // 当前图层
 const currentLayer = ref("天地图卫星");
@@ -172,7 +172,7 @@ const mapConfig = ref({});
 
 const list = Array.from({ length: 4 }, (_, i) => ({
   id: Date.now() + i + 1,
-  name: `白岩码头风险点在${new Date().toLocaleString()}疑似出现走私预警`
+  name: `白岩码头风险点在${new Date().toLocaleString()}疑似出现走私预警`,
 }));
 
 // 切换地图图层
@@ -233,9 +233,9 @@ function addClickMarker(event) {
         src: getIconPathMarkIcons("temp_pos"),
         size: [24, 24],
         scale: 0.7,
-        anchor: [0, 0]
-      }
-    }
+        anchor: [0, 0],
+      },
+    },
   });
 }
 
@@ -266,12 +266,11 @@ function onMapClick(event) {
         return Object.values(
           mapMarkersConfig.markerLayersByType.value
         ).includes(layer);
-      }
-      else {
+      } else {
         // 检查是否是默认标记点图层
         return mapMarkersConfig.markerLayer.value === layer;
       }
-    }
+    },
   });
   console.log("🚀 ~ onMapClick ~ features:", features);
 
@@ -283,8 +282,7 @@ function onMapClick(event) {
     // TODO: 是否需要添加临时标记点
     if (markerData.popupType === "risk-point") {
       isGeneratingMarker.value = true;
-    }
-    else {
+    } else {
       isGeneratingMarker.value = false;
     }
     if (clickMarkerId.value) {
@@ -306,7 +304,7 @@ function onMapClick(event) {
       feature,
       coordinate: event.coordinate,
       lonLat: toLonLat(event.coordinate),
-      pixel: event.pixel
+      pixel: event.pixel,
     });
   }
 }
@@ -330,12 +328,11 @@ function onMapDoubleClick(event) {
         return Object.values(
           mapMarkersConfig.markerLayersByType.value
         ).includes(layer);
-      }
-      else {
+      } else {
         // 检查是否是默认标记点图层
         return mapMarkersConfig.markerLayer.value === layer;
       }
-    }
+    },
   });
   if (features.length > 0) {
     const feature = features[0];
@@ -366,12 +363,11 @@ function onMapRightClick(event) {
         return Object.values(
           mapMarkersConfig.markerLayersByType.value
         ).includes(layer);
-      }
-      else {
+      } else {
         // 检查是否是默认标记点图层
         return mapMarkersConfig.markerLayer.value === layer;
       }
-    }
+    },
   });
 
   if (features.length > 0) {
@@ -390,7 +386,7 @@ function onMapRightClick(event) {
       feature,
       coordinate: event.coordinate,
       lonLat: toLonLat(event.coordinate),
-      pixel: event.pixel
+      pixel: event.pixel,
     });
   }
 }
@@ -407,16 +403,14 @@ function onMapMove(event) {
   typeList.forEach((type) => {
     if (mapZoom.value < 13) {
       mapMarkersConfig.toggleMarkerTextVisibilityByType(type, false);
-    }
-    else {
+    } else {
       mapMarkersConfig.toggleMarkerTextVisibilityByType(type, true);
     }
 
     if (mapZoom.value < 11.4) {
       mapMarkersConfig.toggleShipMarkerStyle(type, true); // 使用小绿点
       useMapEvents.value = false;
-    }
-    else {
+    } else {
       mapMarkersConfig.toggleShipMarkerStyle(type, false); // 使用原始图标
       useMapEvents.value = true;
     }
@@ -437,28 +431,28 @@ async function trackBack(markerId) {
   const coordinates = [
     {
       latLon: [121.72482419397187, 29.34646109911479],
-      text: "2025.06.15 01:18"
+      text: "2025.06.15 01:18",
     },
     {
       latLon: [121.77201003734264, 29.34544660015939],
-      text: "2025.06.15 01:18"
+      text: "2025.06.15 01:18",
     },
     {
       latLon: [121.82213515941295, 29.34065820190017],
-      text: "2025.06.15 01:18"
+      text: "2025.06.15 01:18",
     },
     {
       latLon: [121.7919227570692, 29.2915641536963],
-      text: "2025.06.15 01:18"
+      text: "2025.06.15 01:18",
     },
     {
       latLon: [121.83106155101451, 29.278388561873953],
-      text: "2025.06.15 01:18"
+      text: "2025.06.15 01:18",
     },
     {
       latLon: [121.8633338898817, 29.266409276796225],
-      text: "2025.06.15 01:18"
-    }
+      text: "2025.06.15 01:18",
+    },
   ];
 
   // 生成轨迹路线
@@ -473,8 +467,8 @@ async function trackBack(markerId) {
       strokeWidth: 3,
       lineDash: [],
       lineCap: "round",
-      lineJoin: "round"
-    }
+      lineJoin: "round",
+    },
   });
   const id = trackFeature.getProperties().trackId;
   console.log("🚀 ~ trackBack ~ trackFeature:", id);
@@ -541,7 +535,7 @@ function trackCorrect(markerId) {
       mapMarkersConfig.setMarkerCoordinates(markerId, clickedCoordinate.value);
       isGeneratingMarker.value = false;
       mapMarkersConfig.removeMarker(clickMarkerId.value);
-    }
+    },
   });
 }
 /**
@@ -591,8 +585,8 @@ function cancelShip(markerId) {
  */
 function showMarkerPopup(coordinates, markerData) {
   if (
-    !mapMarkersConfig.markerPopupOverlay.value
-    || !mapMarkersConfig.markerPopupElement.value
+    !mapMarkersConfig.markerPopupOverlay.value ||
+    !mapMarkersConfig.markerPopupElement.value
   ) {
     return;
   }
@@ -604,8 +598,7 @@ function showMarkerPopup(coordinates, markerData) {
       viewMore,
       cancelTrack
     );
-  }
-  else if (markerData.popupType === "ship") {
+  } else if (markerData.popupType === "ship") {
     if (markerData.flat) {
       mapMarkersConfig.markerPopupElement.value.innerHTML = createPopupMenuShip(
         markerData,
@@ -613,10 +606,9 @@ function showMarkerPopup(coordinates, markerData) {
         viewMoreShip,
         shipQuery
       );
-    }
-    else {
-      mapMarkersConfig.markerPopupElement.value.innerHTML
-        = createPopupContentShip(
+    } else {
+      mapMarkersConfig.markerPopupElement.value.innerHTML =
+        createPopupContentShip(
           markerData,
           setKeyShip,
           viewMoreShip,
@@ -624,10 +616,9 @@ function showMarkerPopup(coordinates, markerData) {
           cancelShip
         );
     }
-  }
-  else {
-    mapMarkersConfig.markerPopupElement.value.innerHTML
-      = createPopupContentRisk(
+  } else {
+    mapMarkersConfig.markerPopupElement.value.innerHTML =
+      createPopupContentRisk(
         markerData,
         trackCorrect,
         viewMoreCorrect,
@@ -656,7 +647,7 @@ function onMarkerClick(eventData) {
     flat,
     markerId,
     ...markerData,
-    lonLat
+    lonLat,
   });
 }
 
@@ -679,8 +670,8 @@ const displayZoom = computed(() => {
 const displayClicked = computed(() => {
   return clickedCoordinate.value
     ? `${clickedCoordinate.value[0].toFixed(
-      4
-    )}, ${clickedCoordinate.value[1].toFixed(4)}`
+        4
+      )}, ${clickedCoordinate.value[1].toFixed(4)}`
     : "未点击";
 });
 
@@ -705,28 +696,28 @@ function handleTrackClick(warning) {
     const pos = [
       {
         latLon: [121.72482419397187, 29.34646109911479],
-        text: "2025.06.15 01:18"
+        text: "2025.06.15 01:18",
       },
       {
         latLon: [121.77201003734264, 29.34544660015939],
-        text: "2025.06.15 01:18"
+        text: "2025.06.15 01:18",
       },
       {
         latLon: [121.82213515941295, 29.34065820190017],
-        text: "2025.06.15 01:18"
+        text: "2025.06.15 01:18",
       },
       {
         latLon: [121.7919227570692, 29.2915641536963],
-        text: "2025.06.15 01:18"
+        text: "2025.06.15 01:18",
       },
       {
         latLon: [121.83106155101451, 29.278388561873953],
-        text: "2025.06.15 01:18"
+        text: "2025.06.15 01:18",
       },
       {
         latLon: [121.8633338898817, 29.266409276796225],
-        text: "2025.06.15 01:18"
-      }
+        text: "2025.06.15 01:18",
+      },
     ];
 
     // 生成轨迹路线
@@ -742,8 +733,8 @@ function handleTrackClick(warning) {
         strokeWidth: 3,
         lineDash: [],
         lineCap: "round",
-        lineJoin: "round"
-      }
+        lineJoin: "round",
+      },
     });
   }
 }
@@ -760,28 +751,28 @@ function getwarning(warning) {
   // 添加带文本的标记点
   const pos = [
     {
-      latLon: [122.3299, 29.1671]
+      latLon: [122.3299, 29.1671],
     },
     {
       latLon: [122.2392, 29.0883],
-      text: "2025.09.15 03:18"
+      text: "2025.09.15 03:18",
     },
     {
       latLon: [122.1514, 29.0895],
-      text: "2025.08.15 01:18"
+      text: "2025.08.15 01:18",
     },
     {
       latLon: [122.0913, 29.0504],
       text: "2025.04.15 12:18",
-      tips: "船舶套牌"
+      tips: "船舶套牌",
     },
     {
       latLon: [121.9881, 29.0338],
-      text: "2025.04.15 12:18"
+      text: "2025.04.15 12:18",
     },
     {
-      latLon: [121.9352, 29.0376]
-    }
+      latLon: [121.9352, 29.0376],
+    },
   ];
 
   // 生成轨迹路线
@@ -797,8 +788,8 @@ function getwarning(warning) {
       strokeWidth: 3,
       lineDash: [],
       lineCap: "round",
-      lineJoin: "round"
-    }
+      lineJoin: "round",
+    },
   });
 }
 
@@ -810,27 +801,27 @@ function handleVehicleTrackBack(vehicleData) {
     // mapMarkersConfig.flyTo(vehicleData.coordinates, 15);
     const pos = [
       {
-        latLon: [121.5813, 29.1144]
+        latLon: [121.5813, 29.1144],
       },
       {
         latLon: [121.5813, 29.144],
-        text: "2025.06.15 01:18"
+        text: "2025.06.15 01:18",
       },
       {
         latLon: [121.5903, 29.163],
-        text: "2025.06.15 01:18"
+        text: "2025.06.15 01:18",
       },
       {
         latLon: [121.6016, 29.1809],
-        text: "2025.06.15 01:18"
+        text: "2025.06.15 01:18",
       },
       {
         latLon: [121.648, 29.2057],
-        text: "2025.06.15 01:18"
+        text: "2025.06.15 01:18",
       },
       {
-        latLon: [121.6729, 29.2261]
-      }
+        latLon: [121.6729, 29.2261],
+      },
     ];
 
     // 生成轨迹路线
@@ -846,8 +837,8 @@ function handleVehicleTrackBack(vehicleData) {
         strokeWidth: 3,
         lineDash: [],
         lineCap: "round",
-        lineJoin: "round"
-      }
+        lineJoin: "round",
+      },
     });
   }
 }
@@ -917,20 +908,20 @@ function handleVesselTrackBack(vesselData) {
   const pos = [
     {
       latLon: [122.3299, 29.1671],
-      text: "2025.06.15 01:18"
+      text: "2025.06.15 01:18",
     },
     {
       latLon: [122.2392, 29.0883],
-      text: "2025.06.15 01:18"
+      text: "2025.06.15 01:18",
     },
     {
       latLon: [122.1514, 29.0895],
-      text: "2025.06.15 01:18"
+      text: "2025.06.15 01:18",
     },
     {
       latLon: [122.0913, 29.0504],
-      text: "2025.06.15 01:18"
-    }
+      text: "2025.06.15 01:18",
+    },
   ];
 
   // 生成轨迹路线
@@ -946,8 +937,8 @@ function handleVesselTrackBack(vesselData) {
       strokeWidth: 3,
       lineDash: [],
       lineCap: "round",
-      lineJoin: "round"
-    }
+      lineJoin: "round",
+    },
   });
 }
 
@@ -1066,8 +1057,7 @@ function handleToolbarClear() {
   // 清空所有内容
   if (plotPanelRef.value && plotPanelRef.value.clearAll) {
     plotPanelRef.value.clearAll();
-  }
-  else {
+  } else {
     console.log("PlotPanel 引用不存在或 clearAll 方法不存在");
   }
   // 关闭标绘面板
@@ -1119,7 +1109,7 @@ const layers = ref([
   { id: 5, name: "船舶动态", visible: true, type: "ship" },
   { id: 6, name: "车辆动态", visible: true, type: "car" },
   { id: 7, name: "电子围栏", visible: false, type: "electronic-fence" },
-  { id: 8, name: "案件", visible: false, type: "case" }
+  { id: 8, name: "案件", visible: false, type: "case" },
 ]);
 
 // 感知设备
@@ -1130,8 +1120,8 @@ const sensingDevices = ref([
     id: 11,
     name: "视频感知设备",
     visible: false,
-    type: "video-sensing"
-  }
+    type: "video-sensing",
+  },
 ]);
 
 // 热力图数据
@@ -1144,14 +1134,14 @@ const heatmaps = ref([
     id: 16,
     name: "车辆运行热力图",
     visible: false,
-    type: "vehicle-heatmap"
+    type: "vehicle-heatmap",
   },
   {
     id: 17,
     name: "船舶运行热力图",
     visible: false,
-    type: "ship-heatmap"
-  }
+    type: "ship-heatmap",
+  },
 ]);
 
 const allMarkerListConfigs = {
@@ -1171,21 +1161,20 @@ const allMarkerListConfigs = {
   工作站: "work-station",
   综合案件热力图: "case-hot",
   涉冻品案件热力图: "ice-hot",
-  涉成品油案件热力图: "oil-hot"
+  涉成品油案件热力图: "oil-hot",
 };
 // 控制图层面板事件处理
 function handleLayerToggle(layer) {
   console.log("图层切换:", layer);
   // 这里可以添加实际的图层显示/隐藏逻辑
-  const heatmap = heatmaps.value.find(heatmap => heatmap.type === layer.type);
-  if (heatmap.visible) {
+  const heatmap = heatmaps.value.find((heatmap) => heatmap.type === layer.type);
+  if (heatmap && heatmap.visible) {
     // 只切换当前点击的热力图层，不影响其他图层
     heatmaps.value.forEach((val) => {
       val.visible = val.type === layer.type;
       heatmapConfig.setLayerVisible(val.type, val.visible);
     });
-  }
-  else {
+  } else {
     mapMarkersConfig.toggleMarkerVisibilityByLayer(layer.type, layer.visible);
   }
 }
@@ -1218,14 +1207,13 @@ function handleBottomMenuClick(index) {
       风险点热力图: "risk-hot",
       工作站: "work-station",
       无走私村: "no-smuggling",
-      案件: "case"
+      案件: "case",
     };
     handleDefaultVisibleLayers(Object.keys(defaultVisibleLayers));
     Object.values(defaultVisibleLayers).forEach((type) => {
       mapMarkersConfig.toggleMarkerVisibilityByLayer(type, true);
     });
-  }
-  else if (index === 1) {
+  } else if (index === 1) {
     console.log("重点船舶");
     const defaultVisibleLayers = {
       船舶动态: "ship",
@@ -1234,7 +1222,7 @@ function handleBottomMenuClick(index) {
       光电雷达覆盖区域: "optical-radar",
       智能限高杆: "height-bar",
       视频感知设备: "video-sensing",
-      船舶运行热力图: "ship-heatmap"
+      船舶运行热力图: "ship-heatmap",
     };
     keyVesselsPopupVisible.value = true;
     handleDefaultVisibleLayers(Object.keys(defaultVisibleLayers));
@@ -1242,13 +1230,12 @@ function handleBottomMenuClick(index) {
     Object.values(defaultVisibleLayers).forEach((type) => {
       mapMarkersConfig.toggleMarkerVisibilityByLayer(type, true);
     });
-  }
-  else if (index === 2) {
+  } else if (index === 2) {
     console.log("重点人员");
     const defaultVisibleLayers = {
       工作站: "work-station",
       无走私村: "no-smuggling",
-      案件: "case"
+      案件: "case",
     };
     keyPersonnelPopupVisible.value = true;
     handleDefaultVisibleLayers(Object.keys(defaultVisibleLayers));
@@ -1256,8 +1243,7 @@ function handleBottomMenuClick(index) {
     Object.values(defaultVisibleLayers).forEach((type) => {
       mapMarkersConfig.toggleMarkerVisibilityByLayer(type, true);
     });
-  }
-  else if (index === 3) {
+  } else if (index === 3) {
     console.log("可疑车辆");
     const defaultVisibleLayers = {
       车辆动态: "car",
@@ -1266,7 +1252,7 @@ function handleBottomMenuClick(index) {
       交通要道: "track-route",
       智能限高杆: "height-bar",
       视频感知设备: "video-sensing",
-      车辆运行热力图: "vehicle-heatmap"
+      车辆运行热力图: "vehicle-heatmap",
     };
     suspiciousVehiclePopupVisible.value = true;
     handleDefaultVisibleLayers(Object.keys(defaultVisibleLayers));
@@ -1279,10 +1265,10 @@ function handleBottomMenuClick(index) {
 
 function handleDefaultVisibleLayers(defaultVisibleLayers) {
   [...layers.value, ...sensingDevices.value, ...heatmaps.value].forEach(
-    val => (val.visible = false)
+    (val) => (val.visible = false)
   );
   [...layers.value, ...sensingDevices.value, ...heatmaps.value].forEach(
-    val => defaultVisibleLayers.includes(val.name) && (val.visible = true)
+    (val) => defaultVisibleLayers.includes(val.name) && (val.visible = true)
   );
 }
 
@@ -1305,8 +1291,8 @@ const getSliderIndicatorStyle = computed(() => {
   const startOffset = 29; // 起始偏移
 
   if (
-    activeBottomMenu.value >= 0
-    && activeBottomMenu.value < bottomMenu.value.length
+    activeBottomMenu.value >= 0 &&
+    activeBottomMenu.value < bottomMenu.value.length
   ) {
     const x = startOffset + activeBottomMenu.value * spacing;
     let y = -1;
@@ -1317,14 +1303,14 @@ const getSliderIndicatorStyle = computed(() => {
       transform: `translate(${x}px, ${y}px)`,
       opacity: 1,
       transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-      width: `${baseWidth}px`
+      width: `${baseWidth}px`,
     };
   }
 
   return {
     opacity: 0,
     transition: "all 0.3s ease",
-    width: `${baseWidth}px`
+    width: `${baseWidth}px`,
   };
 });
 
@@ -1333,7 +1319,7 @@ onMounted(async () => {
   const layersData = [
     ...layers.value,
     ...sensingDevices.value,
-    ...heatmaps.value
+    ...heatmaps.value,
   ];
   layersData.forEach((layer) => {
     mapMarkersConfig.toggleMarkerVisibilityByLayer(layer.type, layer.visible);
@@ -1402,10 +1388,8 @@ onUnmounted(() => {
             @click="handleWarningClick"
           >
             <div class="warning-title">
-              <div class="warning-title-num">
-                6
-              </div>
-              <img src="@/assets/imgs/text.png" alt="">
+              <div class="warning-title-num">6</div>
+              <img src="@/assets/imgs/text.png" alt="" />
             </div>
             <div class="warning-content">
               <Vue3SeamlessScroll
@@ -1553,7 +1537,7 @@ onUnmounted(() => {
                 :class="{ active: index === activeBottomMenu }"
                 @click="handleBottomMenuClick(index)"
               >
-                <img :src="getIconPath(item.icon)" :alt="`${item.name}图标`">
+                <img :src="getIconPath(item.icon)" :alt="`${item.name}图标`" />
                 {{ item.name }}
               </div>
             </div>
@@ -1650,21 +1634,11 @@ onUnmounted(() => {
                   class="layer-select"
                   @change="handleLayerChange"
                 >
-                  <option value="天地图">
-                    天地图
-                  </option>
-                  <option value="天地图卫星">
-                    天地图卫星
-                  </option>
-                  <option value="高德地图">
-                    高德地图
-                  </option>
-                  <option value="高德卫星">
-                    高德卫星
-                  </option>
-                  <option value="CartoDB">
-                    CartoDB
-                  </option>
+                  <option value="天地图">天地图</option>
+                  <option value="天地图卫星">天地图卫星</option>
+                  <option value="高德地图">高德地图</option>
+                  <option value="高德卫星">高德卫星</option>
+                  <option value="CartoDB">CartoDB</option>
                 </select>
               </div>
 
