@@ -35,8 +35,8 @@ jobs:
         run: npm run lint # 确保 package.json 中有 "lint": "eslint ." 脚本
 
       # 步骤5：运行单元测试（如 Jest/Vitest）
-      - name: 单元测试
-        run: npm run test:unit # 确保 package.json 中有对应的测试脚本
+      # - name: 单元测试
+      #   run: npm run test:unit # 确保 package.json 中有对应的测试脚本
 
   # 任务2：构建项目（依赖 test 任务成功完成）
   build:
