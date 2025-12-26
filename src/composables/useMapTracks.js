@@ -445,7 +445,7 @@ export function useMapTracks(map) {
     startButton.className = 'track-start-button';
     startButton.textContent = '始';
     startButton.style.cssText = locationName
-? `
+      ? `
       width: 32px;
       height: 32px;
       background-color: #1890ff;
@@ -459,7 +459,7 @@ export function useMapTracks(map) {
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       flex-shrink: 0;
     `
-: `
+      : `
       width: 32px;
       height: 32px;
       background-color: #1890ff;
@@ -657,7 +657,7 @@ export function useMapTracks(map) {
     endButton.className = 'track-end-button';
     endButton.textContent = '终';
     endButton.style.cssText = locationName
-? `
+      ? `
       width: 32px;
       height: 32px;
       background-color: #ff7a00;
@@ -671,7 +671,7 @@ export function useMapTracks(map) {
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       flex-shrink: 0;
     `
-: `
+      : `
       width: 32px;
       height: 32px;
       background-color: #ff7a00;

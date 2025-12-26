@@ -1103,7 +1103,7 @@ function handleFeatureDeleted(feature) {
 // 图层数据
 const layers = ref([
   { id: 1, name: "风险点", visible: true, type: "risk-point" },
-  { id: 2, name: "交通要道", visible: false, type: "track-route" },
+  { id: 2, name: "交通要道", visible: false, type: "key-route" },
   { id: 3, name: "工作站", visible: false, type: "work-station" },
   { id: 4, name: "无走私村", visible: false, type: "no-smuggling" },
   { id: 5, name: "船舶动态", visible: true, type: "ship" },
@@ -1155,7 +1155,7 @@ const allMarkerListConfigs = {
   光电雷达覆盖区域: "optical-radar",
   船舶运行热力图: "ship-heatmap",
   车辆动态: "car",
-  交通要道: "track-route",
+  交通要道: "key-route",
   车辆运行热力图: "vehicle-heatmap",
   案件: "case",
   工作站: "work-station",
@@ -1249,7 +1249,7 @@ function handleBottomMenuClick(index) {
       车辆动态: "car",
       风险点: "risk-point",
       电子围栏: "electronic-fence",
-      交通要道: "track-route",
+      交通要道: "key-route",
       智能限高杆: "height-bar",
       视频感知设备: "video-sensing",
       车辆运行热力图: "vehicle-heatmap",
@@ -1388,10 +1388,8 @@ onUnmounted(() => {
             @click="handleWarningClick"
           >
             <div class="warning-title">
-              <div class="warning-title-num">
-                6
-              </div>
-              <img src="@/assets/imgs/text.png" alt="">
+              <div class="warning-title-num">6</div>
+              <img src="@/assets/imgs/text.png" alt="" />
             </div>
             <div class="warning-content">
               <Vue3SeamlessScroll
@@ -1539,7 +1537,7 @@ onUnmounted(() => {
                 :class="{ active: index === activeBottomMenu }"
                 @click="handleBottomMenuClick(index)"
               >
-                <img :src="getIconPath(item.icon)" :alt="`${item.name}图标`">
+                <img :src="getIconPath(item.icon)" :alt="`${item.name}图标`" />
                 {{ item.name }}
               </div>
             </div>
@@ -1636,21 +1634,11 @@ onUnmounted(() => {
                   class="layer-select"
                   @change="handleLayerChange"
                 >
-                  <option value="天地图">
-                    天地图
-                  </option>
-                  <option value="天地图卫星">
-                    天地图卫星
-                  </option>
-                  <option value="高德地图">
-                    高德地图
-                  </option>
-                  <option value="高德卫星">
-                    高德卫星
-                  </option>
-                  <option value="CartoDB">
-                    CartoDB
-                  </option>
+                  <option value="天地图">天地图</option>
+                  <option value="天地图卫星">天地图卫星</option>
+                  <option value="高德地图">高德地图</option>
+                  <option value="高德卫星">高德卫星</option>
+                  <option value="CartoDB">CartoDB</option>
                 </select>
               </div>
 
