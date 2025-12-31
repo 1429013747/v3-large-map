@@ -1,16 +1,16 @@
-import { reactive, ref } from 'vue';
+import { ref, reactive } from 'vue';
 import { Feature } from 'ol';
-import { LineString, Point } from 'ol/geom';
+import { Point, LineString } from 'ol/geom';
 import { fromLonLat } from 'ol/proj';
-import { Circle, Fill, Icon, Stroke, Style, Text } from 'ol/style';
+import { Style, Circle, Fill, Stroke, Text, Icon } from 'ol/style';
 import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import Overlay from 'ol/Overlay';
 
 /**
  * 地图轨迹管理Hook
- * @param {object} map - OpenLayers地图实例
- * @returns {object} 轨迹管理方法和状态
+ * @param {Object} map - OpenLayers地图实例
+ * @returns {Object} 轨迹管理方法和状态
  */
 export function useMapTracks(map) {
   // 轨迹数据
@@ -69,8 +69,8 @@ export function useMapTracks(map) {
   /**
    * 平滑轨迹坐标点，使转弯更圆润
    * @param {Array} coordinates - 坐标点数组 [[x, y], [x, y], ...]
-   * @param {number} smoothness - 平滑度，控制插值点数量，默认5
-   * @returns {object} { smoothed: 平滑后的坐标点数组, originalIndices: 原始点在平滑后数组中的索引映射 }
+   * @param {Number} smoothness - 平滑度，控制插值点数量，默认5
+   * @returns {Object} { smoothed: 平滑后的坐标点数组, originalIndices: 原始点在平滑后数组中的索引映射 }
    */
   const smoothCoordinates = (coordinates, smoothness = 5) => {
     if (!coordinates || coordinates.length < 2) {
@@ -160,7 +160,7 @@ export function useMapTracks(map) {
   /**
    * 生成轨迹路线
    * @param {Array} coordinates - 坐标点数组 [[lng, lat], [lng, lat], ...]
-   * @param {object} options - 轨迹选项
+   * @param {Object} options - 轨迹选项
    * @returns {Feature} 轨迹要素
    */
   const generateTrackRoute = async (coordinates, options = {}) => {
@@ -278,9 +278,9 @@ export function useMapTracks(map) {
    * 开始轨迹路线动画
    * @param {Feature} trackFeature - 轨迹要素
    * @param {Array} mapCoordinates - 地图坐标数组
-   * @param {number} animationDuration - 动画持续时间
+   * @param {Number} animationDuration - 动画持续时间
    * @param {Array} coordinates - 坐标点数组
-   * @param {string} trackId - 轨迹ID
+   * @param {String} trackId - 轨迹ID
    * @returns {Promise} 动画状态
    */
   const startTrackRouteAnimation = (params) => {
@@ -398,6 +398,7 @@ export function useMapTracks(map) {
 
           // 计算小车旋转角度（根据当前点和下一个点的方向）
           if (state.currentIndex < mapCoordinates.length - 1) {
+
             // 更新小车样式
             const carStyle = new Style({
               zIndex: 999999, // 设置小车样式层级，确保显示在最上层
@@ -422,7 +423,7 @@ export function useMapTracks(map) {
     });
   };
 
-  // 起点标记
+  //起点标记
   const onStartPoint = (mapCoordinates, trackId = null, showStart, coordinates = []) => {
     if (!map) return;
 
@@ -444,8 +445,7 @@ export function useMapTracks(map) {
     const startButton = document.createElement('div');
     startButton.className = 'track-start-button';
     startButton.textContent = '始';
-    startButton.style.cssText = locationName
-      ? `
+    startButton.style.cssText = locationName ? `
       width: 32px;
       height: 32px;
       background-color: #1890ff;
@@ -458,8 +458,7 @@ export function useMapTracks(map) {
       font-weight: bold;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       flex-shrink: 0;
-    `
-      : `
+    `: `
       width: 32px;
       height: 32px;
       background-color: #1890ff;
@@ -570,7 +569,7 @@ export function useMapTracks(map) {
       trackSource.value.addFeature(startFeature);
     }
   };
-  // 中间点标记
+  //中间点标记
   const onMidpointPoint = (params, style) => {
     const { coord, coordinates, trackId = null, smoothedCoord } = params;
     // 如果提供了平滑后的坐标，使用平滑后的坐标；否则使用原始坐标
@@ -634,7 +633,7 @@ export function useMapTracks(map) {
     // 将中间点文字添加到动画图层，确保显示在轨迹线之上
     animationTrackSource.value.addFeature(feature);
   };
-  // 终点标记
+  //终点标记
   const onEndPoint = (mapCoordinates, trackId = null, showEnd, coordinates = []) => {
     if (!map) return;
 
@@ -656,8 +655,7 @@ export function useMapTracks(map) {
     const endButton = document.createElement('div');
     endButton.className = 'track-end-button';
     endButton.textContent = '终';
-    endButton.style.cssText = locationName
-      ? `
+    endButton.style.cssText = locationName ? `
       width: 32px;
       height: 32px;
       background-color: #ff7a00;
@@ -670,8 +668,7 @@ export function useMapTracks(map) {
       font-weight: bold;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       flex-shrink: 0;
-    `
-      : `
+    `: `
       width: 32px;
       height: 32px;
       background-color: #ff7a00;
@@ -786,7 +783,7 @@ export function useMapTracks(map) {
   /**
    * 为轨迹设置删除按钮功能
    * @param {Feature} trackFeature - 轨迹要素
-   * @param {string} trackId - 轨迹ID
+   * @param {String} trackId - 轨迹ID
    * @param {Array} mapCoordinates - 地图坐标数组
    */
   const setupTrackDeleteButton = (trackFeature, trackId, mapCoordinates) => {
@@ -893,13 +890,15 @@ export function useMapTracks(map) {
 
   /**
    * 展示指定轨迹路线
-   * @param {string} trackId - 轨迹ID
-   * @param {boolean} visible - 是否可见
+   * @param {String} trackId - 轨迹ID
+   * @param {Boolean} visible - 是否可见
    */
   const showTrackRoute = (trackId, visible) => {
     if (!trackSource.value) return;
     // 处理主轨迹图层中的要素
     const features = trackSource.value.getFeatures();
+    // 隐藏所有轨迹的起点和终点
+    toggleTrackPointOverlays(trackId, { visible: visible });
 
     // 查找主轨迹线（通过id匹配）
     const trackFeatures = features.filter((feature) => feature.getProperties().trackId === trackId);
@@ -984,8 +983,8 @@ export function useMapTracks(map) {
 
   /**
    * 获取轨迹的当前可见状态
-   * @param {string} trackId - 轨迹ID
-   * @returns {boolean} 是否可见
+   * @param {String} trackId - 轨迹ID
+   * @returns {Boolean} 是否可见
    */
   const getTrackVisibility = (trackId) => {
     if (!trackSource.value) return;
@@ -1004,8 +1003,8 @@ export function useMapTracks(map) {
 
   /**
    * 切换指定轨迹的显示状态
-   * @param {string} trackId - 轨迹ID
-   * @returns {boolean} 新的可见状态
+   * @param {String} trackId - 轨迹ID
+   * @returns {Boolean} 新的可见状态
    */
   const toggleTrackRoute = (trackId) => {
     if (!trackId) return;
@@ -1015,8 +1014,109 @@ export function useMapTracks(map) {
   };
 
   /**
+   * 控制轨迹起点和终点 overlay 的显示与隐藏
+   * @param {String|Array|null} trackId - 轨迹ID，可以是单个ID、ID数组或null（null表示所有轨迹）
+   * @param {Object} options - 控制选项
+   * @param {Boolean} options.showStart - 是否显示起点，默认true
+   * @param {Boolean} options.showEnd - 是否显示终点，默认true
+   * @param {Boolean} options.visible - 是否可见，如果提供此参数，会同时控制起点和终点
+   */
+  function toggleTrackPointOverlays(trackId = null, options = {}) {
+    if (!map) return;
+
+    const {
+      showStart = null,
+      showEnd = null,
+      visible = null
+    } = options;
+
+    // 如果提供了 visible 参数，同时控制起点和终点
+    const shouldShowStart = visible !== null ? visible : (showStart !== null ? showStart : true);
+    const shouldShowEnd = visible !== null ? visible : (showEnd !== null ? showEnd : true);
+
+    // 确定要处理的轨迹ID列表
+    let trackIdsToProcess = [];
+    if (trackId === null) {
+      // 处理所有轨迹
+      trackIdsToProcess = Object.keys(trackPointOverlays);
+    } else if (Array.isArray(trackId)) {
+      // 处理指定的轨迹ID数组
+      trackIdsToProcess = trackId;
+    } else {
+      // 处理单个轨迹ID
+      trackIdsToProcess = [trackId];
+    }
+
+    // 遍历处理每个轨迹
+    trackIdsToProcess.forEach((tid) => {
+      const pointOverlays = trackPointOverlays[tid];
+      if (!pointOverlays) return;
+
+      // 控制起点 overlay
+      if (pointOverlays.start) {
+        const startOverlay = pointOverlays.start;
+        const startPosition = startOverlay.getPosition();
+
+        if (shouldShowStart) {
+          // 显示起点：如果之前有位置，恢复位置；否则需要从轨迹中获取位置
+          if (!startPosition) {
+            // 尝试从轨迹要素中获取起点坐标
+            const features = trackSource.value.getFeatures();
+            const trackFeature = features.find((feature) => feature.get('trackId') === tid);
+            if (trackFeature) {
+              const geometry = trackFeature.getGeometry();
+              if (geometry && geometry.getType() === 'LineString') {
+                const coordinates = geometry.getCoordinates();
+                if (coordinates && coordinates.length > 0) {
+                  startOverlay.setPosition(coordinates[0]);
+                }
+              }
+            }
+          }
+        } else {
+          // 隐藏起点：清除位置
+          startOverlay.setPosition(undefined);
+        }
+      }
+
+      // 控制终点 overlay
+      if (pointOverlays.end) {
+        const endOverlay = pointOverlays.end;
+        const endPosition = endOverlay.getPosition();
+
+        if (shouldShowEnd) {
+          // 显示终点：如果之前有位置，恢复位置；否则需要从轨迹中获取位置
+          if (!endPosition) {
+            // 尝试从轨迹要素中获取终点坐标
+            const features = trackSource.value.getFeatures();
+            const trackFeature = features.find((feature) => feature.get('trackId') === tid);
+            if (trackFeature) {
+              const geometry = trackFeature.getGeometry();
+              if (geometry && geometry.getType() === 'LineString') {
+                const coordinates = geometry.getCoordinates();
+                if (coordinates && coordinates.length > 0) {
+                  endOverlay.setPosition(coordinates[coordinates.length - 1]);
+                }
+              }
+            }
+          }
+        } else {
+          // 隐藏终点：清除位置
+          endOverlay.setPosition(undefined);
+        }
+      }
+    });
+
+    console.log(`轨迹起点和终点 overlay 显示状态已更新`, {
+      trackIds: trackIdsToProcess,
+      showStart: shouldShowStart,
+      showEnd: shouldShowEnd
+    });
+  };
+
+  /**
    * 移除指定轨迹路线
-   * @param {string} trackId - 轨迹ID
+   * @param {String} trackId - 轨迹ID
    */
   const removeTrackRoute = (trackId) => {
     if (!trackSource.value) return;
@@ -1219,8 +1319,8 @@ export function useMapTracks(map) {
 
   /**
    * 检查轨迹ID是否唯一
-   * @param {string} id - 轨迹ID
-   * @returns {boolean} 是否唯一
+   * @param {String} id - 轨迹ID
+   * @returns {Boolean} 是否唯一
    */
   const isTrackIdUnique = (id) => {
     return !trackSource.value
@@ -1229,8 +1329,8 @@ export function useMapTracks(map) {
   };
   /**
    * 生成唯一的轨迹ID
-   * @param {string} prefix - ID前缀
-   * @returns {string} 唯一的ID
+   * @param {String} prefix - ID前缀
+   * @returns {String} 唯一的ID
    */
   const generateUniqueTrackId = (prefix = 'track') => {
     let id;
@@ -1250,7 +1350,7 @@ export function useMapTracks(map) {
 
   /**
    * 停止指定轨迹的动画
-   * @param {string} trackId - 轨迹ID
+   * @param {String} trackId - 轨迹ID
    */
   const stopTrackAnimationById = (trackId) => {
     if (animationTimers[trackId]) {
@@ -1281,7 +1381,7 @@ export function useMapTracks(map) {
 
   /**
    * 暂停指定轨迹的动画
-   * @param {string} trackId - 轨迹ID
+   * @param {String} trackId - 轨迹ID
    */
   const pauseTrackAnimationById = (trackId) => {
     const state = animationStates[trackId];
@@ -1293,7 +1393,7 @@ export function useMapTracks(map) {
 
   /**
    * 恢复指定轨迹的动画
-   * @param {string} trackId - 轨迹ID
+   * @param {String} trackId - 轨迹ID
    */
   const resumeTrackAnimationById = (trackId) => {
     const state = animationStates[trackId];
@@ -1332,7 +1432,7 @@ export function useMapTracks(map) {
 
   /**
    * 切换指定轨迹的动画播放状态
-   * @param {string} trackId - 轨迹ID
+   * @param {String} trackId - 轨迹ID
    */
   const toggleTrackAnimationById = (trackId) => {
     const state = animationStates[trackId];
@@ -1365,7 +1465,7 @@ export function useMapTracks(map) {
   };
   /**
    * 设置速度值
-   * @param {number} speed - 速度值
+   * @param {Number} speed - 速度值
    */
   const setSpeedValue = (speed) => {
     speedValue.value = speed;
@@ -1373,7 +1473,7 @@ export function useMapTracks(map) {
 
   /**
    * 获取当前正在运行的动画信息
-   * @returns {object} 动画信息
+   * @returns {Object} 动画信息
    */
   const getActiveAnimations = () => {
     const activeAnimations = {};
@@ -1393,7 +1493,7 @@ export function useMapTracks(map) {
 
   /**
    * 获取动画统计信息
-   * @returns {object} 统计信息
+   * @returns {Object} 统计信息
    */
   const getAnimationStats = () => {
     const totalAnimations = Object.keys(animationStates).length;
@@ -1437,6 +1537,7 @@ export function useMapTracks(map) {
     getTrackVisibility,
     toggleTrackRoute,
     removeTrackRoute,
+    toggleTrackPointOverlays,
     // 动画控制 - 全局
     pauseTrackAnimation,
     resumeTrackAnimation,
