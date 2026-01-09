@@ -1,6 +1,6 @@
 import { generateRandomCoordinates } from "@/utils/coordinateGenerator.js";
 import { getIconPath, getIconPathMarkIcons } from "@/utils/utilstools.js";
-import { riskData, radarData } from "./riskData.js";
+import { radarData, riskData } from "./riskData.js";
 
 export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, warningDrawerVisible, initShowPanel, radarScanAnimation) {
   // 生成随机坐标点（50公里内）
@@ -325,7 +325,6 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
   };
   window.disPlayWarnDetail = function (e) {
     initShowPanel();
-    console.log("🚀 ~ disPlayWarnDetail ~ e:", e)
     warningDrawerVisible.value = true;
   };
 
@@ -372,22 +371,21 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
   }));
   mapMarkersConfig.addMarkers(radarList);
 
-
   // 添加雷达扫描动画
   if (radarScanAnimation) {
     const radarAnimationList = radarData.map((coord, index) => ({
       id: `optical-radar-${index}`,
       coordinates: [coord.longitude, coord.latitude],
       options: {
-        radius: 2000,                  // 扫描半径（米），默认 2km
-        color: '#00ffcc',              // 扫描颜色
-        scanSpeed: 2500,               // 扫描一圈的时间（毫秒）
-        fadeLength: 0.35,              // 扫描尾迹长度
-        hoverRadiusAdd: 500,           // hover 时半径增加（米）
-        solidRipple: true,             // 实心涟漪
-        rippleDuration: 2000,          // 涟漪周期（毫秒）
-        rippleCount: 3,                // 涟漪数量
-        visible: false                 // 初始隐藏，跟随 marker 显示
+        radius: 2000, // 扫描半径（米），默认 2km
+        color: '#00ffcc', // 扫描颜色
+        scanSpeed: 2500, // 扫描一圈的时间（毫秒）
+        fadeLength: 0.35, // 扫描尾迹长度
+        hoverRadiusAdd: 500, // hover 时半径增加（米）
+        solidRipple: true, // 实心涟漪
+        rippleDuration: 2000, // 涟漪周期（毫秒）
+        rippleCount: 3, // 涟漪数量
+        visible: false // 初始隐藏，跟随 marker 显示
       }
     }));
     console.log("🚀 ~ getMarkerData ~ radarAnimationList:", radarAnimationList)

@@ -1394,8 +1394,10 @@ onUnmounted(() => {
             @click="handleWarningClick"
           >
             <div class="warning-title">
-              <div class="warning-title-num">6</div>
-              <img src="@/assets/imgs/text.png" alt="" />
+              <div class="warning-title-num">
+                6
+              </div>
+              <img src="@/assets/imgs/text.png" alt="">
             </div>
             <div class="warning-content">
               <Vue3SeamlessScroll
@@ -1543,7 +1545,7 @@ onUnmounted(() => {
                 :class="{ active: index === activeBottomMenu }"
                 @click="handleBottomMenuClick(index)"
               >
-                <img :src="getIconPath(item.icon)" :alt="`${item.name}图标`" />
+                <img :src="getIconPath(item.icon)" :alt="`${item.name}图标`">
                 {{ item.name }}
               </div>
             </div>
@@ -1640,11 +1642,21 @@ onUnmounted(() => {
                   class="layer-select"
                   @change="handleLayerChange"
                 >
-                  <option value="天地图">天地图</option>
-                  <option value="天地图卫星">天地图卫星</option>
-                  <option value="高德地图">高德地图</option>
-                  <option value="高德卫星">高德卫星</option>
-                  <option value="CartoDB">CartoDB</option>
+                  <option value="天地图">
+                    天地图
+                  </option>
+                  <option value="天地图卫星">
+                    天地图卫星
+                  </option>
+                  <option value="高德地图">
+                    高德地图
+                  </option>
+                  <option value="高德卫星">
+                    高德卫星
+                  </option>
+                  <option value="CartoDB">
+                    CartoDB
+                  </option>
                 </select>
               </div>
 
