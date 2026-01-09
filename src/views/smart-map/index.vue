@@ -10,6 +10,7 @@ import {
   createPopupMenuShip,
 } from "@/composables/createPopupContent.js";
 import { useMapMarkers } from "@/composables/useMapMarkers.js";
+import { useRadarScanAnimation } from "@/composables/useRadarScanAnimation.js";
 import { getMarkerData } from "@/mock/data.js";
 import { useDefaultConfigStore } from "@/stores/defaultConfig.js";
 import { getIconPath, getIconPathMarkIcons } from "@/utils/utilstools.js";
@@ -193,6 +194,7 @@ async function onMapReady(mapInstance) {
   console.log("当前地图中心:", mapCenter);
   map.value = mapInstance; // 设置 map 变量
   mapMarkersConfig = useMapMarkers(map.value);
+  const radarScanAnimation = useRadarScanAnimation(map.value);
   // 使用类型图层
   useTypeLayer.value = true;
   // 初始化标记点
@@ -207,7 +209,8 @@ async function onMapReady(mapInstance) {
     useTypeLayer,
     heatmapConfig,
     warningDrawerVisible,
-    initShowPanel
+    initShowPanel,
+    radarScanAnimation
   );
 }
 
@@ -1114,7 +1117,7 @@ const layers = ref([
 
 // 感知设备
 const sensingDevices = ref([
-  { id: 9, name: "光电雷达覆盖区域", visible: false, type: "optical-radar" },
+  { id: 9, name: "光电雷达覆盖区域", visible: true, type: "optical-radar" },
   { id: 10, name: "智能限高杆", visible: false, type: "height-bar" },
   {
     id: 11,
@@ -1176,6 +1179,9 @@ function handleLayerToggle(layer) {
     });
   } else {
     mapMarkersConfig.toggleMarkerVisibilityByLayer(layer.type, layer.visible);
+    if (layer.type === "optical-radar") {
+      radarScanAnimation.toggleAllRadarVisibility(layer.visible);
+    }
   }
 }
 

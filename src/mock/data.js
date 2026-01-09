@@ -1,8 +1,8 @@
 import { generateRandomCoordinates } from "@/utils/coordinateGenerator.js";
 import { getIconPath, getIconPathMarkIcons } from "@/utils/utilstools.js";
-import { riskData } from "./riskData.js";
+import { riskData, radarData } from "./riskData.js";
 
-export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, warningDrawerVisible, initShowPanel) {
+export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, warningDrawerVisible, initShowPanel, radarScanAnimation) {
   // 生成随机坐标点（50公里内）
   const randomCoords = generateRandomCoordinates(
     29.330254208488313,
@@ -328,6 +328,72 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
     console.log("🚀 ~ disPlayWarnDetail ~ e:", e)
     warningDrawerVisible.value = true;
   };
+
+  const radarList = radarData.map(coord => ({
+    coordinates: [coord.longitude, coord.latitude],
+    options: {
+      id: `optical-radar-${coord.id}`,
+      type: 'optical-radar',
+      useTypeLayer: useTypeLayer.value,
+      visible: true, // 初始隐藏
+      style: {
+        icon: {
+          src: getIconPathMarkIcons('radar'),
+          size: [48, 68],
+          anchor: [0.5, 0.5],
+          scale: 0.5,
+          displacement: [0, 0],
+          borderSize: 25, // 外边框大小
+          borderColor: '#ffa502', // 外边框颜色
+          borderWidth: 2, // 外边框宽度
+          showBorder: false, // 初始隐藏边框
+          isRadar: true
+        },
+        text: {
+          content: coord.name,
+          color: '#000000',
+          offsetX: 10,
+          offsetY: -17,
+          // bgImage: '/src/assets/imgs/qb.png', // 背景图片路径
+          bgSize: [100, 50], // 背景图片尺寸
+          displacement: [18, 9], // 汽包位置偏移
+          bgScale: 0.7, // 缩放比例
+          bgOpacity: 0.9, // 透明度
+          font: '10px Arial',
+          showBackground: false
+        }
+      },
+      data: {
+        popupType: 'optical-radar',
+        title: '雷达站',
+        originData: coord
+      }
+    }
+  }));
+  mapMarkersConfig.addMarkers(radarList);
+
+
+  // 添加雷达扫描动画
+  if (radarScanAnimation) {
+    const radarAnimationList = radarData.map((coord, index) => ({
+      id: `optical-radar-${index}`,
+      coordinates: [coord.longitude, coord.latitude],
+      options: {
+        radius: 2000,                  // 扫描半径（米），默认 2km
+        color: '#00ffcc',              // 扫描颜色
+        scanSpeed: 2500,               // 扫描一圈的时间（毫秒）
+        fadeLength: 0.35,              // 扫描尾迹长度
+        hoverRadiusAdd: 500,           // hover 时半径增加（米）
+        solidRipple: true,             // 实心涟漪
+        rippleDuration: 2000,          // 涟漪周期（毫秒）
+        rippleCount: 3,                // 涟漪数量
+        visible: false                 // 初始隐藏，跟随 marker 显示
+      }
+    }));
+    console.log("🚀 ~ getMarkerData ~ radarAnimationList:", radarAnimationList)
+    radarScanAnimation.addRadarAnimations(radarAnimationList);
+    radarScanAnimation.toggleAllRadarVisibility(true);
+  }
   // 创建多边形
   mapMarkersConfig.drawFilledPolygon(
     [
