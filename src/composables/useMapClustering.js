@@ -1,16 +1,16 @@
+import { ref, reactive, nextTick } from 'vue';
 import { Feature } from 'ol';
 import { Point } from 'ol/geom';
-import VectorLayer from 'ol/layer/Vector';
 import { fromLonLat } from 'ol/proj';
-import Cluster from 'ol/source/Cluster';
+import { Style, Icon, Text, Circle, Fill, Stroke } from 'ol/style';
 import VectorSource from 'ol/source/Vector';
-import { Circle, Fill, Icon, Style, Text } from 'ol/style';
-import { reactive, ref } from 'vue';
+import VectorLayer from 'ol/layer/Vector';
+import Cluster from 'ol/source/Cluster';
 
 /**
  * 地图标记聚合管理Hook
- * @param {object} map - OpenLayers地图实例
- * @returns {object} 聚合管理方法和状态
+ * @param {Object} map - OpenLayers地图实例
+ * @returns {Object} 聚合管理方法和状态
  */
 export function useMapClustering(map) {
   // 聚合相关状态
@@ -47,10 +47,10 @@ export function useMapClustering(map) {
   /**
    * 创建聚合样式
    * @param {Feature} feature - 要素
-   * @param {number} resolution - 分辨率
+   * @param {Number} resolution - 分辨率
    * @returns {Style} 样式对象
    */
-  function createClusterStyle(feature, resolution) {
+  const createClusterStyle = (feature, resolution) => {
     const features = feature.get('features');
     const size = features ? features.length : 1;
 
@@ -58,8 +58,7 @@ export function useMapClustering(map) {
       // 单个标记样式
       const markerData = features[0].getProperties();
       return createSingleMarkerStyle(markerData);
-    }
-    else {
+    } else {
       // 聚合样式
       return createClusterMarkerStyle(size);
     }
@@ -67,10 +66,10 @@ export function useMapClustering(map) {
 
   /**
    * 创建单个标记样式
-   * @param {object} markerData - 标记数据
+   * @param {Object} markerData - 标记数据
    * @returns {Style} 样式对象
    */
-  function createSingleMarkerStyle(markerData) {
+  const createSingleMarkerStyle = (markerData) => {
     const { icon, color, radius } = markerData.style || {};
 
     if (icon) {
@@ -82,8 +81,7 @@ export function useMapClustering(map) {
           scale: icon.scale || 1
         })
       });
-    }
-    else {
+    } else {
       return new Style({
         image: new Circle({
           radius: radius || clusterConfig.markerStyle.radius,
@@ -101,10 +99,10 @@ export function useMapClustering(map) {
 
   /**
    * 创建聚合标记样式
-   * @param {number} size - 聚合数量
+   * @param {Number} size - 聚合数量
    * @returns {Style} 样式对象
    */
-  function createClusterMarkerStyle(size) {
+  const createClusterMarkerStyle = (size) => {
     const radius = Math.max(15, Math.min(30, 15 + size));
     const [startColor, endColor] = getClusterColor(size);
 
@@ -144,10 +142,10 @@ export function useMapClustering(map) {
 
   /**
    * 根据聚合数量获取颜色
-   * @param {number} size - 聚合数量
-   * @returns {string} 颜色值
+   * @param {Number} size - 聚合数量
+   * @returns {String} 颜色值
    */
-  function getClusterColor(size) {
+  const getClusterColor = (size) => {
     // 所有区间统一返回 [起色, 终色] 以用于径向渐变
     if (size <= 5) return ['rgba(82, 196, 26, 1)', 'rgba(82, 196, 26, 0.3)']; // 绿色渐变
     if (size <= 10) return ['rgba(250, 173, 20, 1)', 'rgba(250, 173, 20, 0.3)']; // 黄色渐变
@@ -157,12 +155,12 @@ export function useMapClustering(map) {
 
   /**
    * 创建聚合图层
-   * @param {string} type - 图层类型
+   * @param {String} type - 图层类型
    * @param {Array} markers - 标记点数组
-   * @param {object} options - 选项
+   * @param {Object} options - 选项
    * @returns {VectorLayer} 聚合图层
    */
-  function createClusterLayer(type, markers = [], options = {}) {
+  const createClusterLayer = (type, markers = [], options = {}) => {
     if (!map) {
       console.warn('地图实例未初始化');
       return null;
@@ -182,9 +180,9 @@ export function useMapClustering(map) {
 
     // 创建聚合源
     const clusterSource = new Cluster({
-      source,
+      source: source,
       distance: options.distance || clusterConfig.distance, // 聚合距离
-      minDistance: options.minDistance || clusterConfig.minDistance // 最小聚合距离
+      minDistance: options.minDistance || clusterConfig.minDistance //最小聚合距离
     });
 
     // 创建聚合图层
@@ -207,10 +205,10 @@ export function useMapClustering(map) {
 
   /**
    * 更新聚合图层
-   * @param {string} type - 图层类型
+   * @param {String} type - 图层类型
    * @param {Array} markers - 新的标记点数组
    */
-  function updateClusterLayer(type, markers) {
+  const updateClusterLayer = (type, markers) => {
     if (!clusterSources.value[type]) {
       console.warn(`聚合图层 ${type} 不存在`);
       return;
@@ -234,10 +232,10 @@ export function useMapClustering(map) {
 
   /**
    * 启用/禁用聚合
-   * @param {string} type - 图层类型
-   * @param {boolean} enabled - 是否启用
+   * @param {String} type - 图层类型
+   * @param {Boolean} enabled - 是否启用
    */
-  function toggleCluster(type, enabled) {
+  const toggleCluster = (type, enabled) => {
     if (!clusterLayers.value[type]) {
       console.warn(`聚合图层 ${type} 不存在`);
       return;
@@ -248,10 +246,10 @@ export function useMapClustering(map) {
 
   /**
    * 设置聚合距离
-   * @param {string} type - 图层类型
-   * @param {number} distance - 聚合距离
+   * @param {String} type - 图层类型
+   * @param {Number} distance - 聚合距离
    */
-  function setClusterDistance(type, distance) {
+  const setClusterDistance = (type, distance) => {
     if (!clusterSources.value[type]) {
       console.warn(`聚合图层 ${type} 不存在`);
       return;
@@ -263,17 +261,17 @@ export function useMapClustering(map) {
 
   /**
    * 获取聚合信息
-   * @param {string} type - 图层类型
-   * @returns {object} 聚合信息
+   * @param {String} type - 图层类型
+   * @returns {Object} 聚合信息
    */
-  function getClusterInfo(type) {
+  const getClusterInfo = (type) => {
     if (!clusterSources.value[type]) {
       return { totalFeatures: 0, clusters: 0 };
     }
 
     const source = clusterSources.value[type];
     const features = source.getFeatures();
-    const clusters = features.filter(f => f.get('features') && f.get('features').length > 1);
+    const clusters = features.filter((f) => f.get('features') && f.get('features').length > 1);
 
     return {
       totalFeatures: source.getSource().getFeatures().length,
@@ -284,9 +282,9 @@ export function useMapClustering(map) {
 
   /**
    * 清除聚合图层
-   * @param {string} type - 图层类型
+   * @param {String} type - 图层类型
    */
-  function clearClusterLayer(type) {
+  const clearClusterLayer = (type) => {
     if (clusterLayers.value[type]) {
       map.removeLayer(clusterLayers.value[type]);
       delete clusterLayers.value[type];
@@ -297,7 +295,7 @@ export function useMapClustering(map) {
   /**
    * 清除所有聚合图层
    */
-  function clearAllClusterLayers() {
+  const clearAllClusterLayers = () => {
     Object.keys(clusterLayers.value).forEach((type) => {
       clearClusterLayer(type);
     });
@@ -306,7 +304,7 @@ export function useMapClustering(map) {
   /**
    * 销毁聚合管理器
    */
-  function destroy() {
+  const destroy = () => {
     clearAllClusterLayers();
     clusterLayers.value = {};
     clusterSources.value = {};

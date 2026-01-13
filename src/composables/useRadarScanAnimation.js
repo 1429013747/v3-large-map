@@ -1,4 +1,4 @@
-import { onUnmounted, ref } from 'vue';
+import { ref, onUnmounted } from 'vue';
 import { fromLonLat } from 'ol/proj';
 import { unByKey } from 'ol/Observable';
 
@@ -9,8 +9,8 @@ import { unByKey } from 'ol/Observable';
  * - 半径以米为单位，自动换算为像素，缩放效果与地图一致
  * - 默认半径 1km
  * 
- * @param {object} map - OpenLayers 地图实例
- * @returns {object} 雷达动画管理方法
+ * @param {Object} map - OpenLayers 地图实例
+ * @returns {Object} 雷达动画管理方法
  */
 export function useRadarScanAnimation(map) {
   // 存储所有雷达动画配置
@@ -23,17 +23,15 @@ export function useRadarScanAnimation(map) {
   const hoveredRadarId = ref(null);
   // 鼠标位置
   let mousePosition = null;
-  // 动画循环 ID
-  let animationFrameId = null;
 
   // 默认半径：1km
   const DEFAULT_RADIUS_METERS = 1000;
 
   /**
    * 根据地图分辨率将米转换为像素
-   * @param {number} meters - 米
-   * @param {number} resolution - 地图分辨率（米/像素，EPSG:3857）
-   * @returns {number} 像素
+   * @param {Number} meters - 米
+   * @param {Number} resolution - 地图分辨率（米/像素，EPSG:3857）
+   * @returns {Number} 像素
    */
   const metersToPixels = (meters, resolution) => {
     if (!resolution || resolution <= 0) return 0;
@@ -42,9 +40,9 @@ export function useRadarScanAnimation(map) {
 
   /**
    * 添加雷达扫描动画
-   * @param {string} id - 雷达唯一标识
+   * @param {String} id - 雷达唯一标识
    * @param {Array} coordinates - 雷达中心坐标 [经度, 纬度]
-   * @param {object} options - 动画配置
+   * @param {Object} options - 动画配置
    */
   const addRadarAnimation = (id, coordinates, options = {}) => {
     const {
@@ -91,10 +89,7 @@ export function useRadarScanAnimation(map) {
     });
 
     if (radarAnimations.value.size === 1) {
-      // 延迟启动，确保图层已创建
-      setTimeout(() => {
-        startAnimationLoop();
-      }, 100);
+      startAnimationLoop();
       bindMouseEvents();
     }
   };
@@ -153,8 +148,8 @@ export function useRadarScanAnimation(map) {
       const radiusPixels = metersToPixels(radar.currentRadiusMeters, resolution);
 
       const distance = Math.sqrt(
-        (mousePosition[0] - pixel[0]) ** 2 +
-        (mousePosition[1] - pixel[1]) ** 2
+        Math.pow(mousePosition[0] - pixel[0], 2) +
+        Math.pow(mousePosition[1] - pixel[1], 2)
       );
 
       if (distance <= radiusPixels) {
@@ -205,12 +200,6 @@ export function useRadarScanAnimation(map) {
     const [x, y] = pixelCoords;
     const isHovered = radar.id === hoveredRadarId.value;
 
-    // 验证坐标是否为有限值
-    if (!Number.isFinite(x) || !Number.isFinite(y)) return;
-
-    // 验证 pixelRatio 和 resolution 是否为有限值
-    if (!Number.isFinite(pixelRatio) || !Number.isFinite(resolution) || resolution <= 0) return;
-
     // 平滑过渡半径（米）
     const radiusDiff = radar.targetRadiusMeters - radar.currentRadiusMeters;
     radar.currentRadiusMeters += radiusDiff * 0.1;
@@ -221,8 +210,8 @@ export function useRadarScanAnimation(map) {
     // 将米转换为像素，再乘以 pixelRatio
     const scaledRadius = metersToPixels(radar.currentRadiusMeters, resolution) * pixelRatio;
 
-    // 如果半径太小或不是有限值，不绘制
-    if (!Number.isFinite(scaledRadius) || scaledRadius < 5) return;
+    // 如果半径太小，不绘制
+    if (scaledRadius < 5) return;
 
     // 计算扫描角度
     const angle = ((elapsed % scanSpeed) / scanSpeed) * Math.PI * 2;
@@ -234,13 +223,11 @@ export function useRadarScanAnimation(map) {
 
     // 解析颜色
     const rgbMatch = activeColor.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
-    let r = 0;
-    let g = 255;
-    let b = 204;
+    let r = 0, g = 255, b = 204;
     if (rgbMatch) {
-      r = Number.parseInt(rgbMatch[1], 16);
-      g = Number.parseInt(rgbMatch[2], 16);
-      b = Number.parseInt(rgbMatch[3], 16);
+      r = parseInt(rgbMatch[1], 16);
+      g = parseInt(rgbMatch[2], 16);
+      b = parseInt(rgbMatch[3], 16);
     }
 
     // 1. 底层大范围辉光
@@ -295,7 +282,7 @@ export function useRadarScanAnimation(map) {
       // 透明度：开始时较亮，扩散到边缘时消失
       const rippleAlpha = (1 - currentProgress) * (isHovered ? 0.5 : 0.35);
 
-      if (rippleAlpha > 0.02 && Number.isFinite(rippleRadius) && rippleRadius > 0) {
+      if (rippleAlpha > 0.02) {
         if (solidRipple) {
           // 实心涟漪：径向渐变填充
           const rippleGradient = ctx.createRadialGradient(x, y, rippleRadius * 0.3, x, y, rippleRadius);
@@ -430,32 +417,27 @@ export function useRadarScanAnimation(map) {
    */
   const handlePostRender = (event) => {
     if (radarAnimations.value.size === 0) return;
-    if (!map) return;
 
     const elapsed = Date.now() - startTime;
     const ctx = event.context;
     const frameState = event.frameState;
-    if (!frameState) return;
+    const pixelRatio = frameState.pixelRatio;
 
-    const pixelRatio = frameState.pixelRatio || 1;
-
-    // 获取当前地图分辨率（米/像素）
+    // 获取当前地图分辨率（度/像素）
     const view = map.getView();
-    if (!view) return;
-
     const resolution = view.getResolution();
-    if (!Number.isFinite(resolution) || resolution <= 0) return;
 
     radarAnimations.value.forEach((radar) => {
       if (!radar.visible) return;
-      if (!radar.projectedCoords) return;
 
       const pixel = map.getPixelFromCoordinate(radar.projectedCoords);
-      if (!pixel || !Number.isFinite(pixel[0]) || !Number.isFinite(pixel[1])) return;
+      if (!pixel) return;
 
       const pixelCoords = [pixel[0] * pixelRatio, pixel[1] * pixelRatio];
       drawRadarScan(ctx, radar, pixelCoords, elapsed, pixelRatio, resolution);
     });
+
+    map.render();
   };
 
   /**
@@ -464,55 +446,24 @@ export function useRadarScanAnimation(map) {
   const startAnimationLoop = () => {
     if (!map) return;
 
-    // 如果已经有监听器，不再重复添加
-    if (listenerKeys.value.length > 0) return;
-
-    // 尝试找到 optical-radar 类型的图层
     const layers = map.getLayers().getArray();
     let targetLayer = layers.find(layer => layer.get('type') === 'optical-radar');
 
-    // 如果找不到，尝试找第一个有 source 的图层
     if (!targetLayer) {
-      targetLayer = layers.find(layer => {
-        try {
-          return layer.getSource && layer.getSource();
-        } catch (e) {
-          return false;
-        }
-      });
+      targetLayer = layers.find(layer => layer.getSource && layer.getSource());
     }
 
-    // 优先绑定到图层，如果找不到图层则绑定到地图
     if (targetLayer) {
       const key = targetLayer.on('postrender', handlePostRender);
       listenerKeys.value.push(key);
-    } else {
-      // 直接绑定到地图上，确保动画能够显示
-      const key = map.on('postrender', handlePostRender);
-      listenerKeys.value.push(key);
+      map.render();
     }
-
-    // 启动动画循环，持续触发地图渲染
-    const animate = () => {
-      if (radarAnimations.value.size > 0 && map) {
-        map.render();
-        animationFrameId = requestAnimationFrame(animate);
-      }
-    };
-    animationFrameId = requestAnimationFrame(animate);
   };
 
   /**
    * 停止动画循环
    */
   const stopAnimationLoop = () => {
-    // 取消动画帧
-    if (animationFrameId !== null) {
-      cancelAnimationFrame(animationFrameId);
-      animationFrameId = null;
-    }
-
-    // 移除事件监听器
     listenerKeys.value.forEach((key) => {
       unByKey(key);
     });

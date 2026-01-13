@@ -1,5 +1,6 @@
-import { computed, reactive, ref } from 'vue';
+import { ref, computed, reactive } from 'vue';
 import VectorSource from 'ol/source/Vector';
+import VectorLayer from 'ol/layer/Vector';
 import Heatmap from 'ol/layer/Heatmap';
 import GeoJSON from 'ol/format/GeoJSON';
 import Feature from 'ol/Feature';
@@ -26,8 +27,8 @@ export function useMapHeatmap(mapInstance) {
   /**
    * 创建新的热力图层
    * @param {string} type 图层类型
-   * @param {object} options 图层配置
-   * @returns {object} 图层对象
+   * @param {Object} options 图层配置
+   * @returns {Object} 图层对象
    */
   const createLayer = (type, options = {}) => {
     if (!mapRef.value) {
@@ -110,7 +111,7 @@ export function useMapHeatmap(mapInstance) {
   /**
    * 设置指定图层显示/隐藏
    * @param {string} type 图层类型
-   * @param {boolean} visible 是否显示
+   * @param {Boolean} visible 是否显示
    */
   const setLayerVisible = (type, visible) => {
     const layerInfo = heatmapLayers.get(type);
@@ -154,7 +155,7 @@ export function useMapHeatmap(mapInstance) {
   /**
    * 设置指定图层范围半径
    * @param {string} type 图层类型
-   * @param {number} radius
+   * @param {Number} radius
    */
   const setLayerRadius = (type, radius) => {
     const layerInfo = heatmapLayers.get(type);
@@ -166,7 +167,7 @@ export function useMapHeatmap(mapInstance) {
   /**
    * 设置指定图层范围模糊程度
    * @param {string} type 图层类型
-   * @param {number} blur
+   * @param {Number} blur
    */
   const setLayerBlur = (type, blur) => {
     const layerInfo = heatmapLayers.get(type);
@@ -228,8 +229,8 @@ export function useMapHeatmap(mapInstance) {
   /**
    * 设置指定图层 GeoJSON 数据（Point FeatureCollection）
    * @param {string} type 图层类型
-   * @param {object} geojson FeatureCollection
-   * @param {object} options { dataProjection?: string, featureProjection?: string, weightAttr?: string }
+   * @param {Object} geojson FeatureCollection
+   * @param {Object} options { dataProjection?: string, featureProjection?: string, weightAttr?: string }
    */
   const setLayerGeoJSON = (type, geojson, options = {}) => {
     const layerInfo = heatmapLayers.get(type);
@@ -262,7 +263,7 @@ export function useMapHeatmap(mapInstance) {
   /**
    * 设置指定图层层级
    * @param {string} type 图层类型
-   * @param {number} zIndex
+   * @param {Number} zIndex
    */
   const setLayerZIndex = (type, zIndex) => {
     const layerInfo = heatmapLayers.get(type);
@@ -282,7 +283,7 @@ export function useMapHeatmap(mapInstance) {
   /**
    * 获取指定图层信息
    * @param {string} type 图层类型
-   * @returns {object | null} 图层信息
+   * @returns {Object|null} 图层信息
    */
   const getLayer = (type) => {
     return heatmapLayers.get(type) || null;
@@ -291,7 +292,7 @@ export function useMapHeatmap(mapInstance) {
   /**
    * 检查图层是否存在
    * @param {string} type 图层类型
-   * @returns {boolean}
+   * @returns {Boolean}
    */
   const hasLayer = (type) => {
     return heatmapLayers.has(type);
