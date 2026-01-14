@@ -24,15 +24,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20.x # 替换为你的项目实际使用的 Node 版本（如 18.x）
-          cache: npm # 缓存 npm 依赖，加速后续构建
+          cache: pnpm # 缓存 npm 依赖，加速后续构建
 
       # 步骤3：安装项目依赖
       - name: 安装依赖
-        run: npm install # 若用 pnpm/yarn，替换为 pnpm i / yarn install
+        run: pnpm install # 若用 pnpm/yarn，替换为 pnpm i / yarn install
 
       # 步骤4：代码检查（如 ESLint）
       - name: 代码检查
-        run: npm run lint # 确保 package.json 中有 "lint": "eslint ." 脚本
+        run: pnpm run lint # 确保 package.json 中有 "lint": "eslint ." 脚本
 
       # 步骤5：运行单元测试（如 Jest/Vitest）
       # - name: 单元测试
@@ -50,14 +50,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
-          cache: npm
+          cache: pnpm
 
       - name: 安装依赖
-        run: npm install
+        run: pnpm install
 
       # 步骤：构建项目（生成静态文件，如 dist 目录）
       - name: 构建项目
-        run: npm run build # 确保 package.json 中有 "build": "vue-tsc && vite build" 脚本
+        run: pnpm run build # 确保 package.json 中有 "build": "vue-tsc && vite build" 脚本
 
       # 步骤：将构建结果（dist）上传为“构建产物”，供后续部署任务使用
       - name: 上传构建产物
