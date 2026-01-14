@@ -340,7 +340,7 @@ export function useMapMarkers(map) {
             // anchorYUnits: 'fraction', // 锚点位置（背景中心对齐文本）
             scale: iconScale,
             offset: iconOffset, // 支持精灵图偏移
-            displacement: displacement,
+            // displacement: displacement,
             rotation: rotation || 0, // 弧度
             rotationOrigin: rotationOrigin
           })

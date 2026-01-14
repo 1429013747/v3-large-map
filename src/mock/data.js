@@ -22,7 +22,7 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
           size: [36, 36],
           anchor: [0, 0],
           scale: 0.7,
-          displacement: [13, -13],
+          displacement: [12, -12],
           offset: [36 * (index % 10), 0], // 使用不同的精灵图位置
           borderSize: 25, // 外边框大小
           borderColor: "#ffa502", // 外边框颜色
@@ -349,6 +349,7 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
           isRadar: true
         },
         text: {
+          popupType: 'optical-radar',
           content: coord.name,
           color: '#000000',
           offsetX: 10,
