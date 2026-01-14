@@ -26,6 +26,12 @@ jobs:
           node-version: 20.x # 替换为你的项目实际使用的 Node 版本（如 18.x）
           cache: pnpm # 缓存 npm 依赖，加速后续构建
 
+      - name: Install pnpm # 关键步骤：安装 pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10.20.0 # 指定 pnpm 版本（推荐和本地一致）
+          # 可选：启用 pnpm 缓存，加速依赖安装
+          run_install: false
       # 步骤3：安装项目依赖
       - name: 安装依赖
         run: pnpm install # 若用 pnpm/yarn，替换为 pnpm i / yarn install
