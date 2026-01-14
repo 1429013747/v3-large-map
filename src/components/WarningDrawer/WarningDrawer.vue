@@ -74,9 +74,7 @@ const warnings = ref([
     deliveryTime: "2025.06.12 21:00",
     deliverySystem: "--",
     deliveryArea: "宁波象山县",
-    warningType: "伪造信号",
     name: "船舶123",
-    riskPoint: "手动关联",
     forgeStartTime: "2025-09-01 10:00",
     forgeEndTime: "2025-09-01 12:00",
     appearTime: "2025-09-01 09:00"
