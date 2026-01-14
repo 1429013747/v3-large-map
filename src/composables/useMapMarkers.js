@@ -229,6 +229,24 @@ export function useMapMarkers(map) {
   };
 
   /**
+   * 获取所有Overlay
+   */
+  const getAllOverlays = () => {
+    return overlayList.value;
+  };
+
+  /**
+   * 移除指定id的Overlay
+   */
+  const removeOverlay = (id) => {
+    const overlay = overlayList.value.find((overlay) => overlay.getId() === id);
+    overlayList.value = overlayList.value.filter((overlay) => overlay.getId() !== id);
+    if (overlay) {
+      map.removeOverlay(overlay);
+    }
+  };
+
+  /**
    * 清除所有Overlay
    */
   const clearOverlaysByType = () => {
@@ -950,7 +968,7 @@ export function useMapMarkers(map) {
   const toggleMarkerTextVisibilityByType = (type, visible, markerId) => {
     // 首先通过 options.type 查找
     let markerlist = markers.value.filter((m) => m.options.type === type);
-    
+
     // 如果通过 type 找不到，尝试通过 popupType 查找（用于 risk-point 等场景）
     if (markerlist.length === 0) {
       markerlist = markers.value.filter((m) => {
@@ -958,7 +976,7 @@ export function useMapMarkers(map) {
         return popupType === type;
       });
     }
-    
+
     if (markerlist.length === 0) return;
     markerlist.forEach((marker) => {
       if (markerId) {
@@ -2207,6 +2225,8 @@ export function useMapMarkers(map) {
     pauseTrackAnimation, // 暂停所有轨迹动画
     resumeTrackAnimation, // 恢复所有轨迹动画
     toggleTrackPointOverlays, // 切换轨迹起点和终点 overlay 的显示与隐藏
+    getAllOverlays, // 获取所有Overlay
+    removeOverlay, // 移除指定id的Overlay
     // 通用方法
     destroy,
     trackDestroy,
