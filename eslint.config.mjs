@@ -45,5 +45,5 @@ export default antfu({
     'unused-imports/no-unused-vars': ['off'],
     'no-unused-vars': ['off'],
   },
-  ignores: ['dist/**', 'node_modules/**', 'src/utils/autoScale.js', 'public/**']
+  ignores: ['dist/**', 'node_modules/**', 'src/utils/autoScale.js', 'public/**', '*.d.ts', '**/*.d.ts']
 })
