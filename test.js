@@ -10,3 +10,31 @@ const listTree = [
   { id: 9, pid: 4, label: "9" },
   { id: 10, pid: 5, label: "10" },
 ];
+
+function listToTree(data, parentId = null) {
+  // const nodes = data.filter(item => item.pid === parentId)
+  // return nodes.map(el => {
+  //   const children = listToTree(data, el.id)
+  //   return {
+  //     ...el,
+  //     children
+  //   }
+  // })
+
+  const map = {}
+  const result = []
+  data.forEach(el => {
+    map[el.id] = { ...el, children: [] }
+  })
+  data.forEach(el => {
+    if (el.pid) {
+      map[el.pid].children.push(map[el.id])
+    } else {
+      result.push(map[el.id])
+    }
+  })
+  return result
+}
+
+const data = listToTree(listTree)
+console.log(JSON.stringify(data, null, 2));
