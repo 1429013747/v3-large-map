@@ -17,6 +17,7 @@
     "@vueuse/core": "^12.3.0",
     "ant-design-vue": "^4.1.0",
     "axios": "^1.7.9",
+    "dayjs": "^1.11.19",
     "echarts": "^5.6.0",
     "gm-crypt": "^0.0.2",
     "husky": "^9.1.7",
