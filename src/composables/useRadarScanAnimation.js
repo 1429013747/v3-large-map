@@ -1,4 +1,4 @@
-import { ref, onUnmounted } from 'vue';
+import { onUnmounted, ref } from 'vue';
 import { fromLonLat } from 'ol/proj';
 import { unByKey } from 'ol/Observable';
 
@@ -9,8 +9,8 @@ import { unByKey } from 'ol/Observable';
  * - 半径以米为单位，自动换算为像素，缩放效果与地图一致
  * - 默认半径 1km
  * 
- * @param {Object} map - OpenLayers 地图实例
- * @returns {Object} 雷达动画管理方法
+ * @param {object} map - OpenLayers 地图实例
+ * @returns {object} 雷达动画管理方法
  */
 export function useRadarScanAnimation(map) {
   // 存储所有雷达动画配置
@@ -29,9 +29,9 @@ export function useRadarScanAnimation(map) {
 
   /**
    * 根据地图分辨率将米转换为像素
-   * @param {Number} meters - 米
-   * @param {Number} resolution - 地图分辨率（米/像素，EPSG:3857）
-   * @returns {Number} 像素
+   * @param {number} meters - 米
+   * @param {number} resolution - 地图分辨率（米/像素，EPSG:3857）
+   * @returns {number} 像素
    */
   const metersToPixels = (meters, resolution) => {
     if (!resolution || resolution <= 0) return 0;
@@ -40,9 +40,9 @@ export function useRadarScanAnimation(map) {
 
   /**
    * 添加雷达扫描动画
-   * @param {String} id - 雷达唯一标识
+   * @param {string} id - 雷达唯一标识
    * @param {Array} coordinates - 雷达中心坐标 [经度, 纬度]
-   * @param {Object} options - 动画配置
+   * @param {object} options - 动画配置
    */
   const addRadarAnimation = (id, coordinates, options = {}) => {
     const {
@@ -148,8 +148,8 @@ export function useRadarScanAnimation(map) {
       const radiusPixels = metersToPixels(radar.currentRadiusMeters, resolution);
 
       const distance = Math.sqrt(
-        Math.pow(mousePosition[0] - pixel[0], 2) +
-        Math.pow(mousePosition[1] - pixel[1], 2)
+        (mousePosition[0] - pixel[0]) ** 2 +
+        (mousePosition[1] - pixel[1]) ** 2
       );
 
       if (distance <= radiusPixels) {
@@ -223,11 +223,13 @@ export function useRadarScanAnimation(map) {
 
     // 解析颜色
     const rgbMatch = activeColor.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
-    let r = 0, g = 255, b = 204;
+    let r = 0;
+    let g = 255;
+    let b = 204;
     if (rgbMatch) {
-      r = parseInt(rgbMatch[1], 16);
-      g = parseInt(rgbMatch[2], 16);
-      b = parseInt(rgbMatch[3], 16);
+      r = Number.parseInt(rgbMatch[1], 16);
+      g = Number.parseInt(rgbMatch[2], 16);
+      b = Number.parseInt(rgbMatch[3], 16);
     }
 
     // 1. 底层大范围辉光
