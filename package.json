@@ -12,6 +12,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@ant-design/icons-vue": "^7.0.1",
     "@supermapgis/iclient-mapboxgl": "^11.3.0",
     "@supermapgis/iclient-ol": "^11.3.0",
     "@vueuse/core": "^12.3.0",
