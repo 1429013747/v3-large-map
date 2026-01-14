@@ -66,6 +66,12 @@ const shipEventsPanelVisible = ref(false);
 const keyVesselsPopupRef = ref(null);
 const valueArea = ref([]);
 
+const locationCorrectModalVisible = ref(false);
+const locationConfirmModalVisible = ref(false);
+const currentCorrectMarkerData = ref(null);
+const currentCorrectMarkerId = ref(null);
+const hasConfirmedLocationCorrect = ref(false); // 是否已经确认修改过位置
+
 // 可疑车辆弹窗相关
 const suspiciousVehiclePopupVisible = ref(false);
 const selectedVehicleData = ref({});
@@ -236,6 +242,7 @@ function addClickMarker(event) {
         src: getIconPathMarkIcons("temp_pos"),
         size: [24, 24],
         scale: 0.7,
+        displacement: [-8, 12],
         anchor: [0, 0],
       },
     },
@@ -252,9 +259,17 @@ function onMapClick(event) {
     mapMarkersConfig.removeMarker(clickMarkerId.value);
     clickMarkerId.value = null;
   }
-  if (isGeneratingMarker.value) {
+
+  clickedCoordinate.value = event.lonLat;
+
+  // 检查是否在位置纠偏模式下
+  if (currentCorrectMarkerId.value && !hasConfirmedLocationCorrect.value) {
+    // 位置纠偏模式：添加临时标记点并显示确认框（只有在未确认修改的情况下才弹出）
     addClickMarker(event);
+    locationConfirmModalVisible.value = true;
+    return; // 位置纠偏模式下不处理其他逻辑
   }
+
   clickedCoordinate.value = event.lonLat;
   const features = map.value.getFeaturesAtPixel(event.pixel, {
     layerFilter: (layer) => {
@@ -282,12 +297,6 @@ function onMapClick(event) {
     const markerId = feature.get("id");
     const markerData = feature.getProperties();
 
-    // TODO: 是否需要添加临时标记点
-    if (markerData.popupType === "risk-point") {
-      isGeneratingMarker.value = true;
-    } else {
-      isGeneratingMarker.value = false;
-    }
     if (clickMarkerId.value) {
       mapMarkersConfig.removeMarker(clickMarkerId.value);
       clickMarkerId.value = null;
@@ -527,19 +536,115 @@ function viewMore(markerId) {
 function trackCorrect(markerId) {
   console.log("风险点轨迹纠正:", markerId);
   const markerData = mapMarkersConfig.getMarker(markerId);
-  Modal.confirm({
-    title: "是否确认纠正坐标？",
-    content: "确认后，坐标将纠正为当前点击坐标",
-    centered: true,
-    mask: false,
-    getContainer: ".ui-container",
-    class: "track-correct-modal",
-    onOk: () => {
-      mapMarkersConfig.setMarkerCoordinates(markerId, clickedCoordinate.value);
-      isGeneratingMarker.value = false;
-      mapMarkersConfig.removeMarker(clickMarkerId.value);
-    },
-  });
+  currentCorrectMarkerData.value = markerData;
+  currentCorrectMarkerId.value = markerId;
+  // 重置确认标志，允许新的位置纠偏流程
+  hasConfirmedLocationCorrect.value = true;
+  locationCorrectModalVisible.value = true;
+}
+
+/**
+ * 开始位置纠偏模式 - 点击位置纠偏提示框的确定后进入
+ */
+function handleLocationCorrectStart() {
+  // 关闭提示框
+  locationCorrectModalVisible.value = false;
+
+  // 重置确认标志，允许弹出第二个弹框
+  hasConfirmedLocationCorrect.value = false;
+
+  // 进入位置纠偏模式，设置自定义光标
+  isGeneratingMarker.value = true;
+  // 创建缩放后的光标图标，热点位置在下方中间
+  const iconUrl = new URL(
+    "@/assets/imgs/markIcons/set-point.png",
+    import.meta.url
+  ).href;
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.onload = function () {
+    // 缩放比例：0.7（缩小到70%）
+    const scale = 0.7;
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const scaledWidth = img.width * scale;
+    const scaledHeight = img.height * scale;
+    canvas.width = scaledWidth;
+    canvas.height = scaledHeight;
+
+    // 绘制缩放后的图片
+    ctx.drawImage(img, 0, 0, scaledWidth, scaledHeight);
+
+    // 热点位置：下方中间 (宽度的一半, 高度)
+    const hotspotX = scaledWidth / 2;
+    const hotspotY = scaledHeight;
+
+    // 转换为data URL并设置光标
+    const dataUrl = canvas.toDataURL("image/png");
+    const customCursor = `url("${dataUrl}") ${hotspotX} ${hotspotY}, pointer`;
+    document.body.style.cursor = customCursor;
+  };
+  img.src = iconUrl;
+}
+
+/**
+ * 确认位置纠偏
+ */
+function handleLocationCorrectConfirm() {
+  if (currentCorrectMarkerId.value && clickedCoordinate.value) {
+    mapMarkersConfig.setMarkerCoordinates(
+      currentCorrectMarkerId.value,
+      clickedCoordinate.value
+    );
+    isGeneratingMarker.value = false;
+    mapMarkersConfig.removeMarker(clickMarkerId.value);
+    // 恢复默认光标
+    document.body.style.cursor = "";
+
+    // 标记已确认修改，之后不能再弹出第二个弹框
+    hasConfirmedLocationCorrect.value = true;
+
+    // 关闭确认弹窗
+    locationConfirmModalVisible.value = false;
+    locationCorrectModalVisible.value = false;
+    currentCorrectMarkerData.value = null;
+    currentCorrectMarkerId.value = null;
+    clickedCoordinate.value = null;
+  }
+}
+
+/**
+ * 取消位置修改确认
+ */
+function handleLocationConfirmCancel() {
+  locationConfirmModalVisible.value = false;
+  // 移除临时标记点
+  if (clickMarkerId.value) {
+    mapMarkersConfig.removeMarker(clickMarkerId.value);
+    clickMarkerId.value = null;
+  }
+  clickedCoordinate.value = null;
+}
+
+/**
+ * 取消位置纠偏
+ */
+function handleLocationCorrectCancel() {
+  locationCorrectModalVisible.value = false;
+  locationConfirmModalVisible.value = false;
+  isGeneratingMarker.value = false;
+  // 重置确认标志
+  hasConfirmedLocationCorrect.value = false;
+  // 恢复默认光标
+  document.body.style.cursor = "";
+  // 清理临时标记点
+  if (clickMarkerId.value) {
+    mapMarkersConfig.removeMarker(clickMarkerId.value);
+    clickMarkerId.value = null;
+  }
+  currentCorrectMarkerData.value = null;
+  currentCorrectMarkerId.value = null;
+  clickedCoordinate.value = null;
 }
 /**
  * 查看更多
@@ -555,6 +660,11 @@ function deayModal(markerId) {
   mapMarkersConfig.toggleMarkerBorder(markerId, false);
   mapMarkersConfig.removeMarker(clickMarkerId.value);
   isGeneratingMarker.value = false;
+  hasConfirmedLocationCorrect.value = true;
+  currentCorrectMarkerData.value = null;
+  currentCorrectMarkerId.value = null;
+  clickedCoordinate.value = null;
+  document.body.style.cursor = "";
   document.querySelector(".marker-popup-container").style.display = "none";
 }
 /**
@@ -1394,10 +1504,8 @@ onUnmounted(() => {
             @click="handleWarningClick"
           >
             <div class="warning-title">
-              <div class="warning-title-num">
-                6
-              </div>
-              <img src="@/assets/imgs/text.png" alt="">
+              <div class="warning-title-num">6</div>
+              <img src="@/assets/imgs/text.png" alt="" />
             </div>
             <div class="warning-content">
               <Vue3SeamlessScroll
@@ -1545,7 +1653,7 @@ onUnmounted(() => {
                 :class="{ active: index === activeBottomMenu }"
                 @click="handleBottomMenuClick(index)"
               >
-                <img :src="getIconPath(item.icon)" :alt="`${item.name}图标`">
+                <img :src="getIconPath(item.icon)" :alt="`${item.name}图标`" />
                 {{ item.name }}
               </div>
             </div>
@@ -1642,21 +1750,11 @@ onUnmounted(() => {
                   class="layer-select"
                   @change="handleLayerChange"
                 >
-                  <option value="天地图">
-                    天地图
-                  </option>
-                  <option value="天地图卫星">
-                    天地图卫星
-                  </option>
-                  <option value="高德地图">
-                    高德地图
-                  </option>
-                  <option value="高德卫星">
-                    高德卫星
-                  </option>
-                  <option value="CartoDB">
-                    CartoDB
-                  </option>
+                  <option value="天地图">天地图</option>
+                  <option value="天地图卫星">天地图卫星</option>
+                  <option value="高德地图">高德地图</option>
+                  <option value="高德卫星">高德卫星</option>
+                  <option value="CartoDB">CartoDB</option>
                 </select>
               </div>
 
@@ -1682,6 +1780,76 @@ onUnmounted(() => {
         </div>
       </template>
     </MapLayout>
+
+    <!-- 位置纠偏提示对话框 -->
+    <a-modal
+      v-model:open="locationCorrectModalVisible"
+      :title="null"
+      :footer="null"
+      :mask="false"
+      centered
+      width="440px"
+      get-container=".ui-container"
+      class="location-correct-modal"
+      :z-index="99999"
+    >
+      <div class="location-correct-content">
+        <div class="location-correct-title">位置纠偏提示</div>
+        <div class="location-correct-body"></div>
+        <div class="location-correct-footer">
+          <div class="warning-text">
+            <div>
+              <img
+                src="@/assets/imgs/markIcons/set-point.png"
+                alt="位置纠偏提示"
+              />
+            </div>
+            <span>请在地图处重新标注位置</span>
+          </div>
+          <a-button
+            type="primary"
+            class="confirm-btn"
+            @click="handleLocationCorrectStart"
+          >
+            确定
+          </a-button>
+        </div>
+      </div>
+    </a-modal>
+
+    <!-- 位置修改确认对话框 -->
+    <a-modal
+      v-model:open="locationConfirmModalVisible"
+      :title="null"
+      :footer="null"
+      :mask="false"
+      centered
+      width="400px"
+      get-container=".ui-container"
+      class="location-confirm-modal"
+      :z-index="99999"
+    >
+      <div class="location-confirm-content">
+        <div class="location-confirm-title">确认修改位置</div>
+        <div class="location-confirm-body">
+          <div class="confirm-text">
+            是否确认将标记点位置修改到当前点击位置？
+          </div>
+        </div>
+        <div class="location-confirm-footer">
+          <a-button class="cancel-btn" @click="handleLocationConfirmCancel"
+            >重新标注</a-button
+          >
+          <a-button
+            type="primary"
+            class="confirm-btn"
+            @click="handleLocationCorrectConfirm"
+          >
+            确定
+          </a-button>
+        </div>
+      </div>
+    </a-modal>
   </div>
 </template>
 
