@@ -1155,10 +1155,12 @@ export function useMapMarkers(map) {
 
   /**
    * 分批添加大量标记点
-   * @param {Array} markerList - 标记点列表
-   * @param {number} batchSize - 每批大小
-   * @param {Function} onProgress - 进度回调
-   * @param {Function} onComplete - 完成回调
+   * @param {object} params - 参数对象
+   * @param {Array} params.markerList - 标记点列表
+   * @param {number} params.batchSize - 每批大小
+   * @param {Function} params.onProgress - 进度回调
+   * @param {Function} params.onComplete - 完成回调
+   * @param {boolean} params.isEnableCluster - 是否启用聚合
    */
   const addMarkersBatch = (params) => {
     const { markerList, batchSize, onProgress, onComplete, isEnableCluster } = params;
@@ -1595,6 +1597,7 @@ export function useMapMarkers(map) {
    * @param {string} [options.fillColor] - 填充色，支持 rgba/hex，默认含0.5透明度
    * @param {string} [options.strokeColor] - 边框颜色
    * @param {number} [options.strokeWidth] - 边框宽度
+   * @param {string} [options.type] - 图层类型
    * @returns {Feature|undefined} 返回创建的要素
    */
   const drawFilledPolygonCustom = (
@@ -1677,6 +1680,8 @@ export function useMapMarkers(map) {
    * @param {string} [options.fillColor] - 填充色，支持 rgba/hex，默认含0.5透明度
    * @param {string} [options.strokeColor] - 边框颜色
    * @param {number} [options.strokeWidth] - 边框宽度
+   * @param {string|null} [options.id] - 要素ID
+   * @param {boolean} [options.visible] - 是否可见
    * @returns {Feature|undefined} 返回创建的要素
    */
   const drawSector = (
@@ -1881,8 +1886,13 @@ export function useMapMarkers(map) {
 
   /**
    * 添加指定图层到地图
-   * @param {string} type 图层类型
-   * @param {object} layer 图层对象
+   * @param {object} config - 配置对象
+   * @param {Source} config.source - 图层源
+   * @param {string} config.title - 图层标题
+   * @param {string} config.type - 图层类型
+   * @param {boolean} config.visible - 是否可见
+   * @param {number} config.opacity - 透明度
+   * @param {number} config.zIndex - zIndex
    */
   const addLayerToMap = (config) => {
     if (!map) return;
@@ -2081,7 +2091,7 @@ export function useMapMarkers(map) {
 
   /**
    * 获取地图边界
-   * @returns {object} 地图边界
+   * @returns {object|undefined} 地图边界
    */
   const getMapBounds = () => {
     if (!map) return;

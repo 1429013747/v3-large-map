@@ -130,7 +130,7 @@ export function useMapHeatmap(mapInstance) {
         console.warn('地图容器元素不存在');
         return;
       }
-      
+
       // 使用 try-catch 捕获可能的渲染错误
       layerInfo.layer.setVisible(visible);
       layerInfo.visible = visible;
@@ -291,7 +291,7 @@ export function useMapHeatmap(mapInstance) {
   /**
    * 检查图层是否存在
    * @param {string} type 图层类型
-   * @returns {boolean}
+   * @returns {boolean} 是否存在
    */
   const hasLayer = (type) => {
     return heatmapLayers.has(type);

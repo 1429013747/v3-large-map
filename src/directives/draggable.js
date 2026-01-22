@@ -58,22 +58,41 @@ function setupRemoveListener(targetEl, originalEl) {
 }
 
 /**
- * 查找 Modal 的实际 DOM 元素
+ * 通过 class 名称查找目标元素
  * @param {HTMLElement} el - 指令绑定的元素
- * @param {string} targetClass - 目标元素的 class 名称（可选）
+ * @param {string} targetClass - 目标元素的 class 名称
  * @param {string} containerSelector - 容器选择器（可选）
- * @returns {HTMLElement|null} Modal 的实际 DOM 元素
+ * @returns {HTMLElement|null} 目标 DOM 元素
  */
 function findModalElement(el, targetClass = null, containerSelector = null) {
-  // 如果指定了目标 class，优先使用它
-  if (targetClass) {
-    const classSelector = targetClass.startsWith('.') ? targetClass : `.${targetClass}`;
+  // 必须指定目标 class 才能查找
+  if (!targetClass) {
+    return null;
+  }
 
-    // 方法1: 在指定容器中查找
-    if (containerSelector) {
-      const container = typeof containerSelector === 'string' && containerSelector.startsWith('.')
-        ? document.querySelector(containerSelector)
-        : (containerSelector === 'body' ? document.body : document.querySelector(containerSelector));
+  const classSelector = targetClass.startsWith('.') ? targetClass : `.${targetClass}`;
+
+  // 方法1: 在指定容器中查找
+  if (containerSelector) {
+    const container = typeof containerSelector === 'string' && containerSelector.startsWith('.')
+      ? document.querySelector(containerSelector)
+      : (containerSelector === 'body' ? document.body : document.querySelector(containerSelector));
+
+    if (container) {
+      const targetEl = container.querySelector(classSelector);
+      if (targetEl) {
+        return targetEl;
+      }
+    }
+  }
+
+  // 方法2: 在元素属性指定的容器中查找
+  if (el.getAttribute) {
+    const attrContainerSelector = el.getAttribute('get-container');
+    if (attrContainerSelector) {
+      const container = typeof attrContainerSelector === 'string' && attrContainerSelector.startsWith('.')
+        ? document.querySelector(attrContainerSelector)
+        : (attrContainerSelector === 'body' ? document.body : document.querySelector(attrContainerSelector));
 
       if (container) {
         const targetEl = container.querySelector(classSelector);
@@ -82,76 +101,15 @@ function findModalElement(el, targetClass = null, containerSelector = null) {
         }
       }
     }
-
-    // 方法2: 在元素属性指定的容器中查找
-    if (el.getAttribute) {
-      const attrContainerSelector = el.getAttribute('get-container');
-      if (attrContainerSelector) {
-        const container = typeof attrContainerSelector === 'string' && attrContainerSelector.startsWith('.')
-          ? document.querySelector(attrContainerSelector)
-          : (attrContainerSelector === 'body' ? document.body : document.querySelector(attrContainerSelector));
-
-        if (container) {
-          const targetEl = container.querySelector(classSelector);
-          if (targetEl) {
-            return targetEl;
-          }
-        }
-      }
-    }
-
-    // 方法3: 在整个文档中查找
-    const targetEl = document.querySelector(classSelector);
-    if (targetEl) {
-      return targetEl;
-    }
   }
 
-  // 方法4: 通过容器选择器查找容器，然后在容器中查找（最可靠）
-  const finalContainerSelector = containerSelector || (el.getAttribute ? el.getAttribute('get-container') : null) || '.ui-container';
-  if (finalContainerSelector) {
-    const container = typeof finalContainerSelector === 'string' && finalContainerSelector.startsWith('.')
-      ? document.querySelector(finalContainerSelector)
-      : (finalContainerSelector === 'body' ? document.body : document.querySelector(finalContainerSelector));
-
-    if (container) {
-      // 查找容器内最近的 Modal（通过 class 或最近的 .ant-modal）
-      let modalEl = container.querySelector('.ant-modal');
-
-      // 如果没找到，查找 .ant-modal-wrap 内的 .ant-modal
-      if (!modalEl) {
-        const modalWrap = container.querySelector('.ant-modal-wrap');
-        if (modalWrap) {
-          modalEl = modalWrap.querySelector('.ant-modal');
-        }
-      }
-
-      if (modalEl) {
-        return modalEl;
-      }
-    }
+  // 方法3: 在整个文档中查找
+  const targetEl = document.querySelector(classSelector);
+  if (targetEl) {
+    return targetEl;
   }
 
-  // 方法5: 在元素内部查找
-  let modalEl = el.querySelector?.('.ant-modal');
-  if (modalEl) return modalEl;
-
-  // 方法6: 查找最近的父级或兄弟级 Modal
-  modalEl = el.closest?.('.ant-modal');
-  if (modalEl) return modalEl;
-
-  // 方法7: 在整个文档中查找最近的 Modal（作为最后手段）
-  const allModals = document.querySelectorAll('.ant-modal');
-  if (allModals.length > 0) {
-    // 查找 z-index 最高的 Modal
-    modalEl = Array.from(allModals).sort((a, b) => {
-      const zIndexA = Number.parseInt(window.getComputedStyle(a).zIndex) || 0;
-      const zIndexB = Number.parseInt(window.getComputedStyle(b).zIndex) || 0;
-      return zIndexB - zIndexA; // 返回 z-index 最高的
-    })[0];
-  }
-
-  return modalEl || null;
+  return null;
 }
 
 /**
@@ -276,92 +234,7 @@ function initDraggable(el, binding, instance, vnode) {
     return;
   }
 
-  // 检查是否是 Modal 组件（没有指定 class 的情况）
-  const isModal = el.classList?.contains('modal-container') ||
-    el.tagName === 'A-MODAL' ||
-    (el.__vueParentComponent && el.__vueParentComponent.type?.name === 'AModal') ||
-    (el.getAttribute && el.getAttribute('get-container')) ||
-    (vnode?.props && (vnode.props['get-container'] || vnode.props.getContainer));
-
-  // 如果是 Modal，需要等待渲染并找到实际的 DOM 元素
-  if (isModal) {
-    let retryCount = 0;
-    const maxRetries = 40; // 最多重试 40 次（2秒）
-    let found = false;
-
-    // 获取容器选择器
-    const containerSelector = getContainerSelector(el, vnode);
-
-    // 使用 MutationObserver 监听 DOM 变化
-    const observer = new MutationObserver((mutations, obs) => {
-      if (found) return;
-
-      const modalEl = findModalElement(el, null, containerSelector);
-      if (modalEl) {
-        found = true;
-        obs.disconnect();
-        // 找到 Modal 元素，初始化拖拽
-        initDraggableOnElement(modalEl, binding, el);
-      }
-    });
-
-    // 开始观察
-    const container = typeof containerSelector === 'string' && containerSelector.startsWith('.')
-      ? document.querySelector(containerSelector)
-      : (containerSelector === 'body' ? document.body : document.querySelector(containerSelector));
-
-    if (container) {
-      observer.observe(container, {
-        childList: true,
-        subtree: true
-      });
-    }
-
-    // 同时使用定时器作为备用方案
-    const tryInit = () => {
-      if (found) return;
-
-      const modalEl = findModalElement(el, null, containerSelector);
-      if (modalEl) {
-        found = true;
-        observer.disconnect();
-
-        // 设置移除监听器，在元素被移除前清空样式
-        setupRemoveListener(modalEl, el);
-
-        initDraggableOnElement(modalEl, binding, el);
-      } else if (retryCount++ < maxRetries) {
-        setTimeout(tryInit, 50);
-      } else {
-        observer.disconnect();
-        console.warn('[v-draggable] 无法找到 Modal 元素，已重试', maxRetries, '次');
-        console.warn('[v-draggable] 元素:', el);
-        console.warn('[v-draggable] 容器选择器:', containerSelector);
-        console.warn('[v-draggable] 容器:', container);
-        console.warn('[v-draggable] 所有 Modal:', document.querySelectorAll('.ant-modal'));
-      }
-    };
-
-    // 使用 nextTick 或 Promise 延迟执行
-    const startInit = () => {
-      // 立即尝试一次
-      tryInit();
-    };
-
-    if (instance && instance.$nextTick) {
-      instance.$nextTick(startInit);
-    } else {
-      Promise.resolve().then(() => {
-        setTimeout(startInit, 100);
-      });
-    }
-
-    // 存储 observer 以便清理
-    el._draggableObserver = observer;
-    return;
-  }
-
-  // 普通元素直接初始化
+  // 没有指定 class，直接使用绑定的元素
   initDraggableOnElement(el, binding);
 }
 
@@ -744,25 +617,22 @@ export const vDraggable = {
   },
 
   updated(el, binding, vnode) {
-    // 如果指定了目标 class 或者是 Modal，每次 updated 都尝试重新初始化（因为 Modal 可能刚打开）
+    // 如果指定了目标 class，每次 updated 都尝试重新初始化（因为目标元素可能刚渲染）
     const hasTargetClass = !!binding.arg;
-    const isModal = el.classList?.contains('modal-container') ||
-      el.getAttribute?.('get-container') ||
-      (vnode?.props && (vnode.props['get-container'] || vnode.props.getContainer));
 
-    // 如果已经初始化过，检查目标元素是否还存在（Modal 关闭时会被移除）
+    // 如果已经初始化过，检查目标元素是否还存在
     if (el._draggableTargetEl) {
       const targetEl = el._draggableTargetEl;
       // 检查元素是否还在 DOM 中
       if (!document.contains(targetEl)) {
-        // 元素已被移除（Modal 关闭），清理并重置
+        // 元素已被移除，清理并重置
         cleanupDraggable(targetEl);
         delete el._draggableTargetEl;
       }
       // 注意：如果元素还在 DOM 中，setupRemoveListener 已经设置了监听器来监听移除
     }
 
-    if (hasTargetClass || isModal) {
+    if (hasTargetClass) {
       // 检查是否已经初始化过
       if (!el._draggableTargetEl) {
         const instance = vnode?.ctx || vnode?.componentInstance;
@@ -772,7 +642,7 @@ export const vDraggable = {
       // 如果配置发生变化，重新初始化
       const { value, oldValue } = binding;
       if (value !== oldValue) {
-        // 清理目标元素（可能是 Modal 的实际 DOM）
+        // 清理目标元素
         const targetEl = el._draggableTargetEl || el;
         cleanupDraggable(targetEl);
         if (el._draggableTargetEl) {

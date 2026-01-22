@@ -276,11 +276,13 @@ export function useMapTracks(map) {
 
   /**
    * 开始轨迹路线动画
-   * @param {Feature} trackFeature - 轨迹要素
-   * @param {Array} mapCoordinates - 地图坐标数组
-   * @param {number} animationDuration - 动画持续时间
-   * @param {Array} coordinates - 坐标点数组
-   * @param {string} trackId - 轨迹ID
+   * @param {object} params - 参数对象
+   * @param {Feature} params.trackFeature - 轨迹要素
+   * @param {Array} params.mapCoordinates - 地图坐标数组
+   * @param {number} params.animationDuration - 动画持续时间
+   * @param {Array} params.coordinates - 坐标点数组
+   * @param {string} params.trackId - 轨迹ID
+   * @param {string} params.trackIcon - 轨迹图标
    * @returns {Promise} 动画状态
    */
   const startTrackRouteAnimation = (params) => {
@@ -437,7 +439,7 @@ export function useMapTracks(map) {
     startButton.className = 'track-start-button';
     startButton.textContent = '始';
     startButton.style.cssText = locationName
-? `
+      ? `
       width: 32px;
       height: 32px;
       background-color: #1890ff;
@@ -451,7 +453,7 @@ export function useMapTracks(map) {
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       flex-shrink: 0;
     `
-: `
+      : `
       width: 32px;
       height: 32px;
       background-color: #1890ff;
@@ -649,7 +651,7 @@ export function useMapTracks(map) {
     endButton.className = 'track-end-button';
     endButton.textContent = '终';
     endButton.style.cssText = locationName
-? `
+      ? `
       width: 32px;
       height: 32px;
       background-color: #ff7a00;
@@ -663,7 +665,7 @@ export function useMapTracks(map) {
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       flex-shrink: 0;
     `
-: `
+      : `
       width: 32px;
       height: 32px;
       background-color: #ff7a00;
@@ -979,7 +981,7 @@ export function useMapTracks(map) {
   /**
    * 获取轨迹的当前可见状态
    * @param {string} trackId - 轨迹ID
-   * @returns {boolean} 是否可见
+   * @returns {boolean|undefined} 是否可见
    */
   const getTrackVisibility = (trackId) => {
     if (!trackSource.value) return;
@@ -999,7 +1001,7 @@ export function useMapTracks(map) {
   /**
    * 切换指定轨迹的显示状态
    * @param {string} trackId - 轨迹ID
-   * @returns {boolean} 新的可见状态
+   * @returns {boolean|undefined} 新的可见状态
    */
   const toggleTrackRoute = (trackId) => {
     if (!trackId) return;
