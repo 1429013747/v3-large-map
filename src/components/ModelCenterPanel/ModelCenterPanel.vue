@@ -280,7 +280,8 @@ watch(trendTab, () => {
       <div class="header-section">
         <div class="header-left">
           <span
-            class="model-type" :class="[{ active: modelType === 'provincial' }]"
+            class="model-type"
+            :class="[{ active: modelType === 'provincial' }]"
             @click="modelType = 'provincial'"
           >
             省级模型
@@ -288,7 +289,8 @@ watch(trendTab, () => {
         </div>
         <div class="header-right">
           <span
-            class="model-type" :class="[{ active: modelType === 'personal' }]"
+            class="model-type"
+            :class="[{ active: modelType === 'personal' }]"
             @click="modelType = 'provincial'"
           >
             个性模型
@@ -314,16 +316,14 @@ watch(trendTab, () => {
                 <a-timeline-item
                   v-for="feature in featureList"
                   :key="feature.value"
-                  class="feature-item" :class="[
-                    { active: activeFeature === feature.value },
-                  ]"
+                  class="feature-item"
+                  :class="[{ active: activeFeature === feature.value }]"
                   @click="activeFeature = feature.value"
                 >
                   <template #dot>
                     <div
-                      class="timeline-dot" :class="[
-                        { active: activeFeature === feature.value },
-                      ]"
+                      class="timeline-dot"
+                      :class="[{ active: activeFeature === feature.value }]"
                     />
                   </template>
                   <span class="feature-text">{{ feature.label }}</span>
@@ -467,15 +467,15 @@ watch(trendTab, () => {
                       <span class="section-title">预警趋势</span>
                       <div class="tabs">
                         <span
-                          class="tab-item" :class="[
-                            { active: trendTab === 'month' },
-                          ]"
+                          class="tab-item"
+                          :class="[{ active: trendTab === 'month' }]"
                           @click="trendTab = 'month'"
                         >
                           本月
                         </span>
                         <span
-                          class="tab-item" :class="[{ active: trendTab === 'year' }]"
+                          class="tab-item"
+                          :class="[{ active: trendTab === 'year' }]"
                           @click="trendTab = 'year'"
                         >
                           本年
@@ -507,7 +507,8 @@ watch(trendTab, () => {
                           <tr
                             v-for="(item, index) in warningCountList"
                             :key="index"
-                            class="rank-row" :class="[
+                            class="rank-row"
+                            :class="[
                               { 'rank-1': index === 0 },
                               { 'rank-2': index === 1 },
                               { 'rank-other': index >= 2 },
@@ -532,9 +533,7 @@ watch(trendTab, () => {
         </div>
         <div class="right-section">
           <div class="frequency-warning-panel">
-            <div class="panel-title">
-              高频预警模型
-            </div>
+            <div class="panel-title">高频预警模型</div>
             <div class="frequency-models">
               <div
                 v-for="model in frequencyModels"
@@ -957,6 +956,7 @@ watch(trendTab, () => {
             .tabs {
               display: flex;
               gap: 16px;
+              height: 30px;
 
               .tab-item {
                 padding: 6px 16px;
