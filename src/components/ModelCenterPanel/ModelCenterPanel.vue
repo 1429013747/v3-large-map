@@ -823,7 +823,7 @@ watch(trendTab, () => {
 
         .model-description {
           font-size: 14px;
-          height: 300px;
+          height: 280px;
           line-height: 1.8;
           padding-right: 10px;
           overflow-y: auto;
@@ -930,6 +930,7 @@ watch(trendTab, () => {
       .result-bottom {
         display: flex;
         gap: 0;
+        margin-top: 10px;
 
         .warning-trend-section {
           flex: 1;
