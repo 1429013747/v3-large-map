@@ -675,6 +675,7 @@ watch(trendTab, () => {
     .process {
       padding: 20px;
       height: 100%;
+      flex: 0.18;
 
       :deep(.ant-timeline) {
         margin: 0;
@@ -763,7 +764,7 @@ watch(trendTab, () => {
       }
     }
     .result {
-      flex: 1;
+      flex: 0.82;
       display: flex;
       flex-direction: column;
       gap: 20px;
