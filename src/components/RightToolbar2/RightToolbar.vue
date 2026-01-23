@@ -4,9 +4,8 @@
  * @since: 2025-09-27
 -->
 <script setup>
-import { ref, inject, onMounted, computed } from "vue";
 import { useDefaultConfigStore } from "@/stores/defaultConfig";
-
+import { onMounted, ref } from "vue";
 // 定义emit事件
 const emit = defineEmits([
   "layer-control",
@@ -23,8 +22,7 @@ const emit = defineEmits([
   "locate",
   "zoom-in",
   "zoom-out",
-  "toggle",
-  "model-center",
+  "toggle"
 ]);
 const defaultConfigStore = useDefaultConfigStore();
 const loginUser = computed(() => defaultConfigStore.getLoginUser);
@@ -34,8 +32,8 @@ const activeTool = ref(null);
 // 工具栏显示状态
 const isVisible = ref(true);
 
-// 弹出菜单显示状态
-const isPopupVisible = ref(false);
+// 是否展开
+const isExpanded = ref(false);
 
 // 工具栏项目配置
 const toolbarItems = ref([
@@ -43,72 +41,53 @@ const toolbarItems = ref([
     id: "layer-control",
     label: "控制图层",
     icon: "layers",
-    emit: "layer-control",
-    active: false,
+    emit: "layer-control"
   },
   {
     id: "legend-display",
     label: "图例展示",
     icon: "legend",
-    emit: "legend-display",
-    active: false,
+    emit: "legend-display"
   },
   {
     id: "ship-events",
     label: "船舶事件",
     icon: "ship",
     handler: "handleShipEvents",
-    emit: "ship-events",
-    active: false,
+    emit: "ship-events"
   },
   {
     id: "comprehensive-search",
     label: "综合检索",
     icon: "search-comprehensive",
-    emit: "comprehensive-search",
-    active: false,
+    emit: "comprehensive-search"
   },
   {
     id: "track-query",
     label: "轨迹查询",
     icon: "track-search",
-    emit: "track-query",
-    active: false,
+    emit: "track-query"
   },
   {
     id: "gang-vehicle-query",
     label: "团伙车辆查询",
     icon: "group-car",
-    emit: "gang-vehicle-query",
-    active: false,
+    emit: "gang-vehicle-query"
   },
   {
     id: "tide-query",
     label: "潮汐查询",
     icon: "tide-search",
-    emit: "tide-query",
-    active: false,
-  },
-  {
-    id: "model-center",
-    label: "模型中心",
-    icon: "model-center",
-    emit: "model-center",
-    active: false,
-  },
+    emit: "tide-query"
+  }
 ]);
 
 // 事件处理函数
 
 function handleToolbarItemClick(item) {
   console.log("工具栏项目被点击:", item);
-  if (!item.active) {
-    toolbarItems.value.forEach((item) => {
-      item.active = false;
-    });
-  }
   // 切换激活状态
-  item.active = !item.active;
+  activeTool.value = item.id;
   // 可以触发对应面板的显示
   emit(item.emit);
 }
@@ -116,40 +95,41 @@ function handleToolbarItemClick(item) {
 function handleMeasureDistance() {
   console.log("测距");
   emit("measure-distance");
-  handleClosePopup();
 }
 
 function handleMeasureArea() {
   console.log("测面");
   emit("measure-area");
-  handleClosePopup();
 }
 
 function handlePlotting() {
   console.log("标绘");
   emit("plotting");
-  handleClosePopup();
 }
 
 function handleClear() {
   console.log("清空");
   emit("clear");
-  handleClosePopup();
 }
 
 function handleLocate() {
   console.log("定位");
   // 可以定位到当前位置或指定位置
   emit("locate");
-  handleClosePopup();
 }
 
-function handleTogglePopup() {
-  isPopupVisible.value = !isPopupVisible.value;
+function handleZoomIn() {
+  console.log("放大");
+  emit("zoom-in");
 }
 
-function handleClosePopup() {
-  isPopupVisible.value = false;
+function handleZoomOut() {
+  console.log("缩小");
+  emit("zoom-out");
+}
+
+function handleToggleExpand() {
+  isExpanded.value = !isExpanded.value;
 }
 
 function handleToggle() {
@@ -157,27 +137,19 @@ function handleToggle() {
   console.log("工具栏显示状态:", isVisible.value ? "显示" : "隐藏");
 }
 
-function onClose({ id }) {
-  toolbarItems.value.forEach((item) => {
-    if (item.id === id) {
-      item.active = false;
-    }
-  });
-}
-
 onMounted(async () => {});
-
-defineExpose({
-  onClose,
-});
 </script>
 
 <template>
   <div class="right-toolbar-container">
     <!-- toggle按钮 -->
-    <!-- <div class="toggle-btn" :class="{ collapsed: !isVisible }" @click="handleToggle">
-      <img src="@/assets/imgs/toggle-icon.png" alt="toggle" />
-    </div> -->
+    <div
+      class="toggle-btn"
+      :class="{ collapsed: !isVisible }"
+      @click="handleToggle"
+    >
+      <img src="@/assets/imgs/toggle-icon.png" alt="toggle">
+    </div>
     <div class="right-toolbar" :class="{ collapsed: !isVisible }">
       <!-- 工具栏项目循环 -->
       <div class="toolbar-group">
@@ -185,14 +157,12 @@ defineExpose({
           v-for="item in toolbarItems"
           :key="item.id"
           class="toolbar-item"
-          :class="{ active: item.active }"
+          :class="{ active: activeTool === item.id }"
           @click="handleToolbarItemClick(item)"
         >
-          <div class="toolbar-icon-container">
-            <div class="toolbar-icon" :class="`${item.icon}-icon`">
-              <div v-if="item.nums > 0" class="badge">
-                {{ item.nums > 99 ? "99+" : item.nums }}
-              </div>
+          <div class="toolbar-icon" :class="`${item.icon}-icon`">
+            <div v-if="item.nums > 0" class="badge">
+              {{ item.nums }}
             </div>
           </div>
           <div class="toolbar-label">
@@ -202,84 +172,93 @@ defineExpose({
       </div>
 
       <!-- 分割线 -->
-      <!-- <div class="divider"></div> -->
-      <!-- 工具栏触发按钮 -->
-      <div class="toolbar-trigger" @click.stop="handleTogglePopup">
-        <div class="toolbar-icon-container">
-          <div class="toolbar-icon">
-            <img
-              v-if="isPopupVisible"
-              src="@/assets/imgs/ruler-a.png"
-              alt="toolbar"
-            >
-            <img v-else src="@/assets/imgs/ruler.png" alt="toolbar">
+      <div class="divider" />
+      <div class="toolbar-item-group">
+        <div class="toolbar-item-group-inner" :class="{ expanded: isExpanded }">
+          <!-- 测距 -->
+          <div
+            class="toolbar-item"
+            style="width: 100%"
+            @click="handleMeasureDistance"
+          >
+            <div class="toolbar-icon">
+              <!-- <div class="measure-distance-icon"></div> -->
+              <img src="@/assets/imgs/ruler-a.png" alt="measure">
+            </div>
+            <div class="toolbar-label">
+              测距
+            </div>
+          </div>
+
+          <!-- 测面 -->
+          <div class="toolbar-item" @click="handleMeasureArea">
+            <div class="toolbar-icon">
+              <!-- <div class="measure-area-icon"></div> -->
+              <img src="@/assets/imgs/area-a.png" alt="measure">
+            </div>
+            <div class="toolbar-label">
+              测面
+            </div>
+          </div>
+
+          <!-- 标绘 -->
+          <div class="toolbar-item" @click="handlePlotting">
+            <div class="toolbar-icon">
+              <!-- <div class="plotting-icon"></div> -->
+              <img src="@/assets/imgs/draw-mark-a.png" alt="measure">
+            </div>
+            <div class="toolbar-label">
+              标绘
+            </div>
+          </div>
+
+          <!-- 清空 -->
+          <div class="toolbar-item" @click="handleClear">
+            <div class="toolbar-icon">
+              <!-- <div class="clear-icon"></div> -->
+              <img src="@/assets/imgs/clear-a.png" alt="measure">
+            </div>
+            <div class="toolbar-label">
+              清空
+            </div>
+          </div>
+
+          <!-- 定位 -->
+          <div class="toolbar-item active" @click="handleLocate">
+            <div class="toolbar-icon">
+              <!-- <div class="locate-icon"></div> -->
+              <img src="@/assets/imgs/dw-a.png" alt="measure">
+            </div>
+            <div class="toolbar-label">
+              定位
+            </div>
           </div>
         </div>
-        <div class="toolbar-label" :class="{ active: isPopupVisible }">
-          工具栏
+        <div
+          class="toolbar-item-group-inner-expand"
+          :class="{ expanded: isExpanded }"
+          @click="handleToggleExpand"
+        >
+          <img src="@/assets/imgs/toggle.png" alt="">
         </div>
       </div>
 
-      <!-- 弹出菜单 -->
-      <Teleport to="body">
-        <div
-          v-if="isPopupVisible"
-          class="popup-overlay"
-          @click="handleClosePopup"
-        >
-          <div class="popup-menu" @click.stop>
-            <!-- 测距 -->
-            <div class="popup-menu-item" @click="handleMeasureDistance">
-              <div class="popup-menu-icon">
-                <img src="@/assets/imgs/rule.png" alt="measure">
-              </div>
-              <div class="popup-menu-label">
-                测距
-              </div>
-            </div>
+      <!-- 分割线 -->
+      <div class="divider" />
 
-            <!-- 测面 -->
-            <div class="popup-menu-item" @click="handleMeasureArea">
-              <div class="popup-menu-icon">
-                <img src="@/assets/imgs/rectangle.png" alt="measure">
-              </div>
-              <div class="popup-menu-label">
-                测面
-              </div>
-            </div>
-
-            <!-- 标绘 -->
-            <div class="popup-menu-item" @click="handlePlotting">
-              <div class="popup-menu-icon">
-                <img src="@/assets/imgs/draw-mark2.png" alt="measure">
-              </div>
-              <div class="popup-menu-label">
-                标绘
-              </div>
-            </div>
-
-            <!-- 清空 -->
-            <div class="popup-menu-item" @click="handleClear">
-              <div class="popup-menu-icon">
-                <img src="@/assets/imgs/clear2.png" alt="measure">
-              </div>
-              <div class="popup-menu-label">
-                清空
-              </div>
-            </div>
-
-            <!-- 定位 -->
-            <div class="popup-menu-item active" @click="handleLocate">
-              <div class="popup-menu-icon">
-                <img src="@/assets/imgs/los.png" alt="measure">
-              </div>
-              <div class="popup-menu-label">
-                定位
-              </div>
-            </div>
+      <!-- 缩放控制 -->
+      <div class="zoom-controls">
+        <div class="zoom-btn" @click="handleZoomIn">
+          <div class="zoom-plus">
+            +
           </div>
         </div>
-      </Teleport>
+        <div class="zoom-btn" @click="handleZoomOut">
+          <div class="zoom-minus">
+            -
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -290,13 +269,11 @@ defineExpose({
   right: 0px;
   bottom: 0px;
   width: 90px;
-  // height: 100%;
-  z-index: 9999;
-
+  height: 100%;
+  z-index: 999;
   & * {
     user-select: none;
   }
-
   .toggle-btn {
     position: absolute;
     top: 50%;
@@ -306,24 +283,24 @@ defineExpose({
     z-index: 1001;
     pointer-events: auto;
     transition: all 0.3s ease;
-
     img {
       height: 100px;
       object-fit: cover;
     }
-
     &.collapsed {
       transform: translate(470%, -50%);
     }
   }
 }
-
 .right-toolbar {
   position: fixed;
-  right: 5px;
-  bottom: 10%;
+  right: 0px;
+  bottom: 0px;
   width: 90px;
+  height: 100%;
+  background: #131d2c;
   padding: 16px 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -339,9 +316,14 @@ defineExpose({
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 18px 8px;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
+  }
+  .toolbar-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
   }
 
   .toolbar-group {
@@ -350,54 +332,129 @@ defineExpose({
     width: 100%;
     gap: 4px;
   }
-
-  .toolbar-trigger {
+  .toolbar-item-group {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    width: 100%;
-  }
-
-  .toolbar-icon-container {
-    width: 60px;
-    height: 60px;
-    background: url("@/assets/imgs/menu2-bg.png") no-repeat center center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    .toolbar-icon {
-      position: relative;
-      width: 30px;
-      height: 30px;
+    justify-content: flex-end;
+    height: 100%;
+    .toolbar-item-group-inner {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      margin-bottom: 4px;
+      width: 100%;
+      gap: 6px;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
 
+      &.expanded {
+        max-height: 500px;
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      .toolbar-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 4px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        width: 100%;
+        opacity: 0;
+        transform: translateY(150px);
+
+        &:nth-child(1) {
+          transition-delay: 0.1s;
+        }
+        &:nth-child(2) {
+          transition-delay: 0.15s;
+        }
+        &:nth-child(3) {
+          transition-delay: 0.2s;
+        }
+        &:nth-child(4) {
+          transition-delay: 0.25s;
+        }
+        &:nth-child(5) {
+          transition-delay: 0.3s;
+        }
+      }
+
+      &.expanded .toolbar-item {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .toolbar-label {
+        font-size: 12px;
+        color: #0ccef1;
+        text-align: center;
+        line-height: 1.2;
+        font-weight: 500;
+      }
+    }
+    .toolbar-item-group-inner-expand {
+      cursor: pointer;
+      align-self: flex-end;
+      padding: 8px;
+      color: #0ccef1;
+      font-size: 12px;
+      transition: all 0.3s ease;
+      border-radius: 4px;
+      margin: 20px 0 -10px 0;
       img {
-        height: 30px;
-        object-fit: cover;
+        object-fit: contain;
+      }
+
+      &:hover {
+        background: rgba(12, 206, 241, 0.1);
+        transform: scale(1.05);
+      }
+
+      &::after {
+        content: "";
+        display: inline-block;
+        margin-left: 4px;
+        width: 0;
+        height: 0;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 4px solid #0ccef1;
+        transition: transform 0.3s ease;
+      }
+
+      &.expanded::after {
+        transform: rotate(180deg);
       }
     }
   }
 
+  .toolbar-icon {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+    img {
+      height: 24px;
+      object-fit: cover;
+    }
+  }
+
   .toolbar-label {
-    font-size: 14px;
+    font-size: 12px;
     color: #ffffff;
     text-align: center;
-    max-width: 80px;
     line-height: 1.2;
     font-weight: 500;
-    background-color: rgba(0, 0, 0, 0.3);
-    padding: 2px 6px;
-    margin: 4px 0;
-    &.active {
-      color: #0ccef1;
-    }
   }
 
   .active .toolbar-label {
@@ -519,7 +576,6 @@ defineExpose({
     bottom: 2px;
     right: 2px;
   }
-
   .vehicle-icon {
     width: 20px;
     height: 12px;
@@ -760,7 +816,6 @@ defineExpose({
   .zoom-plus {
     font-size: 24px;
   }
-
   // 新增：工具栏项目图标样式
   .layers-icon,
   .legend-icon,
@@ -780,7 +835,6 @@ defineExpose({
   .layers-icon {
     background: url("@/assets/imgs/layers.png") no-repeat center center;
   }
-
   .toolbar-item.active .layers-icon {
     background: url("@/assets/imgs/layers-a.png") no-repeat center center;
   }
@@ -789,7 +843,6 @@ defineExpose({
   .legend-icon {
     background: url("@/assets/imgs/legend.png") no-repeat center center;
   }
-
   .toolbar-item.active .legend-icon {
     background: url("@/assets/imgs/legend-a.png") no-repeat center center;
   }
@@ -798,7 +851,6 @@ defineExpose({
   .ship-icon {
     background: url("@/assets/imgs/ship.png") no-repeat center center;
   }
-
   .toolbar-item.active .ship-icon {
     background: url("@/assets/imgs/ship-a.png") no-repeat center center;
   }
@@ -808,7 +860,6 @@ defineExpose({
     background: url("@/assets/imgs/search-comprehensive.png") no-repeat center
       center;
   }
-
   .toolbar-item.active .search-comprehensive-icon {
     background: url("@/assets/imgs/search-comprehensive-a.png") no-repeat center
       center;
@@ -818,7 +869,6 @@ defineExpose({
   .track-search-icon {
     background: url("@/assets/imgs/track-search.png") no-repeat center center;
   }
-
   .toolbar-item.active .track-search-icon {
     background: url("@/assets/imgs/track-search-a.png") no-repeat center center;
   }
@@ -827,7 +877,6 @@ defineExpose({
   .group-car-icon {
     background: url("@/assets/imgs/group-car.png") no-repeat center center;
   }
-
   .toolbar-item.active .group-car-icon {
     background: url("@/assets/imgs/group-car-a.png") no-repeat center center;
   }
@@ -836,108 +885,8 @@ defineExpose({
   .tide-search-icon {
     background: url("@/assets/imgs/tide-search.png") no-repeat center center;
   }
-
   .toolbar-item.active .tide-search-icon {
     background: url("@/assets/imgs/tide-search-a.png") no-repeat center center;
   }
-
-  // 模型中心图标
-  .model-center-icon {
-    background: url("@/assets/imgs/tide-search.png") no-repeat center center;
-  }
-
-  .toolbar-item.active .model-center-icon {
-    background: url("@/assets/imgs/tide-search-a.png") no-repeat center center;
-  }
-}
-
-// 弹出菜单样式
-.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 10000;
-  background: rgba(0, 0, 0, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.popup-menu {
-  position: fixed;
-  right: 90px;
-  bottom: 10%;
-  transform: translateY(-50%);
-  background: rgba(32, 47, 66, 0.9);
-  border: 1px solid rgba(12, 206, 241, 0.3);
-  border-radius: 8px;
-  padding: 12px 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 120px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 10001;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-50%) translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(-50%) translateX(0);
-  }
-}
-
-.popup-menu-item {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border-radius: 6px;
-  position: relative;
-
-  &:hover {
-    background: rgba(12, 206, 241, 0.15);
-  }
-}
-
-.popup-menu-icon {
-  position: relative;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 10px;
-
-  img {
-    height: 20px;
-    object-fit: cover;
-  }
-}
-
-.popup-menu-label {
-  font-size: 12px;
-  color: #ffffff;
-  text-align: center;
-  line-height: 1.2;
-  font-weight: 500;
 }
 </style>

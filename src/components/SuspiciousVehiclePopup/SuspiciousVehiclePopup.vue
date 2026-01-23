@@ -8,7 +8,7 @@ import {
   StarFilled,
   StarOutlined,
 } from "@ant-design/icons-vue";
-import { computed, defineOptions, ref } from "vue";
+import { computed, ref } from "vue";
 import AddVehicleModal from "./components/AddVehicleModal.vue";
 import VehicleDetailModal from "./components/VehicleDetailModal.vue";
 

@@ -62,6 +62,7 @@ const trackQueryPanelVisible = ref(false);
 const tideQueryPanelVisible = ref(false);
 const warningInfoVisible = ref(true);
 const shipEventsPanelVisible = ref(false);
+const modelCenterVisible = ref(false);
 const keyVesselsPopupRef = ref(null);
 const valueArea = ref([]);
 
@@ -110,6 +111,8 @@ const riskTyes = [
 
 // 标绘面板引用
 const plotPanelRef = ref(null);
+// 右侧工具栏引用
+const rightToolbarRef = ref(null);
 
 let mapMarkersConfig = {};
 let heatmapConfig = {};
@@ -1083,51 +1086,57 @@ function showViewPanel(panel) {
   trackQueryPanelVisible.value = false;
   gangVehicleQueryPanelVisible.value = false;
   tideQueryPanelVisible.value = false;
+  modelCenterVisible.value = false;
 }
 
 // 工具栏事件处理函数
 function handleToolbarLayerControl() {
   console.log("工具栏：控制图层");
-  showViewPanel();
-  layerControlVisible.value = true;
+  !layerControlVisible.value && showViewPanel();
+  layerControlVisible.value = !layerControlVisible.value;
 }
 
 function handleToolbarLegendDisplay() {
   console.log("工具栏：图例展示");
   // 可以显示图例面板
-  showViewPanel();
-  legendPanelVisible.value = true;
+  !legendPanelVisible.value && showViewPanel();
+  legendPanelVisible.value = !legendPanelVisible.value;
 }
 
 function handleToolbarShipEvents() {
   console.log("工具栏：船舶事件");
   // 可以显示船舶事件面板
-  showViewPanel();
-  shipEventsPanelVisible.value = true;
+  !shipEventsPanelVisible.value && showViewPanel();
+  shipEventsPanelVisible.value = !shipEventsPanelVisible.value;
 }
 
 function handleToolbarComprehensiveSearch() {
   console.log("工具栏：综合检索");
-  showViewPanel();
-  comprehensiveSearchVisible.value = true;
+  !comprehensiveSearchVisible.value && showViewPanel();
+  comprehensiveSearchVisible.value = !comprehensiveSearchVisible.value;
 }
 
 function handleToolbarTrackQuery() {
   console.log("工具栏：轨迹查询");
-  showViewPanel();
-  trackQueryPanelVisible.value = true;
+  !trackQueryPanelVisible.value && showViewPanel();
+  trackQueryPanelVisible.value = !trackQueryPanelVisible.value;
 }
 
 function handleToolbarGangVehicleQuery() {
   console.log("工具栏：团伙车辆查询");
-  showViewPanel();
-  gangVehicleQueryPanelVisible.value = true;
+  !gangVehicleQueryPanelVisible.value && showViewPanel();
+  gangVehicleQueryPanelVisible.value = !gangVehicleQueryPanelVisible.value;
 }
 
 function handleToolbarTideQuery() {
   console.log("工具栏：潮汐查询");
-  showViewPanel();
-  tideQueryPanelVisible.value = true;
+  !tideQueryPanelVisible.value && showViewPanel();
+  tideQueryPanelVisible.value = !tideQueryPanelVisible.value;
+}
+function handleToolbarModelCenter() {
+  console.log("工具栏：模型中心");
+  !modelCenterVisible.value && showViewPanel();
+  modelCenterVisible.value = !modelCenterVisible.value;
 }
 
 function handleKeyPersonnelClose() {
@@ -1539,6 +1548,7 @@ onUnmounted(() => {
           />
           <!-- 右侧工具栏 -->
           <RightToolbar
+            ref="rightToolbarRef"
             @layer-control="handleToolbarLayerControl"
             @legend-display="handleToolbarLegendDisplay"
             @ship-events="handleToolbarShipEvents"
@@ -1553,6 +1563,7 @@ onUnmounted(() => {
             @locate="handleToolbarLocate"
             @zoom-in="handleToolbarZoomIn"
             @zoom-out="handleToolbarZoomOut"
+            @model-center="handleToolbarModelCenter"
           />
 
           <!-- 应急标绘面板 -->
@@ -1572,27 +1583,47 @@ onUnmounted(() => {
             :sensing-devices="sensingDevices"
             :heatmaps="heatmaps"
             @layer-toggle="handleLayerToggle"
+            @closed="rightToolbarRef?.onClose({ id: 'layer-control' })"
           />
 
           <!-- 图例面板 -->
-          <LegendPanel v-model:open="legendPanelVisible" />
+          <LegendPanel
+            v-model:open="legendPanelVisible"
+            @closed="rightToolbarRef?.onClose({ id: 'legend-display' })"
+          />
           <!-- 综合检索面板 -->
-          <ComprehensiveSearchPanel v-model:open="comprehensiveSearchVisible" />
+          <ComprehensiveSearchPanel
+            v-model:open="comprehensiveSearchVisible"
+            @closed="rightToolbarRef?.onClose({ id: 'comprehensive-search' })"
+          />
 
           <!-- 船舶事件面板 -->
-          <ShipEventsPanel v-model:open="shipEventsPanelVisible" />
+          <ShipEventsPanel
+            v-model:open="shipEventsPanelVisible"
+            @closed="rightToolbarRef?.onClose({ id: 'ship-events' })"
+          />
 
           <!-- 轨迹查询面板 -->
           <TrackQueryPanel
             v-model:open="trackQueryPanelVisible"
             :map-markers-config="mapMarkersConfig"
+            @closed="rightToolbarRef?.onClose({ id: 'track-query' })"
           />
 
           <!-- 团伙车辆查询面板 -->
           <GangVehicleQueryPanel v-model:open="gangVehicleQueryPanelVisible" />
 
           <!-- 潮汐查询面板 -->
-          <TideQueryPanel v-model:open="tideQueryPanelVisible" />
+          <TideQueryPanel
+            v-model:open="tideQueryPanelVisible"
+            @closed="rightToolbarRef?.onClose({ id: 'track-query' })"
+          />
+
+          <!-- 模型中心面板 -->
+          <ModelCenterPanel
+            v-model:open="modelCenterVisible"
+            @closed="rightToolbarRef?.onClose({ id: 'model-center' })"
+          />
 
           <!-- 可疑车辆弹窗 -->
           <SuspiciousVehiclePopup

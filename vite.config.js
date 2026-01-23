@@ -14,7 +14,7 @@ import svgLoader from 'vite-svg-loader'
 export default defineConfig(({ mode }) => {
   // 根据当前工作目录中的 `mode` 加载 .env 文件
   // 设置第三个参数为 '' 来加载所有环境变量，而不管是否有 `VITE_` 前缀。
-   
+
   const env = loadEnv(mode, process.cwd(), '')
 
   return {
@@ -115,8 +115,6 @@ export default defineConfig(({ mode }) => {
       preprocessorOptions: {
         scss: {
           additionalData: `
-          @use "@/styles/variables.scss" as *;
-          @use "@/styles/measure.scss" as *;
           @use "@/styles/ship-context-menu.scss" as *;
           @use "@/styles/layer-control.scss" as *;
           @use "@/styles/ship-popup.scss" as *;
