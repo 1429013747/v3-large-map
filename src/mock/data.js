@@ -140,7 +140,7 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
       useTypeLayer: useTypeLayer.value,
       style: {
         icon: {
-          src: getIconPathMarkIcons("icon16"),
+          src: getIconPathMarkIcons("icon17"),
           size: [30, 30],
           anchor: [0, 0],
           scale: 1,
@@ -318,7 +318,7 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
 
   setTimeout(() => {
     mapMarkersConfig.clearOverlaysByType();
-  }, 5000);
+  }, 8000);
   window.closeWarnMarker = function (e) {
     e.stopPropagation();
     e.target.parentElement.parentElement.style.display = "none";
