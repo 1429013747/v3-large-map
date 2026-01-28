@@ -533,7 +533,9 @@ watch(trendTab, () => {
         </div>
         <div class="right-section">
           <div class="frequency-warning-panel">
-            <div class="panel-title">高频预警模型</div>
+            <div class="panel-title">
+              高频预警模型
+            </div>
             <div class="frequency-models">
               <div
                 v-for="model in frequencyModels"

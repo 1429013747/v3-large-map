@@ -12,8 +12,8 @@ const listTree = [
 ];
 
 function listToTree(data, parentId = null) {
-  // const nodes = data.filter(item => item.pid === parentId)
-  // return nodes.map(el => {
+  // const parentNodes = data.filter(el => el.pid === parentId)
+  // return parentNodes.map(el => {
   //   const children = listToTree(data, el.id)
   //   return {
   //     ...el,
@@ -21,16 +21,17 @@ function listToTree(data, parentId = null) {
   //   }
   // })
 
-  const map = {}
+  const listMap = {}
   const result = []
   data.forEach(el => {
-    map[el.id] = { ...el, children: [] }
+    listMap[el.id] = { ...el, children: [] }
   })
+
   data.forEach(el => {
     if (el.pid) {
-      map[el.pid].children.push(map[el.id])
+      listMap[el.pid].children.push(listMap[el.id])
     } else {
-      result.push(map[el.id])
+      result.push(listMap[el.id])
     }
   })
   return result
