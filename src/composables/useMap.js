@@ -234,7 +234,7 @@ export function useMap(options = {}) {
 
     // 地图渲染完成事件
     map.value.on("rendercomplete", () => {
-      console.log("地图渲染完成");
+      // console.log("地图渲染完成");
       if (callbacks.onMapRenderComplete) {
         callbacks.onMapRenderComplete();
       }
