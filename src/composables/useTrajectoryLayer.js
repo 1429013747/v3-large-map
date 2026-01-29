@@ -44,7 +44,7 @@ import TrajectoryPointPopup from '@/pops/TrajectoryPointPopup.vue'
  *
  * 初始化选项：
  * gjTrajectoryLayer.updateData(trajectoryData, {
- *renderTrackPoints: true,
+ * renderTrackPoints: true,
   // 轨迹点标签函数
   trackPointLabel: (data) => dayjs(data.pointTime).format('HH:mm'),
   // 最小显示缩放级别（默认 15，放大到该级别才显示标签）
@@ -87,39 +87,21 @@ import TrajectoryPointPopup from '@/pops/TrajectoryPointPopup.vue'
  *   }
  * })
  *
- * // 3. 手动控制播放
+ * // 3. 手动控制播放（开始 / 暂停 / 继续 / 速度）
  * const trajectoryLayer = useTrajectoryLayer()
  * trajectoryLayer.init(map, { enableTrajectoryPlayback: true })
  * trajectoryLayer.updateData(data)
- * trajectoryLayer.startAnimation(0)  // 播放第一条轨迹
- * trajectoryLayer.stopAnimation()
- * trajectoryLayer.resetAnimation()
+ * trajectoryLayer.startAnimation(0)   // 开始：从第一条轨迹播放
+ * trajectoryLayer.pauseAnimation()  // 暂停（保留进度）
+ * trajectoryLayer.resumeAnimation() // 继续播放
+ * trajectoryLayer.stopAnimation()   // 停止（不保留进度）
+ * trajectoryLayer.setPlaybackSpeed(2) // 播放速度：2 倍速（可播放中修改）
+ * trajectoryLayer.resetAnimation()  // 重置到起点
  *
  * // 4. 通过 id 控制单条轨迹显示/隐藏
  * trajectoryLayer.showById('track-001')
  * trajectoryLayer.hideById('track-001')
  * trajectoryLayer.toggleById('track-001')
- *
- *   初始化轨迹图层示例：
-  ```javascript
-  gjTrajectoryLayer = useTrajectoryLayer();
-  gjTrajectoryLayer.init(map.value, {
-    hoverContent: null, // 使用默认的 TrajectoryPointPopup 组件
-    enableTrajectoryPlayback: true,
- 
-    playbackOptions: {
-      icon: new URL('@/assets/icons/trajectory-moving.svg', import.meta.url).href,
-      iconScale: 0.66,
-      totalSteps: 1000,
-      fixedSpeed: 1, // GPS 轨迹播放速度调快（3公里/秒）
-      speedMultiplier: 1, // 1倍速播放
-      autoPlay: true // 关闭自动播放，手动指定播放 GPS 轨迹
-    }
-  });
-  ```
- *
- *
- *
  */
 export function useTrajectoryLayer() {
   let map = null
@@ -140,6 +122,7 @@ export function useTrajectoryLayer() {
   let trackPointLabelConfig = null // 轨迹点标签配置：函数 (data) => string | null
   let trackPointLabelMinZoom = 11 // 轨迹点标签最小显示缩放级别（放大到13级才显示）
   let customMarkers = [] // 自定义标注点配置
+  let fixedZoom = null // 固定缩放级别（如果设置，则不根据轨迹长度动态计算）
 
   // 动画相关
   let enableTrajectoryPlayback = false // 是否开启轨迹回放功能（默认关闭）
@@ -157,7 +140,13 @@ export function useTrajectoryLayer() {
   const isDrawn = ref(false)
   const hoverData = ref(null)
   const isAnimating = ref(false) // 是否正在播放动画
+  const isPaused = ref(false) // 是否已暂停（可继续播放）
   const animationProgress = ref(0) // 动画进度 0-100
+  const playbackSpeed = ref(1) // 播放速度倍率（1 为正常，2 为 2 倍速），供 UI 绑定
+
+  // 暂停时保存的已播放时间（毫秒 * 速度倍率），用于恢复
+  let pausedElapsed = null
+  let isAllMode = false // true 表示上次是「全部轨迹」模式，恢复时用 animateAll
 
   // 颜色配置
   const COLORS = [
@@ -166,6 +155,12 @@ export function useTrajectoryLayer() {
       core: 'rgba(1, 234, 255, 0.95)',
       glow: 'rgba(1, 234, 255, 0.2)',
       border: 'rgba(73, 246, 255, 0.7)'
+    },
+    {
+      // 红色（#ff4757）
+      core: 'rgba(255, 71, 87, 0.95)',
+      glow: 'rgba(255, 71, 87, 0.2)',
+      border: 'rgba(255, 130, 130, 0.7)'
     },
     {
       // 绿色（#2ed573）
@@ -971,7 +966,7 @@ export function useTrajectoryLayer() {
   }
 
   /**
-   * 停止动画
+   * 停止动画（完全停止，不保留进度；若需暂停后继续请用 pauseAnimation + resumeAnimation）
    */
   const stopAnimation = () => {
     if (animationFrameId) {
@@ -979,6 +974,59 @@ export function useTrajectoryLayer() {
       animationFrameId = null
     }
     isAnimating.value = false
+    isPaused.value = false
+    pausedElapsed = null
+  }
+
+  /**
+   * 暂停动画（保留当前进度，可调用 resumeAnimation 继续）
+   */
+  const pauseAnimation = () => {
+    if (!isAnimating.value) return
+    pausedElapsed = (performance.now() - animationStartTime) * speedMultiplier
+    if (animationFrameId) {
+      cancelAnimationFrame(animationFrameId)
+      animationFrameId = null
+    }
+    isAnimating.value = false
+    isPaused.value = true
+  }
+
+  /**
+   * 从暂停处继续播放
+   */
+  const resumeAnimation = () => {
+    if (!isPaused.value || pausedElapsed == null) return
+    if (!animationStates.length) return
+    // 使 elapsed 从 pausedElapsed 继续：elapsed = pausedElapsed + (timestamp - now) * speedMultiplier
+    animationStartTime = performance.now() - pausedElapsed / speedMultiplier
+    isAnimating.value = true
+    isPaused.value = false
+    pausedElapsed = null
+    if (isAllMode) {
+      animationFrameId = requestAnimationFrame(animateAll)
+    } else {
+      animationFrameId = requestAnimationFrame(animate)
+    }
+  }
+
+  /**
+   * 设置播放速度倍率（如 1 正常，2 两倍速），播放中也可修改，不跳进度
+   * @param {number} speed - 速度倍率，建议 0.25 ~ 4
+   */
+  const setPlaybackSpeed = (speed) => {
+    const s = Number(speed)
+    if (!Number.isFinite(s) || s <= 0) return
+
+    const now = performance.now()
+    // 播放中切换倍速时，保持当前有效已播放时间，避免进度跳变
+    if (isAnimating.value) {
+      const currentElapsed = (now - animationStartTime) * speedMultiplier
+      animationStartTime = now - currentElapsed / s
+    }
+
+    speedMultiplier = s
+    playbackSpeed.value = s
   }
 
   /**
@@ -1025,13 +1073,19 @@ export function useTrajectoryLayer() {
     animationProgress.value = Math.round(progress * 100)
 
     if (progress < 1) {
-      // 根据进度计算当前应该在哪个插值点
-      const currentIndex = Math.floor(progress * (state.newRoute.length - 1))
+      // 根据进度计算当前应该在哪个插值点，并限制在有效范围内
+      const lastIdx = Math.max(0, state.newRoute.length - 1)
+      const currentIndex = Math.min(Math.floor(progress * lastIdx), lastIdx)
 
       if (currentIndex !== state.lastIndex) {
         // 只在索引改变时更新位置
         const currentCoord = state.newRoute[currentIndex]
-        const nextCoord = state.newRoute[Math.min(currentIndex + 1, state.newRoute.length - 1)]
+        const nextCoord = state.newRoute[Math.min(currentIndex + 1, lastIdx)]
+        if (currentCoord == null || nextCoord == null) {
+          state.lastIndex = currentIndex
+          animationFrameId = requestAnimationFrame(animate)
+          return
+        }
 
         // 计算角度
         const angle = -Math.atan2(nextCoord[1] - currentCoord[1], nextCoord[0] - currentCoord[0])
@@ -1082,13 +1136,19 @@ export function useTrajectoryLayer() {
       if (progress < 1) {
         allCompleted = false
 
-        // 根据进度计算当前应该在哪个插值点
-        const currentIndex = Math.floor(progress * (state.newRoute.length - 1))
+        // 根据进度计算当前应该在哪个插值点，并限制在有效范围内
+        const lastIdx = Math.max(0, state.newRoute.length - 1)
+        const currentIndex = Math.min(Math.floor(progress * lastIdx), lastIdx)
 
         if (currentIndex !== state.lastIndex) {
           // 只在索引改变时更新位置
           const currentCoord = state.newRoute[currentIndex]
-          const nextCoord = state.newRoute[Math.min(currentIndex + 1, state.newRoute.length - 1)]
+          const nextIndex = Math.min(currentIndex + 1, lastIdx)
+          const nextCoord = state.newRoute[nextIndex]
+          if (currentCoord == null || nextCoord == null) {
+            state.lastIndex = currentIndex
+            return
+          }
 
           // 计算角度
           const angle = -Math.atan2(nextCoord[1] - currentCoord[1], nextCoord[0] - currentCoord[0])
@@ -1164,6 +1224,10 @@ export function useTrajectoryLayer() {
       stopAnimation()
     }
 
+    isAllMode = true
+    isPaused.value = false
+    pausedElapsed = null
+
     // 重置所有状态
     lineAnimateLayer.getSource().clear()
     animationStates.forEach((state) => {
@@ -1195,6 +1259,10 @@ export function useTrajectoryLayer() {
     if (isAnimating.value) {
       stopAnimation()
     }
+
+    isAllMode = false
+    isPaused.value = false
+    pausedElapsed = null
 
     currentAnimatingIndex = trajectoryIndex
     const state = animationStates[currentAnimatingIndex]
@@ -1475,27 +1543,37 @@ export function useTrajectoryLayer() {
         const firstLineFeature = new Feature({ geometry: new LineString(firstCoords) })
         const extent = firstLineFeature.getGeometry().getExtent()
         if (extent.every(v => Number.isFinite(v))) {
-          // 计算轨迹长度（公里）
-          const wgs84Coords = firstTrajectory.data.map(p => [Number(p.longitude), Number(p.latitude)])
-          const line = turf.lineString(wgs84Coords)
-          const length = turf.length(line, { units: 'kilometers' })
+          // 如果设置了固定缩放级别，直接使用
+          if (fixedZoom !== null) {
+            map.getView().fit(extent, {
+              padding: [100, 100, 100, 100],
+              duration: 500,
+              maxZoom: fixedZoom,
+              minZoom: fixedZoom
+            })
+          } else {
+            // 计算轨迹长度（公里）
+            const wgs84Coords = firstTrajectory.data.map(p => [Number(p.longitude), Number(p.latitude)])
+            const line = turf.lineString(wgs84Coords)
+            const length = turf.length(line, { units: 'kilometers' })
 
-          // 根据轨迹长度动态设置 maxZoom
-          // 轨迹越短，maxZoom 越小，避免缩放太近
-          let maxZoom = 18
-          if (length < 0.5) {
-            maxZoom = 19 // 小于500米
-          } else if (length < 2) {
-            maxZoom = 16 // 小于2公里
-          } else if (length < 10) {
-            maxZoom = 17 // 小于10公里
+            // 根据轨迹长度动态设置 maxZoom
+            // 轨迹越短，maxZoom 越小，避免缩放太近
+            let maxZoom = 17
+            if (length < 0.5) {
+              maxZoom = 18 // 小于500米
+            } else if (length < 2) {
+              maxZoom = 16 // 小于2公里
+            } else if (length < 10) {
+              maxZoom = 17 // 小于10公里
+            }
+
+            map.getView().fit(extent, {
+              padding: [100, 100, 100, 100],
+              duration: 500,
+              maxZoom
+            })
           }
-
-          map.getView().fit(extent, {
-            padding: [100, 100, 100, 100],
-            duration: 500,
-            maxZoom
-          })
         }
       }
     }
@@ -1546,6 +1624,7 @@ export function useTrajectoryLayer() {
       // 设置速度倍率
       if (playbackOptions.speedMultiplier) {
         speedMultiplier = playbackOptions.speedMultiplier
+        playbackSpeed.value = speedMultiplier
       }
 
       // 设置自动播放
@@ -1635,6 +1714,14 @@ export function useTrajectoryLayer() {
       customMarkers = []
     }
 
+    // 固定缩放级别配置
+    // 如果设置，则视角适配时使用固定的 zoom 级别，不根据轨迹长度动态计算
+    if (options.fixedZoom !== undefined) {
+      fixedZoom = options.fixedZoom
+    } else {
+      fixedZoom = null
+    }
+
     // 更新轨迹回放配置
     if (Object.prototype.hasOwnProperty.call(options, 'enableTrajectoryPlayback')) {
       enableTrajectoryPlayback = !!options.enableTrajectoryPlayback
@@ -1654,6 +1741,7 @@ export function useTrajectoryLayer() {
       // 更新速度倍率
       if (playbackOptions.speedMultiplier) {
         speedMultiplier = playbackOptions.speedMultiplier
+        playbackSpeed.value = speedMultiplier
       }
 
       // 更新自动播放
@@ -1725,6 +1813,8 @@ export function useTrajectoryLayer() {
     animationStates = []
     currentAnimatingIndex = -1
     animationProgress.value = 0
+    isPaused.value = false
+    pausedElapsed = null
     if (hoverOverlay) {
       hoverOverlay.setPosition(undefined)
     }
@@ -1795,40 +1885,62 @@ export function useTrajectoryLayer() {
     animationStates = []
     currentAnimatingIndex = -1
     animationProgress.value = 0
+    isPaused.value = false
+    pausedElapsed = null
   }
 
   // 通过 id 显示指定轨迹
   const showById = (id) => {
     if (!layer) return
 
-    const sources = [layer.getSource(), trackPointsLayer?.getSource(), movingIconLayer?.getSource()]
+    console.log('showById 被调用, id:', id)
+
+    const sources = [layer.getSource(), trackPointsLayer?.getSource(), movingIconLayer?.getSource(), lineAnimateLayer?.getSource()]
     sources.forEach(source => {
       if (!source) return
       source.getFeatures().forEach(feature => {
         if (feature.get('trajectoryId') === id) {
-          feature.setStyle(feature.get('originalStyle'))
+          const originalStyle = feature.get('originalStyle')
+          if (originalStyle) {
+            feature.setStyle(originalStyle)
+          }
+          feature.set('isHidden', false)
         }
       })
     })
+
+    // 同时显示标签 Overlay
+    toggleLabelOverlaysByTrajectoryId(id, true)
+    // 同时显示轨迹点标签
+    toggleTrackPointLabelsByTrajectoryId(id, true)
   }
 
   // 通过 id 隐藏指定轨迹
   const hideById = (id) => {
     if (!layer) return
 
-    const sources = [layer.getSource(), trackPointsLayer?.getSource(), movingIconLayer?.getSource()]
+    console.log('hideById 被调用, id:', id)
+
+    const sources = [layer.getSource(), trackPointsLayer?.getSource(), movingIconLayer?.getSource(), lineAnimateLayer?.getSource()]
     sources.forEach(source => {
       if (!source) return
       source.getFeatures().forEach(feature => {
         if (feature.get('trajectoryId') === id) {
-          // 保存原始样式
+          // 保存原始样式（如果还没保存的话）
           if (!feature.get('originalStyle')) {
             feature.set('originalStyle', feature.getStyle())
           }
-          feature.setStyle(null)
+          // 使用空样式数组来隐藏（比 null 更可靠）
+          feature.setStyle(() => [])
+          feature.set('isHidden', true)
         }
       })
     })
+
+    // 同时隐藏标签 Overlay
+    toggleLabelOverlaysByTrajectoryId(id, false)
+    // 同时隐藏轨迹点标签
+    toggleTrackPointLabelsByTrajectoryId(id, false)
   }
 
   // 通过 id 切换指定轨迹显示状态
@@ -1838,10 +1950,10 @@ export function useTrajectoryLayer() {
     const source = layer.getSource()
     const feature = source.getFeatures().find(f => f.get('trajectoryId') === id)
     if (feature) {
-      if (feature.getStyle()) {
-        hideById(id)
-      } else {
+      if (feature.get('isHidden')) {
         showById(id)
+      } else {
+        hideById(id)
       }
     }
   }
@@ -1872,10 +1984,68 @@ export function useTrajectoryLayer() {
     return trajectories.value.map(t => t.id).filter(Boolean)
   }
 
+  /**
+   * 根据轨迹 ID 播放单条轨迹动画
+   * @param {string} id - 轨迹 ID
+   */
+  const startAnimationById = (id) => {
+    if (!animationStates.length) {
+      console.warn('没有可播放的轨迹')
+      return false
+    }
+
+    // 找到该轨迹的索引
+    const index = animationStates.findIndex(s => s.trajectoryId === id)
+    if (index === -1) {
+      console.warn('未找到指定轨迹:', id)
+      return false
+    }
+
+    // 如果已经在播放，先停止
+    if (isAnimating.value) {
+      stopAnimation()
+    }
+
+    isAllMode = false
+    isPaused.value = false
+    pausedElapsed = null
+
+    currentAnimatingIndex = index
+    const state = animationStates[currentAnimatingIndex]
+
+    // 重置状态
+    state.lastIndex = -1
+    state.animatedLineFeature = null
+    lineAnimateLayer.getSource().clear()
+
+    // 重置点的位置
+    state.pointFeature.getGeometry().setCoordinates(state.originalCoords[0])
+    state.pointFeature.getStyle().getImage().setRotation(0)
+
+    isAnimating.value = true
+    animationProgress.value = 0
+    animationStartTime = performance.now()
+
+    animationFrameId = requestAnimationFrame(animate)
+    return true
+  }
+
+  /**
+   * 获取当前正在播放的轨迹 ID
+   */
+  const getCurrentAnimatingId = () => {
+    if (currentAnimatingIndex >= 0 && currentAnimatingIndex < animationStates.length) {
+      return animationStates[currentAnimatingIndex].trajectoryId
+    }
+    return null
+  }
+
   return {
     isVisible,
     isAnimating,
+    isPaused,
     animationProgress,
+    playbackSpeed,
     trajectories,
     init,
     updateData,
@@ -1886,12 +2056,17 @@ export function useTrajectoryLayer() {
     destroy,
     startAnimation,
     startAllAnimations,
+    startAnimationById,
     stopAnimation,
+    pauseAnimation,
+    resumeAnimation,
     resetAnimation,
+    setPlaybackSpeed,
     showById,
     hideById,
     toggleById,
     removeById,
-    getTrajectoryIds
+    getTrajectoryIds,
+    getCurrentAnimatingId
   }
 }
