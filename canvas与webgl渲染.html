@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,25 +8,62 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@8.2.0/ol.css">
   <script src="https://cdn.jsdelivr.net/npm/ol@8.2.0/dist/ol.js"></script>
   <style>
-    body { margin: 0; font-family: Arial, sans-serif; }
-    #map { width: 100vw; height: 100vh; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    #map {
+      width: 100vw;
+      height: 100vh;
+    }
+
     #controls {
       position: absolute;
       top: 10px;
       left: 10px;
-      background: rgba(255,255,255,0.95);
+      background: rgba(255, 255, 255, 0.95);
       padding: 15px;
       border-radius: 8px;
       z-index: 100;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
       min-width: 280px;
     }
-    #controls h3 { margin: 0 0 12px 0; color: #333; border-bottom: 1px solid #eee; padding-bottom: 8px; }
-    .control-row { margin: 10px 0; display: flex; align-items: center; gap: 10px; }
-    .control-row label { min-width: 80px; }
-    .control-row input[type="range"] { flex: 1; }
-    .control-row span { min-width: 60px; text-align: right; font-weight: bold; }
-    .btn-group { display: flex; gap: 8px; margin: 12px 0; }
+
+    #controls h3 {
+      margin: 0 0 12px 0;
+      color: #333;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 8px;
+    }
+
+    .control-row {
+      margin: 10px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .control-row label {
+      min-width: 80px;
+    }
+
+    .control-row input[type="range"] {
+      flex: 1;
+    }
+
+    .control-row span {
+      min-width: 60px;
+      text-align: right;
+      font-weight: bold;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
     .btn {
       flex: 1;
       padding: 10px 16px;
@@ -38,8 +76,16 @@
       font-weight: bold;
       transition: all 0.2s;
     }
-    .btn:hover { background: #e6f7ff; }
-    .btn.active { background: #1890ff; color: white; }
+
+    .btn:hover {
+      background: #e6f7ff;
+    }
+
+    .btn.active {
+      background: #1890ff;
+      color: white;
+    }
+
     #stats {
       background: #f5f5f5;
       padding: 10px;
@@ -47,33 +93,62 @@
       font-size: 13px;
       line-height: 1.8;
     }
-    #stats .label { color: #666; }
-    #stats .value { font-weight: bold; color: #1890ff; }
-    #stats .value.warn { color: #fa8c16; }
-    #stats .value.good { color: #52c41a; }
-    .note { font-size: 11px; color: #999; margin-top: 10px; border-top: 1px solid #eee; padding-top: 8px; }
+
+    #stats .label {
+      color: #666;
+    }
+
+    #stats .value {
+      font-weight: bold;
+      color: #1890ff;
+    }
+
+    #stats .value.warn {
+      color: #fa8c16;
+    }
+
+    #stats .value.good {
+      color: #52c41a;
+    }
+
+    .note {
+      font-size: 11px;
+      color: #999;
+      margin-top: 10px;
+      border-top: 1px solid #eee;
+      padding-top: 8px;
+    }
   </style>
 </head>
+
 <body>
   <div id="map"></div>
   <div id="controls">
     <h3>🔬 Canvas vs WebGL 渲染对比</h3>
-    
+
     <div class="control-row">
       <label>点数量:</label>
       <input type="range" id="pointCount" min="1000" max="100000" step="1000" value="10000">
       <span id="pointCountLabel">10000</span>
     </div>
-    
+
     <div class="btn-group">
-      <button class="btn active" id="btnCanvas">Canvas 渲染</button>
-      <button class="btn" id="btnWebGL">WebGL 渲染</button>
+      <button class="btn" id="btnCanvas">Canvas 渲染</button>
+      <button class="btn active" id="btnWebGL">WebGL 渲染</button>
     </div>
-    
+
     <button class="btn" id="btnRefresh" style="width: 100%; background: #52c41a; border-color: #52c41a; color: white;">
       🔄 重新生成并渲染
     </button>
-    
+    <button class="btn" onclick="showWebGLLayer()"
+      style="width: 100%; background: #c4891a;border-color: #c4891a; color: white; margin-top: 10px;">
+      显示WebGL图层
+    </button>
+    <button class="btn" onclick="hideWebGLLayer()"
+      style="width: 100%; background: #c4891a;border-color: #c4891a;  color: white; margin-top: 10px;">
+      隐藏WebGL图层
+    </button>
+
     <div id="stats">
       <div><span class="label">渲染模式:</span> <span class="value" id="modeValue">Canvas</span></div>
       <div><span class="label">点数量:</span> <span class="value" id="countValue">-</span></div>
@@ -81,7 +156,7 @@
       <div><span class="label">渲染耗时:</span> <span class="value" id="renderValue">-</span></div>
       <div><span class="label">当前帧率:</span> <span class="value" id="fpsValue">-</span></div>
     </div>
-    
+
     <div class="note">
       💡 <b>说明:</b> WebGL 使用 GPU 加速，适合大量点渲染。<br>
       Canvas 支持更复杂样式（文本、图标等）。<br>
@@ -93,7 +168,7 @@
     // CDN 全局方式
     const Map = ol.Map;
     const View = ol.View;
-    const TileLayer = ol.layer.Tile;
+    const TileLayer = ol.layer.WebGLTile;
     const OSM = ol.source.OSM;
     const VectorLayer = ol.layer.Vector;
     const VectorSource = ol.source.Vector;
@@ -107,8 +182,9 @@
     const Stroke = ol.style.Stroke;
 
     // 状态
-    let currentMode = 'canvas'; // 'canvas' | 'webgl'
+    let currentMode = 'webgl'; // 'canvas' | 'webgl'
     let currentLayer = null;
+    let currentLayer2 = null;
     let map = null;
     let fpsInterval = null;
 
@@ -119,7 +195,7 @@
         layers: [new TileLayer({ source: new OSM() })],
         view: new View({
           center: fromLonLat([116.404, 39.915]),
-          zoom: 10,
+          zoom: 8,
           minZoom: 5,
           maxZoom: 18
         })
@@ -133,7 +209,22 @@
         const lon = 116.404 + (Math.random() - 0.5) * 1.5;
         const lat = 39.915 + (Math.random() - 0.5) * 1.5;
         const speed = Math.random() * 100;
-        
+
+        features.push(new Feature({
+          geometry: new Point(fromLonLat([lon, lat])),
+          speed: speed,
+          index: i
+        }));
+      }
+      return features;
+    }
+    function generateFeatures2(count) {
+      const features = [];
+      for (let i = 0; i < count; i++) {
+        const lon = 116.404 + (Math.random() + 0.5) * 1.5;
+        const lat = 39.915 + (Math.random() + 0.5) * 1.5;
+        const speed = Math.random() * 100;
+
         features.push(new Feature({
           geometry: new Point(fromLonLat([lon, lat])),
           speed: speed,
@@ -151,7 +242,7 @@
         if (speed < 33) color = '#52c41a';
         else if (speed < 66) color = '#faad14';
         else color = '#f5222d';
-        
+
         f.setStyle(new Style({
           image: new CircleStyle({
             radius: 4,
@@ -174,7 +265,14 @@
 
     // 创建 WebGL 图层
     function createWebGLLayer(features) {
-      return new WebGLPointsLayer({
+      const webGLLayer = new WebGLPointsLayer({
+        zIndex: 1000,
+        type: 'points', // 图层类型
+        visible: true, // 是否可见
+        rendered: false, // 是否已渲染
+        properties: {
+          name: 'webgl-points' // 图层名称
+        },
         source: new VectorSource({ features }),
         style: {
           'circle-radius': 4,
@@ -192,6 +290,7 @@
         },
         disableHitDetection: false
       });
+      return webGLLayer;
     }
 
     // 渲染
@@ -201,12 +300,17 @@
 
       // 生成数据
       const features = generateFeatures(count);
+      const features2 = generateFeatures2(count);
       const genTime = performance.now() - startTime;
 
       // 移除旧图层
       if (currentLayer) {
         map.removeLayer(currentLayer);
         currentLayer = null;
+      }
+      if (currentLayer2) {
+        map.removeLayer(currentLayer2);
+        currentLayer2 = null;
       }
 
       // 创建新图层
@@ -215,13 +319,16 @@
         currentLayer = createCanvasLayer(features);
       } else {
         currentLayer = createWebGLLayer(features);
+        currentLayer2 = createWebGLLayer(features2);
       }
       map.addLayer(currentLayer);
+      map.addLayer(currentLayer2);
+
 
       // 等待渲染完成
-      map.once('rendercomplete', function() {
+      map.once('rendercomplete', function () {
         const renderTime = performance.now() - layerStartTime;
-        
+
         // 更新统计
         document.getElementById('modeValue').textContent = currentMode === 'canvas' ? 'Canvas' : 'WebGL';
         document.getElementById('modeValue').className = 'value ' + (currentMode === 'webgl' ? 'good' : '');
@@ -235,19 +342,31 @@
       startFPSMonitor();
     }
 
+    // 显示WebGL图层
+    function showWebGLLayer() {
+      if (currentLayer) {
+        currentLayer.setVisible(true);
+      }
+    }
+    // 隐藏WebGL图层
+    function hideWebGLLayer() {
+      if (currentLayer) {
+        currentLayer.setVisible(false);
+      }
+    }
     // FPS 监测
     function startFPSMonitor() {
       if (fpsInterval) clearInterval(fpsInterval);
-      
+
       let frameCount = 0;
       let lastTime = performance.now();
-      
+
       function countFrame() {
         frameCount++;
         requestAnimationFrame(countFrame);
       }
       countFrame();
-      
+
       fpsInterval = setInterval(() => {
         const now = performance.now();
         const elapsed = now - lastTime;
@@ -260,18 +379,18 @@
     }
 
     // 事件绑定
-    document.getElementById('pointCount').addEventListener('input', function() {
+    document.getElementById('pointCount').addEventListener('input', function () {
       document.getElementById('pointCountLabel').textContent = this.value;
     });
 
-    document.getElementById('btnCanvas').addEventListener('click', function() {
+    document.getElementById('btnCanvas').addEventListener('click', function () {
       currentMode = 'canvas';
       document.getElementById('btnCanvas').classList.add('active');
       document.getElementById('btnWebGL').classList.remove('active');
       render();
     });
 
-    document.getElementById('btnWebGL').addEventListener('click', function() {
+    document.getElementById('btnWebGL').addEventListener('click', function () {
       currentMode = 'webgl';
       document.getElementById('btnWebGL').classList.add('active');
       document.getElementById('btnCanvas').classList.remove('active');
@@ -285,4 +404,5 @@
     render();
   </script>
 </body>
+
 </html>
