@@ -8,7 +8,7 @@ const props = defineProps({
     default: false,
   },
 });
-const emit = defineEmits(["update:open"]);
+const emit = defineEmits(["update:open", "closed"]);
 const timeFilter = ref("");
 const locationFilter = ref("");
 const mmsiFilter = ref("");
@@ -177,6 +177,7 @@ const shipTableData = ref([
 
 function handleClose() {
   emit("update:open", false);
+  emit("closed");
 }
 function handleTimeChange(time) {
   console.log("时间", time);
@@ -203,17 +204,8 @@ function handleReset() {
 </script>
 
 <template>
-  <a-drawer
-    v-model:open="visibleModal"
-    title="船舶关注事件"
-    placement="right"
-    get-container=".ui-container"
-    :width="580"
-    :closable="true"
-    :mask="false"
-    root-class-name="layer-box"
-    class="layer-control-drawer"
-  >
+  <a-drawer v-model:open="visibleModal" title="船舶关注事件" placement="right" get-container=".ui-container" :width="580"
+    :closable="true" :mask="false" root-class-name="layer-box" class="layer-control-drawer">
     <template #closeIcon>
       <CloseOutlined @click="handleClose" />
     </template>
@@ -266,27 +258,12 @@ function handleReset() {
         </div>
         <div class="filter-row-item2">
           MMSI:
-          <a-input
-            v-model:value="mmsiFilter"
-            placeholder=""
-            style="width: 120px; flex: 0.65"
-          />
+          <a-input v-model:value="mmsiFilter" placeholder="" style="width: 120px; flex: 0.65" />
 
-          <a-button
-            type="primary"
-            style="flex: 0.1725"
-            size="small"
-            class="query-btn"
-            @click="handleQuery"
-          >
+          <a-button type="primary" style="flex: 0.1725" size="small" class="query-btn" @click="handleQuery">
             查询
           </a-button>
-          <a-button
-            style="flex: 0.1725"
-            class="reset-btn"
-            size="small"
-            @click="handleReset"
-          >
+          <a-button style="flex: 0.1725" class="reset-btn" size="small" @click="handleReset">
             重置
           </a-button>
           <a-dropdown>
@@ -313,21 +290,11 @@ function handleReset() {
     </div>
     <!-- 船舶关注事件列表 -->
     <div class="ship-events-table">
-      <a-table
-        :columns="shipEventColumns"
-        :data-source="shipEventData"
-        :pagination="false"
-        size="small"
-        class="ship-events-table-content"
-      >
+      <a-table :columns="shipEventColumns" :data-source="shipEventData" :pagination="false" size="small"
+        class="ship-events-table-content">
         <template #bodyCell="{ column }">
           <template v-if="column.key === 'operation'">
-            <a-button
-              type="link"
-              size="small"
-              class="detail-btn"
-              @click="onViewDetail"
-            >
+            <a-button type="link" size="small" class="detail-btn" @click="onViewDetail">
               详情
             </a-button>
           </template>
@@ -335,23 +302,10 @@ function handleReset() {
       </a-table>
     </div>
   </a-drawer>
-  <a-modal
-    v-model:open="detailVisible"
-    title="船舶分析"
-    class="modal-container _track-list-modal"
-    :footer="false"
-    :mask="false"
-    get-container=".ui-container"
-    :width="800"
-  >
-    <a-table
-      :columns="shipTableColumns"
-      :data-source="shipTableData"
-      :pagination="false"
-      :scroll="{ y: 340 }"
-      class="elements-table"
-      size="small"
-    >
+  <a-modal v-model:open="detailVisible" title="船舶分析" class="modal-container _track-list-modal" :footer="false"
+    :mask="false" get-container=".ui-container" :width="800">
+    <a-table :columns="shipTableColumns" :data-source="shipTableData" :pagination="false" :scroll="{ y: 340 }"
+      class="elements-table" size="small">
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'element'">
           <div class="element-type">
@@ -385,6 +339,7 @@ function handleReset() {
       border-color: #00ffff;
       box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.2);
     }
+
     :deep(.ant-input) {
       background: rgba(18, 28, 43, 0.1);
       border: none;
@@ -406,25 +361,30 @@ function handleReset() {
       gap: 8px;
       align-items: center;
       justify-content: space-between;
+
       .filter-row-item-dropdown {
         flex: 1;
+
         :deep(.ant-dropdown-link) {
           color: #ffffff;
           font-size: 12px;
         }
       }
     }
+
     .filter-row-item2 {
       display: flex;
       gap: 8px;
       align-items: center;
       margin-top: 16px;
+
       :deep(.ant-input) {
         font-size: 12px;
         height: 28px;
         border-radius: 0;
         background: rgba(18, 28, 43, 0.1);
       }
+
       .export-btn {
         background: #103d4c;
         border-color: #103d4c;
@@ -439,6 +399,7 @@ function handleReset() {
         }
       }
     }
+
     :deep(.ant-select) {
       .ant-select-selector {
         background: rgba(18, 28, 43, 0.8);
@@ -502,6 +463,7 @@ function handleReset() {
       height: 28px;
       color: #ffffff;
       font-size: 12px;
+
       &:hover {
         background: rgba(255, 255, 255, 0.2);
         border-color: rgba(255, 255, 255, 0.17);
@@ -514,14 +476,16 @@ function handleReset() {
 .ship-events-table {
   height: 750px;
   overflow: auto;
+
   :deep(.ship-events-table-content) {
     .ant-table-content {
       overflow: auto;
     }
+
     .ant-table {
       background: transparent;
 
-      .ant-table-thead > tr > th {
+      .ant-table-thead>tr>th {
         background: rgba(0, 255, 255, 0.1);
         border-bottom: none;
         color: #00ffff;
@@ -530,7 +494,7 @@ function handleReset() {
         padding: 8px 12px;
       }
 
-      .ant-table-tbody > tr > td {
+      .ant-table-tbody>tr>td {
         background: transparent;
         border: none;
         color: rgba(255, 255, 255, 0.9);
@@ -539,6 +503,7 @@ function handleReset() {
       }
     }
   }
+
   :deep(.ant-table-cell)::before {
     display: none;
   }
@@ -553,12 +518,15 @@ function handleReset() {
       color: #ffffff;
     }
   }
+
   &::-webkit-scrollbar {
     width: 4px;
   }
+
   &::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.1);
   }
+
   &::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0.1);
   }
@@ -566,6 +534,7 @@ function handleReset() {
 
 .elements-table {
   flex: 1;
+
   :deep(.ant-table) {
     background: transparent;
     color: #ffffff;

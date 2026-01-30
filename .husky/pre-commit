@@ -3,4 +3,5 @@
 . "$(dirname -- "$0")/_/husky.sh"
 set -euo pipefail  # 推荐添加：遇到错误立即退出，捕获未定义变量，管道错误传递
 
+pnpm lint:fix && \
 pnpm lint

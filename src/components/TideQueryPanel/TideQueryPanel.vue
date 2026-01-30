@@ -10,7 +10,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(["update:open"]);
+const emit = defineEmits(["update:open","closed"]);
 
 const visibleModal = computed({
   get() {
@@ -48,6 +48,7 @@ const tideData = ref([
 
 function handleClose() {
   emit("update:open", false);
+  emit("closed");
 }
 
 function handleQuery() {

@@ -118,6 +118,7 @@ const rightToolbarRef = ref(null);
 let mapMarkersConfig = {};
 let heatmapConfig = {};
 let trajectoryLayer = {};
+let radarScanAnimation = {};
 const map = ref(null);
 
 // 是否使用类型图层
@@ -204,7 +205,7 @@ async function onMapReady(mapInstance) {
   console.log("当前地图中心:", mapCenter);
   map.value = mapInstance; // 设置 map 变量
   mapMarkersConfig = useMapMarkers(map.value);
-  const radarScanAnimation = useRadarScanAnimation(map.value);
+  radarScanAnimation = useRadarScanAnimation(map.value);
   // 使用类型图层
   useTypeLayer.value = true;
   // 初始化标记点
@@ -1410,6 +1411,7 @@ onUnmounted(() => {
   mapMarkersConfig.trackDestroy();
   mapMarkersConfig.destroy();
   mapMarkersConfig.destroyClustering();
+  radarScanAnimation.destroy();
 });
 </script>
 
@@ -1417,11 +1419,9 @@ onUnmounted(() => {
   <div class="container">
     <MapLayout :show-map="true" :enable-scale="true" title="智能地图">
       <template #map>
-        <MapViewer
-          ref="mapViewer" :center="mapCenter" :zoom="mapZoom" height="100%" @map-ready="onMapReady"
+        <MapViewer ref="mapViewer" :center="mapCenter" :zoom="mapZoom" height="100%" @map-ready="onMapReady"
           @map-click="onMapClick" @map-double-click="onMapDoubleClick" @map-move="onMapMove"
-          @layer-change="onLayerChange" @map-right-click="onMapRightClick"
-        />
+          @layer-change="onLayerChange" @map-right-click="onMapRightClick" />
       </template>
       <template #default>
         <div class="main-container">
@@ -1457,94 +1457,68 @@ onUnmounted(() => {
             </div> -->
           </div>
           <!-- 左侧预警抽屉 -->
-          <WarningDrawer
-            v-model:open="warningDrawerVisible" @warning-click="handleWarningItemClick"
-            @track-click="handleTrackClick" @detail-click="handleDetailClick" @getwarning="getwarning"
-          />
+          <WarningDrawer v-model:open="warningDrawerVisible" @warning-click="handleWarningItemClick"
+            @track-click="handleTrackClick" @detail-click="handleDetailClick" @getwarning="getwarning" />
           <!-- 右侧工具栏 -->
-          <RightToolbar
-            ref="rightToolbarRef" @layer-control="handleToolbarLayerControl"
+          <RightToolbar ref="rightToolbarRef" @layer-control="handleToolbarLayerControl"
             @legend-display="handleToolbarLegendDisplay" @ship-events="handleToolbarShipEvents"
             @comprehensive-search="handleToolbarComprehensiveSearch" @track-query="handleToolbarTrackQuery"
             @gang-vehicle-query="handleToolbarGangVehicleQuery" @tide-query="handleToolbarTideQuery"
             @measure-distance="handleToolbarMeasureDistance" @measure-area="handleToolbarMeasureArea"
             @plotting="handleToolbarPlotting" @clear="handleToolbarClear" @locate="handleToolbarLocate"
-            @zoom-in="handleToolbarZoomIn" @zoom-out="handleToolbarZoomOut" @model-center="handleToolbarModelCenter"
-          />
+            @zoom-in="handleToolbarZoomIn" @zoom-out="handleToolbarZoomOut" @model-center="handleToolbarModelCenter" />
 
           <!-- 应急标绘面板 -->
-          <PlotPanel
-            ref="plotPanelRef" :map="map" :visible="plottingPanelVisible" @close="closePlottingPanel"
+          <PlotPanel ref="plotPanelRef" :map="map" :visible="plottingPanelVisible" @close="closePlottingPanel"
             @feature-created="handleFeatureCreated" @feature-selected="handleFeatureSelected"
-            @feature-deleted="handleFeatureDeleted"
-          />
+            @feature-deleted="handleFeatureDeleted" />
           <!-- 控制图层面板 -->
-          <LayerControlPanel
-            v-model:open="layerControlVisible" :layers="layers" :sensing-devices="sensingDevices"
+          <LayerControlPanel v-model:open="layerControlVisible" :layers="layers" :sensing-devices="sensingDevices"
             :heatmaps="heatmaps" @layer-toggle="handleLayerToggle"
-            @closed="rightToolbarRef?.onClose({ id: 'layer-control' })"
-          />
+            @closed="rightToolbarRef?.onClose({ id: 'layer-control' })" />
 
           <!-- 图例面板 -->
           <LegendPanel v-model:open="legendPanelVisible" @closed="rightToolbarRef?.onClose({ id: 'legend-display' })" />
           <!-- 综合检索面板 -->
-          <ComprehensiveSearchPanel
-            v-model:open="comprehensiveSearchVisible"
-            @closed="rightToolbarRef?.onClose({ id: 'comprehensive-search' })"
-          />
+          <ComprehensiveSearchPanel v-model:open="comprehensiveSearchVisible"
+            @closed="rightToolbarRef?.onClose({ id: 'comprehensive-search' })" />
 
           <!-- 船舶事件面板 -->
-          <ShipEventsPanel
-            v-model:open="shipEventsPanelVisible"
-            @closed="rightToolbarRef?.onClose({ id: 'ship-events' })"
-          />
+          <ShipEventsPanel v-model:open="shipEventsPanelVisible"
+            @closed="rightToolbarRef?.onClose({ id: 'ship-events' })" />
 
           <!-- 轨迹查询面板 -->
-          <TrackQueryPanel
-            v-model:open="trackQueryPanelVisible" :map-markers-config="mapMarkersConfig"
-            @closed="rightToolbarRef?.onClose({ id: 'track-query' })"
-          />
+          <TrackQueryPanel v-model:open="trackQueryPanelVisible" :map-markers-config="mapMarkersConfig"
+            @closed="rightToolbarRef?.onClose({ id: 'track-query' })" />
 
           <!-- 团伙车辆查询面板 -->
           <GangVehicleQueryPanel v-model:open="gangVehicleQueryPanelVisible" />
 
           <!-- 潮汐查询面板 -->
-          <TideQueryPanel
-            v-model:open="tideQueryPanelVisible"
-            @closed="rightToolbarRef?.onClose({ id: 'track-query' })"
-          />
+          <TideQueryPanel v-model:open="tideQueryPanelVisible"
+            @closed="rightToolbarRef?.onClose({ id: 'tide-query' })" />
 
           <!-- 模型中心面板 -->
-          <ModelCenterPanel
-            v-model:open="modelCenterVisible"
-            @closed="rightToolbarRef?.onClose({ id: 'model-center' })"
-          />
+          <ModelCenterPanel v-model:open="modelCenterVisible"
+            @closed="rightToolbarRef?.onClose({ id: 'model-center' })" />
 
           <!-- 可疑车辆弹窗 -->
-          <SuspiciousVehiclePopup
-            ref="suspiciousVehiclePopupRef" v-model:open="suspiciousVehiclePopupVisible"
+          <SuspiciousVehiclePopup ref="suspiciousVehiclePopupRef" v-model:open="suspiciousVehiclePopupVisible"
             :vehicle-data="selectedVehicleData" @track-back="handleVehicleTrackBack"
             @create-warning="handleVehicleCreateWarning" @vehicle-click="handleVehicleWarningClick"
-            @add-vehicle="handleAddVehicle" @cancel-key="handleCancelKey"
-          />
+            @add-vehicle="handleAddVehicle" @cancel-key="handleCancelKey" />
           <!-- 岸线管控弹窗 -->
-          <CoastlinePopup
-            ref="keyVesselsPopupRef" v-model:open="CoastlinePopupVisible"
-            :coastline-data="selectedCoastlineData"
-          />
+          <CoastlinePopup ref="keyVesselsPopupRef" v-model:open="CoastlinePopupVisible"
+            :coastline-data="selectedCoastlineData" />
           <!-- 应急标绘面板 -->
-          <PlotPanel
-            ref="plotPanelRef" :map="map" :visible="plottingPanelVisible" @close="closePlottingPanel"
+          <PlotPanel ref="plotPanelRef" :map="map" :visible="plottingPanelVisible" @close="closePlottingPanel"
             @feature-created="handleFeatureCreated" @feature-selected="handleFeatureSelected"
-            @feature-deleted="handleFeatureDeleted"
-          />
+            @feature-deleted="handleFeatureDeleted" />
           <!-- 重点船舶弹窗 -->
-          <KeyVesselsPopup
-            ref="keyVesselsPopupRef" v-model:open="keyVesselsPopupVisible"
+          <KeyVesselsPopup ref="keyVesselsPopupRef" v-model:open="keyVesselsPopupVisible"
             :vessels-data="selectedVesselData" @track-back="handleVesselTrackBack"
             @create-warning="handleVesselCreateWarning" @vessels-click="handleVesselWarningClick"
-            @add-vessels="handleAddVessel" @cancel-key="handleCancelKeyVessel"
-          />
+            @add-vessels="handleAddVessel" @cancel-key="handleCancelKeyVessel" />
 
           <!-- 重点人员弹窗 -->
           <KeyPersonnelPopup v-model:open="keyPersonnelPopupVisible" @close="handleKeyPersonnelClose" />
@@ -1554,10 +1528,8 @@ onUnmounted(() => {
             <div class="bottom-menu-box">
               <!-- 滑动指示器 -->
               <div v-show="activeBottomMenu !== -1" class="slider-indicator" :style="getSliderIndicatorStyle" />
-              <div
-                v-for="(item, index) in bottomMenu" :key="item.name" class="bottom-menu-item"
-                :class="{ active: index === activeBottomMenu }" @click="handleBottomMenuClick(index)"
-              >
+              <div v-for="(item, index) in bottomMenu" :key="item.name" class="bottom-menu-item"
+                :class="{ active: index === activeBottomMenu }" @click="handleBottomMenuClick(index)">
                 <img :src="getIconPath(item.icon)" :alt="`${item.name}图标`">
                 {{ item.name }}
               </div>
@@ -1682,10 +1654,8 @@ onUnmounted(() => {
     </MapLayout>
 
     <!-- 位置纠偏提示对话框 -->
-    <a-modal
-      v-model:open="locationCorrectModalVisible" :title="null" :footer="null" :mask="false" centered
-      width="440px" get-container=".ui-container" class="location-correct-modal" :z-index="99999"
-    >
+    <a-modal v-model:open="locationCorrectModalVisible" :title="null" :footer="null" :mask="false" centered
+      width="440px" get-container=".ui-container" class="location-correct-modal" :z-index="99999">
       <div class="location-correct-content">
         <div class="location-correct-title">
           位置纠偏提示
@@ -1706,10 +1676,8 @@ onUnmounted(() => {
     </a-modal>
 
     <!-- 位置修改确认对话框 -->
-    <a-modal
-      v-model:open="locationConfirmModalVisible" :title="null" :footer="null" :mask="false" centered
-      width="400px" get-container=".ui-container" class="location-confirm-modal" :z-index="99999"
-    >
+    <a-modal v-model:open="locationConfirmModalVisible" :title="null" :footer="null" :mask="false" centered
+      width="400px" get-container=".ui-container" class="location-confirm-modal" :z-index="99999">
       <div class="location-confirm-content">
         <div class="location-confirm-title">
           确认修改位置

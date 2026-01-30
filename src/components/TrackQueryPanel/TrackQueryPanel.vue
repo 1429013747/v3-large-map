@@ -13,7 +13,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(["update:open"]);
+const emit = defineEmits(["update:open", "closed"]);
 
 const visibleModal = computed({
   get() {
@@ -154,6 +154,7 @@ const paginationConfig = {
 
 function handleClose() {
   emit("update:open", false);
+  emit("closed");
 }
 
 function handleAddQuery() {
@@ -291,17 +292,8 @@ function handleCancel() {
 </script>
 
 <template>
-  <a-drawer
-    v-model:open="visibleModal"
-    title="轨迹查询"
-    placement="right"
-    get-container=".ui-container"
-    :width="1080"
-    :closable="true"
-    :mask="false"
-    root-class-name="layer-box"
-    class="layer-control-drawer"
-  >
+  <a-drawer v-model:open="visibleModal" title="轨迹查询" placement="right" get-container=".ui-container" :width="1080"
+    :closable="true" :mask="false" root-class-name="layer-box" class="layer-control-drawer">
     <template #closeIcon>
       <CloseOutlined @click="handleClose" />
     </template>
@@ -315,22 +307,11 @@ function handleCancel() {
 
     <!-- 轨迹查询列表 -->
     <div class="track-query-table">
-      <a-table
-        :columns="trackQueryColumns"
-        :data-source="trackQueryData"
-        :pagination="paginationConfig"
-        size="small"
-        class="track-query-table-content"
-        :on-change="handleTableChange"
-      >
+      <a-table :columns="trackQueryColumns" :data-source="trackQueryData" :pagination="paginationConfig" size="small"
+        class="track-query-table-content" :on-change="handleTableChange">
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'operation'">
-            <a-button
-              type="link"
-              size="small"
-              class="detail-btn"
-              @click="handleViewDetail(record)"
-            >
+            <a-button type="link" size="small" class="detail-btn" @click="handleViewDetail(record)">
               查看详情
             </a-button>
           </template>
@@ -359,34 +340,17 @@ function handleCancel() {
           </div>
 
           <!-- 输入行 1-4 -->
-          <div
-            v-for="(item, index) in inputRows"
-            :key="`input-${index}`"
-            class="input-row"
-          >
+          <div v-for="(item, index) in inputRows" :key="`input-${index}`" class="input-row">
             <div class="cell">
-              <a-date-picker
-                v-model:value="item.timeRange"
-                placeholder="选择时间范围"
-                class="time-picker"
-                :bordered="false"
-              />
+              <a-date-picker v-model:value="item.timeRange" placeholder="选择时间范围" class="time-picker"
+                :bordered="false" />
             </div>
             <div class="cell">
-              <a-input
-                v-model:value="item.vehicleName"
-                placeholder="请输入车牌号或船舶名称"
-                class="vehicle-input"
-                :bordered="false"
-              />
+              <a-input v-model:value="item.vehicleName" placeholder="请输入车牌号或船舶名称" class="vehicle-input"
+                :bordered="false" />
             </div>
             <div class="cell">
-              <a-select
-                v-model:value="item.plateColor"
-                placeholder="车牌颜色"
-                class="color-select"
-                :bordered="false"
-              >
+              <a-select v-model:value="item.plateColor" placeholder="车牌颜色" class="color-select" :bordered="false">
                 <a-select-option value="蓝色">
                   蓝色
                 </a-select-option>
@@ -403,20 +367,10 @@ function handleCancel() {
             </div>
             <div class="cell operation-cell">
               <div class="action-buttons">
-                <a-button
-                  type="text"
-                  size="small"
-                  class="action-btn minus-btn"
-                  @click="removeInputRow(index)"
-                >
+                <a-button type="text" size="small" class="action-btn minus-btn" @click="removeInputRow(index)">
                   <span class="btn-icon">⊖</span>
                 </a-button>
-                <a-button
-                  type="text"
-                  size="small"
-                  class="action-btn plus-btn"
-                  @click="addInputRow"
-                >
+                <a-button type="text" size="small" class="action-btn plus-btn" @click="addInputRow">
                   <span class="btn-icon">⊕</span>
                 </a-button>
               </div>
@@ -436,16 +390,8 @@ function handleCancel() {
       </div>
     </div>
   </a-drawer>
-  <a-modal
-    v-model:open="detailVisible"
-    title="轨迹列表"
-    class="modal-container _track-list-modal"
-    :footer="false"
-    :mask="false"
-    get-container=".ui-container"
-    :width="800"
-    @ok="handleDetailOk"
-  >
+  <a-modal v-model:open="detailVisible" title="轨迹列表" class="modal-container _track-list-modal" :footer="false"
+    :mask="false" get-container=".ui-container" :width="800" @ok="handleDetailOk">
     <div class="track-list-content">
       <!-- 播放全部按钮 -->
       <div class="play-all-section">
@@ -474,11 +420,7 @@ function handleCancel() {
         </div>
 
         <!-- 轨迹数据行 -->
-        <div
-          v-for="(item, index) in trackList"
-          :key="`track-${index}`"
-          class="track-row"
-        >
+        <div v-for="(item, index) in trackList" :key="`track-${index}`" class="track-row">
           <div class="cell">
             {{ item.index }}
           </div>
@@ -490,20 +432,10 @@ function handleCancel() {
           </div>
           <div class="cell operation-cell">
             <div class="action-buttons">
-              <a-button
-                type="text"
-                size="small"
-                class="action-btn view-btn"
-                @click="handleViewTrack(item)"
-              >
+              <a-button type="text" size="small" class="action-btn view-btn" @click="handleViewTrack(item)">
                 <span class="btn-icon">👁</span>
               </a-button>
-              <a-button
-                type="text"
-                size="small"
-                class="action-btn play-btn"
-                @click="handlePlayTrack(item)"
-              >
+              <a-button type="text" size="small" class="action-btn play-btn" @click="handlePlayTrack(item)">
                 <span class="btn-icon" style="padding-left: 2px">▶</span>
               </a-button>
             </div>
@@ -518,8 +450,10 @@ function handleCancel() {
 .layer-control-drawer {
   position: relative;
 }
+
 .add-query-section {
   margin-bottom: 20px;
+
   .add-query-btn {
     background: transparent;
     border: 1px solid rgba(0, 255, 255, 0.3);
@@ -546,7 +480,7 @@ function handleCancel() {
       height: 650px;
       overflow-y: auto;
 
-      .ant-table-thead > tr > th {
+      .ant-table-thead>tr>th {
         background: rgba(0, 255, 255, 0.1);
         border-bottom: none;
         color: #fff;
@@ -555,7 +489,7 @@ function handleCancel() {
         padding: 12px 16px;
       }
 
-      .ant-table-tbody > tr > td {
+      .ant-table-tbody>tr>td {
         background: transparent;
         border: none;
         color: rgba(255, 255, 255, 0.9);
@@ -564,7 +498,7 @@ function handleCancel() {
         vertical-align: top;
       }
 
-      .ant-table-tbody > tr:hover > td {
+      .ant-table-tbody>tr:hover>td {
         background: rgba(0, 255, 255, 0.1);
       }
     }
@@ -596,6 +530,7 @@ function handleCancel() {
   // 分页样式
   :deep(.ant-pagination) {
     margin-top: 16px;
+
     .ant-pagination-total-text {
       color: rgba(255, 255, 255, 0.8);
       font-size: 14px;
@@ -638,9 +573,11 @@ function handleCancel() {
         color: #00ffff;
       }
     }
+
     .anticon {
       color: #00ffff;
     }
+
     .ant-pagination-options {
       .ant-select {
         .ant-select-selector {
@@ -692,6 +629,7 @@ function handleCancel() {
   background: rgba(18, 28, 43, 0);
   width: 100%;
   height: 100%;
+
   .search-modal-content {
     margin: auto;
     margin-top: 10%;
@@ -700,6 +638,7 @@ function handleCancel() {
     height: 70%;
     padding: 20px;
   }
+
   .search-modal-content {
     background: rgba(18, 28, 43, 0.95);
     border-radius: 8px;
@@ -777,6 +716,7 @@ function handleCancel() {
             justify-content: space-between;
             align-items: center;
             justify-content: center;
+
             .status-text {
               color: rgba(255, 255, 255, 0.8);
               font-size: 14px;
@@ -788,6 +728,7 @@ function handleCancel() {
 
               .action-btn {
                 color: #00ffff;
+
                 .btn-icon {
                   font-size: 22px;
                 }
@@ -889,12 +830,15 @@ function handleCancel() {
         &:last-child {
           border-right: none;
         }
+
         &:first-child {
           flex: 0.3;
         }
+
         &:nth-child(2) {
           flex: 0.3;
         }
+
         &:nth-child(4) {
           flex: 0.4;
         }
@@ -920,15 +864,19 @@ function handleCancel() {
         &:last-child {
           border-right: none;
         }
+
         &:first-child {
           flex: 0.3;
         }
+
         &:nth-child(2) {
           flex: 0.3;
         }
+
         &:nth-child(4) {
           flex: 0.4;
         }
+
         &.operation-cell {
           justify-content: center;
 
@@ -969,6 +917,7 @@ function handleCancel() {
 ._track-list-modal {
   margin: 0;
 }
+
 .ant-modal-wrap {
   pointer-events: none;
   z-index: 9999;

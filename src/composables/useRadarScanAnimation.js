@@ -1,4 +1,3 @@
-import { onUnmounted, ref } from 'vue';
 import { fromLonLat } from 'ol/proj';
 import { unByKey } from 'ol/Observable';
 
@@ -551,10 +550,6 @@ export function useRadarScanAnimation(map) {
   const destroy = () => {
     clearRadarAnimations();
   };
-
-  onUnmounted(() => {
-    destroy();
-  });
 
   return {
     radarAnimations,
