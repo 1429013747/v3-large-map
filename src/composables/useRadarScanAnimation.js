@@ -549,7 +549,7 @@ export function useRadarScanAnimation(map) {
    */
   const destroy = () => {
     clearRadarAnimations();
-  };   
+  };
 
   return {
     radarAnimations,
