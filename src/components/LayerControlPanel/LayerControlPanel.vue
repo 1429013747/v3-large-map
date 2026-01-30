@@ -64,15 +64,8 @@ function handleLayerToggle(layer) {
 
 <template>
   <a-drawer
-    v-model:open="visibleModal"
-    title="控制图层"
-    placement="right"
-    get-container=".ui-container"
-    :width="380"
-    :closable="true"
-    :mask="false"
-    root-class-name="layer-box"
-    class="layer-control-drawer"
+    v-model:open="visibleModal" title="控制图层" placement="right" get-container=".ui-container" :width="380"
+    :closable="true" :mask="false" root-class-name="layer-box" class="layer-control-drawer"
   >
     <template #closeIcon>
       <CloseOutlined @click="handleClose" />
@@ -83,21 +76,14 @@ function handleLayerToggle(layer) {
       <!-- 主要图层 -->
       <div class="layer-section">
         <div
-          v-for="layer in filteredLayers"
-          :key="layer.id"
-          class="layer-item"
-          :class="{ active: selectedLayerId === layer.id }"
-          @click="handleLayerClick(layer)"
+          v-for="layer in filteredLayers" :key="layer.id" class="layer-item"
+          :class="{ active: selectedLayerId === layer.id }" @click="handleLayerClick(layer)"
         >
           <div class="layer-info">
             <span class="layer-name">{{ layer.name }}</span>
           </div>
           <div class="layer-toggle">
-            <a-switch
-              v-model:checked="layer.visible"
-              size="small"
-              @change="handleLayerToggle(layer)"
-            />
+            <a-switch v-model:checked="layer.visible" size="small" @change="handleLayerToggle(layer)" />
           </div>
         </div>
       </div>
@@ -107,21 +93,14 @@ function handleLayerToggle(layer) {
           感知设备
         </div>
         <div
-          v-for="sensingDevice in sensingDevices"
-          :key="sensingDevice.id"
-          class="layer-item"
-          :class="{ active: selectedLayerId === sensingDevice.id }"
-          @click="handleLayerClick(sensingDevice)"
+          v-for="sensingDevice in sensingDevices" :key="sensingDevice.id" class="layer-item"
+          :class="{ active: selectedLayerId === sensingDevice.id }" @click="handleLayerClick(sensingDevice)"
         >
           <div class="layer-info">
             <span class="layer-name">{{ sensingDevice.name }}</span>
           </div>
           <div class="layer-toggle">
-            <a-switch
-              v-model:checked="sensingDevice.visible"
-              size="small"
-              @change="handleLayerToggle(sensingDevice)"
-            />
+            <a-switch v-model:checked="sensingDevice.visible" size="small" @change="handleLayerToggle(sensingDevice)" />
           </div>
         </div>
       </div>
@@ -131,21 +110,14 @@ function handleLayerToggle(layer) {
           热力图
         </div>
         <div
-          v-for="heatmap in filteredHeatmaps"
-          :key="heatmap.id"
-          class="layer-item"
-          :class="{ active: selectedLayerId === heatmap.id }"
-          @click="handleLayerClick(heatmap)"
+          v-for="heatmap in filteredHeatmaps" :key="heatmap.id" class="layer-item"
+          :class="{ active: selectedLayerId === heatmap.id }" @click="handleLayerClick(heatmap)"
         >
           <div class="layer-info">
             <span class="layer-name">{{ heatmap.name }}</span>
           </div>
           <div class="layer-toggle">
-            <a-switch
-              v-model:checked="heatmap.visible"
-              size="small"
-              @change="handleLayerToggle(heatmap)"
-            />
+            <a-switch v-model:checked="heatmap.visible" size="small" @change="handleLayerToggle(heatmap)" />
           </div>
         </div>
       </div>
@@ -156,6 +128,8 @@ function handleLayerToggle(layer) {
 <style lang="scss" scoped>
 .layer-control-drawer {
   .layer-list {
+    padding: 0 10px;
+
     .heatmap-section,
     .sensing-device-section {
       .section-title {
