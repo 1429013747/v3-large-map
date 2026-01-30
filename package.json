@@ -16,6 +16,11 @@
       "eslint --fix"
     ]
   },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,vue}": [
+      "eslint --fix"
+    ]
+  },
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",
     "@supermapgis/iclient-mapboxgl": "^11.3.0",
