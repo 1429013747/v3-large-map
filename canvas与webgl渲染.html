@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OL 8.2.0 Canvas vs WebGL 渲染对比</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@8.2.0/ol.css">
+  <script src="https://cdn.jsdelivr.net/npm/ol@8.2.0/dist/ol.js"></script>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; }
+    #map { width: 100vw; height: 100vh; }
+    #controls {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(255,255,255,0.95);
+      padding: 15px;
+      border-radius: 8px;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+      min-width: 280px;
+    }
+    #controls h3 { margin: 0 0 12px 0; color: #333; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+    .control-row { margin: 10px 0; display: flex; align-items: center; gap: 10px; }
+    .control-row label { min-width: 80px; }
+    .control-row input[type="range"] { flex: 1; }
+    .control-row span { min-width: 60px; text-align: right; font-weight: bold; }
+    .btn-group { display: flex; gap: 8px; margin: 12px 0; }
+    .btn {
+      flex: 1;
+      padding: 10px 16px;
+      border: 2px solid #1890ff;
+      background: white;
+      color: #1890ff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+    .btn:hover { background: #e6f7ff; }
+    .btn.active { background: #1890ff; color: white; }
+    #stats {
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+    #stats .label { color: #666; }
+    #stats .value { font-weight: bold; color: #1890ff; }
+    #stats .value.warn { color: #fa8c16; }
+    #stats .value.good { color: #52c41a; }
+    .note { font-size: 11px; color: #999; margin-top: 10px; border-top: 1px solid #eee; padding-top: 8px; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div id="controls">
+    <h3>🔬 Canvas vs WebGL 渲染对比</h3>
+    
+    <div class="control-row">
+      <label>点数量:</label>
+      <input type="range" id="pointCount" min="1000" max="100000" step="1000" value="10000">
+      <span id="pointCountLabel">10000</span>
+    </div>
+    
+    <div class="btn-group">
+      <button class="btn active" id="btnCanvas">Canvas 渲染</button>
+      <button class="btn" id="btnWebGL">WebGL 渲染</button>
+    </div>
+    
+    <button class="btn" id="btnRefresh" style="width: 100%; background: #52c41a; border-color: #52c41a; color: white;">
+      🔄 重新生成并渲染
+    </button>
+    
+    <div id="stats">
+      <div><span class="label">渲染模式:</span> <span class="value" id="modeValue">Canvas</span></div>
+      <div><span class="label">点数量:</span> <span class="value" id="countValue">-</span></div>
+      <div><span class="label">生成耗时:</span> <span class="value" id="genValue">-</span></div>
+      <div><span class="label">渲染耗时:</span> <span class="value" id="renderValue">-</span></div>
+      <div><span class="label">当前帧率:</span> <span class="value" id="fpsValue">-</span></div>
+    </div>
+    
+    <div class="note">
+      💡 <b>说明:</b> WebGL 使用 GPU 加速，适合大量点渲染。<br>
+      Canvas 支持更复杂样式（文本、图标等）。<br>
+      WebGLPointsLayer 在 OL 8.2.0 中只支持点。
+    </div>
+  </div>
+
+  <script>
+    // CDN 全局方式
+    const Map = ol.Map;
+    const View = ol.View;
+    const TileLayer = ol.layer.Tile;
+    const OSM = ol.source.OSM;
+    const VectorLayer = ol.layer.Vector;
+    const VectorSource = ol.source.Vector;
+    const WebGLPointsLayer = ol.layer.WebGLPoints;
+    const Feature = ol.Feature;
+    const Point = ol.geom.Point;
+    const fromLonLat = ol.proj.fromLonLat;
+    const Style = ol.style.Style;
+    const CircleStyle = ol.style.Circle;
+    const Fill = ol.style.Fill;
+    const Stroke = ol.style.Stroke;
+
+    // 状态
+    let currentMode = 'canvas'; // 'canvas' | 'webgl'
+    let currentLayer = null;
+    let map = null;
+    let fpsInterval = null;
+
+    // 初始化地图
+    function initMap() {
+      map = new Map({
+        target: 'map',
+        layers: [new TileLayer({ source: new OSM() })],
+        view: new View({
+          center: fromLonLat([116.404, 39.915]),
+          zoom: 10,
+          minZoom: 5,
+          maxZoom: 18
+        })
+      });
+    }
+
+    // 生成点要素数据
+    function generateFeatures(count) {
+      const features = [];
+      for (let i = 0; i < count; i++) {
+        const lon = 116.404 + (Math.random() - 0.5) * 1.5;
+        const lat = 39.915 + (Math.random() - 0.5) * 1.5;
+        const speed = Math.random() * 100;
+        
+        features.push(new Feature({
+          geometry: new Point(fromLonLat([lon, lat])),
+          speed: speed,
+          index: i
+        }));
+      }
+      return features;
+    }
+
+    // Canvas 样式（传统 ol/style 体系）
+    function applyCanvasStyle(features) {
+      features.forEach(f => {
+        const speed = f.get('speed');
+        let color;
+        if (speed < 33) color = '#52c41a';
+        else if (speed < 66) color = '#faad14';
+        else color = '#f5222d';
+        
+        f.setStyle(new Style({
+          image: new CircleStyle({
+            radius: 4,
+            fill: new Fill({ color: color }),
+            stroke: new Stroke({ color: '#fff', width: 0.5 })
+          })
+        }));
+      });
+    }
+
+    // 创建 Canvas 图层
+    function createCanvasLayer(features) {
+      applyCanvasStyle(features);
+      return new VectorLayer({
+        source: new VectorSource({ features }),
+        updateWhileAnimating: true,
+        updateWhileInteracting: true
+      });
+    }
+
+    // 创建 WebGL 图层
+    function createWebGLLayer(features) {
+      return new WebGLPointsLayer({
+        source: new VectorSource({ features }),
+        style: {
+          'circle-radius': 4,
+          'circle-fill-color': [
+            'interpolate',
+            ['linear'],
+            ['get', 'speed'],
+            0, '#52c41a',
+            50, '#faad14',
+            100, '#f5222d'
+          ],
+          'circle-stroke-color': '#ffffff',
+          'circle-stroke-width': 0.5,
+          'circle-opacity': 0.9
+        },
+        disableHitDetection: false
+      });
+    }
+
+    // 渲染
+    function render() {
+      const count = parseInt(document.getElementById('pointCount').value);
+      const startTime = performance.now();
+
+      // 生成数据
+      const features = generateFeatures(count);
+      const genTime = performance.now() - startTime;
+
+      // 移除旧图层
+      if (currentLayer) {
+        map.removeLayer(currentLayer);
+        currentLayer = null;
+      }
+
+      // 创建新图层
+      const layerStartTime = performance.now();
+      if (currentMode === 'canvas') {
+        currentLayer = createCanvasLayer(features);
+      } else {
+        currentLayer = createWebGLLayer(features);
+      }
+      map.addLayer(currentLayer);
+
+      // 等待渲染完成
+      map.once('rendercomplete', function() {
+        const renderTime = performance.now() - layerStartTime;
+        
+        // 更新统计
+        document.getElementById('modeValue').textContent = currentMode === 'canvas' ? 'Canvas' : 'WebGL';
+        document.getElementById('modeValue').className = 'value ' + (currentMode === 'webgl' ? 'good' : '');
+        document.getElementById('countValue').textContent = count.toLocaleString();
+        document.getElementById('genValue').textContent = genTime.toFixed(1) + 'ms';
+        document.getElementById('renderValue').textContent = renderTime.toFixed(1) + 'ms';
+        document.getElementById('renderValue').className = 'value ' + (renderTime > 500 ? 'warn' : 'good');
+      });
+
+      // 启动 FPS 监测
+      startFPSMonitor();
+    }
+
+    // FPS 监测
+    function startFPSMonitor() {
+      if (fpsInterval) clearInterval(fpsInterval);
+      
+      let frameCount = 0;
+      let lastTime = performance.now();
+      
+      function countFrame() {
+        frameCount++;
+        requestAnimationFrame(countFrame);
+      }
+      countFrame();
+      
+      fpsInterval = setInterval(() => {
+        const now = performance.now();
+        const elapsed = now - lastTime;
+        const fps = Math.round(frameCount / (elapsed / 1000));
+        document.getElementById('fpsValue').textContent = fps;
+        document.getElementById('fpsValue').className = 'value ' + (fps >= 50 ? 'good' : fps >= 30 ? '' : 'warn');
+        frameCount = 0;
+        lastTime = now;
+      }, 1000);
+    }
+
+    // 事件绑定
+    document.getElementById('pointCount').addEventListener('input', function() {
+      document.getElementById('pointCountLabel').textContent = this.value;
+    });
+
+    document.getElementById('btnCanvas').addEventListener('click', function() {
+      currentMode = 'canvas';
+      document.getElementById('btnCanvas').classList.add('active');
+      document.getElementById('btnWebGL').classList.remove('active');
+      render();
+    });
+
+    document.getElementById('btnWebGL').addEventListener('click', function() {
+      currentMode = 'webgl';
+      document.getElementById('btnWebGL').classList.add('active');
+      document.getElementById('btnCanvas').classList.remove('active');
+      render();
+    });
+
+    document.getElementById('btnRefresh').addEventListener('click', render);
+
+    // 初始化
+    initMap();
+    render();
+  </script>
+</body>
+</html>
