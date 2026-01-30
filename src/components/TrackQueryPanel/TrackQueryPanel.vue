@@ -292,8 +292,10 @@ function handleCancel() {
 </script>
 
 <template>
-  <a-drawer v-model:open="visibleModal" title="轨迹查询" placement="right" get-container=".ui-container" :width="1080"
-    :closable="true" :mask="false" root-class-name="layer-box" class="layer-control-drawer">
+  <a-drawer
+    v-model:open="visibleModal" title="轨迹查询" placement="right" get-container=".ui-container" :width="1080"
+    :closable="true" :mask="false" root-class-name="layer-box" class="layer-control-drawer"
+  >
     <template #closeIcon>
       <CloseOutlined @click="handleClose" />
     </template>
@@ -307,8 +309,10 @@ function handleCancel() {
 
     <!-- 轨迹查询列表 -->
     <div class="track-query-table">
-      <a-table :columns="trackQueryColumns" :data-source="trackQueryData" :pagination="paginationConfig" size="small"
-        class="track-query-table-content" :on-change="handleTableChange">
+      <a-table
+        :columns="trackQueryColumns" :data-source="trackQueryData" :pagination="paginationConfig" size="small"
+        class="track-query-table-content" :on-change="handleTableChange"
+      >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'operation'">
             <a-button type="link" size="small" class="detail-btn" @click="handleViewDetail(record)">
@@ -342,12 +346,16 @@ function handleCancel() {
           <!-- 输入行 1-4 -->
           <div v-for="(item, index) in inputRows" :key="`input-${index}`" class="input-row">
             <div class="cell">
-              <a-date-picker v-model:value="item.timeRange" placeholder="选择时间范围" class="time-picker"
-                :bordered="false" />
+              <a-date-picker
+                v-model:value="item.timeRange" placeholder="选择时间范围" class="time-picker"
+                :bordered="false"
+              />
             </div>
             <div class="cell">
-              <a-input v-model:value="item.vehicleName" placeholder="请输入车牌号或船舶名称" class="vehicle-input"
-                :bordered="false" />
+              <a-input
+                v-model:value="item.vehicleName" placeholder="请输入车牌号或船舶名称" class="vehicle-input"
+                :bordered="false"
+              />
             </div>
             <div class="cell">
               <a-select v-model:value="item.plateColor" placeholder="车牌颜色" class="color-select" :bordered="false">
@@ -390,8 +398,10 @@ function handleCancel() {
       </div>
     </div>
   </a-drawer>
-  <a-modal v-model:open="detailVisible" title="轨迹列表" class="modal-container _track-list-modal" :footer="false"
-    :mask="false" get-container=".ui-container" :width="800" @ok="handleDetailOk">
+  <a-modal
+    v-model:open="detailVisible" title="轨迹列表" class="modal-container _track-list-modal" :footer="false"
+    :mask="false" get-container=".ui-container" :width="800" @ok="handleDetailOk"
+  >
     <div class="track-list-content">
       <!-- 播放全部按钮 -->
       <div class="play-all-section">

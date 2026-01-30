@@ -204,8 +204,10 @@ function handleReset() {
 </script>
 
 <template>
-  <a-drawer v-model:open="visibleModal" title="船舶关注事件" placement="right" get-container=".ui-container" :width="580"
-    :closable="true" :mask="false" root-class-name="layer-box" class="layer-control-drawer">
+  <a-drawer
+    v-model:open="visibleModal" title="船舶关注事件" placement="right" get-container=".ui-container" :width="580"
+    :closable="true" :mask="false" root-class-name="layer-box" class="layer-control-drawer"
+  >
     <template #closeIcon>
       <CloseOutlined @click="handleClose" />
     </template>
@@ -290,8 +292,10 @@ function handleReset() {
     </div>
     <!-- 船舶关注事件列表 -->
     <div class="ship-events-table">
-      <a-table :columns="shipEventColumns" :data-source="shipEventData" :pagination="false" size="small"
-        class="ship-events-table-content">
+      <a-table
+        :columns="shipEventColumns" :data-source="shipEventData" :pagination="false" size="small"
+        class="ship-events-table-content"
+      >
         <template #bodyCell="{ column }">
           <template v-if="column.key === 'operation'">
             <a-button type="link" size="small" class="detail-btn" @click="onViewDetail">
@@ -302,10 +306,14 @@ function handleReset() {
       </a-table>
     </div>
   </a-drawer>
-  <a-modal v-model:open="detailVisible" title="船舶分析" class="modal-container _track-list-modal" :footer="false"
-    :mask="false" get-container=".ui-container" :width="800">
-    <a-table :columns="shipTableColumns" :data-source="shipTableData" :pagination="false" :scroll="{ y: 340 }"
-      class="elements-table" size="small">
+  <a-modal
+    v-model:open="detailVisible" title="船舶分析" class="modal-container _track-list-modal" :footer="false"
+    :mask="false" get-container=".ui-container" :width="800"
+  >
+    <a-table
+      :columns="shipTableColumns" :data-source="shipTableData" :pagination="false" :scroll="{ y: 340 }"
+      class="elements-table" size="small"
+    >
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'element'">
           <div class="element-type">

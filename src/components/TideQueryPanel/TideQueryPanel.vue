@@ -10,7 +10,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(["update:open","closed"]);
+const emit = defineEmits(["update:open", "closed"]);
 
 const visibleModal = computed({
   get() {
