@@ -9,7 +9,12 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prepare": "husky install"
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,vue}": [
+      "eslint --fix"
+    ]
   },
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",
@@ -35,6 +40,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.12.1",
+    "lint-staged": "^15.2.0",
     "@types/node": "^22.10.5",
     "@vitejs/plugin-legacy": "^6.0.0",
     "@vitejs/plugin-vue": "^5.2.1",
