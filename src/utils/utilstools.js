@@ -73,3 +73,45 @@ export function clickDownloadFile(file) {
   a.click();
   URL.revokeObjectURL(url);
 }
+
+/**
+ * 控制请求并发数
+ * @param {Array} tasks 请求任务数组
+ * @param {Number} max 最大并发数
+ * @returns {Promise} 返回请求结果数组
+ */
+
+export function controlRequest(tasks, max = 2) {
+  return new Promise((resolve, reject) => {
+    let index = 0
+    const result = []
+    let sumRequest = 0
+    function run() {
+      const flatIndex = index
+      tasks[flatIndex]().then(res => {
+        result[flatIndex] = res
+      }).catch(async err => {
+        // 如果请求失败，则重试一次
+        try {
+          const res = await tasks[flatIndex](false)
+          result[flatIndex] = res
+        } catch (error) {
+          result[flatIndex] = error
+        }
+      }).finally(() => {
+        sumRequest++
+        if (sumRequest >= tasks.length) {
+          resolve(result)
+        }
+        if (index < tasks.length) {
+          run()
+        }
+      })
+      index++
+    }
+
+    for (let i = 0; i < Math.min(tasks.length - 1, max); i++) {
+      run()
+    }
+  })
+}

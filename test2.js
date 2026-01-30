@@ -1,9 +1,13 @@
 const tasks = [
-  function () {
-    return new Promise((resolve) => {
+  function (isError = true) {
+    return new Promise((resolve, reject) => {
       setTimeout(() => {
-        resolve('function1');
-      }, 1000);
+        if (isError) {
+          reject(new Error('function1'));
+        } else {
+          resolve('function1');
+        }
+      }, 2000);
     });
   },
   function () {
@@ -13,10 +17,14 @@ const tasks = [
       }, 1000);
     });
   },
-  function () {
-    return new Promise((resolve) => {
+  function (isError = true) {
+    return new Promise((resolve, reject) => {
       setTimeout(() => {
-        resolve('function3');
+        if (isError) {
+          reject(new Error('function3'));
+        } else {
+          resolve('function3');
+        }
       }, 3000);
     });
   },
@@ -36,7 +44,7 @@ const tasks = [
   }
 ]
 
-function controlRequest(tasks, max = 1) {
+function controlRequest(tasks, max = 2) {
   return new Promise((resolve, reject) => {
     let index = 0
     const result = []
@@ -45,7 +53,13 @@ function controlRequest(tasks, max = 1) {
       const flatIndex = index
       tasks[flatIndex]().then(res => {
         result[flatIndex] = res
-        console.log(result);
+      }).catch(async err => {
+        try {
+          const res = await tasks[flatIndex](false)
+          result[flatIndex] = res
+        } catch (error) {
+          result[flatIndex] = error
+        }
       }).finally(() => {
         sumRequest++
         if (sumRequest >= tasks.length) {
