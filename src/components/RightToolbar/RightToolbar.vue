@@ -843,11 +843,11 @@ defineExpose({
 
   // 模型中心图标
   .model-center-icon {
-    background: url("@/assets/imgs/tide-search.png") no-repeat center center;
+    background: url("@/assets/imgs/modal.png") no-repeat center center;
   }
 
   .toolbar-item.active .model-center-icon {
-    background: url("@/assets/imgs/tide-search-a.png") no-repeat center center;
+    background: url("@/assets/imgs/modal-a.png") no-repeat center center;
   }
 }
 
