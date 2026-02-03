@@ -44,7 +44,7 @@ import TrajectoryPointPopup from '@/pops/TrajectoryPointPopup.vue'
  *
  * 初始化选项：
  * gjTrajectoryLayer.updateData(trajectoryData, {
- * renderTrackPoints: true,
+ *renderTrackPoints: true,
   // 轨迹点标签函数
   trackPointLabel: (data) => dayjs(data.pointTime).format('HH:mm'),
   // 最小显示缩放级别（默认 15，放大到该级别才显示标签）
@@ -993,6 +993,23 @@ export function useTrajectoryLayer() {
   }
 
   /**
+   * 根据轨迹 ID 暂停指定轨迹的播放
+   * @param {string} id - 轨迹 ID
+   * @returns {boolean} 是否成功暂停
+   */
+  const pauseAnimationById = (id) => {
+    // 只要正在播放就暂停
+    if (!isAnimating.value) {
+      console.warn('当前没有正在播放的动画')
+      return false
+    }
+
+    // 暂停当前播放
+    pauseAnimation()
+    return true
+  }
+
+  /**
    * 从暂停处继续播放
    */
   const resumeAnimation = () => {
@@ -1008,6 +1025,34 @@ export function useTrajectoryLayer() {
     } else {
       animationFrameId = requestAnimationFrame(animate)
     }
+  }
+
+  /**
+   * 根据轨迹 ID 恢复指定轨迹的播放
+   * @param {string} id - 轨迹 ID
+   * @returns {boolean} 是否成功恢复
+   */
+  const resumeAnimationById = (id) => {
+    if (!animationStates.length) {
+      console.warn('没有可恢复的轨迹')
+      return false
+    }
+
+    // 找到该轨迹的索引
+    const index = animationStates.findIndex(s => s.trajectoryId === id)
+    if (index === -1) {
+      console.warn('未找到指定轨迹:', id)
+      return false
+    }
+
+    // 如果当前处于暂停状态且有暂停进度，直接恢复播放
+    if (isPaused.value && pausedElapsed != null) {
+      resumeAnimation()
+      return true
+    }
+
+    // 如果没有暂停，从头开始播放
+    return startAnimationById(id)
   }
 
   /**
@@ -2059,7 +2104,9 @@ export function useTrajectoryLayer() {
     startAnimationById,
     stopAnimation,
     pauseAnimation,
+    pauseAnimationById,
     resumeAnimation,
+    resumeAnimationById,
     resetAnimation,
     setPlaybackSpeed,
     showById,
