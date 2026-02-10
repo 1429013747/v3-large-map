@@ -127,6 +127,7 @@ export function useTrajectoryLayer() {
   // 动画相关
   let enableTrajectoryPlayback = false // 是否开启轨迹回放功能（默认关闭）
   let playbackOptions = {} // 回放配置（速度、自动播放等）
+  let onAnimationComplete = null // 轨迹播放完成回调 (trajectoryId) => void
   let animationFrameId = null // requestAnimationFrame id
   let animationStates = [] // 每条轨迹的动画状态
   let fixedSpeed = 0.75 // 固定速度（公里/秒），默认 0.05 km/s = 50 m/s = 180 km/h
@@ -1153,8 +1154,9 @@ export function useTrajectoryLayer() {
       state.pointFeature.getGeometry().setCoordinates(endCoord)
       updateAnimatedLine(state, state.newRoute)
 
+      const completedId = state.trajectoryId
       stopAnimation()
-      console.log('轨迹播放完成')
+      try { onAnimationComplete?.(completedId) } catch (e) { console.warn(e) }
     }
   }
 
@@ -1208,12 +1210,13 @@ export function useTrajectoryLayer() {
           state.lastIndex = currentIndex
         }
       } else {
-        // 该轨迹动画结束
+        // 该轨迹动画结束，通知本条轨迹完成（便于列表图标对应更新）
         if (!state.completed) {
           const endCoord = state.newRoute[state.newRoute.length - 1]
           state.pointFeature.getGeometry().setCoordinates(endCoord)
           updateAnimatedLineForState(state, state.newRoute)
           state.completed = true
+          try { onAnimationComplete?.(state.trajectoryId) } catch (e) { console.warn(e) }
         }
       }
     })
@@ -1229,7 +1232,7 @@ export function useTrajectoryLayer() {
       animationFrameId = requestAnimationFrame(animateAll)
     } else {
       stopAnimation()
-      console.log('所有轨迹播放完成')
+      try { onAnimationComplete?.(null) } catch (e) { console.warn(e) }
     }
   }
 
@@ -1660,6 +1663,9 @@ export function useTrajectoryLayer() {
         speedMultiplier: options.playbackOptions.speedMultiplier,
         autoPlay: options.playbackOptions.autoPlay
       }
+      onAnimationComplete = typeof options.playbackOptions.onAnimationComplete === 'function'
+        ? options.playbackOptions.onAnimationComplete
+        : null
 
       // 设置固定速度（公里/秒）
       if (playbackOptions.fixedSpeed) {

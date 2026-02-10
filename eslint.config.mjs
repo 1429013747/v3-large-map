@@ -16,6 +16,7 @@ export default antfu({
     'node/handle-callback-err': 'off',
     'no-unused-expressions': 'off',
     'eqeqeq': 'off',
+    'style/max-statements-per-line': 'off',
     'jsdoc/check-types': 'off',
     'regexp/no-unused-capturing-group': 'off',
     'unused-imports/no-unused-imports': 'off',
