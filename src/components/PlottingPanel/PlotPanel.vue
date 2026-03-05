@@ -1422,7 +1422,7 @@ defineExpose({
   text-align: center;
   padding-right: 1.5px;
   line-height: 20px;
-  opacity: 0;
+  opacity: 1;
   transition: all 0.3s ease;
 }
 
