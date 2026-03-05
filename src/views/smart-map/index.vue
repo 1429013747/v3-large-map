@@ -1428,14 +1428,14 @@ onUnmounted(() => {
       <template #default>
         <div class="main-container">
           <!-- 顶部搜索 -->
-          <div class="search-container">
+          <!-- <div class="search-container">
             <a-cascader v-model:value="valueArea" :options="options" placeholder="请选择区域" allow-clear />
             <a-input v-model:value="searchKeyword" placeholder="请输入关键词" allow-clear @press-enter="handleSearch">
               <template #suffix>
                 <SearchOutlined @click="handleSearch" />
               </template>
             </a-input>
-          </div>
+          </div> -->
           <!-- 顶部预警 -->
           <div v-if="warningInfoVisible" class="warning-container" @click="handleWarningClick">
             <div class="warning-title">

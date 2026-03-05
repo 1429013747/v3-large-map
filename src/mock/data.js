@@ -20,7 +20,7 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
         icon: {
           src: getIconPath("allIcon2"),
           size: [36, 36],
-          anchor: [0, 0],
+          anchor: [0.5, 0.5],
           scale: 0.7,
           displacement: [12, -12],
           offset: [36 * (index % 10), 0], // 使用不同的精灵图位置
@@ -68,7 +68,7 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
         icon: {
           src: getIconPathMarkIcons("icon10"),
           size: [53, 53],
-          anchor: [0, 0],
+          anchor: [0.5, 0.5],
           scale: 0.7,
           displacement: [18, -18], // 偏移量
           borderSize: 30, // 外边框大小
@@ -142,7 +142,7 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
         icon: {
           src: getIconPathMarkIcons("icon17"),
           size: [30, 30],
-          anchor: [0, 0],
+          anchor: [0.5, 0.5],
           scale: 1,
           displacement: [14, -14], // 偏移量
           borderSize: 30, // 外边框大小

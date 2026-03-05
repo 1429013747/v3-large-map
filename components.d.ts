@@ -8,7 +8,6 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AButton: typeof import('ant-design-vue/es')['Button']
-    AButtonGroup: typeof import('ant-design-vue/es')['ButtonGroup']
     ACascader: typeof import('ant-design-vue/es')['Cascader']
     ACheckableTag: typeof import('ant-design-vue/es')['CheckableTag']
     ACollapse: typeof import('ant-design-vue/es')['Collapse']
@@ -32,7 +31,6 @@ declare module 'vue' {
     ASelect: typeof import('ant-design-vue/es')['Select']
     ASelectOption: typeof import('ant-design-vue/es')['SelectOption']
     ASlider: typeof import('ant-design-vue/es')['Slider']
-    ASpin: typeof import('ant-design-vue/es')['Spin']
     ASwitch: typeof import('ant-design-vue/es')['Switch']
     ATable: typeof import('ant-design-vue/es')['Table']
     ATabPane: typeof import('ant-design-vue/es')['TabPane']
@@ -48,6 +46,7 @@ declare module 'vue' {
     CoastlinePopup: typeof import('./src/components/CoastlinePopup/CoastlinePopup.vue')['default']
     ComprehensiveSearchPanel: typeof import('./src/components/ComprehensiveSearchPanel/ComprehensiveSearchPanel.vue')['default']
     DownOutlined: typeof import('@ant-design/icons-vue')['DownOutlined']
+    FencePopup: typeof import('./src/components/FencePopup/FencePopup.vue')['default']
     GangVehicleQueryPanel: typeof import('./src/components/GangVehicleQueryPanel/GangVehicleQueryPanel.vue')['default']
     GlobalLoading: typeof import('./src/components/common/GlobalLoading/GlobalLoading.vue')['default']
     Header: typeof import('./src/components/common/Header/Header.vue')['default']
