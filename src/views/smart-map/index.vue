@@ -205,9 +205,7 @@ async function onMapReady(mapInstance) {
   console.log("当前地图中心:", mapCenter);
   map.value = mapInstance; // 设置 map 变量
   mapMarkersConfig = useMapMarkers(map.value, {
-    textZoomThreshold: 12, // 文本 16 级以上展示
-    iconZoomThreshold: 11, // 图标 14 级以上展示
-    typeList: ["car", "ship", "risk-point"],
+ 
   });
   radarScanAnimation = useRadarScanAnimation(map.value);
   // 使用类型图层

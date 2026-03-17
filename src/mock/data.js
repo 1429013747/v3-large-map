@@ -2,13 +2,20 @@ import { generateRandomCoordinates } from "@/utils/coordinateGenerator.js";
 import { getIconPath, getIconPathMarkIcons } from "@/utils/utilstools.js";
 import { radarData, riskData } from "./riskData.js";
 
-export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, warningDrawerVisible, initShowPanel, radarScanAnimation) {
+export function getMarkerData(
+  mapMarkersConfig,
+  useTypeLayer,
+  heatmapConfig,
+  warningDrawerVisible,
+  initShowPanel,
+  radarScanAnimation,
+) {
   // 生成随机坐标点（50公里内）
   const randomCoords = generateRandomCoordinates(
     29.330254208488313,
     121.69077697750392,
-    50,
-    12
+    1500,
+    120000,
   );
   const riskList = randomCoords.map((coord, index) => ({
     coordinates: [coord.lng, coord.lat],
@@ -27,8 +34,8 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
           borderSize: 25, // 外边框大小
           borderColor: "#ffa502", // 外边框颜色
           borderWidth: 2, // 外边框宽度
-          showBorder: false // 初始隐藏边框
-        }
+          showBorder: false, // 初始隐藏边框
+        },
       },
       data: {
         popupType: "risk-point",
@@ -38,9 +45,9 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
         principal: "张三",
         riskType: "high",
         lastUpdate: new Date().toLocaleString(),
-        markerId: `risk-pointer-${index}`
-      }
-    }
+        markerId: `risk-pointer-${index}`,
+      },
+    },
   }));
   // 批量添加
   mapMarkersConfig.addMarkers(riskList, {
@@ -49,14 +56,14 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
     // isEnableCluster: true,
     onProgress: (progress) => {
       console.log("进度:", progress);
-    }
+    },
   });
   // 生成随机坐标点（50公里内） 可疑车辆
   const carCoords = generateRandomCoordinates(
     29.330254208488313,
     121.69077697750392,
-    50,
-    12
+    1500,
+    6110,
   );
   const carList = carCoords.map((coord, index) => ({
     coordinates: [coord.lng, coord.lat],
@@ -74,7 +81,7 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
           borderSize: 30, // 外边框大小
           borderColor: "#ffa502", // 外边框颜色
           borderWidth: 2, // 外边框宽度
-          showBorder: false // 初始隐藏边框
+          showBorder: false, // 初始隐藏边框
         },
         text: {
           content: "可疑车辆",
@@ -87,8 +94,8 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
           bgScale: 0.7, // 缩放比例
           bgOpacity: 0.9, // 透明度
           font: "10px Arial",
-          showBackground: false
-        }
+          showBackground: false,
+        },
       },
       data: {
         popupType: "car",
@@ -103,9 +110,9 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
         tag: "涉私车辆",
         riskLevel: "高风险",
         lastUpdate: new Date().toLocaleString(),
-        markerId: `car-${index}`
-      }
-    }
+        markerId: `car-${index}`,
+      },
+    },
   }));
   // 批量添加
   mapMarkersConfig.addMarkers(carList, {
@@ -122,15 +129,15 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
       //   minDistance: 20, // 最小聚合距离
       // });
       // mapMarkersConfig.toggleClustering("car", true);
-    }
+    },
   });
 
   // 生成随机坐标点（50公里内） 船舶动态
   const shipDynamicCoords = generateRandomCoordinates(
     29.22087519433525,
     122.49099904613172,
-    30,
-    20
+    1300,
+    4002,
   );
   const shipList = shipDynamicCoords.map((coord, index) => ({
     coordinates: [coord.lng, coord.lat],
@@ -150,7 +157,7 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
           // 360
           rotation: Math.PI - (index % 360),
           borderWidth: 2, // 外边框宽度
-          showBorder: false // 初始隐藏边框
+          showBorder: false, // 初始隐藏边框
         },
         text: {
           content: "华盛167",
@@ -163,17 +170,17 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
           bgScale: 0.7, // 缩放比例
           bgOpacity: 0.9, // 透明度
           font: "10px Arial",
-          showBackground: true
-        }
+          showBackground: false,
+        },
       },
       data: {
         popupType: "ship",
         title: `船舶动态`,
         description: `距离中心 0 公里`,
         distance: 0,
-        cardId: `123456789`
-      }
-    }
+        cardId: `123456789`,
+      },
+    },
   }));
   // 批量添加
   mapMarkersConfig.addMarkers(shipList, {
@@ -182,7 +189,7 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
     // isEnableCluster: true,
     onProgress: (progress) => {
       console.log("进度:", progress);
-    }
+    },
   });
   // 单个添加
   // shipDynamicCoords.forEach((coord, index) => {
@@ -233,61 +240,61 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
     [
       {
         latLon: [121.4582, 29.3395],
-        text: "2025.06.15 01:18"
+        text: "2025.06.15 01:18",
       },
       {
         latLon: [121.4033, 29.3658],
-        text: "2025.06.15 01:18"
+        text: "2025.06.15 01:18",
       },
       {
         latLon: [121.3593, 29.4089],
-        text: "2025.06.15 01:18"
+        text: "2025.06.15 01:18",
       },
       {
         latLon: [121.2893, 29.4077],
-        text: "2025.06.15 01:18"
+        text: "2025.06.15 01:18",
       },
       {
         latLon: [121.2138, 29.4208],
-        text: "2025.06.15 01:18"
-      }
+        text: "2025.06.15 01:18",
+      },
     ],
     [
       {
         latLon: [121.4582, 29.3395],
-        text: "2025.06.15 01:18"
+        text: "2025.06.15 01:18",
       },
       {
         latLon: [121.3854, 29.3359],
-        text: "2025.06.15 01:18"
+        text: "2025.06.15 01:18",
       },
       {
         latLon: [121.2879, 29.3526],
-        text: "2025.06.15 01:18"
+        text: "2025.06.15 01:18",
       },
       {
         latLon: [121.2206, 29.3155],
-        text: "2025.06.15 01:18"
-      }
+        text: "2025.06.15 01:18",
+      },
     ],
     [
       {
         latLon: [121.4582, 29.3395],
-        text: "2025.06.15 01:18"
+        text: "2025.06.15 01:18",
       },
       {
         latLon: [121.4239, 29.276],
-        text: "2025.06.15 01:18"
+        text: "2025.06.15 01:18",
       },
       {
         latLon: [121.336, 29.2988],
-        text: "2025.06.15 01:18"
+        text: "2025.06.15 01:18",
       },
       {
         latLon: [121.2302, 29.2257],
-        text: "2025.06.15 01:18"
-      }
-    ]
+        text: "2025.06.15 01:18",
+      },
+    ],
   ];
   // 生成轨迹路线
   trackLines.forEach((line) => {
@@ -304,16 +311,16 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
         strokeWidth: 3,
         lineDash: [],
         lineCap: "round",
-        lineJoin: "round"
-      }
+        lineJoin: "round",
+      },
     });
   });
   // 绘制预警牌
   const overlays = mapMarkersConfig.createMultipleMarkers([
     [121.9251, 29.2748],
-    [121.7960, 29.0541],
+    [121.796, 29.0541],
     [122.0364, 29.0205],
-    [122.2039, 29.4125]
+    [122.2039, 29.4125],
   ]);
 
   setTimeout(() => {
@@ -328,30 +335,30 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
     warningDrawerVisible.value = true;
   };
 
-  const radarList = radarData.map(coord => ({
+  const radarList = radarData.map((coord) => ({
     coordinates: [coord.longitude, coord.latitude],
     options: {
       id: `optical-radar-${coord.id}`,
-      type: 'optical-radar',
+      type: "optical-radar",
       useTypeLayer: useTypeLayer.value,
       visible: true, // 初始隐藏
       style: {
         icon: {
-          src: getIconPathMarkIcons('radar'),
+          src: getIconPathMarkIcons("radar"),
           size: [48, 68],
           anchor: [0.5, 0.5],
           scale: 0.5,
           displacement: [0, 0],
           borderSize: 25, // 外边框大小
-          borderColor: '#ffa502', // 外边框颜色
+          borderColor: "#ffa502", // 外边框颜色
           borderWidth: 2, // 外边框宽度
           showBorder: false, // 初始隐藏边框
-          isRadar: true
+          isRadar: true,
         },
         text: {
-          popupType: 'optical-radar',
+          popupType: "optical-radar",
           content: coord.name,
-          color: '#000000',
+          color: "#000000",
           offsetX: 10,
           offsetY: -17,
           // bgImage: '/src/assets/imgs/qb.png', // 背景图片路径
@@ -359,16 +366,16 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
           displacement: [18, 9], // 汽包位置偏移
           bgScale: 0.7, // 缩放比例
           bgOpacity: 0.9, // 透明度
-          font: '10px Arial',
-          showBackground: false
-        }
+          font: "10px Arial",
+          showBackground: false,
+        },
       },
       data: {
-        popupType: 'optical-radar',
-        title: '雷达站',
-        originData: coord
-      }
-    }
+        popupType: "optical-radar",
+        title: "雷达站",
+        originData: coord,
+      },
+    },
   }));
   mapMarkersConfig.addMarkers(radarList);
 
@@ -379,17 +386,17 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
       coordinates: [coord.longitude, coord.latitude],
       options: {
         radius: 2000, // 扫描半径（米），默认 2km
-        color: '#00ffcc', // 扫描颜色
+        color: "#00ffcc", // 扫描颜色
         scanSpeed: 2500, // 扫描一圈的时间（毫秒）
         fadeLength: 0.35, // 扫描尾迹长度
         hoverRadiusAdd: 500, // hover 时半径增加（米）
         solidRipple: true, // 实心涟漪
         rippleDuration: 2000, // 涟漪周期（毫秒）
         rippleCount: 3, // 涟漪数量
-        visible: false // 初始隐藏，跟随 marker 显示
-      }
+        visible: false, // 初始隐藏，跟随 marker 显示
+      },
     }));
-    console.log("🚀 ~ getMarkerData ~ radarAnimationList:", radarAnimationList)
+    console.log("🚀 ~ getMarkerData ~ radarAnimationList:", radarAnimationList);
     radarScanAnimation.addRadarAnimations(radarAnimationList);
     radarScanAnimation.toggleAllRadarVisibility(true);
   }
@@ -400,9 +407,9 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
       [122.2012, 29.3227],
       [122.2685, 29.3227],
       [122.2863, 29.4244],
-      [122.219, 29.4758]
+      [122.219, 29.4758],
     ],
-    { fillColor: "#c18a7e80", strokeColor: "#fe383790", strokeWidth: 1 }
+    { fillColor: "#c18a7e80", strokeColor: "#fe383790", strokeWidth: 1 },
   );
 
   // 风险热力点
@@ -413,7 +420,7 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
     radius: 10,
     blur: 20,
     gradient: ["#00f", "#0ff", "#0f0", "#ff0", "#f00"],
-    data: riskData
+    data: riskData,
   });
 
   // 综合案件热力点
@@ -428,9 +435,9 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
       { lon: 121.62, lat: 29.07, weight: 0.1 },
       { lon: 121.65, lat: 29.09, weight: 0.9 },
       { lon: 121.61, lat: 29.07, weight: 0.7 },
-      { lon: 121.69, lat: 29.00, weight: 0.9 },
-      { lon: 121.6314, lat: 29.1386, weight: 0.8 }
-    ]
+      { lon: 121.69, lat: 29.0, weight: 0.9 },
+      { lon: 121.6314, lat: 29.1386, weight: 0.8 },
+    ],
   });
 
   // 涉冻品案件热力点
@@ -445,9 +452,9 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
       { lon: 121.12, lat: 28.27, weight: 0.1 },
       { lon: 121.15, lat: 28.29, weight: 0.9 },
       { lon: 121.11, lat: 28.27, weight: 0.7 },
-      { lon: 121.19, lat: 28.30, weight: 0.9 },
-      { lon: 121.3314, lat: 29.1386, weight: 0.8 }
-    ]
+      { lon: 121.19, lat: 28.3, weight: 0.9 },
+      { lon: 121.3314, lat: 29.1386, weight: 0.8 },
+    ],
   });
 
   // 涉成品油案件热力点
@@ -462,9 +469,9 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
       { lon: 121.52, lat: 29.67, weight: 0.1 },
       { lon: 121.55, lat: 29.69, weight: 0.9 },
       { lon: 121.51, lat: 29.67, weight: 0.7 },
-      { lon: 121.59, lat: 29.60, weight: 0.9 },
-      { lon: 121.5314, lat: 29.1386, weight: 0.8 }
-    ]
+      { lon: 121.59, lat: 29.6, weight: 0.9 },
+      { lon: 121.5314, lat: 29.1386, weight: 0.8 },
+    ],
   });
 
   // 车辆运行热力图
@@ -479,9 +486,9 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
       { lon: 121.72, lat: 29.17, weight: 0.3 },
       { lon: 121.75, lat: 29.19, weight: 0.8 },
       { lon: 121.71, lat: 29.17, weight: 0.6 },
-      { lon: 121.79, lat: 29.20, weight: 0.9 },
-      { lon: 121.7314, lat: 29.1386, weight: 0.7 }
-    ]
+      { lon: 121.79, lat: 29.2, weight: 0.9 },
+      { lon: 121.7314, lat: 29.1386, weight: 0.7 },
+    ],
   });
 
   // 船舶运行热力图
@@ -496,8 +503,8 @@ export function getMarkerData(mapMarkersConfig, useTypeLayer, heatmapConfig, war
       { lon: 121.82, lat: 29.37, weight: 0.4 },
       { lon: 121.85, lat: 29.39, weight: 0.7 },
       { lon: 121.81, lat: 29.37, weight: 0.5 },
-      { lon: 121.89, lat: 29.40, weight: 0.8 },
-      { lon: 121.8314, lat: 29.1386, weight: 0.6 }
-    ]
+      { lon: 121.89, lat: 29.4, weight: 0.8 },
+      { lon: 121.8314, lat: 29.1386, weight: 0.6 },
+    ],
   });
 }
