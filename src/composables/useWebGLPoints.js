@@ -59,8 +59,8 @@ export function useWebGLPoints(map, options = {}) {
 
   /**
    * 解析 layerKey：未传则用默认 key
-   * @param {string} [layerKey]
-   * @returns {string}
+   * @param {String} [layerKey]
+   * @returns {String}
    */
   const resolveLayerKey = (layerKey) => {
     return layerKey ?? currentDefaultKey.value;
@@ -68,7 +68,7 @@ export function useWebGLPoints(map, options = {}) {
 
   /**
    * 获取图层信息，不存在则返回 undefined
-   * @param {string} key
+   * @param {String} key
    */
   const getLayer = (key) => {
     return layers.value[key];
@@ -76,7 +76,7 @@ export function useWebGLPoints(map, options = {}) {
 
   /**
    * 获取所有图层 key 列表
-   * @returns {string[]}
+   * @returns {String[]}
    */
   const getLayerKeys = () => {
     return Object.keys(layers.value);
@@ -84,11 +84,11 @@ export function useWebGLPoints(map, options = {}) {
 
   /**
    * 创建/注册一个 WebGLPoints 图层
-   * @param {string} layerKey - 图层唯一标识，如 'risk-points'、'case-points'
+   * @param {String} layerKey - 图层唯一标识，如 'risk-points'、'case-points'
    * @param {Object} [layerOptions] - 图层配置
    * @param {Object} [layerOptions.style] - WebGL 样式，符合 ol/style/webgl 的 WebGLStyle
    * @param {number} [layerOptions.zIndex] - 图层 zIndex
-   * @param {string} [layerOptions.title] - 图层标题（存到 layer 的 properties，便于图例等）
+   * @param {String} [layerOptions.title] - 图层标题（存到 layer 的 properties，便于图例等）
    * @returns {boolean} 是否创建成功
    */
   const createLayer = (layerKey, layerOptions = {}) => {
@@ -127,7 +127,7 @@ export function useWebGLPoints(map, options = {}) {
   /**
    * 初始化 WebGLPoints 图层（单图层用法，创建默认 key 的图层）
    * @param {Object} [style] - 覆盖默认样式，符合 ol/style/webgl 的 WebGLStyle
-   * @param {string} [layerKey] - 指定图层 key，不传则用 defaultLayerKey
+   * @param {String} [layerKey] - 指定图层 key，不传则用 defaultLayerKey
    * @returns {boolean} 是否初始化成功
    */
   const initLayer = (style, layerKey) => {
@@ -139,11 +139,11 @@ export function useWebGLPoints(map, options = {}) {
 
   /**
    * 添加单个点位
-   * @param {string | [number, number]} layerKeyOrCoordinates - 图层 key，或直接传 [经度, 纬度]（使用默认图层）
+   * @param {String | [number, number]} layerKeyOrCoordinates - 图层 key，或直接传 [经度, 纬度]（使用默认图层）
    * @param {[number, number] | Object} coordinatesOrData - [经度, 纬度] 或 附加属性 data
    * @param {Object} [data] - 附加到 feature 上的属性
-   * @param {string} [id] - 点位 id，不传则自动生成
-   * @returns {string|null} 点位 id，失败返回 null
+   * @param {String} [id] - 点位 id，不传则自动生成
+   * @returns {String|null} 点位 id，失败返回 null
    */
   const addPoint = (layerKeyOrCoordinates, coordinatesOrData = {}, data = {}, id) => {
     let layerKey;
@@ -196,9 +196,9 @@ export function useWebGLPoints(map, options = {}) {
 
   /**
    * 批量添加点位
-   * @param {string | Array} layerKeyOrPoints - 图层 key，或直接传点位数组（使用默认图层）
+   * @param {String | Array} layerKeyOrPoints - 图层 key，或直接传点位数组（使用默认图层）
    * @param {Array<[number, number] | { coordinates: [number, number], data?: Object, id?: string }>} [points] - 坐标数组或 { coordinates, data?, id? } 数组
-   * @returns {string[]} 成功添加的点位 id 列表
+   * @returns {String[]} 成功添加的点位 id 列表
    */
   const addPoints = (layerKeyOrPoints, points) => {
     let layerKey;
@@ -245,8 +245,8 @@ export function useWebGLPoints(map, options = {}) {
 
   /**
    * 按 id 移除点位
-   * @param {string} [layerKey] - 图层 key，不传则从默认图层删
-   * @param {string} id - 点位 id
+   * @param {String} [layerKey] - 图层 key，不传则从默认图层删
+   * @param {String} id - 点位 id
    * @returns {boolean} 是否移除成功
    */
   const removePoint = (layerKey, id) => {
@@ -270,7 +270,7 @@ export function useWebGLPoints(map, options = {}) {
 
   /**
    * 清空指定图层或默认图层的所有点位
-   * @param {string} [layerKey] - 图层 key，不传则清空默认图层
+   * @param {String} [layerKey] - 图层 key，不传则清空默认图层
    */
   const clearPoints = (layerKey) => {
     const key = resolveLayerKey(layerKey);
@@ -283,7 +283,7 @@ export function useWebGLPoints(map, options = {}) {
 
   /**
    * 设置图层可见性
-   * @param {string | boolean} layerKeyOrVisible - 图层 key，或直接传 boolean（控制默认图层）
+   * @param {String | boolean} layerKeyOrVisible - 图层 key，或直接传 boolean（控制默认图层）
    * @param {boolean} [visible] - 是否可见
    */
   const setVisible = (layerKeyOrVisible, visible) => {
@@ -298,7 +298,7 @@ export function useWebGLPoints(map, options = {}) {
 
   /**
    * 更新某图层的样式变量（用于动态样式）
-   * @param {string} [layerKey] - 图层 key，不传则更新默认图层
+   * @param {String} [layerKey] - 图层 key，不传则更新默认图层
    * @param {Object<string, number>} variables - 变量名 -> 数值
    */
   const updateStyleVariables = (layerKey, variables) => {
@@ -319,7 +319,7 @@ export function useWebGLPoints(map, options = {}) {
 
   /**
    * 获取指定图层或默认图层的点位数量
-   * @param {string} [layerKey]
+   * @param {String} [layerKey]
    * @returns {number}
    */
   const getPointsCount = (layerKey) => {
@@ -329,8 +329,8 @@ export function useWebGLPoints(map, options = {}) {
 
   /**
    * 根据 id 获取 feature（先查默认图层，再查其它图层）
-   * @param {string} id - 点位 id
-   * @param {string} [layerKey] - 指定图层 key，不传则遍历所有图层查找
+   * @param {String} id - 点位 id
+   * @param {String} [layerKey] - 指定图层 key，不传则遍历所有图层查找
    * @returns {import('ol/Feature').default<import('ol/geom/Point').default>|undefined}
    */
   const getPointFeature = (id, layerKey) => {
@@ -347,7 +347,7 @@ export function useWebGLPoints(map, options = {}) {
 
   /**
    * 移除并销毁指定图层
-   * @param {string} layerKey
+   * @param {String} layerKey
    */
   const removeLayer = (layerKey) => {
     const key = resolveLayerKey(layerKey);
@@ -368,7 +368,7 @@ export function useWebGLPoints(map, options = {}) {
 
   /**
    * 设置当前默认操作的图层 key（影响无 layerKey 的 addPoint/addPoints/clearPoints 等）
-   * @param {string} key
+   * @param {String} key
    */
   const setDefaultLayer = (key) => {
     if (layers.value[key]) currentDefaultKey.value = key;
