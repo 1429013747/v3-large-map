@@ -32,6 +32,8 @@ export function useMapMarkers(map, zoomVisibilityOptions = {}) {
   // 按类型分组的标记点图层 - 用于性能优化
   const markerLayersByType = ref({});
   const markerSourcesByType = ref({});
+  // 记录哪些 type 启用了聚合（按类型控制）
+  const clusterEnabledByType = ref({});
 
   // 首屏未到达渲染缩放级别时，按类型缓存待渲染的标记点
   // 结构：{ [type]: { list: Array<{ coordinates, options }>, loaded: boolean } }
@@ -798,21 +800,39 @@ export function useMapMarkers(map, zoomVisibilityOptions = {}) {
    */
   const toggleMarkerVisibilityByLayer = (type, visible) => {
     const layers = getAllLayers();
-    const targetLayers = layers.filter(
-      (layer, index) => layer.get("type") === type,
-    );
+    let matchedAnyLayer = false;
 
-    // 如果图层存在，控制图层可见性
-    if (targetLayers.length > 0) {
-      targetLayers.forEach((layer) => {
+    layers.forEach((layer) => {
+      const layerType = layer.get("type");
+      const title = layer.get("title");
+
+      // 原始类型图层：只在「未启用聚合」时跟随显示；启用聚合时强制隐藏，避免和聚合叠加
+      if (layerType === type) {
+        const shouldShowBase =
+          visible && !(clusterEnabledByType.value?.[type] && clusterLayers.value?.[type]);
+        layer.setVisible(shouldShowBase);
+        matchedAnyLayer = true;
+      }
+
+      // 聚合图层：仅控制该 type 自己的聚合图层
+      if (clusterLayers.value?.[type] && layer === clusterLayers.value[type]) {
         layer.setVisible(visible);
-      });
-      // 关键优化：有类型图层时，不再遍历每个要素更新样式/visible，
-      // 缩放时只切 layer.visible，避免大量点位导致卡顿
+        matchedAnyLayer = true;
+      } else if (title === `${type}_cluster`) {
+        // 兜底：如果某些地方创建的聚合图层未正确写入 clusterLayers，则通过 title 命中
+        layer.setVisible(visible);
+        matchedAnyLayer = true;
+      }
+    });
+
+    // 关键优化/修复：
+    // - 如果已经命中了图层（类型图层或聚合图层），图层显隐就足够了
+    // - 不再遍历大量 marker 逐个 setStyle（既卡顿，也可能与聚合显示逻辑冲突）
+    if (matchedAnyLayer || markerLayersByType.value?.[type] || clusterLayers.value?.[type]) {
       return;
     }
 
-    // 更新标记点的可见性状态和样式（无论图层是否存在都要更新）
+    // 没有类型图层时（非 useTypeLayer 的场景），才退回到逐个 feature 的显隐方式
     const markerlist = markers.value.filter((m) => m.options.type === type);
 
     if (markerlist.length === 0) {
@@ -1186,6 +1206,9 @@ export function useMapMarkers(map, zoomVisibilityOptions = {}) {
       onComplete = null,
       isEnableCluster = false,
     } = batchOptions;
+    // 本次 addMarkers 涉及的 type（用于按类型启用聚合）
+    const typesInThisBatch = new Set();
+
     // 1. 根据缩放和 iconZoomThreshold，把需要延迟渲染的先放入缓存
     const renderNowList = [];
     const deferListByType = {};
@@ -1203,6 +1226,7 @@ export function useMapMarkers(map, zoomVisibilityOptions = {}) {
       if (needDefer) {
         markerList.forEach(({ coordinates, options = {} }) => {
           const type = options.type;
+          if (type) typesInThisBatch.add(type);
           if (type && zoomVisibilityConfig.typeList.includes(type)) {
             if (!deferListByType[type]) {
               deferListByType[type] = [];
@@ -1215,9 +1239,17 @@ export function useMapMarkers(map, zoomVisibilityOptions = {}) {
           }
         });
       } else {
+        markerList.forEach(({ options = {} }) => {
+          const type = options.type;
+          if (type) typesInThisBatch.add(type);
+        });
         renderNowList.push(...markerList);
       }
     } else {
+      markerList.forEach(({ options = {} }) => {
+        const type = options.type;
+        if (type) typesInThisBatch.add(type);
+      });
       renderNowList.push(...markerList);
     }
 
@@ -1236,13 +1268,14 @@ export function useMapMarkers(map, zoomVisibilityOptions = {}) {
         addMarker(coordinates, options, false);
       });
       if (isEnableCluster) {
-        // 启用指定类型的聚合
-        Object.keys(markerSourcesByType.value).forEach((el) => {
-          enableClustering(el, {
-            distance: 40, // 聚合距离
-            minDistance: 20, // 最小聚合距离
-          });
-          toggleClustering(el, true);
+        // 只对本次批次里出现的 type 启用聚合（而不是把所有类型都聚合）
+        typesInThisBatch.forEach((t) => {
+          if (!t) return;
+          // 仅对使用类型图层的 marker 才有意义
+          if (markerSourcesByType.value?.[t] || markerLayersByType.value?.[t]) {
+            enableClustering(t, { distance: 40, minDistance: 20 });
+            toggleClustering(t, true);
+          }
         });
       }
       onComplete && onComplete();
@@ -1255,6 +1288,7 @@ export function useMapMarkers(map, zoomVisibilityOptions = {}) {
       onProgress,
       onComplete,
       isEnableCluster,
+      typesInThisBatch: Array.from(typesInThisBatch),
     };
     // 大数据量使用分批处理
     await addMarkersBatch(params);
@@ -1270,8 +1304,14 @@ export function useMapMarkers(map, zoomVisibilityOptions = {}) {
    * @param {boolean} params.isEnableCluster - 是否启用聚合
    */
   const addMarkersBatch = (params) => {
-    const { markerList, batchSize, onProgress, onComplete, isEnableCluster } =
-      params;
+    const {
+      markerList,
+      batchSize,
+      onProgress,
+      onComplete,
+      isEnableCluster,
+      typesInThisBatch = [],
+    } = params;
     return new Promise((resolve, reject) => {
       let currentIndex = 0;
       const total = markerList.length;
@@ -1382,13 +1422,13 @@ export function useMapMarkers(map, zoomVisibilityOptions = {}) {
           requestAnimationFrame(processBatch);
         } else {
           if (isEnableCluster) {
-            // 启用指定类型的聚合
-            Object.keys(markerSourcesByType.value).forEach((el) => {
-              enableClustering(el, {
-                distance: 40, // 聚合距离
-                minDistance: 20, // 最小聚合距离
-              });
-              toggleClustering(el, true);
+            // 只对本次批次里出现的 type 启用聚合
+            typesInThisBatch.forEach((t) => {
+              if (!t) return;
+              if (markerSourcesByType.value?.[t] || markerLayersByType.value?.[t]) {
+                enableClustering(t, { distance: 40, minDistance: 20 });
+                toggleClustering(t, true);
+              }
             });
           }
           // 所有数据处理完成
@@ -1946,7 +1986,8 @@ export function useMapMarkers(map, zoomVisibilityOptions = {}) {
       markerLayersByType.value[type].setVisible(false);
     }
 
-    clusterEnabled.value = true;
+    clusterEnabledByType.value[type] = true;
+    clusterEnabled.value = Object.values(clusterEnabledByType.value).some(Boolean);
     console.log(`已启用 ${type} 类型的聚合功能`);
   };
 
@@ -1963,6 +2004,8 @@ export function useMapMarkers(map, zoomVisibilityOptions = {}) {
       markerLayersByType.value[type].setVisible(true);
     }
 
+    clusterEnabledByType.value[type] = false;
+    clusterEnabled.value = Object.values(clusterEnabledByType.value).some(Boolean);
     console.log(`已禁用 ${type} 类型的聚合功能`);
   };
 

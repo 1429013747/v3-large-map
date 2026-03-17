@@ -15,7 +15,7 @@ export function getMarkerData(
     29.330254208488313,
     121.69077697750392,
     1500,
-    120000,
+    10000,
   );
   const riskList = randomCoords.map((coord, index) => ({
     coordinates: [coord.lng, coord.lat],
@@ -53,7 +53,7 @@ export function getMarkerData(
   mapMarkersConfig.addMarkers(riskList, {
     useBatch: true,
     batchSize: 1000,
-    // isEnableCluster: true,
+    isEnableCluster: true,
     onProgress: (progress) => {
       console.log("进度:", progress);
     },
