@@ -325,7 +325,7 @@ export function getMarkerData(
 
   setTimeout(() => {
     mapMarkersConfig.clearOverlaysByType();
-  }, 8000);
+  }, 18000);
   window.closeWarnMarker = function (e) {
     e.stopPropagation();
     e.target.parentElement.parentElement.style.display = "none";

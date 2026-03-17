@@ -121,6 +121,12 @@ let trajectoryLayer = {};
 let radarScanAnimation = {};
 const map = ref(null);
 
+const zoomVisibilityOptions = ref({
+  textZoomThreshold: 16, // 文本 16 级以上展示
+  iconZoomThreshold: 11, // 图标 14 级以上展示
+  typeList: ["car", "ship", "risk-point"],
+});
+
 // 是否使用类型图层
 const useTypeLayer = ref(false);
 
@@ -204,9 +210,7 @@ function switchLayer(layerType) {
 async function onMapReady(mapInstance) {
   console.log("当前地图中心:", mapCenter);
   map.value = mapInstance; // 设置 map 变量
-  mapMarkersConfig = useMapMarkers(map.value, {
- 
-  });
+  mapMarkersConfig = useMapMarkers(map.value, zoomVisibilityOptions.value);
   radarScanAnimation = useRadarScanAnimation(map.value);
   // 使用类型图层
   useTypeLayer.value = true;
@@ -1224,6 +1228,9 @@ const allMarkerListConfigs = {
 // 控制图层面板事件处理
 function handleLayerToggle(layer) {
   console.log("图层切换:", layer);
+  if (mapZoom.value < zoomVisibilityOptions.value.iconZoomThreshold) {
+    return;
+  }
   // 这里可以添加实际的图层显示/隐藏逻辑
   const heatmap = heatmaps.value.find((heatmap) => heatmap.type === layer.type);
   if (heatmap && heatmap.visible) {

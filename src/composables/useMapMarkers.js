@@ -36,7 +36,7 @@ export function useMapMarkers(map, zoomVisibilityOptions = {}) {
   const clusterEnabledByType = ref({});
 
   // 首屏未到达渲染缩放级别时，按类型缓存待渲染的标记点
-  // 结构：{ [type]: { list: Array<{ coordinates, options }>, loaded: boolean } }
+  // 结构：{ [type]: { list: Array<{ coordinates, options }>, loaded: boolean, isEnableCluster?: boolean } }
   const pendingMarkersByType = {};
 
   // Overlay 相关
@@ -254,7 +254,7 @@ export function useMapMarkers(map, zoomVisibilityOptions = {}) {
         title: "warn-overlay",
         type: "warn-overlay",
         id: id,
-        stopEvent: true,
+        stopEvent: false, // 改为 false，允许滚轮事件传递到地图
         offset: [0, 20],
         positioning: "bottom-left",
         // position: fromLonLat([lng, lat]),
@@ -809,7 +809,8 @@ export function useMapMarkers(map, zoomVisibilityOptions = {}) {
       // 原始类型图层：只在「未启用聚合」时跟随显示；启用聚合时强制隐藏，避免和聚合叠加
       if (layerType === type) {
         const shouldShowBase =
-          visible && !(clusterEnabledByType.value?.[type] && clusterLayers.value?.[type]);
+          visible &&
+          !(clusterEnabledByType.value?.[type] && clusterLayers.value?.[type]);
         layer.setVisible(shouldShowBase);
         matchedAnyLayer = true;
       }
@@ -828,7 +829,11 @@ export function useMapMarkers(map, zoomVisibilityOptions = {}) {
     // 关键优化/修复：
     // - 如果已经命中了图层（类型图层或聚合图层），图层显隐就足够了
     // - 不再遍历大量 marker 逐个 setStyle（既卡顿，也可能与聚合显示逻辑冲突）
-    if (matchedAnyLayer || markerLayersByType.value?.[type] || clusterLayers.value?.[type]) {
+    if (
+      matchedAnyLayer ||
+      markerLayersByType.value?.[type] ||
+      clusterLayers.value?.[type]
+    ) {
       return;
     }
 
@@ -1256,9 +1261,17 @@ export function useMapMarkers(map, zoomVisibilityOptions = {}) {
     // 把需要延迟渲染的缓存起来
     Object.keys(deferListByType).forEach((type) => {
       if (!pendingMarkersByType[type]) {
-        pendingMarkersByType[type] = { list: [], loaded: false };
+        pendingMarkersByType[type] = {
+          list: [],
+          loaded: false,
+          isEnableCluster: false,
+        };
       }
       pendingMarkersByType[type].list.push(...deferListByType[type]);
+      // 记录该类型是否需要聚合（用于后续缩放达到阈值时从缓存渲染）
+      if (isEnableCluster) {
+        pendingMarkersByType[type].isEnableCluster = true;
+      }
     });
 
     // 如果当前全部都是延迟渲染的，就直接返回（等缩放达到阈值再统一渲染）
@@ -1425,7 +1438,10 @@ export function useMapMarkers(map, zoomVisibilityOptions = {}) {
             // 只对本次批次里出现的 type 启用聚合
             typesInThisBatch.forEach((t) => {
               if (!t) return;
-              if (markerSourcesByType.value?.[t] || markerLayersByType.value?.[t]) {
+              if (
+                markerSourcesByType.value?.[t] ||
+                markerLayersByType.value?.[t]
+              ) {
                 enableClustering(t, { distance: 40, minDistance: 20 });
                 toggleClustering(t, true);
               }
@@ -1987,7 +2003,9 @@ export function useMapMarkers(map, zoomVisibilityOptions = {}) {
     }
 
     clusterEnabledByType.value[type] = true;
-    clusterEnabled.value = Object.values(clusterEnabledByType.value).some(Boolean);
+    clusterEnabled.value = Object.values(clusterEnabledByType.value).some(
+      Boolean,
+    );
     console.log(`已启用 ${type} 类型的聚合功能`);
   };
 
@@ -2005,7 +2023,9 @@ export function useMapMarkers(map, zoomVisibilityOptions = {}) {
     }
 
     clusterEnabledByType.value[type] = false;
-    clusterEnabled.value = Object.values(clusterEnabledByType.value).some(Boolean);
+    clusterEnabled.value = Object.values(clusterEnabledByType.value).some(
+      Boolean,
+    );
     console.log(`已禁用 ${type} 类型的聚合功能`);
   };
 
@@ -2376,7 +2396,10 @@ export function useMapMarkers(map, zoomVisibilityOptions = {}) {
               const pending = pendingMarkersByType[type];
               const pendingList = pending?.list || [];
               if (pending && !pending.loaded && pendingList.length > 0) {
-                addMarkers(pendingList, { useBatch: true });
+                addMarkers(pendingList, {
+                  useBatch: true,
+                  isEnableCluster: !!pending.isEnableCluster,
+                });
                 pending.loaded = true;
                 pending.list = [];
               }
