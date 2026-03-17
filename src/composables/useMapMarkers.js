@@ -27,7 +27,7 @@ import { getIconPathMarkIcons, getIconPath } from "@/utils/utilstools.js";
  * @param {Object} map - OpenLayers地图实例
  * @returns {Object} 标记点管理方法和状态
  */
-export function useMapMarkers(map) {
+export function useMapMarkers(map, zoomOptions = {}) {
   // 标记点数据
   const markers = ref([]);
   const markerLayer = ref(null);
@@ -68,6 +68,15 @@ export function useMapMarkers(map) {
       strokeWidth: 2,
       displacement: [9, -9],
     },
+  });
+
+  // 缩放显隐控制配置（用于图层/文本显隐）
+  const zoomVisibilityConfig = ref({
+    textZoomThreshold: zoomOptions?.textZoomThreshold ?? null,
+    iconZoomThreshold: zoomOptions?.iconZoomThreshold ?? null,
+    typeList: Array.isArray(zoomOptions?.typeList)
+      ? [...zoomOptions.typeList]
+      : [],
   });
 
   // 轨迹管理
@@ -1026,13 +1035,22 @@ export function useMapMarkers(map) {
    */
   const createMarkerLayerByType = (type) => {
     if (markerLayersByType.value[type]) {
-      // 确保已存在的图层是可见的
-      const existingLayer = markerLayersByType.value[type];
-      existingLayer.setVisible(true);
-      return existingLayer;
+      return markerLayersByType.value[type];
     }
 
     const typeSource = new VectorSource();
+    const view = map?.getView?.();
+    const currentZoom = view?.getZoom?.();
+    const cfg = zoomVisibilityConfig.value;
+    const isControlled =
+      type &&
+      typeof cfg?.iconZoomThreshold === "number" &&
+      Array.isArray(cfg?.typeList) &&
+      cfg.typeList.includes(type) &&
+      typeof currentZoom === "number";
+    const initialVisible = isControlled
+      ? currentZoom >= cfg.iconZoomThreshold
+      : true;
     // 为 detail-marker 类型设置高于轨迹图层（zIndex: 200）的 zIndex，确保显示在轨迹上面
     const layerZIndex =
       type === "detail-marker"
@@ -1042,7 +1060,7 @@ export function useMapMarkers(map) {
       source: typeSource,
       zIndex: layerZIndex,
       title: type,
-      visible: true, // 确保图层可见
+      visible: initialVisible,
       renderMode: "image", // 平移/缩放时渲染为位图，减少重绘卡顿
     });
 
@@ -1110,6 +1128,18 @@ export function useMapMarkers(map) {
   };
 
   /**
+   * 仅控制“类型图层”的可见性（不改 Feature 样式）
+   */
+  const setTypeLayerVisible = (type, visible) => {
+    if (!map) return;
+    const layer = markerLayersByType.value?.[type];
+    if (layer) {
+      layer.setVisible(visible);
+    }
+    // 兜底：还没创建图层时，什么也不做；等图层创建时会按当前缩放设置初始 visible
+  };
+
+  /**
    * 获取自定义图层
    * @returns {Array} 图层数组
    */
@@ -1173,6 +1203,52 @@ export function useMapMarkers(map) {
         }
       }
     });
+  };
+
+  /**
+   * 基于缩放级别在图层内部控制：图标图层显隐 + 文本显隐
+   * - 图标：通过 layer.setVisible（只控制图层，不控制 Feature）
+   * - 文本：通过 toggleMarkerTextVisibilityByType（会改样式并触发重绘）
+   */
+  const setupZoomVisibilityController = (options = {}) => {
+    if (!map) return;
+    const {
+      textZoomThreshold = zoomVisibilityConfig.value.textZoomThreshold ?? null,
+      iconZoomThreshold = zoomVisibilityConfig.value.iconZoomThreshold ?? null,
+      typeList = zoomVisibilityConfig.value.typeList ?? [],
+    } = options;
+
+    zoomVisibilityConfig.value = {
+      textZoomThreshold,
+      iconZoomThreshold,
+      typeList: Array.isArray(typeList) ? [...typeList] : [],
+    };
+
+    const view = map.getView();
+    if (!view) return;
+
+    const apply = () => {
+      const zoom = view.getZoom();
+      if (typeof zoom !== "number") return;
+      const cfg = zoomVisibilityConfig.value;
+      const list = Array.isArray(cfg.typeList) ? cfg.typeList : [];
+
+      if (typeof cfg.iconZoomThreshold === "number") {
+        const showIcon = zoom >= cfg.iconZoomThreshold;
+        list.forEach((t) => setTypeLayerVisible(t, showIcon));
+      }
+
+      if (typeof cfg.textZoomThreshold === "number") {
+        const showText = zoom >= cfg.textZoomThreshold;
+        list.forEach((t) => toggleMarkerTextVisibilityByType(t, showText));
+      }
+    };
+
+    // 初始化立刻应用一次
+    apply();
+
+    // 缩放变化监听（resolution 变化对应 zoom 变化）
+    view.on("change:resolution", apply);
   };
 
   /**
@@ -1774,7 +1850,7 @@ export function useMapMarkers(map) {
     customPolygonSource.value.addFeature(feature);
     return feature;
   };
-  
+
   /**
    * 清理已加载标记点记录
    */
@@ -2167,11 +2243,8 @@ export function useMapMarkers(map) {
     createMultipleMarkers,
     clearOverlaysByType,
     drawFilledPolygon,
-    drawFilledPolygonCustom,
-    drawSector,
     addLayerToMap,
     removeLayer,
-    addExcludedAreaLayer,
 
     // 性能优化方法
     batchToggleMarkerVisibility,
@@ -2190,6 +2263,7 @@ export function useMapMarkers(map) {
     // 文本和气泡控制方法
     toggleMarkerTextVisibility,
     toggleMarkerTextVisibilityByType,
+    setupZoomVisibilityController,
     toggleShipMarkerStyle,
     // ID管理方法
     isMarkerIdUnique,

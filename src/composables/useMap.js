@@ -30,8 +30,8 @@ export function useMap(options = {}) {
   const isMapReady = ref(false);
   const mapCenter = ref(center);
   const mapZoom = ref(zoom);
-  const apiKey = ref("cff1fa4f29d5375c9d6290bd249ce077");
-  // const apiKey = ref("0a48cde9eb28189acac8149c3f047266");
+  // const apiKey = ref("cff1fa4f29d5375c9d6290bd249ce077");
+  const apiKey = ref("0a48cde9eb28189acac8149c3f047266");
   // 更新中心坐标
   const updateCenter = (newCenter) => {
     mapCenter.value = newCenter;

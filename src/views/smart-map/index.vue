@@ -204,7 +204,11 @@ function switchLayer(layerType) {
 async function onMapReady(mapInstance) {
   console.log("当前地图中心:", mapCenter);
   map.value = mapInstance; // 设置 map 变量
-  mapMarkersConfig = useMapMarkers(map.value);
+  mapMarkersConfig = useMapMarkers(map.value, {
+    textZoomThreshold: 12, // 文本 16 级以上展示
+    iconZoomThreshold: 11, // 图标 14 级以上展示
+    typeList: ["car", "ship", "risk-point"],
+  });
   radarScanAnimation = useRadarScanAnimation(map.value);
   // 使用类型图层
   useTypeLayer.value = true;
@@ -216,13 +220,14 @@ async function onMapReady(mapInstance) {
     hoverContent: null, // 使用默认的 TrajectoryPointPopup 组件
     enableTrajectoryPlayback: true,
     playbackOptions: {
-      icon: new URL('@/assets/icons/trajectory-moving.svg', import.meta.url).href,
+      icon: new URL("@/assets/icons/trajectory-moving.svg", import.meta.url)
+        .href,
       iconScale: 0.66,
       totalSteps: 1000,
       fixedSpeed: 1, // GPS 轨迹播放速度调快（3公里/秒）
       speedMultiplier: 1, // 1倍速播放
-      autoPlay: true // 关闭自动播放，手动指定播放 GPS 轨迹
-    }
+      autoPlay: true, // 关闭自动播放，手动指定播放 GPS 轨迹
+    },
   });
   // 初始化热力图
   heatmapConfig = useMapHeatmap(map.value);
@@ -234,7 +239,7 @@ async function onMapReady(mapInstance) {
     heatmapConfig,
     warningDrawerVisible,
     initShowPanel,
-    radarScanAnimation
+    radarScanAnimation,
   );
 }
 
@@ -300,7 +305,7 @@ function onMapClick(event) {
         }
         // 备用方案：检查是否在类型图层列表中
         return Object.values(
-          mapMarkersConfig.markerLayersByType.value
+          mapMarkersConfig.markerLayersByType.value,
         ).includes(layer);
       } else {
         // 检查是否是默认标记点图层
@@ -356,7 +361,7 @@ function onMapDoubleClick(event) {
         }
         // 备用方案：检查是否在类型图层列表中
         return Object.values(
-          mapMarkersConfig.markerLayersByType.value
+          mapMarkersConfig.markerLayersByType.value,
         ).includes(layer);
       } else {
         // 检查是否是默认标记点图层
@@ -391,7 +396,7 @@ function onMapRightClick(event) {
         }
         // 备用方案：检查是否在类型图层列表中
         return Object.values(
-          mapMarkersConfig.markerLayersByType.value
+          mapMarkersConfig.markerLayersByType.value,
         ).includes(layer);
       } else {
         // 检查是否是默认标记点图层
@@ -427,24 +432,6 @@ function onMapMove(event) {
   const center = `${event.center[0].toFixed(4)}, ${event.center[1].toFixed(4)}`;
   displayCenter.value = center;
   mapZoom.value = event.zoom;
-
-  // 处理文本可见性
-  const typeList = ["car", "ship", "risk-point"];
-  typeList.forEach((type) => {
-    if (mapZoom.value < 13) {
-      mapMarkersConfig.toggleMarkerTextVisibilityByType(type, false);
-    } else {
-      mapMarkersConfig.toggleMarkerTextVisibilityByType(type, true);
-    }
-
-    if (mapZoom.value < 11.4) {
-      mapMarkersConfig.toggleShipMarkerStyle(type, true); // 使用小绿点
-      useMapEvents.value = false;
-    } else {
-      mapMarkersConfig.toggleShipMarkerStyle(type, false); // 使用原始图标
-      useMapEvents.value = true;
-    }
-  });
 }
 
 /**
@@ -457,23 +444,24 @@ async function trackBack(markerId) {
     trajectoryLayer.clear();
   }
   // 示例坐标点
-  const coordinates = [{
-    id: markerId, // 使用 id 控制显示/隐藏
-    name: 'markerId1',
-    startPoint: 'markerId1' + ' ' + ('起点标签'), // 起点标签
-    endPoint: 'markerId1' + ' ' + ('终点标签'), // 终点标签
-    data: Array.from({ length: 320 }, (_, idx) => ({
-      id: `${markerId}-${idx}`,
-      fromAmap: false, // true就这个点不绘制了
-      longitude: String(121.72482419397187 + idx * 0.001),
-      latitude: String(29.34646109911479 + idx * 0.001),
-      pointTime: new Date().toISOString(),
-      vehicleNo: 'markerId1'
-    }))
-  }
+  const coordinates = [
+    {
+      id: markerId, // 使用 id 控制显示/隐藏
+      name: "markerId1",
+      startPoint: "markerId1" + " " + "起点标签", // 起点标签
+      endPoint: "markerId1" + " " + "终点标签", // 终点标签
+      data: Array.from({ length: 320 }, (_, idx) => ({
+        id: `${markerId}-${idx}`,
+        fromAmap: false, // true就这个点不绘制了
+        longitude: String(121.72482419397187 + idx * 0.001),
+        latitude: String(29.34646109911479 + idx * 0.001),
+        pointTime: new Date().toISOString(),
+        vehicleNo: "markerId1",
+      })),
+    },
   ];
   trajectoryLayer.updateData(coordinates, {
-    renderTrackPoints: true // 渲染轨迹点
+    renderTrackPoints: true, // 渲染轨迹点
     // 轨迹点标签：传入函数自定义渲染内容，返回 null 则不显示
     // trackPointLabel: (data) => {
     //   // 例如：显示时间
@@ -553,7 +541,7 @@ function handleLocationCorrectStart() {
   // 创建缩放后的光标图标，热点位置在下方中间
   const iconUrl = new URL(
     "@/assets/imgs/markIcons/set-point.png",
-    import.meta.url
+    import.meta.url,
   ).href;
   const img = new Image();
   img.crossOrigin = "anonymous";
@@ -589,7 +577,7 @@ function handleLocationCorrectConfirm() {
   if (currentCorrectMarkerId.value && clickedCoordinate.value) {
     mapMarkersConfig.setMarkerCoordinates(
       currentCorrectMarkerId.value,
-      clickedCoordinate.value
+      clickedCoordinate.value,
     );
     isGeneratingMarker.value = false;
     mapMarkersConfig.removeMarker(clickMarkerId.value);
@@ -704,7 +692,7 @@ function showMarkerPopup(coordinates, markerData) {
       markerData,
       trackBack,
       viewMore,
-      cancelTrack
+      cancelTrack,
     );
   } else if (markerData.popupType === "ship") {
     if (markerData.flat) {
@@ -712,7 +700,7 @@ function showMarkerPopup(coordinates, markerData) {
         markerData,
         setKeyShip,
         viewMoreShip,
-        shipQuery
+        shipQuery,
       );
     } else {
       mapMarkersConfig.markerPopupElement.value.innerHTML =
@@ -721,7 +709,7 @@ function showMarkerPopup(coordinates, markerData) {
           setKeyShip,
           viewMoreShip,
           shipQuery,
-          cancelShip
+          cancelShip,
         );
     }
   } else {
@@ -731,7 +719,7 @@ function showMarkerPopup(coordinates, markerData) {
         markerData,
         trackCorrect,
         viewMoreCorrect,
-        cancelCorrect
+        cancelCorrect,
       );
   }
 
@@ -779,8 +767,8 @@ const displayZoom = computed(() => {
 const displayClicked = computed(() => {
   return clickedCoordinate.value
     ? `${clickedCoordinate.value[0].toFixed(
-      4
-    )}, ${clickedCoordinate.value[1].toFixed(4)}`
+        4,
+      )}, ${clickedCoordinate.value[1].toFixed(4)}`
     : "未点击";
 });
 
@@ -806,23 +794,24 @@ function handleTrackClick(warning) {
       trajectoryLayer.clear();
     }
     // 示例坐标点
-    const coordinates = [{
-      id: warning.markerId, // 使用 id 控制显示/隐藏
-      name: 'markerId1',
-      startPoint: 'markerId1' + ' ' + ('起点标签'), // 起点标签
-      endPoint: 'markerId1' + ' ' + ('终点标签'), // 终点标签
-      data: Array.from({ length: 320 }, (_, idx) => ({
-        id: `${warning.markerId}-${idx}`,
-        fromAmap: false, // true就这个点不绘制了
-        longitude: String(121.72482419397187 + idx * 0.001),
-        latitude: String(29.34646109911479 + idx * 0.001),
-        pointTime: new Date().toISOString(),
-        vehicleNo: 'markerId1'
-      }))
-    }
+    const coordinates = [
+      {
+        id: warning.markerId, // 使用 id 控制显示/隐藏
+        name: "markerId1",
+        startPoint: "markerId1" + " " + "起点标签", // 起点标签
+        endPoint: "markerId1" + " " + "终点标签", // 终点标签
+        data: Array.from({ length: 320 }, (_, idx) => ({
+          id: `${warning.markerId}-${idx}`,
+          fromAmap: false, // true就这个点不绘制了
+          longitude: String(121.72482419397187 + idx * 0.001),
+          latitude: String(29.34646109911479 + idx * 0.001),
+          pointTime: new Date().toISOString(),
+          vehicleNo: "markerId1",
+        })),
+      },
     ];
     trajectoryLayer.updateData(coordinates, {
-      renderTrackPoints: true // 渲染轨迹点
+      renderTrackPoints: true, // 渲染轨迹点
       // 轨迹点标签：传入函数自定义渲染内容，返回 null 则不显示
       // trackPointLabel: (data) => {
       //   // 例如：显示时间
@@ -846,23 +835,24 @@ function getwarning(warning) {
     trajectoryLayer.clear();
   }
   // 示例坐标点
-  const coordinates = [{
-    id: warning.markerId, // 使用 id 控制显示/隐藏
-    name: 'markerId1',
-    startPoint: 'markerId1' + ' ' + ('起点标签'), // 起点标签
-    endPoint: 'markerId1' + ' ' + ('终点标签'), // 终点标签
-    data: Array.from({ length: 320 }, (_, idx) => ({
-      id: `${warning.markerId}-${idx}`,
-      fromAmap: false, // true就这个点不绘制了
-      longitude: String(121.72482419397187 + idx * 0.001),
-      latitude: String(29.34646109911479 + idx * 0.001),
-      pointTime: new Date().toISOString(),
-      vehicleNo: 'markerId1'
-    }))
-  }
+  const coordinates = [
+    {
+      id: warning.markerId, // 使用 id 控制显示/隐藏
+      name: "markerId1",
+      startPoint: "markerId1" + " " + "起点标签", // 起点标签
+      endPoint: "markerId1" + " " + "终点标签", // 终点标签
+      data: Array.from({ length: 320 }, (_, idx) => ({
+        id: `${warning.markerId}-${idx}`,
+        fromAmap: false, // true就这个点不绘制了
+        longitude: String(121.72482419397187 + idx * 0.001),
+        latitude: String(29.34646109911479 + idx * 0.001),
+        pointTime: new Date().toISOString(),
+        vehicleNo: "markerId1",
+      })),
+    },
   ];
   trajectoryLayer.updateData(coordinates, {
-    renderTrackPoints: true // 渲染轨迹点
+    renderTrackPoints: true, // 渲染轨迹点
     // 轨迹点标签：传入函数自定义渲染内容，返回 null 则不显示
     // trackPointLabel: (data) => {
     //   // 例如：显示时间
@@ -883,23 +873,24 @@ function handleVehicleTrackBack(vehicleData) {
       trajectoryLayer.clear();
     }
     // 示例坐标点
-    const coordinates = [{
-      id: vehicleData.markerId, // 使用 id 控制显示/隐藏
-      name: 'markerId1',
-      startPoint: 'markerId1' + ' ' + ('起点标签'), // 起点标签
-      endPoint: 'markerId1' + ' ' + ('终点标签'), // 终点标签
-      data: Array.from({ length: 320 }, (_, idx) => ({
-        id: `${vehicleData.markerId}-${idx}`,
-        fromAmap: false, // true就这个点不绘制了
-        longitude: String(121.72482419397187 + idx * 0.001),
-        latitude: String(29.34646109911479 + idx * 0.001),
-        pointTime: new Date().toISOString(),
-        vehicleNo: 'markerId1'
-      }))
-    }
+    const coordinates = [
+      {
+        id: vehicleData.markerId, // 使用 id 控制显示/隐藏
+        name: "markerId1",
+        startPoint: "markerId1" + " " + "起点标签", // 起点标签
+        endPoint: "markerId1" + " " + "终点标签", // 终点标签
+        data: Array.from({ length: 320 }, (_, idx) => ({
+          id: `${vehicleData.markerId}-${idx}`,
+          fromAmap: false, // true就这个点不绘制了
+          longitude: String(121.72482419397187 + idx * 0.001),
+          latitude: String(29.34646109911479 + idx * 0.001),
+          pointTime: new Date().toISOString(),
+          vehicleNo: "markerId1",
+        })),
+      },
     ];
     trajectoryLayer.updateData(coordinates, {
-      renderTrackPoints: true // 渲染轨迹点
+      renderTrackPoints: true, // 渲染轨迹点
       // 轨迹点标签：传入函数自定义渲染内容，返回 null 则不显示
       // trackPointLabel: (data) => {
       //   // 例如：显示时间
@@ -940,7 +931,7 @@ watch(
       mapMarkersConfig.toggleMarkerBorder(MarkerIds.value[0], false);
       MarkerIds.value = [];
     }
-  }
+  },
 );
 
 function handleAddVehicle(formData) {
@@ -977,23 +968,24 @@ function handleVesselTrackBack(vesselData) {
     trajectoryLayer.clear();
   }
   // 示例坐标点
-  const coordinates = [{
-    id: vesselData.markerId, // 使用 id 控制显示/隐藏
-    name: 'markerId1',
-    startPoint: 'markerId1' + ' ' + ('起点标签'), // 起点标签
-    endPoint: 'markerId1' + ' ' + ('终点标签'), // 终点标签
-    data: Array.from({ length: 320 }, (_, idx) => ({
-      id: `${vesselData.markerId}-${idx}`,
-      fromAmap: false, // true就这个点不绘制了
-      longitude: String(121.72482419397187 + idx * 0.001),
-      latitude: String(29.34646109911479 + idx * 0.001),
-      pointTime: new Date().toISOString(),
-      vehicleNo: 'markerId1'
-    }))
-  }
+  const coordinates = [
+    {
+      id: vesselData.markerId, // 使用 id 控制显示/隐藏
+      name: "markerId1",
+      startPoint: "markerId1" + " " + "起点标签", // 起点标签
+      endPoint: "markerId1" + " " + "终点标签", // 终点标签
+      data: Array.from({ length: 320 }, (_, idx) => ({
+        id: `${vesselData.markerId}-${idx}`,
+        fromAmap: false, // true就这个点不绘制了
+        longitude: String(121.72482419397187 + idx * 0.001),
+        latitude: String(29.34646109911479 + idx * 0.001),
+        pointTime: new Date().toISOString(),
+        vehicleNo: "markerId1",
+      })),
+    },
   ];
   trajectoryLayer.updateData(coordinates, {
-    renderTrackPoints: true // 渲染轨迹点
+    renderTrackPoints: true, // 渲染轨迹点
     // 轨迹点标签：传入函数自定义渲染内容，返回 null 则不显示
     // trackPointLabel: (data) => {
     //   // 例如：显示时间
@@ -1336,10 +1328,10 @@ function handleBottomMenuClick(index) {
 
 function handleDefaultVisibleLayers(defaultVisibleLayers) {
   [...layers.value, ...sensingDevices.value, ...heatmaps.value].forEach(
-    (val) => (val.visible = false)
+    (val) => (val.visible = false),
   );
   [...layers.value, ...sensingDevices.value, ...heatmaps.value].forEach(
-    (val) => defaultVisibleLayers.includes(val.name) && (val.visible = true)
+    (val) => defaultVisibleLayers.includes(val.name) && (val.visible = true),
   );
 }
 
@@ -1420,9 +1412,16 @@ onUnmounted(() => {
     <MapLayout :show-map="true" :enable-scale="true" title="智能地图">
       <template #map>
         <MapViewer
-          ref="mapViewer" :center="mapCenter" :zoom="mapZoom" height="100%" @map-ready="onMapReady"
-          @map-click="onMapClick" @map-double-click="onMapDoubleClick" @map-move="onMapMove"
-          @layer-change="onLayerChange" @map-right-click="onMapRightClick"
+          ref="mapViewer"
+          :center="mapCenter"
+          :zoom="mapZoom"
+          height="100%"
+          @map-ready="onMapReady"
+          @map-click="onMapClick"
+          @map-double-click="onMapDoubleClick"
+          @map-move="onMapMove"
+          @layer-change="onLayerChange"
+          @map-right-click="onMapRightClick"
         />
       </template>
       <template #default>
@@ -1437,7 +1436,11 @@ onUnmounted(() => {
             </a-input>
           </div> -->
           <!-- 顶部预警 -->
-          <div v-if="warningInfoVisible" class="warning-container" @click="handleWarningClick">
+          <div
+            v-if="warningInfoVisible"
+            class="warning-container"
+            @click="handleWarningClick"
+          >
             <div class="warning-title">
               <div class="warning-title-num">
                 6
@@ -1445,7 +1448,13 @@ onUnmounted(() => {
               <img src="@/assets/imgs/text.png" alt="">
             </div>
             <div class="warning-content">
-              <Vue3SeamlessScroll :list="list" direction="up" :hover="true" :step="0.35" :delay="2000">
+              <Vue3SeamlessScroll
+                :list="list"
+                direction="up"
+                :hover="true"
+                :step="0.35"
+                :delay="2000"
+              >
                 <template #default="{ data }">
                   <div class="warning-content-item">
                     {{ data.name }}
@@ -1460,35 +1469,57 @@ onUnmounted(() => {
           </div>
           <!-- 左侧预警抽屉 -->
           <WarningDrawer
-            v-model:open="warningDrawerVisible" @warning-click="handleWarningItemClick"
-            @track-click="handleTrackClick" @detail-click="handleDetailClick" @getwarning="getwarning"
+            v-model:open="warningDrawerVisible"
+            @warning-click="handleWarningItemClick"
+            @track-click="handleTrackClick"
+            @detail-click="handleDetailClick"
+            @getwarning="getwarning"
           />
           <!-- 右侧工具栏 -->
           <RightToolbar
-            ref="rightToolbarRef" @layer-control="handleToolbarLayerControl"
-            @legend-display="handleToolbarLegendDisplay" @ship-events="handleToolbarShipEvents"
-            @comprehensive-search="handleToolbarComprehensiveSearch" @track-query="handleToolbarTrackQuery"
-            @gang-vehicle-query="handleToolbarGangVehicleQuery" @tide-query="handleToolbarTideQuery"
-            @measure-distance="handleToolbarMeasureDistance" @measure-area="handleToolbarMeasureArea"
-            @plotting="handleToolbarPlotting" @clear="handleToolbarClear" @locate="handleToolbarLocate"
-            @zoom-in="handleToolbarZoomIn" @zoom-out="handleToolbarZoomOut" @model-center="handleToolbarModelCenter"
+            ref="rightToolbarRef"
+            @layer-control="handleToolbarLayerControl"
+            @legend-display="handleToolbarLegendDisplay"
+            @ship-events="handleToolbarShipEvents"
+            @comprehensive-search="handleToolbarComprehensiveSearch"
+            @track-query="handleToolbarTrackQuery"
+            @gang-vehicle-query="handleToolbarGangVehicleQuery"
+            @tide-query="handleToolbarTideQuery"
+            @measure-distance="handleToolbarMeasureDistance"
+            @measure-area="handleToolbarMeasureArea"
+            @plotting="handleToolbarPlotting"
+            @clear="handleToolbarClear"
+            @locate="handleToolbarLocate"
+            @zoom-in="handleToolbarZoomIn"
+            @zoom-out="handleToolbarZoomOut"
+            @model-center="handleToolbarModelCenter"
           />
 
           <!-- 应急标绘面板 -->
           <PlotPanel
-            ref="plotPanelRef" :map="map" :visible="plottingPanelVisible" @close="closePlottingPanel"
-            @feature-created="handleFeatureCreated" @feature-selected="handleFeatureSelected"
+            ref="plotPanelRef"
+            :map="map"
+            :visible="plottingPanelVisible"
+            @close="closePlottingPanel"
+            @feature-created="handleFeatureCreated"
+            @feature-selected="handleFeatureSelected"
             @feature-deleted="handleFeatureDeleted"
           />
           <!-- 控制图层面板 -->
           <LayerControlPanel
-            v-model:open="layerControlVisible" :layers="layers" :sensing-devices="sensingDevices"
-            :heatmaps="heatmaps" @layer-toggle="handleLayerToggle"
+            v-model:open="layerControlVisible"
+            :layers="layers"
+            :sensing-devices="sensingDevices"
+            :heatmaps="heatmaps"
+            @layer-toggle="handleLayerToggle"
             @closed="rightToolbarRef?.onClose({ id: 'layer-control' })"
           />
 
           <!-- 图例面板 -->
-          <LegendPanel v-model:open="legendPanelVisible" @closed="rightToolbarRef?.onClose({ id: 'legend-display' })" />
+          <LegendPanel
+            v-model:open="legendPanelVisible"
+            @closed="rightToolbarRef?.onClose({ id: 'legend-display' })"
+          />
           <!-- 综合检索面板 -->
           <ComprehensiveSearchPanel
             v-model:open="comprehensiveSearchVisible"
@@ -1503,7 +1534,8 @@ onUnmounted(() => {
 
           <!-- 轨迹查询面板 -->
           <TrackQueryPanel
-            v-model:open="trackQueryPanelVisible" :map-markers-config="mapMarkersConfig"
+            v-model:open="trackQueryPanelVisible"
+            :map-markers-config="mapMarkersConfig"
             @closed="rightToolbarRef?.onClose({ id: 'track-query' })"
           />
 
@@ -1524,41 +1556,64 @@ onUnmounted(() => {
 
           <!-- 可疑车辆弹窗 -->
           <SuspiciousVehiclePopup
-            ref="suspiciousVehiclePopupRef" v-model:open="suspiciousVehiclePopupVisible"
-            :vehicle-data="selectedVehicleData" @track-back="handleVehicleTrackBack"
-            @create-warning="handleVehicleCreateWarning" @vehicle-click="handleVehicleWarningClick"
-            @add-vehicle="handleAddVehicle" @cancel-key="handleCancelKey"
+            ref="suspiciousVehiclePopupRef"
+            v-model:open="suspiciousVehiclePopupVisible"
+            :vehicle-data="selectedVehicleData"
+            @track-back="handleVehicleTrackBack"
+            @create-warning="handleVehicleCreateWarning"
+            @vehicle-click="handleVehicleWarningClick"
+            @add-vehicle="handleAddVehicle"
+            @cancel-key="handleCancelKey"
           />
           <!-- 岸线管控弹窗 -->
           <CoastlinePopup
-            ref="keyVesselsPopupRef" v-model:open="CoastlinePopupVisible"
+            ref="keyVesselsPopupRef"
+            v-model:open="CoastlinePopupVisible"
             :coastline-data="selectedCoastlineData"
           />
           <!-- 应急标绘面板 -->
           <PlotPanel
-            ref="plotPanelRef" :map="map" :visible="plottingPanelVisible" @close="closePlottingPanel"
-            @feature-created="handleFeatureCreated" @feature-selected="handleFeatureSelected"
+            ref="plotPanelRef"
+            :map="map"
+            :visible="plottingPanelVisible"
+            @close="closePlottingPanel"
+            @feature-created="handleFeatureCreated"
+            @feature-selected="handleFeatureSelected"
             @feature-deleted="handleFeatureDeleted"
           />
           <!-- 重点船舶弹窗 -->
           <KeyVesselsPopup
-            ref="keyVesselsPopupRef" v-model:open="keyVesselsPopupVisible"
-            :vessels-data="selectedVesselData" @track-back="handleVesselTrackBack"
-            @create-warning="handleVesselCreateWarning" @vessels-click="handleVesselWarningClick"
-            @add-vessels="handleAddVessel" @cancel-key="handleCancelKeyVessel"
+            ref="keyVesselsPopupRef"
+            v-model:open="keyVesselsPopupVisible"
+            :vessels-data="selectedVesselData"
+            @track-back="handleVesselTrackBack"
+            @create-warning="handleVesselCreateWarning"
+            @vessels-click="handleVesselWarningClick"
+            @add-vessels="handleAddVessel"
+            @cancel-key="handleCancelKeyVessel"
           />
 
           <!-- 重点人员弹窗 -->
-          <KeyPersonnelPopup v-model:open="keyPersonnelPopupVisible" @close="handleKeyPersonnelClose" />
+          <KeyPersonnelPopup
+            v-model:open="keyPersonnelPopupVisible"
+            @close="handleKeyPersonnelClose"
+          />
 
           <!-- 底部菜单 -->
           <div class="bottom-menu">
             <div class="bottom-menu-box">
               <!-- 滑动指示器 -->
-              <div v-show="activeBottomMenu !== -1" class="slider-indicator" :style="getSliderIndicatorStyle" />
               <div
-                v-for="(item, index) in bottomMenu" :key="item.name" class="bottom-menu-item"
-                :class="{ active: index === activeBottomMenu }" @click="handleBottomMenuClick(index)"
+                v-show="activeBottomMenu !== -1"
+                class="slider-indicator"
+                :style="getSliderIndicatorStyle"
+              />
+              <div
+                v-for="(item, index) in bottomMenu"
+                :key="item.name"
+                class="bottom-menu-item"
+                :class="{ active: index === activeBottomMenu }"
+                @click="handleBottomMenuClick(index)"
               >
                 <img :src="getIconPath(item.icon)" :alt="`${item.name}图标`">
                 {{ item.name }}
@@ -1624,11 +1679,22 @@ onUnmounted(() => {
 
             <!-- 右侧地图图层切换 -->
             <div class="statistics-right">
-              <div class="map-layer-buttons" :class="{ 'slide-right': currentLayer === '天地图卫星' }">
-                <div class="layer-btn" :class="{ active: currentLayer === '天地图' }" @click="switchLayer('天地图')">
+              <div
+                class="map-layer-buttons"
+                :class="{ 'slide-right': currentLayer === '天地图卫星' }"
+              >
+                <div
+                  class="layer-btn"
+                  :class="{ active: currentLayer === '天地图' }"
+                  @click="switchLayer('天地图')"
+                >
                   行政地图
                 </div>
-                <div class="layer-btn" :class="{ active: currentLayer === '天地图卫星' }" @click="switchLayer('天地图卫星')">
+                <div
+                  class="layer-btn"
+                  :class="{ active: currentLayer === '天地图卫星' }"
+                  @click="switchLayer('天地图卫星')"
+                >
                   卫星图
                 </div>
               </div>
@@ -1641,7 +1707,11 @@ onUnmounted(() => {
               <!-- 图层切换 -->
               <div class="control-group">
                 <label>底图图层：</label>
-                <select v-model="currentLayer" class="layer-select" @change="handleLayerChange">
+                <select
+                  v-model="currentLayer"
+                  class="layer-select"
+                  @change="handleLayerChange"
+                >
                   <option value="天地图">
                     天地图
                   </option>
@@ -1685,8 +1755,15 @@ onUnmounted(() => {
 
     <!-- 位置纠偏提示对话框 -->
     <a-modal
-      v-model:open="locationCorrectModalVisible" :title="null" :footer="null" :mask="false" centered
-      width="440px" get-container=".ui-container" class="location-correct-modal" :z-index="99999"
+      v-model:open="locationCorrectModalVisible"
+      :title="null"
+      :footer="null"
+      :mask="false"
+      centered
+      width="440px"
+      get-container=".ui-container"
+      class="location-correct-modal"
+      :z-index="99999"
     >
       <div class="location-correct-content">
         <div class="location-correct-title">
@@ -1696,11 +1773,18 @@ onUnmounted(() => {
         <div class="location-correct-footer">
           <div class="warning-text">
             <div>
-              <img src="@/assets/imgs/markIcons/set-point.png" alt="位置纠偏提示">
+              <img
+                src="@/assets/imgs/markIcons/set-point.png"
+                alt="位置纠偏提示"
+              >
             </div>
             <span>请在地图处重新标注位置</span>
           </div>
-          <a-button type="primary" class="confirm-btn" @click="handleLocationCorrectStart">
+          <a-button
+            type="primary"
+            class="confirm-btn"
+            @click="handleLocationCorrectStart"
+          >
             确定
           </a-button>
         </div>
@@ -1709,8 +1793,15 @@ onUnmounted(() => {
 
     <!-- 位置修改确认对话框 -->
     <a-modal
-      v-model:open="locationConfirmModalVisible" :title="null" :footer="null" :mask="false" centered
-      width="400px" get-container=".ui-container" class="location-confirm-modal" :z-index="99999"
+      v-model:open="locationConfirmModalVisible"
+      :title="null"
+      :footer="null"
+      :mask="false"
+      centered
+      width="400px"
+      get-container=".ui-container"
+      class="location-confirm-modal"
+      :z-index="99999"
     >
       <div class="location-confirm-content">
         <div class="location-confirm-title">
@@ -1725,7 +1816,11 @@ onUnmounted(() => {
           <a-button class="cancel-btn" @click="handleLocationConfirmCancel">
             重新标注
           </a-button>
-          <a-button type="primary" class="confirm-btn" @click="handleLocationCorrectConfirm">
+          <a-button
+            type="primary"
+            class="confirm-btn"
+            @click="handleLocationCorrectConfirm"
+          >
             确定
           </a-button>
         </div>
