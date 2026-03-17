@@ -44,6 +44,49 @@ export function useMapClustering(map) {
     minDistance: 20
   });
 
+  // LRU 缓存（避免频繁 new Style，且限制内存增长）
+  const createLRU = (maxSize) => {
+    const map = new Map();
+    return {
+      get(key) {
+        if (!map.has(key)) return undefined;
+        const val = map.get(key);
+        // 刷新为最近使用
+        map.delete(key);
+        map.set(key, val);
+        return val;
+      },
+      set(key, val) {
+        if (map.has(key)) map.delete(key);
+        map.set(key, val);
+        if (map.size > maxSize) {
+          const oldestKey = map.keys().next().value;
+          map.delete(oldestKey);
+        }
+      },
+      clear() {
+        map.clear();
+      },
+      size() {
+        return map.size;
+      },
+    };
+  };
+
+  // 聚合样式缓存（避免频繁 new Style 导致缩放卡顿）
+  // - 聚合圈：按 size 缓存（size 种类有限，给个小上限即可）
+  // - 单点：按 styleKey 缓存（来自 markerData.style）
+  const clusterStyleCache = createLRU(256); // key: size -> Style | Style[]
+  const singleStyleCache = createLRU(5000); // key: string -> Style
+
+  const getSingleStyleKey = (markerData) => {
+    try {
+      return JSON.stringify(markerData?.style || {});
+    } catch (e) {
+      return String(markerData?.id || Math.random());
+    }
+  };
+
   /**
    * 创建聚合样式
    * @param {Feature} feature - 要素
@@ -57,10 +100,19 @@ export function useMapClustering(map) {
     if (size === 1) {
       // 单个标记样式
       const markerData = features[0].getProperties();
-      return createSingleMarkerStyle(markerData);
+      const key = getSingleStyleKey(markerData);
+      const cached = singleStyleCache.get(key);
+      if (cached) return cached;
+      const style = createSingleMarkerStyle(markerData);
+      singleStyleCache.set(key, style);
+      return style;
     } else {
       // 聚合样式
-      return createClusterMarkerStyle(size);
+      const cached = clusterStyleCache.get(size);
+      if (cached) return cached;
+      const style = createClusterMarkerStyle(size);
+      clusterStyleCache.set(size, style);
+      return style;
     }
   };
 
@@ -103,41 +155,29 @@ export function useMapClustering(map) {
    * @returns {Style} 样式对象
    */
   const createClusterMarkerStyle = (size) => {
+    // 注意：自定义 renderer + 渐变在大量缩放/交互时非常吃 CPU
+    // 这里改为 Circle 样式 + 文本，并通过上层 clusterStyleCache 复用
     const radius = Math.max(15, Math.min(30, 15 + size));
-    const [startColor, endColor] = getClusterColor(size);
+    const [startColor] = getClusterColor(size);
 
-    // 使用自定义 renderer 绘制径向渐变圆
-    const circleGradientStyle = new Style({
+    const circleStyle = new Style({
+      image: new Circle({
+        radius,
+        fill: new Fill({ color: startColor }),
+      }),
       zIndex: 0,
-      renderer: (pixelCoordinates, state) => {
-        const ctx = state.context;
-        const pixelRatio = state.pixelRatio || 1;
-        const [x, y] = pixelCoordinates;
-
-        const r = radius * pixelRatio;
-        const gradient = ctx.createRadialGradient(x, y, 0, x, y, r);
-        gradient.addColorStop(0, startColor);
-        gradient.addColorStop(1, endColor);
-
-        ctx.beginPath();
-        ctx.arc(x, y, r, 0, Math.PI * 2, true);
-        ctx.closePath();
-        ctx.fillStyle = gradient;
-        ctx.fill();
-      }
     });
 
-    // 文本样式与自定义渲染可叠加返回
     const textStyle = new Style({
-      zIndex: 1,
       text: new Text({
         text: size.toString(),
         font: `${clusterConfig.clusterStyle.textSize}px ${clusterConfig.clusterStyle.textWeight}`,
-        fill: new Fill({ color: clusterConfig.clusterStyle.textColor })
-      })
+        fill: new Fill({ color: clusterConfig.clusterStyle.textColor }),
+      }),
+      zIndex: 1,
     });
 
-    return [circleGradientStyle, textStyle];
+    return [circleStyle, textStyle];
   };
 
   /**
@@ -190,7 +230,11 @@ export function useMapClustering(map) {
       source: clusterSource,
       style: createClusterStyle,
       title: `${type}_cluster`,
-      zIndex: 101
+      zIndex: 101,
+      // 性能：聚合层使用 image 渲染，并且交互过程中不强制每帧重绘
+      renderMode: 'image',
+      updateWhileAnimating: false,
+      updateWhileInteracting: false
     });
 
     // 保存引用
